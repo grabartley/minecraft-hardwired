@@ -1,0 +1,6 @@
+{
+  "parent": "hardwired:block/lift",
+  "textures": {
+    "lamp": "minecraft:block/redstone_lamp_on"
+  }
+}
