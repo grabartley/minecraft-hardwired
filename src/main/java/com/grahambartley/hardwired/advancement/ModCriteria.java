@@ -14,6 +14,9 @@ public final class ModCriteria {
   public static final String SCENE_SAVED = "scene_saved";
   public static final String SHORT_CIRCUIT = "short_circuit";
   public static final String CONTROLLER_PISTON = "controller_piston";
+  public static final String CIRCUIT_SAVED = "circuit_saved";
+  public static final String CIRCUIT_MADE = "circuit_made";
+  public static final String CIRCUIT_COPIED = "circuit_copied";
   public static final DeviceCriterion DEVICE =
       Criteria.register(Hardwired.MOD_ID + ":device", new DeviceCriterion());
 

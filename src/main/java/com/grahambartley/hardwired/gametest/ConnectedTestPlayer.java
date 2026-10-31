@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.gametest;
 
+import com.grahambartley.hardwired.network.CircuitResultPayload;
 import com.grahambartley.hardwired.network.MainPanelViewPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload.CellView;
@@ -142,6 +143,10 @@ public final class ConnectedTestPlayer {
 
   public List<MainPanelViewPayload> panelViews() {
     return received(MainPanelViewPayload.class);
+  }
+
+  public List<CircuitResultPayload> circuitResults() {
+    return received(CircuitResultPayload.class);
   }
 
   public boolean hasEarned(Identifier advancement) {

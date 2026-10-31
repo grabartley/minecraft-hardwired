@@ -12,6 +12,9 @@
     "hardwired:motion_sensor",
     "hardwired:dusk_sensor",
     "hardwired:controller",
-    "hardwired:main_panel"
+    "hardwired:main_panel",
+    "hardwired:circuit_board",
+    "hardwired:blank_circuit_block",
+    "hardwired:circuit_block"
   ]
 }

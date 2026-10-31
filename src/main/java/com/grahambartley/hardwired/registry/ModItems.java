@@ -43,7 +43,10 @@ public final class ModItems {
           ModBlocks.MOTION_SENSOR,
           ModBlocks.DUSK_SENSOR,
           ModBlocks.CONTROLLER,
-          ModBlocks.MAIN_PANEL);
+          ModBlocks.MAIN_PANEL,
+          ModBlocks.CIRCUIT_BOARD,
+          ModBlocks.BLANK_CIRCUIT_BLOCK,
+          ModBlocks.CIRCUIT_BLOCK);
 
   private ModItems() {}
 

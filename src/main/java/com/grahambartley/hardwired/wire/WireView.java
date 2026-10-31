@@ -145,7 +145,7 @@ public final class WireView {
           endsConnected = true;
           continue;
         }
-        boolean output = WireRules.isOutput(world.getBlockState(touch.pos()));
+        boolean output = WireRules.isOutput(world.getBlockState(touch.pos()), touch);
         boolean input = engine.isInput(touch, cell.color());
         if (input || output) {
           marks.add(new MarkView(touch.pos().asLong(), input));

@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.network;
 
+import com.grahambartley.hardwired.device.CircuitActions;
 import com.grahambartley.hardwired.device.ControllerActions;
 import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.device.MainPanelActions;
@@ -35,6 +36,11 @@ public final class ModNetworking {
     PayloadTypeRegistry.playC2S().register(ControllerSetPayload.ID, ControllerSetPayload.CODEC);
     PayloadTypeRegistry.playC2S().register(MainPanelActionPayload.ID, MainPanelActionPayload.CODEC);
     PayloadTypeRegistry.playS2C().register(MainPanelViewPayload.ID, MainPanelViewPayload.CODEC);
+    PayloadTypeRegistry.playC2S().register(CircuitActionPayload.ID, CircuitActionPayload.CODEC);
+    PayloadTypeRegistry.playS2C().register(CircuitResultPayload.ID, CircuitResultPayload.CODEC);
+    ServerPlayNetworking.registerGlobalReceiver(
+        CircuitActionPayload.ID,
+        (payload, context) -> CircuitActions.act(context.player(), payload));
     ServerPlayNetworking.registerGlobalReceiver(
         ControllerSetPayload.ID,
         (payload, context) -> ControllerActions.save(context.player(), payload));

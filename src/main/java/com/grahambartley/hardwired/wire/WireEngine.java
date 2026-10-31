@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 
 public final class WireEngine {
 
@@ -70,6 +71,16 @@ public final class WireEngine {
   public boolean isPowered(BlockPos pos, Hue color) {
     for (WireNetwork network : grid.networksTouching(pos)) {
       if (network.color() == color && network.isOn()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean isPoweredFrom(BlockPos pos, Direction side) {
+    TouchPoint touch = new TouchPoint(pos, side.getOpposite());
+    for (WireNetwork network : grid.networksTouching(pos)) {
+      if (network.isOn() && network.touches().contains(touch)) {
         return true;
       }
     }
@@ -245,14 +256,22 @@ public final class WireEngine {
 
   private boolean readInputs(WireNetwork network) {
     boolean changed = network.rememberedInputs().retainAll(network.touchedPositions.keySet());
+    LongOpenHashSet read = new LongOpenHashSet();
+    LongOpenHashSet driving = new LongOpenHashSet();
     for (TouchPoint touch : new ArrayList<>(network.touches())) {
       if (VanillaPower.isReadable(world, touch.pos())) {
         long key = touch.pos().asLong();
-        changed |=
-            isInput(touch, network.color())
-                ? network.rememberedInputs().add(key)
-                : network.rememberedInputs().remove(key);
+        read.add(key);
+        if (isInput(touch, network.color())) {
+          driving.add(key);
+        }
       }
+    }
+    for (long key : read) {
+      changed |=
+          driving.contains(key)
+              ? network.rememberedInputs().add(key)
+              : network.rememberedInputs().remove(key);
     }
     return changed;
   }
@@ -264,7 +283,8 @@ public final class WireEngine {
   public boolean isInput(TouchPoint touch, Hue color) {
     BlockState blockState = world.getBlockState(touch.pos());
     if (blockState.getBlock() instanceof WireDevice device) {
-      return device.isDriving(world, touch.pos(), blockState, color);
+      return device.isDrivingFrom(
+          world, touch.pos(), blockState, color, touch.awayFromWire().getOpposite());
     }
     return VanillaPower.suppliesWire(world, touch);
   }

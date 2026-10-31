@@ -24,8 +24,11 @@ public final class WireRules {
 
   private WireRules() {}
 
-  public static boolean isOutput(BlockState state) {
-    return state.getBlock() instanceof WireDevice || state.isIn(OUTPUTS);
+  public static boolean isOutput(BlockState state, TouchPoint touch) {
+    if (state.getBlock() instanceof WireDevice device) {
+      return device.connectsFrom(state, touch.awayFromWire().getOpposite());
+    }
+    return state.isIn(OUTPUTS);
   }
 
   public static boolean accepts(BlockView world, BlockPos pos, Direction side) {

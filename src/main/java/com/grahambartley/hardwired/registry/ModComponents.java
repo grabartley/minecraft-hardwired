@@ -1,7 +1,9 @@
 package com.grahambartley.hardwired.registry;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.circuit.Design;
 import com.grahambartley.hardwired.controller.ControllerProgram;
+import com.grahambartley.hardwired.device.DesignCodecs;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.Scene;
 import java.util.List;
@@ -34,6 +36,15 @@ public final class ModComponents {
           ComponentType.<ControllerProgram>builder()
               .codec(ControllerProgram.CODEC)
               .packetCodec(ControllerProgram.PACKET_CODEC)
+              .build());
+
+  public static final ComponentType<Design> CIRCUIT_DESIGN =
+      Registry.register(
+          Registries.DATA_COMPONENT_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "circuit_design"),
+          ComponentType.<Design>builder()
+              .codec(DesignCodecs.CODEC)
+              .packetCodec(DesignCodecs.PACKET_CODEC)
               .build());
 
   private ModComponents() {}

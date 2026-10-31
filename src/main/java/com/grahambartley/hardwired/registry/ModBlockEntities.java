@@ -2,6 +2,8 @@ package com.grahambartley.hardwired.registry;
 
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.AnimatedDeviceBlockEntity;
+import com.grahambartley.hardwired.block.CircuitBlockEntity;
+import com.grahambartley.hardwired.block.CircuitBoardBlockEntity;
 import com.grahambartley.hardwired.block.ControlPanelBlockEntity;
 import com.grahambartley.hardwired.block.ControllerBlockEntity;
 import com.grahambartley.hardwired.block.LampBlockEntity;
@@ -46,6 +48,20 @@ public final class ModBlockEntities {
           Registries.BLOCK_ENTITY_TYPE,
           Identifier.of(Hardwired.MOD_ID, "main_panel"),
           BlockEntityType.Builder.create(MainPanelBlockEntity::new, ModBlocks.MAIN_PANEL)
+              .build(null));
+
+  public static final BlockEntityType<CircuitBoardBlockEntity> CIRCUIT_BOARD =
+      Registry.register(
+          Registries.BLOCK_ENTITY_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "circuit_board"),
+          BlockEntityType.Builder.create(CircuitBoardBlockEntity::new, ModBlocks.CIRCUIT_BOARD)
+              .build(null));
+
+  public static final BlockEntityType<CircuitBlockEntity> CIRCUIT_BLOCK =
+      Registry.register(
+          Registries.BLOCK_ENTITY_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "circuit_block"),
+          BlockEntityType.Builder.create(CircuitBlockEntity::new, ModBlocks.CIRCUIT_BLOCK)
               .build(null));
 
   private ModBlockEntities() {}

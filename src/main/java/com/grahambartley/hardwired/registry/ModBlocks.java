@@ -2,6 +2,8 @@ package com.grahambartley.hardwired.registry;
 
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.AbstractLampBlock;
+import com.grahambartley.hardwired.block.CircuitBlock;
+import com.grahambartley.hardwired.block.CircuitBoardBlock;
 import com.grahambartley.hardwired.block.ControlPanelBlock;
 import com.grahambartley.hardwired.block.ControllerBlock;
 import com.grahambartley.hardwired.block.CopperLampBlock;
@@ -94,6 +96,13 @@ public final class ModBlocks {
   public static final Block MAIN_PANEL =
       register("main_panel", new MainPanelBlock(deviceSettings(), MAIN_PANEL_BOX));
 
+  public static final Block CIRCUIT_BOARD =
+      register("circuit_board", new CircuitBoardBlock(computerSettings().nonOpaque()));
+  public static final Block BLANK_CIRCUIT_BLOCK =
+      register("blank_circuit_block", new Block(computerSettings()));
+  public static final Block CIRCUIT_BLOCK =
+      register("circuit_block", new CircuitBlock(computerSettings()));
+
   private ModBlocks() {}
 
   public static void register() {}
@@ -124,6 +133,14 @@ public final class ModBlocks {
         .sounds(BlockSoundGroup.COPPER)
         .pistonBehavior(PistonBehavior.DESTROY)
         .nonOpaque();
+  }
+
+  private static AbstractBlock.Settings computerSettings() {
+    return AbstractBlock.Settings.create()
+        .mapColor(MapColor.TERRACOTTA_WHITE)
+        .strength(1.5F, 6F)
+        .sounds(BlockSoundGroup.STONE)
+        .pistonBehavior(PistonBehavior.BLOCK);
   }
 
   private static Block register(String name, Block block) {

@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired;
 
 import com.grahambartley.hardwired.block.AbstractLampBlock;
+import com.grahambartley.hardwired.block.CircuitBoardBlockEntity;
 import com.grahambartley.hardwired.block.ControlPanelBlockEntity;
 import com.grahambartley.hardwired.block.ControllerBlockEntity;
 import com.grahambartley.hardwired.block.JunctionBlock;
@@ -13,6 +14,7 @@ import com.grahambartley.hardwired.client.anim.AnimatedDeviceRenderer;
 import com.grahambartley.hardwired.client.anim.DeviceAnimations;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
+import com.grahambartley.hardwired.network.CircuitResultPayload;
 import com.grahambartley.hardwired.network.MainPanelViewPayload;
 import com.grahambartley.hardwired.network.OpenDevicePayload;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.SyncServerConfigS2CPayload;
@@ -23,6 +25,7 @@ import com.grahambartley.hardwired.registry.ModBlockEntities;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.registry.ModItems;
+import com.grahambartley.hardwired.screen.CircuitBoardScreen;
 import com.grahambartley.hardwired.screen.ControlPanelScreen;
 import com.grahambartley.hardwired.screen.ControllerScreen;
 import com.grahambartley.hardwired.screen.JunctionScreen;
@@ -70,6 +73,9 @@ public class HardwiredClient implements ClientModInitializer {
     ClientPlayNetworking.registerGlobalReceiver(
         MainPanelViewPayload.ID, (payload, context) -> showMainPanel(context.client(), payload));
     ClientPlayNetworking.registerGlobalReceiver(
+        CircuitResultPayload.ID,
+        (payload, context) -> showCircuitResult(context.client(), payload));
+    ClientPlayNetworking.registerGlobalReceiver(
         SyncServerConfigS2CPayload.ID,
         (payload, context) -> SyncedServerConfig.apply(payload.config()));
     SyncedServerConfig.resetOnDisconnect();
@@ -94,6 +100,8 @@ public class HardwiredClient implements ClientModInitializer {
       client.setScreen(new ControlPanelScreen(pos, panel, payload.look()));
     } else if (client.world.getBlockEntity(pos) instanceof ControllerBlockEntity controller) {
       client.setScreen(new ControllerScreen(pos, controller));
+    } else if (client.world.getBlockEntity(pos) instanceof CircuitBoardBlockEntity board) {
+      client.setScreen(new CircuitBoardScreen(pos, board));
     } else if (client.world.getBlockState(pos).getBlock() instanceof JunctionBlock) {
       client.setScreen(new JunctionScreen(pos, client.world.getBlockState(pos)));
     }
@@ -108,11 +116,19 @@ public class HardwiredClient implements ClientModInitializer {
     }
   }
 
+  private static void showCircuitResult(MinecraftClient client, CircuitResultPayload payload) {
+    if (client.currentScreen instanceof CircuitBoardScreen screen && screen.shows(payload.pos())) {
+      screen.accept(payload);
+    }
+  }
+
   private static void registerColors() {
     Block[] lamps = ModBlocks.lamps();
     BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), lamps);
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.JUNCTION, RenderLayer.getCutout());
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CONTROLLER, RenderLayer.getCutout());
+    BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CIRCUIT_BOARD, RenderLayer.getCutout());
+    BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CIRCUIT_BLOCK, RenderLayer.getCutout());
     ColorProviderRegistry.BLOCK.register(
         (state, world, pos, tintIndex) -> {
           if (world == null
