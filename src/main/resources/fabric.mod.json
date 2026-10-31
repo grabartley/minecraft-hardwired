@@ -31,7 +31,9 @@
       "com.grahambartley.hardwired.gametest.ControllerGameTest",
       "com.grahambartley.hardwired.gametest.MainPanelGameTest",
       "com.grahambartley.hardwired.gametest.CircuitGameTest",
-      "com.grahambartley.hardwired.gametest.CircuitBoardGameTest"
+      "com.grahambartley.hardwired.gametest.CircuitBoardGameTest",
+      "com.grahambartley.hardwired.gametest.PowerGameTest",
+      "com.grahambartley.hardwired.gametest.ElectronicsGameTest"
     ],
     "modmenu": [
       "com.grahambartley.hardwired.HardwiredModMenu"

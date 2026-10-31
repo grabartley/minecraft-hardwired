@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:lightning_rod"
+    },
+    "title": {
+      "translate": "advancement.hardwired.caught_lightning.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.caught_lightning.description"
+    },
+    "frame": "challenge",
+    "hidden": false
+  },
+  "criteria": {
+    "struck": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "lightning_charged"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light",
+  "rewards": {
+    "experience": 100
+  }
+}

@@ -6,8 +6,10 @@ import com.grahambartley.hardwired.controller.ControllerProgram;
 import com.grahambartley.hardwired.device.DesignCodecs;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.Scene;
+import com.mojang.serialization.Codec;
 import java.util.List;
 import net.minecraft.component.ComponentType;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -45,6 +47,15 @@ public final class ModComponents {
           ComponentType.<Design>builder()
               .codec(DesignCodecs.CODEC)
               .packetCodec(DesignCodecs.PACKET_CODEC)
+              .build());
+
+  public static final ComponentType<Integer> CELL_CHARGE =
+      Registry.register(
+          Registries.DATA_COMPONENT_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "cell_charge"),
+          ComponentType.<Integer>builder()
+              .codec(Codec.intRange(0, Integer.MAX_VALUE))
+              .packetCodec(PacketCodecs.VAR_INT)
               .build());
 
   private ModComponents() {}

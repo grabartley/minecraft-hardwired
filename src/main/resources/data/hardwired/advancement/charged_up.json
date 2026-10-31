@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:redstone_cell"
+    },
+    "title": {
+      "translate": "advancement.hardwired.charged_up.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.charged_up.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "filled": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "cell_filled"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light"
+}

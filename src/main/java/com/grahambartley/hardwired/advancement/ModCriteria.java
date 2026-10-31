@@ -17,6 +17,10 @@ public final class ModCriteria {
   public static final String CIRCUIT_SAVED = "circuit_saved";
   public static final String CIRCUIT_MADE = "circuit_made";
   public static final String CIRCUIT_COPIED = "circuit_copied";
+  public static final String CELL_FILLED = "cell_filled";
+  public static final String SOLAR_CHARGED = "solar_charged";
+  public static final String LIGHTNING_CHARGED = "lightning_charged";
+  public static final String LIGHTS_OUT = "lights_out";
   public static final DeviceCriterion DEVICE =
       Criteria.register(Hardwired.MOD_ID + ":device", new DeviceCriterion());
 

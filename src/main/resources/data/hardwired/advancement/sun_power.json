@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:solar_panel"
+    },
+    "title": {
+      "translate": "advancement.hardwired.sun_power.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.sun_power.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "charged": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "solar_charged"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light"
+}

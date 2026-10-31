@@ -26,6 +26,7 @@ public final class ServerConfigPayloads {
     buf.writeVarInt(config.lamp().ageRateMultiplierPercent());
     buf.writeVarInt(config.device().motionSensorRangeBlocks());
     buf.writeVarInt(config.device().buttonHoldTicks());
+    buf.writeVarInt(config.device().intercomRangeBlocks());
     PowerSettings power = config.power();
     buf.writeVarInt(power.cellCapacity());
     buf.writeVarInt(power.dustCharge());
@@ -45,7 +46,7 @@ public final class ServerConfigPayloads {
     return new HardwiredConfig(
         new WireSettings(buf.readVarInt(), buf.readVarInt()),
         new LampSettings(buf.readVarInt()),
-        new DeviceSettings(buf.readVarInt(), buf.readVarInt()),
+        new DeviceSettings(buf.readVarInt(), buf.readVarInt(), buf.readVarInt()),
         new PowerSettings(
             buf.readVarInt(),
             buf.readVarInt(),

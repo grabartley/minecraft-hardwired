@@ -71,6 +71,13 @@ public final class HardwiredCommand {
               config -> config.device().buttonHoldTicks(),
               (config, value) -> config.withDevice(config.device().withButtonHoldTicks(value))),
           new IntOption(
+              "intercomrange",
+              "blocks",
+              DeviceSettings.INTERCOM_RANGE_MIN,
+              DeviceSettings.INTERCOM_RANGE_MAX,
+              config -> config.device().intercomRangeBlocks(),
+              (config, value) -> config.withDevice(config.device().withIntercomRangeBlocks(value))),
+          new IntOption(
               "cellcapacity",
               "charge",
               PowerSettings.CELL_CAPACITY_MIN,

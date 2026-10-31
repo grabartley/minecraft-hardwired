@@ -16,16 +16,20 @@ import java.util.UUID;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
+import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.test.TestContext;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -101,6 +105,34 @@ public final class ConnectedTestPlayer {
 
   public void setOperator(boolean operator) {
     player.permission = operator ? OPERATOR : NOT_OPERATOR;
+  }
+
+  public void setChatVisibility(ChatVisibility visibility) {
+    SyncedClientOptions base = SyncedClientOptions.createDefault();
+    player.setClientOptions(
+        new SyncedClientOptions(
+            base.language(),
+            base.viewDistance(),
+            visibility,
+            base.chatColorsEnabled(),
+            base.playerModelParts(),
+            base.mainArm(),
+            base.filtersText(),
+            base.allowsServerListing()));
+  }
+
+  public List<Text> intercomLines() {
+    channel.flushOutbound();
+    List<Text> lines = new ArrayList<>();
+    for (Object message : channel.outboundMessages()) {
+      if (message instanceof GameMessageS2CPacket packet
+          && !packet.overlay()
+          && packet.content().getContent() instanceof TranslatableTextContent content
+          && content.getKey().equals("chat.hardwired.intercom")) {
+        lines.add(packet.content());
+      }
+    }
+    return lines;
   }
 
   public void hold(ItemStack main, ItemStack off) {

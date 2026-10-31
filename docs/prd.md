@@ -289,13 +289,13 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 
 | ID | Requirement |
 |---|---|
-| POWER-1 | A Redstone Cell stores charge. Using redstone dust or a block of redstone on it fills it, using the item up |
+| POWER-1 | A Redstone Cell stores charge. Using redstone dust or a block of redstone on it fills it, using the item up. A dust adds `dustCharge` and a block adds nine times that. An item is used only when all of its charge fits, so a nearly full cell refuses it, says so and keeps the item in the hand, and a cell never holds more than its capacity |
 | POWER-2 | Only the Lift, Alarm, Radio, Speaker and Intercom need charge. Wire, lamps, panels, switches, Controllers, Circuit Blocks and vanilla blocks never do |
-| POWER-3 | A device that needs charge uses it from a cell on its network, only while running |
-| POWER-4 | A Solar Panel, built from daylight detectors, slowly fills cells on its network by day |
-| POWER-5 | Lightning striking a lightning rod wired to a cell fills that cell |
-| POWER-6 | A device that runs out of charge stops, says why when looked at, and starts again when charged |
-| POWER-7 | A cell shows how full it is in its look, without a number |
+| POWER-3 | A device that needs charge uses it from a cell on its network, only while running. Alarms, Radios and Speakers pay once a second, starting with the second they start in, and an Intercom pays per line |
+| POWER-4 | A Solar Panel, built from daylight detectors, slowly fills cells on its network by day. It reads sky light as a daylight detector does, counts as day from a reading of 8, shows it is working with its lit state, and earns nothing while its chunk is unloaded |
+| POWER-5 | Lightning striking a vanilla lightning rod that wire touches fills the cells on that wire, once per bolt |
+| POWER-6 | A device that runs out of charge stops, says why when looked at, and starts again when charged. A stopped device shows its reason under the crosshair and on using it: no cell on its wire, out of charge, wire off, no disc, no Speaker, no Radio playing or song ended. A device out of charge checks once a second, so it restarts within a second of charge arriving |
+| POWER-7 | A cell shows how full it is in its look, without a number: five looks, empty only at no charge and full from just over three quarters |
 
 **Not supported:** generators that burn other fuels; cables with limited capacity; voltage.
 
@@ -308,9 +308,9 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 | ID | Requirement |
 |---|---|
 | DEV-1 | A Lift moves players between Lift Floors on a wired shaft |
-| DEV-2 | An Alarm sounds when its network turns on |
-| DEV-3 | A Speaker plays a music disc from a Radio on its network, so one Radio can fill a house |
-| DEV-4 | An Intercom shares a chat line with other Intercoms on its network |
+| DEV-2 | An Alarm sounds when its network turns on. It mounts on a floor, wall or ceiling, rings a vanilla bell once a second while its network is on and it has charge, and shows that in its powered look |
+| DEV-3 | A Speaker plays a music disc from a Radio on its network, so one Radio can fill a house. A Radio holds one disc: using a disc puts it in, using an empty hand takes it out, and breaking the Radio drops it. A Radio plays once it has a disc, a Speaker on its network and charge, whether or not the wire is on, and each Speaker plays the disc as a jukebox would, heard around the Speaker. A Radio with no Speaker stays quiet, uses no charge and says so. A song plays once: when it ends everything stops, and taking the disc out and putting it back plays it again. A song cut off by running out of charge, or a lost Speaker, starts from the top. Breaking a Speaker stops its sound. Note particles and a playing look show it working with the sound off |
+| DEV-4 | An Intercom shares a chat line with other Intercoms on its network. Using it opens a one-line box of up to 256 characters. A line follows chat rules: the server strips characters chat forbids, a player with chat hidden cannot send, only players with full chat receive it, and a player may send one line a second. Every player within `intercomRange` blocks of any Intercom on the network hears it, each Intercom rings briefly, and the line costs `intercomChargePerLine` |
 | DEV-5 | A Main Panel on a network lists its lamps, Controllers and switches and works them from one screen, with up to 128 rows. It flips switches, runs or stops Controllers, and sets the colour and brightness of one lamp. A stopped Controller finishes its step and holds there, and Run carries on forwards, or backwards from the end. A lamp set this way keeps that look until a Control Panel next changes its network |
 | DEV-6 | Every device has a plain name, a recipe in copper and redstone, and a sound that fits vanilla |
 | DEV-7 | A Main Panel lists only networks the player may see (PERM-4), and every action checks reach of the panel, build rights and that the device is still on a network the player may see. A device in an unloaded chunk shows its last known state and cannot be worked, and other wire points there are counted as unknown |
@@ -329,7 +329,7 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 | CFG-2 | Settings are saved per world as JSON in the world save directory |
 | CFG-3 | A missing file gives defaults. A broken file gives defaults, is logged and is kept |
 | CFG-4 | Out-of-range values are clamped on load |
-| CFG-5 | Every balance value is a setting with a balanced default, never a fixed number in code. That covers wire view range, network size, circuit size, cell capacity, charge use, lamp ageing, Motion Sensor range and Push Button hold time. Accessibility and safety limits such as ACC-3 and LINK-8 are requirements, not settings |
+| CFG-5 | Every balance value is a setting with a balanced default, never a fixed number in code. That covers wire view range, network size, circuit size, cell capacity, charge use, lamp ageing, Motion Sensor range, Intercom range and Push Button hold time. Accessibility and safety limits such as ACC-3 and LINK-8 are requirements, not settings |
 | CFG-6 | A settings screen through Mod Menu shows the same server options and shares their validation with the commands |
 | CFG-7 | An option that only changes what one player sees, such as how wire is drawn, is a client setting saved on that player's device |
 
@@ -355,12 +355,12 @@ The mod has its own tab, with a background of copper and redstone traces and a w
 | ADV-10 | Logic Gate | Saving a first design |
 | ADV-11 | Pocket Circuit | Making a Circuit Block |
 | ADV-12 | Share The Love | Copying a Circuit Block |
-| ADV-13 | Charged Up | Filling a Redstone Cell |
-| ADV-14 | Sun Power | Charging a cell with a Solar Panel |
-| ADV-15 | Caught Lightning | Charging a cell by lightning |
+| ADV-13 | Charged Up | Filling a Redstone Cell with redstone |
+| ADV-14 | Sun Power | Being near a Solar Panel as it charges a cell |
+| ADV-15 | Caught Lightning | Being near a wired rod as lightning charges a cell |
 | ADV-16 | Short Circuit | Cutting a wire that is on |
 | ADV-17 | Vintage | A lamp reaching full age |
-| ADV-18 | Lights Out | Every device on a network that needs charge stopping for lack of it |
+| ADV-18 | Lights Out | Being near the last running device on a network as it stops for lack of charge |
 | ADV-19 | Hardwired | Granted on joining a world: the root of the tab |
 
 | ID | Requirement |
@@ -447,7 +447,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 
 | ID | Requirement |
 |---|---|
-| SAFE-1 | No game mechanic duplicates or deletes wire or any item the mod handles. Laying and removing wire conserves items |
+| SAFE-1 | No game mechanic duplicates or deletes wire or any item the mod handles. Laying and removing wire conserves items. A Radio has no inventory for hoppers: they neither feed it nor empty it |
 | SAFE-2 | Charge is never created except by POWER-1, POWER-4 and POWER-5 |
 | SAFE-3 | A bad config file never stops a server starting (CFG-3, CFG-4) |
 | SAFE-4 | Every payload is size-limited: drag paths, scene names, timelines, designs and pasted text |
@@ -480,6 +480,9 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | Circuit design, on a board or a block | kept | kept | block does not move | drops as item data | kept to the last save |
 | A Circuit Block's running state | kept | kept | block does not move | lost | kept to the last save |
 | Charge | kept | kept | cell does not move | drops as item data | kept to the last save |
+| A disc in a Radio | kept | kept | Radio does not move | drops | kept to the last save |
+| A Radio's place in a song | kept | kept | Radio does not move | lost | kept to the last save |
+| Why a device stopped | kept | kept | not applicable | lost | kept to the last save |
 | Network state, including a trip | kept | kept | not applicable | not applicable | kept to the last save |
 | Junction rule and a switch's scene | kept | kept | block does not move | drops as item data | kept to the last save |
 | Settings | not applicable | kept | not applicable | not applicable | written atomically |

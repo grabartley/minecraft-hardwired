@@ -46,7 +46,13 @@ public final class ModItems {
           ModBlocks.MAIN_PANEL,
           ModBlocks.CIRCUIT_BOARD,
           ModBlocks.BLANK_CIRCUIT_BLOCK,
-          ModBlocks.CIRCUIT_BLOCK);
+          ModBlocks.CIRCUIT_BLOCK,
+          ModBlocks.REDSTONE_CELL,
+          ModBlocks.SOLAR_PANEL,
+          ModBlocks.ALARM,
+          ModBlocks.RADIO,
+          ModBlocks.SPEAKER,
+          ModBlocks.INTERCOM);
 
   private ModItems() {}
 

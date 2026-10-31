@@ -6,6 +6,7 @@
 		"AbstractBlockStateMixin",
 		"DispenserBlockMixin",
 		"LevelStorageMixin",
+		"LightningRodBlockMixin",
 		"PistonBlockMixin",
 		"ServerWorldMixin",
 		"WorldChunkMixin",

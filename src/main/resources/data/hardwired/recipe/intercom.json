@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "C C",
+    "RNR",
+    " C "
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "N": {
+      "item": "minecraft:note_block"
+    }
+  },
+  "result": {
+    "id": "hardwired:intercom",
+    "count": 2
+  }
+}

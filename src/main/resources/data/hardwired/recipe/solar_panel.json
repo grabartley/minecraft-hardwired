@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "DDD",
+    "CRC"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:daylight_detector"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "id": "hardwired:solar_panel",
+    "count": 1
+  }
+}

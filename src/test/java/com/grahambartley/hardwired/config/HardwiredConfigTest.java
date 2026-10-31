@@ -32,7 +32,7 @@ class HardwiredConfigTest {
         new HardwiredConfig(
             new WireSettings(64, 1000),
             new LampSettings(250),
-            new DeviceSettings(9, 40),
+            new DeviceSettings(9, 40, 32),
             PowerSettings.DEFAULTS,
             LiftSettings.DEFAULTS,
             CircuitSettings.DEFAULTS);

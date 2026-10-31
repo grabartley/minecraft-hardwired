@@ -15,6 +15,12 @@
     "hardwired:main_panel",
     "hardwired:circuit_board",
     "hardwired:blank_circuit_block",
-    "hardwired:circuit_block"
+    "hardwired:circuit_block",
+    "hardwired:redstone_cell",
+    "hardwired:solar_panel",
+    "hardwired:alarm",
+    "hardwired:radio",
+    "hardwired:speaker",
+    "hardwired:intercom"
   ]
 }

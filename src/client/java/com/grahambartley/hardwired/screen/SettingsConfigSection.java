@@ -61,6 +61,14 @@ final class SettingsConfigSection {
             DeviceSettings.BUTTON_HOLD_MAX,
             config.device().buttonHoldTicks(),
             value -> config = config.withDevice(config.device().withButtonHoldTicks(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "intercomrange",
+            KEY + "intercomrange.tooltip",
+            DeviceSettings.INTERCOM_RANGE_MIN,
+            DeviceSettings.INTERCOM_RANGE_MAX,
+            config.device().intercomRangeBlocks(),
+            value -> config = config.withDevice(config.device().withIntercomRangeBlocks(value))));
     list.addRow(rows.header(KEY + "power"));
     list.addRow(
         rows.intSlider(

@@ -117,15 +117,20 @@ public final class WireEngine {
   }
 
   public <T> Optional<T> findOnNetwork(BlockPos pos, Class<T> type) {
+    return allOnNetwork(pos, type).stream().findFirst();
+  }
+
+  public <T> List<T> allOnNetwork(BlockPos pos, Class<T> type) {
     return grid.networksTouching(pos).stream()
         .flatMap(network -> network.touches().stream())
         .map(TouchPoint::pos)
+        .distinct()
         .filter(this::isLoaded)
         .sorted()
         .map(world::getBlockEntity)
         .filter(type::isInstance)
         .map(type::cast)
-        .findFirst();
+        .toList();
   }
 
   public void refresh(BlockPos pos) {

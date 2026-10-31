@@ -4,8 +4,10 @@ import com.grahambartley.hardwired.block.AbstractLampBlock;
 import com.grahambartley.hardwired.block.CircuitBoardBlockEntity;
 import com.grahambartley.hardwired.block.ControlPanelBlockEntity;
 import com.grahambartley.hardwired.block.ControllerBlockEntity;
+import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.LampBlockEntity;
+import com.grahambartley.hardwired.client.DeviceHud;
 import com.grahambartley.hardwired.client.WireDrag;
 import com.grahambartley.hardwired.client.WireHud;
 import com.grahambartley.hardwired.client.WireRenderer;
@@ -28,6 +30,7 @@ import com.grahambartley.hardwired.registry.ModItems;
 import com.grahambartley.hardwired.screen.CircuitBoardScreen;
 import com.grahambartley.hardwired.screen.ControlPanelScreen;
 import com.grahambartley.hardwired.screen.ControllerScreen;
+import com.grahambartley.hardwired.screen.IntercomScreen;
 import com.grahambartley.hardwired.screen.JunctionScreen;
 import com.grahambartley.hardwired.screen.MainPanelScreen;
 import com.grahambartley.hardwired.wire.Hue;
@@ -58,7 +61,12 @@ public class HardwiredClient implements ClientModInitializer {
   private static final int TINTED_LAYER = 1;
   private static final int LAMP_TINT_FLOOR = 7;
   private static final List<BlockEntityType<? extends BlockEntity>> ANIMATED_TYPES =
-      List.of(ModBlockEntities.ANIMATED_DEVICE, ModBlockEntities.CONTROLLER);
+      List.of(
+          ModBlockEntities.ANIMATED_DEVICE,
+          ModBlockEntities.CONTROLLER,
+          ModBlockEntities.ELECTRONIC,
+          ModBlockEntities.RADIO,
+          ModBlockEntities.SPEAKER);
 
   @Override
   public void onInitializeClient() {
@@ -84,6 +92,7 @@ public class HardwiredClient implements ClientModInitializer {
     UseBlockCallback.EVENT.register(WireDrag::onUseBlock);
     WorldRenderEvents.LAST.register(WireRenderer::render);
     HudRenderCallback.EVENT.register(WireHud::render);
+    HudRenderCallback.EVENT.register(DeviceHud::render);
     registerColors();
     ClientSettingsStore.load(FabricLoader.getInstance().getConfigDir());
     DeviceAnimations.register();
@@ -104,6 +113,8 @@ public class HardwiredClient implements ClientModInitializer {
       client.setScreen(new CircuitBoardScreen(pos, board));
     } else if (client.world.getBlockState(pos).getBlock() instanceof JunctionBlock) {
       client.setScreen(new JunctionScreen(pos, client.world.getBlockState(pos)));
+    } else if (client.world.getBlockState(pos).getBlock() instanceof IntercomBlock) {
+      client.setScreen(new IntercomScreen(pos));
     }
   }
 
@@ -129,6 +140,14 @@ public class HardwiredClient implements ClientModInitializer {
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CONTROLLER, RenderLayer.getCutout());
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CIRCUIT_BOARD, RenderLayer.getCutout());
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CIRCUIT_BLOCK, RenderLayer.getCutout());
+    BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.REDSTONE_CELL, RenderLayer.getTranslucent());
+    BlockRenderLayerMap.INSTANCE.putBlocks(
+        RenderLayer.getCutout(),
+        ModBlocks.SOLAR_PANEL,
+        ModBlocks.ALARM,
+        ModBlocks.RADIO,
+        ModBlocks.SPEAKER,
+        ModBlocks.INTERCOM);
     ColorProviderRegistry.BLOCK.register(
         (state, world, pos, tintIndex) -> {
           if (world == null

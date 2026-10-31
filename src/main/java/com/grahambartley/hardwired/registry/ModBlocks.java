@@ -2,16 +2,22 @@ package com.grahambartley.hardwired.registry;
 
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.AbstractLampBlock;
+import com.grahambartley.hardwired.block.AlarmBlock;
 import com.grahambartley.hardwired.block.CircuitBlock;
 import com.grahambartley.hardwired.block.CircuitBoardBlock;
 import com.grahambartley.hardwired.block.ControlPanelBlock;
 import com.grahambartley.hardwired.block.ControllerBlock;
 import com.grahambartley.hardwired.block.CopperLampBlock;
 import com.grahambartley.hardwired.block.DuskClock;
+import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.MainPanelBlock;
 import com.grahambartley.hardwired.block.MountedLampBlock;
+import com.grahambartley.hardwired.block.RadioBlock;
+import com.grahambartley.hardwired.block.RedstoneCellBlock;
 import com.grahambartley.hardwired.block.SensorBlock;
+import com.grahambartley.hardwired.block.SolarPanelBlock;
+import com.grahambartley.hardwired.block.SpeakerBlock;
 import com.grahambartley.hardwired.block.StreetlightBlock;
 import com.grahambartley.hardwired.block.SwitchBlock;
 import java.util.EnumSet;
@@ -38,6 +44,10 @@ public final class ModBlocks {
   private static final double[] BUTTON_BOX = {5, 0, 5, 11, 3, 11};
   private static final double[] MOTION_SENSOR_BOX = {5, 0, 5, 11, 4, 11};
   private static final double[] DUSK_SENSOR_BOX = {4, 0, 4, 12, 3, 12};
+  private static final double[] ALARM_BOX = {3, 0, 3, 13, 6, 13};
+  private static final double[] RADIO_BOX = {1, 0, 2, 15, 14, 14};
+  private static final double[] SPEAKER_BOX = {3, 0, 3, 13, 13, 13};
+  private static final double[] INTERCOM_BOX = {5, 0, 5, 11, 12, 11};
 
   public static final Block COPPER_LAMP =
       register(
@@ -102,6 +112,39 @@ public final class ModBlocks {
       register("blank_circuit_block", new Block(computerSettings()));
   public static final Block CIRCUIT_BLOCK =
       register("circuit_block", new CircuitBlock(computerSettings()));
+
+  public static final Block REDSTONE_CELL =
+      register(
+          "redstone_cell",
+          new RedstoneCellBlock(
+              deviceSettings()
+                  .sounds(BlockSoundGroup.GLASS)
+                  .pistonBehavior(PistonBehavior.BLOCK)
+                  .luminance(state -> state.get(RedstoneCellBlock.LEVEL))
+                  .emissiveLighting(
+                      (state, world, pos) -> state.get(RedstoneCellBlock.LEVEL) > 0)));
+  public static final Block SOLAR_PANEL =
+      register(
+          "solar_panel",
+          new SolarPanelBlock(
+              deviceSettings()
+                  .pistonBehavior(PistonBehavior.BLOCK)
+                  .emissiveLighting((state, world, pos) -> state.get(SolarPanelBlock.LIT))));
+
+  public static final Block ALARM = register("alarm", new AlarmBlock(deviceSettings(), ALARM_BOX));
+  public static final Block RADIO =
+      register(
+          "radio",
+          new RadioBlock(
+              deviceSettings()
+                  .mapColor(MapColor.OAK_TAN)
+                  .sounds(BlockSoundGroup.WOOD)
+                  .pistonBehavior(PistonBehavior.BLOCK),
+              RADIO_BOX));
+  public static final Block SPEAKER =
+      register("speaker", new SpeakerBlock(deviceSettings(), SPEAKER_BOX));
+  public static final Block INTERCOM =
+      register("intercom", new IntercomBlock(deviceSettings(), INTERCOM_BOX));
 
   private ModBlocks() {}
 
