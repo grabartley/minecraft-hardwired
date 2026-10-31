@@ -21,8 +21,6 @@ import net.minecraft.world.World;
 
 public final class CircuitBoardBlock extends HorizontalFacingBlock implements BlockEntityProvider {
 
-  private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 12, 16);
-
   public CircuitBoardBlock(Settings settings) {
     super(settings);
     setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
@@ -46,7 +44,7 @@ public final class CircuitBoardBlock extends HorizontalFacingBlock implements Bl
   @Override
   protected VoxelShape getOutlineShape(
       BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-    return SHAPE;
+    return CircuitBoardShape.of(state.get(FACING));
   }
 
   @Override

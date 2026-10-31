@@ -17,6 +17,8 @@ import net.minecraft.util.math.BlockPos;
 
 public final class MainPanelActions {
 
+  private static final int MIN_TICKS_BETWEEN_ACTIONS = 2;
+  private static final ActionRate RATE = new ActionRate(MIN_TICKS_BETWEEN_ACTIONS);
   private static final float CLICK_VOLUME = 0.4F;
   private static final float CLICK_PITCH = 1.3F;
 
@@ -26,8 +28,12 @@ public final class MainPanelActions {
     send(player, panel, true);
   }
 
+  public static void forget(ServerPlayerEntity player) {
+    RATE.forget(player.getUuid());
+  }
+
   public static void act(ServerPlayerEntity player, MainPanelActionPayload action) {
-    if (perform(player, action)) {
+    if (RATE.allow(player.getUuid(), player.getServer().getTicks()) && perform(player, action)) {
       send(player, action.panel(), false);
     }
   }

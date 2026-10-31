@@ -4,7 +4,9 @@ import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.command.HardwiredCommand;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.device.CircuitActions;
+import com.grahambartley.hardwired.device.ControllerActions;
 import com.grahambartley.hardwired.device.IntercomActions;
+import com.grahambartley.hardwired.device.MainPanelActions;
 import com.grahambartley.hardwired.lift.LiftActions;
 import com.grahambartley.hardwired.network.ModNetworking;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
@@ -55,6 +57,8 @@ public class Hardwired implements ModInitializer {
         (handler, server) -> {
           WireView.forget(handler.getPlayer());
           CircuitActions.forget(handler.getPlayer());
+          MainPanelActions.forget(handler.getPlayer());
+          ControllerActions.forget(handler.getPlayer());
           IntercomActions.forget(handler.getPlayer());
           LiftActions.forget(handler.getPlayer());
         });
