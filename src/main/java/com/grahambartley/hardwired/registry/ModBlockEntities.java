@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.registry;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.block.AnimatedDeviceBlockEntity;
 import com.grahambartley.hardwired.block.ControlPanelBlockEntity;
 import com.grahambartley.hardwired.block.LampBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -21,6 +22,14 @@ public final class ModBlockEntities {
           Registries.BLOCK_ENTITY_TYPE,
           Identifier.of(Hardwired.MOD_ID, "control_panel"),
           BlockEntityType.Builder.create(ControlPanelBlockEntity::new, ModBlocks.CONTROL_PANEL)
+              .build(null));
+
+  public static final BlockEntityType<AnimatedDeviceBlockEntity> ANIMATED_DEVICE =
+      Registry.register(
+          Registries.BLOCK_ENTITY_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "animated_device"),
+          BlockEntityType.Builder.create(
+                  AnimatedDeviceBlockEntity::new, ModBlocks.animatedDevices())
               .build(null));
 
   private ModBlockEntities() {}

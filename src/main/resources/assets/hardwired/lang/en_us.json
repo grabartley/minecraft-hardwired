@@ -147,5 +147,12 @@
   "advancement.hardwired.short_circuit.title": "Short Circuit",
   "advancement.hardwired.short_circuit.description": "Cut a wire that is on",
   "advancement.hardwired.vintage.title": "Vintage",
-  "advancement.hardwired.vintage.description": "See a lamp reach full age"
+  "advancement.hardwired.vintage.description": "See a lamp reach full age",
+  "screen.hardwired.settings.client": "This Device",
+  "screen.hardwired.settings.throughopacity": "Wire Through Blocks",
+  "screen.hardwired.settings.throughopacity.tooltip": "How strongly wire shows through blocks. Lower is fainter.",
+  "screen.hardwired.settings.surfaceopacity": "Wire On Surfaces",
+  "screen.hardwired.settings.surfaceopacity.tooltip": "How strongly wire shows on the faces you can see.",
+  "screen.hardwired.settings.showmarkers": "Input and Output Marks",
+  "screen.hardwired.settings.showmarkers.tooltip": "Shows the marks on blocks that drive or read a wire."
 }

@@ -84,8 +84,6 @@ dependencies {
 	modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 	modLocalRuntime "com.terraformersmc:modmenu:${project.modmenu_version}"
 
-	modCompileOnly "mezz.jei:jei-1.21.1-fabric-api:${project.jei_version}"
-	modCompileOnly "dev.emi:emi-fabric:${project.emi_version}:api"
 	if (project.recipe_viewers.toBoolean()) {
 		modLocalRuntime "mezz.jei:jei-1.21.1-fabric:${project.jei_version}"
 		modLocalRuntime "dev.emi:emi-fabric:${project.emi_version}"

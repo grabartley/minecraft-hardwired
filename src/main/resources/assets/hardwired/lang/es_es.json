@@ -147,5 +147,12 @@
   "advancement.hardwired.short_circuit.title": "Cortocircuito",
   "advancement.hardwired.short_circuit.description": "Corta un cable encendido",
   "advancement.hardwired.vintage.title": "Vintage",
-  "advancement.hardwired.vintage.description": "Ve una lámpara alcanzar la edad máxima"
+  "advancement.hardwired.vintage.description": "Ve una lámpara alcanzar la edad máxima",
+  "screen.hardwired.settings.client": "Este dispositivo",
+  "screen.hardwired.settings.throughopacity": "Cable a través de bloques",
+  "screen.hardwired.settings.throughopacity.tooltip": "Con qué fuerza se ve el cable a través de los bloques. Menos es más tenue.",
+  "screen.hardwired.settings.surfaceopacity": "Cable en superficies",
+  "screen.hardwired.settings.surfaceopacity.tooltip": "Con qué fuerza se ve el cable en las caras visibles.",
+  "screen.hardwired.settings.showmarkers": "Marcas de entrada y salida",
+  "screen.hardwired.settings.showmarkers.tooltip": "Muestra las marcas en los bloques que activan o leen un cable."
 }

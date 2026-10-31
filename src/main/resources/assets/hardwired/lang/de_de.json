@@ -147,5 +147,12 @@
   "advancement.hardwired.short_circuit.title": "Kurzschluss",
   "advancement.hardwired.short_circuit.description": "Durchtrenne einen Draht, der an ist",
   "advancement.hardwired.vintage.title": "Vintage",
-  "advancement.hardwired.vintage.description": "Sieh, wie eine Lampe ganz altert"
+  "advancement.hardwired.vintage.description": "Sieh, wie eine Lampe ganz altert",
+  "screen.hardwired.settings.client": "Dieses Gerät",
+  "screen.hardwired.settings.throughopacity": "Kabel durch Blöcke",
+  "screen.hardwired.settings.throughopacity.tooltip": "Wie stark Kabel durch Blöcke sichtbar sind. Weniger ist schwächer.",
+  "screen.hardwired.settings.surfaceopacity": "Kabel auf Flächen",
+  "screen.hardwired.settings.surfaceopacity.tooltip": "Wie stark Kabel auf sichtbaren Flächen erscheinen.",
+  "screen.hardwired.settings.showmarkers": "Eingangs- und Ausgangsmarken",
+  "screen.hardwired.settings.showmarkers.tooltip": "Zeigt die Marken an Blöcken, die ein Kabel treiben oder lesen."
 }

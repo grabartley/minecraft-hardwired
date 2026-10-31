@@ -506,7 +506,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | ID | Requirement |
 |---|---|
 | COMPAT-1 | Minecraft 1.21.1, Java 21, Fabric Loader 0.16.5 or later, Fabric API 0.107.0+1.21.1 or later |
-| COMPAT-2 | Mod Menu, JEI and EMI are optional. Without them, the mod works fully |
+| COMPAT-2 | Mod Menu, JEI and EMI are optional. Without them, the mod works fully. Every recipe is a plain crafting recipe, so JEI and EMI show them with no code in the mod |
 | COMPAT-3 | Hardwired needs no other mod in the family. With More Doors, wire opens its doors like any other. With Total Storage, wire powers its terminals |
 | COMPAT-4 | Vanilla redstone behaves as it does without the mod |
 | COMPAT-5 | Costs, sensors and loot can be changed by data packs |

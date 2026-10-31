@@ -147,5 +147,12 @@
   "advancement.hardwired.short_circuit.title": "Короткое замыкание",
   "advancement.hardwired.short_circuit.description": "Перережьте включённый провод",
   "advancement.hardwired.vintage.title": "Винтаж",
-  "advancement.hardwired.vintage.description": "Увидьте, как лампа полностью состарилась"
+  "advancement.hardwired.vintage.description": "Увидьте, как лампа полностью состарилась",
+  "screen.hardwired.settings.client": "Это устройство",
+  "screen.hardwired.settings.throughopacity": "Провод сквозь блоки",
+  "screen.hardwired.settings.throughopacity.tooltip": "Насколько заметен провод сквозь блоки. Меньше значит бледнее.",
+  "screen.hardwired.settings.surfaceopacity": "Провод на поверхностях",
+  "screen.hardwired.settings.surfaceopacity.tooltip": "Насколько заметен провод на видимых гранях.",
+  "screen.hardwired.settings.showmarkers": "Метки входов и выходов",
+  "screen.hardwired.settings.showmarkers.tooltip": "Показывает метки на блоках, которые питают или читают провод."
 }

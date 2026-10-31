@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.screen;
 
+import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.EditServerConfigC2SPayload;
@@ -22,6 +23,7 @@ public final class HardwiredConfigScreen extends Screen {
 
   private final Screen parent;
   private final SettingsConfigSection settings;
+  private final ClientConfigSection clientSettings = new ClientConfigSection();
 
   public HardwiredConfigScreen(@Nullable Screen parent) {
     super(Text.translatable("screen.hardwired.settings.title"));
@@ -42,6 +44,7 @@ public final class HardwiredConfigScreen extends Screen {
             this.client, this.width, layout, ROW_HEIGHT, ConfigRows.CONTENT_WIDTH);
     final ConfigRows rows = new ConfigRows(canEdit, this.textRenderer);
 
+    this.clientSettings.addTo(list, new ConfigRows(true, this.textRenderer));
     this.settings.addTo(list, rows);
     addDrawableChild(list);
 
@@ -53,7 +56,6 @@ public final class HardwiredConfigScreen extends Screen {
             .dimensions(
                 doneLeft, layout.buttonsY(), DONE_CANCEL_WIDTH, ConfigScreenLayout.BUTTON_HEIGHT)
             .build();
-    doneButton.active = canEdit;
     addDrawableChild(doneButton);
 
     addDrawableChild(
@@ -65,11 +67,10 @@ public final class HardwiredConfigScreen extends Screen {
   }
 
   private void saveAndClose() {
-    if (resolveAccess() != EditAccess.EDITABLE) {
-      close();
-      return;
+    ClientSettingsStore.update(this.clientSettings.settings());
+    if (resolveAccess() == EditAccess.EDITABLE) {
+      ClientPlayNetworking.send(new EditServerConfigC2SPayload(this.settings.config()));
     }
-    ClientPlayNetworking.send(new EditServerConfigC2SPayload(this.settings.config()));
     close();
   }
 

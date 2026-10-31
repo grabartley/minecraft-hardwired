@@ -8,18 +8,23 @@ import com.grahambartley.hardwired.client.WireDrag;
 import com.grahambartley.hardwired.client.WireHud;
 import com.grahambartley.hardwired.client.WireRenderer;
 import com.grahambartley.hardwired.client.WireViewStore;
+import com.grahambartley.hardwired.client.anim.AnimatedDeviceRenderer;
+import com.grahambartley.hardwired.client.anim.DeviceAnimations;
+import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
 import com.grahambartley.hardwired.network.OpenDevicePayload;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.SyncServerConfigS2CPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload;
 import com.grahambartley.hardwired.network.WireInspectResultPayload;
 import com.grahambartley.hardwired.network.WireViewClearPayload;
+import com.grahambartley.hardwired.registry.ModBlockEntities;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.registry.ModItems;
 import com.grahambartley.hardwired.screen.ControlPanelScreen;
 import com.grahambartley.hardwired.screen.JunctionScreen;
 import com.grahambartley.hardwired.wire.Hue;
+import java.util.List;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -29,9 +34,13 @@ import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 
@@ -41,6 +50,8 @@ public class HardwiredClient implements ClientModInitializer {
   private static final int NO_TINT = -1;
   private static final int TINTED_LAYER = 1;
   private static final int LAMP_TINT_FLOOR = 7;
+  private static final List<BlockEntityType<? extends BlockEntity>> ANIMATED_TYPES =
+      List.of(ModBlockEntities.ANIMATED_DEVICE);
 
   @Override
   public void onInitializeClient() {
@@ -62,6 +73,13 @@ public class HardwiredClient implements ClientModInitializer {
     WorldRenderEvents.LAST.register(WireRenderer::render);
     HudRenderCallback.EVENT.register(WireHud::render);
     registerColors();
+    ClientSettingsStore.load(FabricLoader.getInstance().getConfigDir());
+    DeviceAnimations.register();
+    ANIMATED_TYPES.forEach(HardwiredClient::registerAnimated);
+  }
+
+  private static <T extends BlockEntity> void registerAnimated(BlockEntityType<T> type) {
+    BlockEntityRendererFactories.register(type, AnimatedDeviceRenderer::new);
   }
 
   private static void openDevice(MinecraftClient client, OpenDevicePayload payload) {

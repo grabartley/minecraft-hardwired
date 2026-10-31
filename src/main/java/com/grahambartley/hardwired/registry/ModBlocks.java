@@ -90,6 +90,10 @@ public final class ModBlocks {
     };
   }
 
+  public static Block[] animatedDevices() {
+    return new Block[] {};
+  }
+
   private static MountedLampBlock mountedLamp(double[] floorBox, Set<BlockFace> faces) {
     return new MountedLampBlock(
         deviceSettings()

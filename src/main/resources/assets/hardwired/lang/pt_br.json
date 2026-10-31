@@ -147,5 +147,12 @@
   "advancement.hardwired.short_circuit.title": "Curto-circuito",
   "advancement.hardwired.short_circuit.description": "Corte um fio ligado",
   "advancement.hardwired.vintage.title": "Vintage",
-  "advancement.hardwired.vintage.description": "Veja uma lâmpada chegar à idade máxima"
+  "advancement.hardwired.vintage.description": "Veja uma lâmpada chegar à idade máxima",
+  "screen.hardwired.settings.client": "Este dispositivo",
+  "screen.hardwired.settings.throughopacity": "Fio através de blocos",
+  "screen.hardwired.settings.throughopacity.tooltip": "Quão forte o fio aparece através dos blocos. Menos é mais fraco.",
+  "screen.hardwired.settings.surfaceopacity": "Fio nas superfícies",
+  "screen.hardwired.settings.surfaceopacity.tooltip": "Quão forte o fio aparece nas faces visíveis.",
+  "screen.hardwired.settings.showmarkers": "Marcas de entrada e saída",
+  "screen.hardwired.settings.showmarkers.tooltip": "Mostra as marcas nos blocos que acionam ou leem um fio."
 }

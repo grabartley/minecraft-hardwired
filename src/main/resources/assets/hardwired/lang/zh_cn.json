@@ -147,5 +147,12 @@
   "advancement.hardwired.short_circuit.title": "短路",
   "advancement.hardwired.short_circuit.description": "切断一根通电的电线",
   "advancement.hardwired.vintage.title": "复古",
-  "advancement.hardwired.vintage.description": "看着一盏灯完全老化"
+  "advancement.hardwired.vintage.description": "看着一盏灯完全老化",
+  "screen.hardwired.settings.client": "本设备",
+  "screen.hardwired.settings.throughopacity": "透过方块的电线",
+  "screen.hardwired.settings.throughopacity.tooltip": "电线透过方块显示的强度。越低越淡。",
+  "screen.hardwired.settings.surfaceopacity": "表面上的电线",
+  "screen.hardwired.settings.surfaceopacity.tooltip": "电线在可见表面上显示的强度。",
+  "screen.hardwired.settings.showmarkers": "输入和输出标记",
+  "screen.hardwired.settings.showmarkers.tooltip": "显示驱动或读取电线的方块上的标记。"
 }

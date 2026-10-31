@@ -1,6 +1,8 @@
 package com.grahambartley.hardwired.client;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.ClientSettingsStore;
+import com.grahambartley.hardwired.config.ClientWireSettings;
 import com.grahambartley.hardwired.item.WireItem;
 import com.grahambartley.hardwired.network.WireChunkPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload.CellView;
@@ -39,8 +41,6 @@ public final class WireRenderer {
   private static final int MARK_INPUT = 6;
   private static final int MARK_OUTPUT = 7;
   private static final float SURFACE_OFFSET = 0.012F;
-  private static final int OPAQUE = 0xFF000000;
-  private static final int FAINT = 0x70000000;
   private static final int WHITE = 0xFFFFFF;
 
   private WireRenderer() {}
@@ -57,10 +57,11 @@ public final class WireRenderer {
     VertexConsumerProvider.Immediate buffers =
         client.getBufferBuilders().getEntityVertexConsumers();
     VertexConsumer through = buffers.getBuffer(THROUGH_BLOCKS);
-    drawAll(through, matrix, FAINT, true);
+    ClientWireSettings settings = ClientSettingsStore.get();
+    drawAll(through, matrix, settings.throughBlocksAlpha(), true);
     buffers.draw(THROUGH_BLOCKS);
     VertexConsumer surface = buffers.getBuffer(ON_SURFACE);
-    drawAll(surface, matrix, OPAQUE, false);
+    drawAll(surface, matrix, settings.onSurfaceAlpha(), false);
     buffers.draw(ON_SURFACE);
   }
 
@@ -76,8 +77,10 @@ public final class WireRenderer {
       for (CellView cell : chunk.cells()) {
         drawCell(consumer, matrix, cell, present, alpha, bothSides);
       }
-      for (MarkView mark : chunk.marks()) {
-        drawMark(consumer, matrix, mark, alpha);
+      if (ClientSettingsStore.get().showMarkers()) {
+        for (MarkView mark : chunk.marks()) {
+          drawMark(consumer, matrix, mark, alpha);
+        }
       }
     }
   }
