@@ -1,0 +1,14 @@
+{
+  "clip": "hardwired:clips/alarm.animation.json",
+  "parts": [
+    {
+      "bone": "alarm_clapper",
+      "model": "hardwired:block/part/alarm_clapper",
+      "pivot": [
+        8,
+        1,
+        4
+      ]
+    }
+  ]
+}

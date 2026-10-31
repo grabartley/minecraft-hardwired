@@ -1,0 +1,7 @@
+{
+  "parent": "hardwired:block/radio",
+  "textures": {
+    "dial": "hardwired:block/radio_dial_lit",
+    "glow": "minecraft:block/redstone_lamp_on"
+  }
+}

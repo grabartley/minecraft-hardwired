@@ -1,0 +1,14 @@
+{
+  "clip": "hardwired:clips/radio.animation.json",
+  "parts": [
+    {
+      "bone": "radio_needle",
+      "model": "hardwired:block/part/radio_needle",
+      "pivot": [
+        8,
+        3,
+        2.25
+      ]
+    }
+  ]
+}

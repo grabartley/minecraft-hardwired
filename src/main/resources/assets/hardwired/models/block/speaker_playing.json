@@ -1,0 +1,7 @@
+{
+  "parent": "hardwired:block/speaker",
+  "textures": {
+    "horn": "hardwired:block/speaker_throat_lit",
+    "pilot": "minecraft:block/redstone_lamp_on"
+  }
+}

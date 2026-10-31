@@ -1,0 +1,14 @@
+{
+  "clip": "hardwired:clips/speaker.animation.json",
+  "parts": [
+    {
+      "bone": "speaker_diaphragm",
+      "model": "hardwired:block/part/speaker_diaphragm",
+      "pivot": [
+        8,
+        8,
+        4.75
+      ]
+    }
+  ]
+}

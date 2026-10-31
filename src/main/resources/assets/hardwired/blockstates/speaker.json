@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,playing=false": {
+      "model": "hardwired:block/speaker"
+    },
+    "facing=north,playing=true": {
+      "model": "hardwired:block/speaker_playing"
+    },
+    "facing=east,playing=false": {
+      "model": "hardwired:block/speaker",
+      "y": 90
+    },
+    "facing=east,playing=true": {
+      "model": "hardwired:block/speaker_playing",
+      "y": 90
+    },
+    "facing=south,playing=false": {
+      "model": "hardwired:block/speaker",
+      "y": 180
+    },
+    "facing=south,playing=true": {
+      "model": "hardwired:block/speaker_playing",
+      "y": 180
+    },
+    "facing=west,playing=false": {
+      "model": "hardwired:block/speaker",
+      "y": 270
+    },
+    "facing=west,playing=true": {
+      "model": "hardwired:block/speaker_playing",
+      "y": 270
+    }
+  }
+}
