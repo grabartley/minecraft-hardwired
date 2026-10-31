@@ -1,10 +1,13 @@
 package com.grahambartley.hardwired.gametest;
 
+import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.network.WireChunkPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload.CellView;
 import com.grahambartley.hardwired.network.WireInspectPayload;
+import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModItems;
 import com.grahambartley.hardwired.wire.Hue;
+import com.grahambartley.hardwired.wire.LampLook;
 import com.grahambartley.hardwired.wire.WireCell;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireFace;
@@ -17,6 +20,8 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.WallMountedBlock;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -122,6 +127,38 @@ public class WireSealGameTest implements FabricGameTest {
               stranger.receivedCellsAt(sealed).isEmpty(),
               "a stranger must get no packet data for sealed wire");
           finish(context, owner, stranger);
+        });
+  }
+
+  @GameTest(templateName = BENCH)
+  public void aPanelSendsASealedLookOnlyToThoseWhoMaySeeIt(TestContext context) {
+    ConnectedTestPlayer owner = ConnectedTestPlayer.joinAt(context, standing(4, 4));
+    ConnectedTestPlayer stranger = ConnectedTestPlayer.joinAt(context, standing(5, 4));
+    ConnectedTestPlayer operator = ConnectedTestPlayer.joinAt(context, standing(3, 4));
+    operator.setOperator(true);
+    operator.command("hardwired override");
+    BlockPos panel = standing(3, 2);
+    context.setBlockState(
+        panel,
+        ModBlocks.CONTROL_PANEL.getDefaultState().with(WallMountedBlock.FACE, BlockFace.FLOOR));
+    layAndSeal(owner, run(context, 2, 4, 2), Hue.RED);
+    LampLook sealedLook = new LampLook(Hue.BLUE, 5);
+    context.waitAndRun(
+        VIEW_TICKS,
+        () -> {
+          BlockPos opened = context.getAbsolutePos(panel);
+          WireEngine.of(context.getWorld()).applyLook(opened, sealedLook);
+          DeviceActions.open(owner.player(), opened);
+          DeviceActions.open(stranger.player(), opened);
+          DeviceActions.open(operator.player(), opened);
+          context.assertTrue(
+              owner.openedLooks().equals(List.of(sealedLook)), "the owner sees their look");
+          context.assertTrue(
+              stranger.openedLooks().equals(List.of(LampLook.DEFAULT)),
+              "a stranger must get the default look, not the sealed one");
+          context.assertTrue(
+              operator.openedLooks().equals(List.of(sealedLook)), "override shows the look");
+          finish(context, owner, stranger, operator);
         });
   }
 

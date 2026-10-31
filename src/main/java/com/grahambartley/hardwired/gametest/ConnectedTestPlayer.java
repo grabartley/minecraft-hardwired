@@ -2,10 +2,12 @@ package com.grahambartley.hardwired.gametest;
 
 import com.grahambartley.hardwired.network.CircuitResultPayload;
 import com.grahambartley.hardwired.network.MainPanelViewPayload;
+import com.grahambartley.hardwired.network.OpenDevicePayload;
 import com.grahambartley.hardwired.network.WireChunkPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload.CellView;
 import com.grahambartley.hardwired.network.WireInspectResultPayload;
 import com.grahambartley.hardwired.network.WireViewClearPayload;
+import com.grahambartley.hardwired.wire.LampLook;
 import com.grahambartley.hardwired.wire.WireFace;
 import com.grahambartley.hardwired.wire.WireView;
 import com.mojang.authlib.GameProfile;
@@ -175,6 +177,10 @@ public final class ConnectedTestPlayer {
 
   public List<MainPanelViewPayload> panelViews() {
     return received(MainPanelViewPayload.class);
+  }
+
+  public List<LampLook> openedLooks() {
+    return received(OpenDevicePayload.class).stream().map(OpenDevicePayload::look).toList();
   }
 
   public List<CircuitResultPayload> circuitResults() {

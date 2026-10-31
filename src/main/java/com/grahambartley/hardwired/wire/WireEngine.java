@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -88,15 +89,20 @@ public final class WireEngine {
   }
 
   public LampLook lookAt(BlockPos pos) {
-    return lookNetworkAt(pos).map(WireNetwork::look).orElse(null);
+    return lookNetworkAt(pos, network -> true).map(WireNetwork::look).orElse(null);
+  }
+
+  public LampLook lookAt(BlockPos pos, WireViewer viewer) {
+    return lookNetworkAt(pos, viewer::canSee).map(WireNetwork::look).orElse(null);
   }
 
   public long lookStampAt(BlockPos pos) {
-    return lookNetworkAt(pos).map(WireNetwork::lookStamp).orElse(0L);
+    return lookNetworkAt(pos, network -> true).map(WireNetwork::lookStamp).orElse(0L);
   }
 
-  private Optional<WireNetwork> lookNetworkAt(BlockPos pos) {
+  private Optional<WireNetwork> lookNetworkAt(BlockPos pos, Predicate<WireNetwork> visible) {
     return grid.networksTouching(pos).stream()
+        .filter(visible)
         .filter(network -> network.look() != null)
         .min(Comparator.comparing(WireNetwork::color));
   }
