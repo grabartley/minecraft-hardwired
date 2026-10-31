@@ -1,9 +1,12 @@
 package com.grahambartley.hardwired.command;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.CircuitSettings;
 import com.grahambartley.hardwired.config.DeviceSettings;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.LampSettings;
+import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.config.WireSettings;
 import com.grahambartley.hardwired.server.ServerConfigService;
 import com.mojang.brigadier.CommandDispatcher;
@@ -64,7 +67,92 @@ public final class HardwiredCommand {
               DeviceSettings.BUTTON_HOLD_MIN,
               DeviceSettings.BUTTON_HOLD_MAX,
               config -> config.device().buttonHoldTicks(),
-              (config, value) -> config.withDevice(config.device().withButtonHoldTicks(value))));
+              (config, value) -> config.withDevice(config.device().withButtonHoldTicks(value))),
+          new IntOption(
+              "cellcapacity",
+              "charge",
+              PowerSettings.CELL_CAPACITY_MIN,
+              PowerSettings.CELL_CAPACITY_MAX,
+              config -> config.power().cellCapacity(),
+              (config, value) -> config.withPower(config.power().withCellCapacity(value))),
+          new IntOption(
+              "cellchargeperdust",
+              "charge",
+              PowerSettings.DUST_CHARGE_MIN,
+              PowerSettings.DUST_CHARGE_MAX,
+              config -> config.power().dustCharge(),
+              (config, value) -> config.withPower(config.power().withDustCharge(value))),
+          new IntOption(
+              "solarchargeperminute",
+              "charge",
+              PowerSettings.SOLAR_CHARGE_MIN,
+              PowerSettings.SOLAR_CHARGE_MAX,
+              config -> config.power().solarChargePerMinute(),
+              (config, value) -> config.withPower(config.power().withSolarChargePerMinute(value))),
+          new IntOption(
+              "lightningcharge",
+              "charge",
+              PowerSettings.LIGHTNING_CHARGE_MIN,
+              PowerSettings.LIGHTNING_CHARGE_MAX,
+              config -> config.power().lightningCharge(),
+              (config, value) -> config.withPower(config.power().withLightningCharge(value))),
+          new IntOption(
+              "alarmchargepersecond",
+              "charge",
+              PowerSettings.ALARM_CHARGE_MIN,
+              PowerSettings.ALARM_CHARGE_MAX,
+              config -> config.power().alarmChargePerSecond(),
+              (config, value) -> config.withPower(config.power().withAlarmChargePerSecond(value))),
+          new IntOption(
+              "radiochargepersecond",
+              "charge",
+              PowerSettings.RADIO_CHARGE_MIN,
+              PowerSettings.RADIO_CHARGE_MAX,
+              config -> config.power().radioChargePerSecond(),
+              (config, value) -> config.withPower(config.power().withRadioChargePerSecond(value))),
+          new IntOption(
+              "speakerchargepersecond",
+              "charge",
+              PowerSettings.SPEAKER_CHARGE_MIN,
+              PowerSettings.SPEAKER_CHARGE_MAX,
+              config -> config.power().speakerChargePerSecond(),
+              (config, value) ->
+                  config.withPower(config.power().withSpeakerChargePerSecond(value))),
+          new IntOption(
+              "intercomchargeperline",
+              "charge",
+              PowerSettings.INTERCOM_CHARGE_MIN,
+              PowerSettings.INTERCOM_CHARGE_MAX,
+              config -> config.power().intercomChargePerLine(),
+              (config, value) -> config.withPower(config.power().withIntercomChargePerLine(value))),
+          new IntOption(
+              "liftticksperblock",
+              "ticks",
+              LiftSettings.TICKS_PER_BLOCK_MIN,
+              LiftSettings.TICKS_PER_BLOCK_MAX,
+              config -> config.lift().ticksPerBlock(),
+              (config, value) -> config.withLift(config.lift().withTicksPerBlock(value))),
+          new IntOption(
+              "liftchargeperblock",
+              "charge",
+              LiftSettings.CHARGE_PER_BLOCK_MIN,
+              LiftSettings.CHARGE_PER_BLOCK_MAX,
+              config -> config.lift().chargePerBlock(),
+              (config, value) -> config.withLift(config.lift().withChargePerBlock(value))),
+          new IntOption(
+              "circuitmaxparts",
+              "parts",
+              CircuitSettings.MAX_PARTS_MIN,
+              CircuitSettings.MAX_PARTS_MAX,
+              config -> config.circuit().maxParts(),
+              (config, value) -> config.withCircuit(config.circuit().withMaxParts(value))),
+          new IntOption(
+              "circuitpartsperredstone",
+              "parts",
+              CircuitSettings.PARTS_PER_REDSTONE_MIN,
+              CircuitSettings.PARTS_PER_REDSTONE_MAX,
+              config -> config.circuit().partsPerRedstone(),
+              (config, value) -> config.withCircuit(config.circuit().withPartsPerRedstone(value))));
 
   private HardwiredCommand() {}
 

@@ -16,7 +16,13 @@ import java.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record HardwiredConfig(WireSettings wire, LampSettings lamp, DeviceSettings device) {
+public record HardwiredConfig(
+    WireSettings wire,
+    LampSettings lamp,
+    DeviceSettings device,
+    PowerSettings power,
+    LiftSettings lift,
+    CircuitSettings circuit) {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HardwiredConfig.class);
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -25,23 +31,43 @@ public record HardwiredConfig(WireSettings wire, LampSettings lamp, DeviceSettin
     wire = wire == null ? WireSettings.DEFAULTS : wire;
     lamp = lamp == null ? LampSettings.DEFAULTS : lamp;
     device = device == null ? DeviceSettings.DEFAULTS : device;
+    power = power == null ? PowerSettings.DEFAULTS : power;
+    lift = lift == null ? LiftSettings.DEFAULTS : lift;
+    circuit = circuit == null ? CircuitSettings.DEFAULTS : circuit;
   }
 
   public static HardwiredConfig defaults() {
     return new HardwiredConfig(
-        WireSettings.DEFAULTS, LampSettings.DEFAULTS, DeviceSettings.DEFAULTS);
+        WireSettings.DEFAULTS,
+        LampSettings.DEFAULTS,
+        DeviceSettings.DEFAULTS,
+        PowerSettings.DEFAULTS,
+        LiftSettings.DEFAULTS,
+        CircuitSettings.DEFAULTS);
   }
 
   public HardwiredConfig withWire(final WireSettings value) {
-    return new HardwiredConfig(value, lamp, device);
+    return new HardwiredConfig(value, lamp, device, power, lift, circuit);
   }
 
   public HardwiredConfig withLamp(final LampSettings value) {
-    return new HardwiredConfig(wire, value, device);
+    return new HardwiredConfig(wire, value, device, power, lift, circuit);
   }
 
   public HardwiredConfig withDevice(final DeviceSettings value) {
-    return new HardwiredConfig(wire, lamp, value);
+    return new HardwiredConfig(wire, lamp, value, power, lift, circuit);
+  }
+
+  public HardwiredConfig withPower(final PowerSettings value) {
+    return new HardwiredConfig(wire, lamp, device, value, lift, circuit);
+  }
+
+  public HardwiredConfig withLift(final LiftSettings value) {
+    return new HardwiredConfig(wire, lamp, device, power, value, circuit);
+  }
+
+  public HardwiredConfig withCircuit(final CircuitSettings value) {
+    return new HardwiredConfig(wire, lamp, device, power, lift, value);
   }
 
   public static HardwiredConfig load(Path path) {
@@ -107,7 +133,10 @@ public record HardwiredConfig(WireSettings wire, LampSettings lamp, DeviceSettin
     return new HardwiredConfig(
         WireSettings.fromJson(fields),
         LampSettings.fromJson(fields),
-        DeviceSettings.fromJson(fields));
+        DeviceSettings.fromJson(fields),
+        PowerSettings.fromJson(fields),
+        LiftSettings.fromJson(fields),
+        CircuitSettings.fromJson(fields));
   }
 
   static JsonObject toJson(HardwiredConfig config) {
@@ -115,6 +144,9 @@ public record HardwiredConfig(WireSettings wire, LampSettings lamp, DeviceSettin
     config.wire.writeJson(root);
     config.lamp.writeJson(root);
     config.device.writeJson(root);
+    config.power.writeJson(root);
+    config.lift.writeJson(root);
+    config.circuit.writeJson(root);
     return root;
   }
 

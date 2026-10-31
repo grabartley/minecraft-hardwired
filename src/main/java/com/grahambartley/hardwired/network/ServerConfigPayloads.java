@@ -1,37 +1,63 @@
 package com.grahambartley.hardwired.network;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.CircuitSettings;
 import com.grahambartley.hardwired.config.DeviceSettings;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.LampSettings;
+import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.config.WireSettings;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
 public final class ServerConfigPayloads {
 
   private static final PacketCodec<RegistryByteBuf, HardwiredConfig> CONFIG_CODEC =
-      PacketCodec.tuple(
-          PacketCodecs.VAR_INT,
-          config -> config.wire().viewRangeBlocks(),
-          PacketCodecs.VAR_INT,
-          config -> config.wire().maxNetworkSize(),
-          PacketCodecs.VAR_INT,
-          config -> config.lamp().ageRateMultiplierPercent(),
-          PacketCodecs.VAR_INT,
-          config -> config.device().motionSensorRangeBlocks(),
-          PacketCodecs.VAR_INT,
-          config -> config.device().buttonHoldTicks(),
-          (viewRange, networkSize, ageRate, motionRange, buttonHold) ->
-              new HardwiredConfig(
-                  new WireSettings(viewRange, networkSize),
-                  new LampSettings(ageRate),
-                  new DeviceSettings(motionRange, buttonHold)));
+      PacketCodec.of(ServerConfigPayloads::write, ServerConfigPayloads::read);
 
   private ServerConfigPayloads() {}
+
+  private static void write(HardwiredConfig config, RegistryByteBuf buf) {
+    buf.writeVarInt(config.wire().viewRangeBlocks());
+    buf.writeVarInt(config.wire().maxNetworkSize());
+    buf.writeVarInt(config.lamp().ageRateMultiplierPercent());
+    buf.writeVarInt(config.device().motionSensorRangeBlocks());
+    buf.writeVarInt(config.device().buttonHoldTicks());
+    PowerSettings power = config.power();
+    buf.writeVarInt(power.cellCapacity());
+    buf.writeVarInt(power.dustCharge());
+    buf.writeVarInt(power.solarChargePerMinute());
+    buf.writeVarInt(power.lightningCharge());
+    buf.writeVarInt(power.alarmChargePerSecond());
+    buf.writeVarInt(power.radioChargePerSecond());
+    buf.writeVarInt(power.speakerChargePerSecond());
+    buf.writeVarInt(power.intercomChargePerLine());
+    buf.writeVarInt(config.lift().ticksPerBlock());
+    buf.writeVarInt(config.lift().chargePerBlock());
+    buf.writeVarInt(config.circuit().maxParts());
+    buf.writeVarInt(config.circuit().partsPerRedstone());
+  }
+
+  private static HardwiredConfig read(RegistryByteBuf buf) {
+    return new HardwiredConfig(
+        new WireSettings(buf.readVarInt(), buf.readVarInt()),
+        new LampSettings(buf.readVarInt()),
+        new DeviceSettings(buf.readVarInt(), buf.readVarInt()),
+        new PowerSettings(
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt()),
+        new LiftSettings(buf.readVarInt(), buf.readVarInt()),
+        new CircuitSettings(buf.readVarInt(), buf.readVarInt()));
+  }
 
   public record SyncServerConfigS2CPayload(HardwiredConfig config) implements CustomPayload {
     public static final CustomPayload.Id<SyncServerConfigS2CPayload> ID =

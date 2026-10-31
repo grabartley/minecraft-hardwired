@@ -30,7 +30,12 @@ class HardwiredConfigTest {
   void savedValuesRoundTrip() {
     HardwiredConfig config =
         new HardwiredConfig(
-            new WireSettings(64, 1000), new LampSettings(250), new DeviceSettings(9, 40));
+            new WireSettings(64, 1000),
+            new LampSettings(250),
+            new DeviceSettings(9, 40),
+            PowerSettings.DEFAULTS,
+            LiftSettings.DEFAULTS,
+            CircuitSettings.DEFAULTS);
     HardwiredConfig.save(file(), config);
     assertEquals(config, HardwiredConfig.load(file()));
   }
