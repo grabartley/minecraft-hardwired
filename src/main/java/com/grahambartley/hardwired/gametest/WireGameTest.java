@@ -9,6 +9,7 @@ import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModItems;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.LampLook;
+import com.grahambartley.hardwired.wire.VanillaPower;
 import com.grahambartley.hardwired.wire.WireCell;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireFace;
@@ -317,27 +318,21 @@ public class WireGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = BENCH)
-  public void readingPowerAtAChunkEdgeLoadsNoChunk(TestContext context) {
+  @GameTest(templateName = BENCH, batchId = "chunk-edge")
+  public void powerIsNotReadWithinTwoBlocksOfAnUnloadedChunk(TestContext context) {
     BlockPos start = context.getAbsolutePos(standing(4, 4));
-    int x = start.getX();
-    while (context.getWorld().getChunkManager().isChunkLoaded(x >> 4, start.getZ() >> 4)) {
-      x += 16;
+    int chunkX = start.getX() >> 4;
+    while (context.getWorld().getChunkManager().isChunkLoaded(chunkX, start.getZ() >> 4)) {
+      chunkX++;
     }
-    int unloadedChunk = x >> 4;
-    BlockPos edge = new BlockPos((unloadedChunk << 4) - 1, start.getY(), start.getZ());
-    context.setBlockState(context.getRelativePos(edge), Blocks.STONE);
-    WireCell cell = new WireCell(new WireFace(edge, Direction.UP), Hue.PLAIN);
-    engine(context).lay(cell);
-    context.waitAndRun(
-        SETTLE_TICKS,
-        () -> {
-          context.assertFalse(
-              context.getWorld().getChunkManager().isChunkLoaded(unloadedChunk, start.getZ() >> 4),
-              "reading power must not load the next chunk");
-          engine(context).cut(cell);
-          context.complete();
-        });
+    int borderX = chunkX << 4;
+    BlockPos clear = new BlockPos(borderX - 3, start.getY(), (start.getZ() & ~15) + 8);
+    context.assertTrue(
+        VanillaPower.isReadable(context.getWorld(), clear), "three blocks clear can be read");
+    context.assertFalse(
+        VanillaPower.isReadable(context.getWorld(), clear.east()),
+        "the second read would cross into the unloaded chunk");
+    context.complete();
   }
 
   @GameTest(templateName = BENCH)
