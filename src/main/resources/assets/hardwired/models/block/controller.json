@@ -4,7 +4,6 @@
     "0": "minecraft:block/polished_deepslate",
     "1": "minecraft:block/polished_blackstone",
     "2": "minecraft:block/gold_block",
-    "5": "minecraft:block/glass",
     "7": "minecraft:block/redstone_lamp",
     "13": "hardwired:block/controller_fan",
     "14": "minecraft:block/polished_blackstone",
@@ -974,39 +973,6 @@
             9
           ],
           "texture": "#7"
-        }
-      }
-    },
-    {
-      "name": "glass",
-      "from": [
-        3,
-        6,
-        1
-      ],
-      "to": [
-        13,
-        12,
-        1
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            2,
-            2,
-            12,
-            8
-          ],
-          "texture": "#5"
-        },
-        "south": {
-          "uv": [
-            2,
-            2,
-            12,
-            8
-          ],
-          "texture": "#5"
         }
       }
     },

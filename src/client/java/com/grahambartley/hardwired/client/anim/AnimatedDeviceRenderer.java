@@ -53,13 +53,17 @@ public final class AnimatedDeviceRenderer<T extends BlockEntity> implements Bloc
     matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-turn.x()));
     matrices.translate(-CENTER, -CENTER, -CENTER);
     for (DeviceAnimations.Part part : animation.parts()) {
+      if (!part.drawnWhile(animating)) {
+        continue;
+      }
       DeviceClip.Pose pose =
           animating ? animation.clip().sample(part.bone(), seconds) : DeviceClip.Pose.REST;
       matrices.push();
       apply(matrices, part.pivot(), pose);
       BakedModel model =
           MinecraftClient.getInstance().getBakedModelManager().getModel(part.model());
-      models.render(matrices.peek(), consumer, state, model, 1F, 1F, 1F, light, overlay);
+      models.render(
+          matrices.peek(), consumer, state, model, 1F, 1F, 1F, part.light(light), overlay);
       matrices.pop();
     }
     matrices.pop();

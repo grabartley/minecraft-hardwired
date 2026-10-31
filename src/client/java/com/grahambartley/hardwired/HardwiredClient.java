@@ -150,7 +150,7 @@ public class HardwiredClient implements ClientModInitializer {
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CONTROLLER, RenderLayer.getCutout());
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CIRCUIT_BOARD, RenderLayer.getCutout());
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CIRCUIT_BLOCK, RenderLayer.getCutout());
-    BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.REDSTONE_CELL, RenderLayer.getTranslucent());
+    BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.REDSTONE_CELL, RenderLayer.getCutout());
     BlockRenderLayerMap.INSTANCE.putBlocks(
         RenderLayer.getCutout(),
         ModBlocks.SOLAR_PANEL,

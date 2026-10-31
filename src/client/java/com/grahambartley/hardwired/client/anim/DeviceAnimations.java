@@ -14,13 +14,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
 public final class DeviceAnimations {
 
-  public record Part(String bone, Identifier model, float[] pivot) {}
+  public record Part(String bone, Identifier model, float[] pivot, boolean glow) {
+
+    public boolean drawnWhile(boolean animating) {
+      return animating || !glow;
+    }
+
+    public int light(int worldLight) {
+      return glow ? LightmapTextureManager.MAX_LIGHT_COORDINATE : worldLight;
+    }
+  }
 
   public record Animation(DeviceClip clip, List<Part> parts) {}
 
@@ -80,16 +90,19 @@ public final class DeviceAnimations {
     }
     List<Part> parts = new ArrayList<>();
     for (JsonElement element : root.getAsJsonArray("parts")) {
-      JsonObject part = element.getAsJsonObject();
-      JsonArray pivot = part.getAsJsonArray("pivot");
-      parts.add(
-          new Part(
-              part.get("bone").getAsString(),
-              Identifier.of(part.get("model").getAsString()),
-              new float[] {
-                pivot.get(0).getAsFloat(), pivot.get(1).getAsFloat(), pivot.get(2).getAsFloat()
-              }));
+      parts.add(part(element.getAsJsonObject()));
     }
     return new Animation(DeviceClip.parse(clipJson), List.copyOf(parts));
+  }
+
+  static Part part(JsonObject part) {
+    JsonArray pivot = part.getAsJsonArray("pivot");
+    return new Part(
+        part.get("bone").getAsString(),
+        Identifier.of(part.get("model").getAsString()),
+        new float[] {
+          pivot.get(0).getAsFloat(), pivot.get(1).getAsFloat(), pivot.get(2).getAsFloat()
+        },
+        part.has("glow") && part.get("glow").getAsBoolean());
   }
 }

@@ -18,6 +18,7 @@ public final class DeviceHud {
   public static void render(DrawContext context, RenderTickCounter tick) {
     MinecraftClient client = MinecraftClient.getInstance();
     if (client.world == null
+        || client.options.hudHidden
         || client.currentScreen != null
         || client.crosshairTarget == null
         || client.crosshairTarget.getType() != HitResult.Type.BLOCK

@@ -50,6 +50,7 @@ public final class ModBlocks {
   private static final double[] RADIO_BOX = {1, 0, 2, 15, 14, 14};
   private static final double[] SPEAKER_BOX = {3, 0, 3, 13, 13, 13};
   private static final double[] INTERCOM_BOX = {5, 0, 5, 11, 12, 11};
+  private static final int RADIO_GLOW = 7;
 
   public static final Block COPPER_LAMP =
       register(
@@ -141,7 +142,8 @@ public final class ModBlocks {
               deviceSettings()
                   .mapColor(MapColor.OAK_TAN)
                   .sounds(BlockSoundGroup.WOOD)
-                  .pistonBehavior(PistonBehavior.BLOCK),
+                  .pistonBehavior(PistonBehavior.BLOCK)
+                  .luminance(state -> state.get(RadioBlock.PLAYING) ? RADIO_GLOW : 0),
               RADIO_BOX));
   public static final Block SPEAKER =
       register("speaker", new SpeakerBlock(deviceSettings(), SPEAKER_BOX));

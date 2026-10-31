@@ -20,6 +20,7 @@ public final class LiftCarRenderer extends EntityRenderer<LiftCarEntity> {
   private static final Identifier MODEL = Identifier.of(Hardwired.MOD_ID, "block/lift_car");
   private static final float HALF_WIDTH = 0.5F;
   private static final float RIGHT_ANGLE = 90F;
+  private static final float ABOVE_PIT_FLOOR = 1F / 16F;
 
   public LiftCarRenderer(EntityRendererFactory.Context context) {
     super(context);
@@ -41,7 +42,7 @@ public final class LiftCarRenderer extends EntityRenderer<LiftCarEntity> {
     BakedModel model = client.getBakedModelManager().getModel(MODEL);
     matrices.push();
     matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(RIGHT_ANGLE * car.quarterTurns()));
-    matrices.translate(-HALF_WIDTH, LiftCarEntity.PLATE, -HALF_WIDTH);
+    matrices.translate(-HALF_WIDTH, LiftCarEntity.PLATE + ABOVE_PIT_FLOOR, -HALF_WIDTH);
     client
         .getBlockRenderManager()
         .getModelRenderer()

@@ -9,6 +9,16 @@
         3,
         2.25
       ]
+    },
+    {
+      "bone": "radio_glow",
+      "model": "hardwired:block/part/radio_glow",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "glow": true
     }
   ]
 }

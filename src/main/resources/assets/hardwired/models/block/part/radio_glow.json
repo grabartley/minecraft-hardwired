@@ -1,0 +1,54 @@
+{
+  "textures": {
+    "lit": "hardwired:block/radio_dial_lit",
+    "particle": "hardwired:block/radio_dial_lit"
+  },
+  "elements": [
+    {
+      "from": [
+        6,
+        3,
+        2.45
+      ],
+      "to": [
+        10,
+        6,
+        2.45
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            10,
+            10,
+            13
+          ],
+          "texture": "#lit"
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        7,
+        3.45
+      ],
+      "to": [
+        9,
+        12,
+        3.45
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            7,
+            11,
+            9,
+            12
+          ],
+          "texture": "#lit"
+        }
+      }
+    }
+  ]
+}

@@ -18,7 +18,7 @@ public final class WireHud {
   public static void render(DrawContext context, RenderTickCounter tick) {
     WireInspectResultPayload result = WireDrag.inspected();
     MinecraftClient client = MinecraftClient.getInstance();
-    if (result == null || client.player == null) {
+    if (result == null || client.player == null || client.options.hudHidden) {
       return;
     }
     String stateKey =
