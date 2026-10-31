@@ -92,7 +92,7 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | **Visitor** | To use switches placed for them. A seal stops them cutting or joining wire, but it does not protect the blocks wire sits on |
 | **Server operator** | To configure every option from the command line and trust that clients cannot cheat |
 | **Pack author** | To tune costs, limits and data-driven content without code |
-| **Vanilla redstone** | Keeps working. Dust and components connect to wire at its ends and behave as they do in vanilla |
+| **Vanilla redstone** | Keeps working. Dust and components connect to wire that touches them and behave as they do in vanilla |
 | **A vanilla client** | Cannot join: the mod adds blocks and items, so the client must have it installed |
 | **A modified client** | Assumed hostile. It can send any packet with any value, and tries to read wiring it should not see |
 | **Reduced settings** | A player on Minimal particles or with sound off still sees what wiring and devices are doing |
@@ -196,14 +196,14 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 |---|---|
 | LINK-1 | Every device connects to wire that touches it, except a Circuit Block (CIRC-2) |
 | LINK-2 | The mod adds a Wall Switch, a Push Button, a Motion Sensor and a Dusk Sensor, all of which turn a network on |
-| LINK-3 | A wire ending at a vanilla component powers it fully: pistons, doors, lamps, note blocks, dispensers, hoppers and the like |
-| LINK-4 | Any vanilla redstone power next to a wire end turns its network on. A wire end ignores power its own network supplied at that end, so wiring into dust does not hold a network on |
+| LINK-3 | Wire touching a vanilla component powers it fully: pistons, doors, lamps, note blocks, dispensers, hoppers and the like |
+| LINK-4 | Any vanilla redstone power in a block wire touches turns its network on. Wire ignores power its own network supplied, so wiring into dust does not hold a network on |
 | LINK-5 | A Junction joins colours with AND, OR or NOT, chosen from its screen |
 | LINK-6 | A network drives no vanilla block that it does not touch, so quasi-connectivity plays no part in wiring |
 | LINK-7 | A network that feeds itself through a longer path of vanilla redstone or a Junction stays on until the loop is broken. That is allowed, and can be used as memory |
 | LINK-8 | A network that changes state on more than 10 ticks in any 20 trips. It stays off until its wire is changed, including through a world reload |
 
-**Not supported:** a wire end giving part-strength power.
+**Not supported:** wire giving part-strength power.
 
 **Enforcement:** server.
 
