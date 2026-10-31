@@ -89,6 +89,7 @@ public final class StreetlightBlock extends AbstractLampBlock {
     boolean fits =
         pos.getY() + HEAD < world.getTopY()
             && world.getBlockState(pos.up()).canReplace(context)
+            && world.getBlockState(pos.up(2)).canReplace(context)
             && world.getBlockState(pos.up(HEAD)).canReplace(context);
     return fits ? getDefaultState() : null;
   }
