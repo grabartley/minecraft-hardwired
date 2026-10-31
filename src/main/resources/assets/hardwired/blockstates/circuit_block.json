@@ -1,0 +1,114 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "hardwired:block/circuit_block_base"
+      }
+    },
+    {
+      "when": {
+        "port_north": "unused"
+      },
+      "apply": {
+        "model": "hardwired:block/circuit_block_port_unused"
+      }
+    },
+    {
+      "when": {
+        "port_north": "input"
+      },
+      "apply": {
+        "model": "hardwired:block/circuit_block_port_input"
+      }
+    },
+    {
+      "when": {
+        "port_north": "output"
+      },
+      "apply": {
+        "model": "hardwired:block/circuit_block_port_output"
+      }
+    },
+    {
+      "when": {
+        "port_east": "unused"
+      },
+      "apply": {
+        "model": "hardwired:block/circuit_block_port_unused",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "port_east": "input"
+      },
+      "apply": {
+        "model": "hardwired:block/circuit_block_port_input",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "port_east": "output"
+      },
+      "apply": {
+        "model": "hardwired:block/circuit_block_port_output",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "port_south": "unused"
+      },
+      "apply": {
+        "model": "hardwired:block/circuit_block_port_unused",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "port_south": "input"
+      },
+      "apply": {
+        "model": "hardwired:block/circuit_block_port_input",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "port_south": "output"
+      },
+      "apply": {
+        "model": "hardwired:block/circuit_block_port_output",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "port_west": "unused"
+      },
+      "apply": {
+        "model": "hardwired:block/circuit_block_port_unused",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "port_west": "input"
+      },
+      "apply": {
+        "model": "hardwired:block/circuit_block_port_input",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "port_west": "output"
+      },
+      "apply": {
+        "model": "hardwired:block/circuit_block_port_output",
+        "y": 270
+      }
+    }
+  ]
+}

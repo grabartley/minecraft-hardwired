@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hardwired:block/circuit_board"
+    },
+    "facing=east": {
+      "model": "hardwired:block/circuit_board",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hardwired:block/circuit_board",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hardwired:block/circuit_board",
+      "y": 270
+    }
+  }
+}
