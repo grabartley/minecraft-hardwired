@@ -17,7 +17,8 @@ abstract class LivingEntityRendererMixin {
           @At(
               value = "INVOKE",
               target = "Lnet/minecraft/entity/LivingEntity;hasVehicle()Z",
-              ordinal = 0))
+              ordinal = 0),
+      require = 0)
   private boolean hardwired$standInLiftCar(boolean riding, LivingEntity entity) {
     return riding && !(entity.getVehicle() instanceof LiftCarEntity);
   }

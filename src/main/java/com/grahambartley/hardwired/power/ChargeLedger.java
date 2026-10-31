@@ -7,7 +7,8 @@ public final class ChargeLedger {
   private ChargeLedger() {}
 
   public static int available(List<? extends ChargeStore> stores) {
-    return stores.stream().mapToInt(ChargeStore::charge).sum();
+    long total = stores.stream().mapToLong(ChargeStore::charge).sum();
+    return (int) Math.min(total, Integer.MAX_VALUE);
   }
 
   public static boolean tryDrain(List<? extends ChargeStore> stores, int amount) {

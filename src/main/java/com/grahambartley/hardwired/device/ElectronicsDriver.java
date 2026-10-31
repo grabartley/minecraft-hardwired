@@ -51,7 +51,7 @@ public final class ElectronicsDriver {
     if (device.keepsChecking(next)) {
       world.scheduleBlockTick(pos, state.getBlock(), BEAT_TICKS);
     }
-    if (ElectronicsRule.lightsOut(before, next, networkStatuses(world, pos))) {
+    if (ElectronicsRule.lightsOut(before, next, () -> networkStatuses(world, pos))) {
       ModCriteria.DEVICE.triggerNear(world, pos, ModCriteria.LIGHTS_OUT);
     }
   }

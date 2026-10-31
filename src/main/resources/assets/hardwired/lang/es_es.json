@@ -296,6 +296,7 @@
   "entity.hardwired.lift_car": "Cabina de ascensor",
   "device.hardwired.status.shaft_blocked": "Algo bloquea el hueco.",
   "device.hardwired.status.no_lift": "No hay ningún Ascensor arriba en su cable.",
+  "device.hardwired.too_fast": "Demasiado rápido. Inténtalo de nuevo.",
   "device.hardwired.lift.called": "Ascensor llamado.",
   "device.hardwired.lift.going": "Yendo a la planta %s.",
   "screen.hardwired.lift.floor": "Planta %s",

@@ -37,10 +37,6 @@ public final class CircuitDraft {
     return new Design(sides, parts, lines);
   }
 
-  public int partCount() {
-    return parts.size();
-  }
-
   public OptionalInt nodeAt(int x, int y) {
     for (int index = 0; index < parts.size(); index++) {
       if (parts.get(index).x() == x && parts.get(index).y() == y) {

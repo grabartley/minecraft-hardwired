@@ -36,6 +36,7 @@ import net.minecraft.test.TestContext;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.chunk.WorldChunk;
 
 public class MainPanelGameTest implements FabricGameTest {
 
@@ -150,6 +151,59 @@ public class MainPanelGameTest implements FabricGameTest {
           context.assertTrue(views.get(0).open(), "the first view opens the screen");
           context.assertFalse(views.get(1).open(), "a refresh must not reopen the screen");
           context.assertTrue(views.get(1).rows().size() == 3, "the view must list three devices");
+          finish(context, player);
+        });
+  }
+
+  @GameTest(templateName = BENCH)
+  public void aClickRightAfterARefreshIsNotDropped(TestContext context) {
+    buildHouse(context, null);
+    ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, NEAR_PANEL);
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          BlockPos panel = context.getAbsolutePos(PANEL);
+          MainPanelActions.act(player.player(), MainPanelActionPayload.refresh(panel));
+          MainPanelActions.act(
+              player.player(),
+              new MainPanelActionPayload(
+                  panel, context.getAbsolutePos(SWITCH), PanelAction.TOGGLE, LampLook.DEFAULT));
+          context.assertTrue(
+              player.panelViews().size() == 2, "the click must be answered as well as the refresh");
+          finish(context, player);
+        });
+  }
+
+  @GameTest(templateName = BENCH)
+  public void aSecondOpenInOneBeatSendsNoSecondView(TestContext context) {
+    buildHouse(context, null);
+    ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, NEAR_PANEL);
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          BlockPos panel = context.getAbsolutePos(PANEL);
+          MainPanelActions.open(player.player(), panel);
+          MainPanelActions.open(player.player(), panel);
+          context.assertTrue(player.panelViews().size() == 1, "one view for a double click");
+          finish(context, player);
+        });
+  }
+
+  @GameTest(templateName = BENCH)
+  public void aListingThatChangesNothingLeavesTheChunkClean(TestContext context) {
+    buildHouse(context, null);
+    ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, NEAR_PANEL);
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          BlockPos panel = context.getAbsolutePos(PANEL);
+          WorldChunk chunk = context.getWorld().getWorldChunk(panel);
+          chunk.setNeedsSaving(false);
+          MainPanelActions.open(player.player(), panel);
+          context.assertTrue(chunk.needsSaving(), "new devices must be saved");
+          chunk.setNeedsSaving(false);
+          MainPanelActions.act(player.player(), MainPanelActionPayload.refresh(panel));
+          context.assertFalse(chunk.needsSaving(), "an unchanged listing has nothing to save");
           finish(context, player);
         });
   }

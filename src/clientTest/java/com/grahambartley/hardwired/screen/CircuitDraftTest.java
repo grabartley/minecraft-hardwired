@@ -57,7 +57,7 @@ class CircuitDraftTest {
   void theLimitStopsPlacing() {
     CircuitDraft draft = three();
     assertFalse(draft.place(PartType.NOT, 5, 5, 3));
-    assertEquals(3, draft.partCount());
+    assertEquals(OptionalInt.empty(), draft.nodeAt(5, 5));
   }
 
   @Test

@@ -1,6 +1,5 @@
 package com.grahambartley.hardwired.circuit;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public record Design(List<PortMode> sides, List<Part> parts, List<Line> lines) {
@@ -43,14 +42,6 @@ public record Design(List<PortMode> sides, List<Part> parts, List<Line> lines) {
 
   public Part partAt(int node) {
     return parts.get(node - Side.COUNT);
-  }
-
-  public List<PortMode> sidesTurned(int quarterTurns) {
-    List<PortMode> turned = new ArrayList<>(sides);
-    for (Side side : Side.values()) {
-      turned.set(side.turned(quarterTurns).ordinal(), mode(side));
-    }
-    return turned;
   }
 
   public boolean isEmpty() {

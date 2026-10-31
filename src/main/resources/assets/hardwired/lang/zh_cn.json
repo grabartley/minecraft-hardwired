@@ -296,6 +296,7 @@
   "entity.hardwired.lift_car": "电梯轿厢",
   "device.hardwired.status.shaft_blocked": "有东西挡住了井道。",
   "device.hardwired.status.no_lift": "它的线路上方没有电梯。",
+  "device.hardwired.too_fast": "操作过快，请重试。",
   "device.hardwired.lift.called": "已呼叫电梯。",
   "device.hardwired.lift.going": "正在前往 %s 层。",
   "screen.hardwired.lift.floor": "%s 层",

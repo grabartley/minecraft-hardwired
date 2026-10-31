@@ -61,7 +61,7 @@ public final class IntercomActions {
       return;
     }
     if (!RATE.allow(player.getUuid(), world.getTime())) {
-      player.sendMessage(Text.translatable("screen.hardwired.circuit.refused.too_fast"), true);
+      player.sendMessage(Text.translatable("device.hardwired.too_fast"), true);
       return;
     }
     if (!ChargeNetwork.tryDrain(world, pos, cost())) {

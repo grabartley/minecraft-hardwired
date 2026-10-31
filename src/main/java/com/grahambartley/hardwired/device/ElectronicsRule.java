@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.device;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public final class ElectronicsRule {
 
@@ -21,9 +22,9 @@ public final class ElectronicsRule {
   }
 
   public static boolean lightsOut(
-      DeviceStatus before, DeviceStatus after, List<DeviceStatus> network) {
+      DeviceStatus before, DeviceStatus after, Supplier<List<DeviceStatus>> network) {
     return before == DeviceStatus.RUNNING
         && after == DeviceStatus.NO_CHARGE
-        && network.stream().noneMatch(status -> status == DeviceStatus.RUNNING);
+        && network.get().stream().noneMatch(status -> status == DeviceStatus.RUNNING);
   }
 }

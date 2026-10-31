@@ -18,18 +18,21 @@ import net.minecraft.util.math.BlockPos;
 
 public final class LiftActions {
 
+  private static final int MIN_TICKS_BETWEEN_USES = 5;
   private static final int MIN_TICKS_BETWEEN_CHOICES = 5;
-  private static final ActionRate RATE = new ActionRate(MIN_TICKS_BETWEEN_CHOICES);
+  private static final ActionRate USES = new ActionRate(MIN_TICKS_BETWEEN_USES);
+  private static final ActionRate CHOICES = new ActionRate(MIN_TICKS_BETWEEN_CHOICES);
 
   private LiftActions() {}
 
   public static void forget(ServerPlayerEntity player) {
-    RATE.forget(player.getUuid());
+    USES.forget(player.getUuid());
+    CHOICES.forget(player.getUuid());
   }
 
   public static void use(ServerPlayerEntity player, BlockPos gate) {
     ServerWorld world = player.getServerWorld();
-    if (!DeviceActions.canUse(player, gate)) {
+    if (!DeviceActions.canUse(player, gate) || !USES.allow(player.getUuid(), world.getTime())) {
       return;
     }
     Optional<LiftShaft> found = LiftShaft.forGate(world, gate);
@@ -95,7 +98,7 @@ public final class LiftActions {
     BlockPos gate = choice.gate();
     if (!DeviceActions.canUse(player, gate)
         || !(world.getBlockState(gate).getBlock() instanceof LiftFloorBlock)
-        || !RATE.allow(player.getUuid(), world.getTime())) {
+        || !CHOICES.allow(player.getUuid(), world.getTime())) {
       return;
     }
     Optional<LiftShaft> shaft = LiftShaft.forGate(world, gate);

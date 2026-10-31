@@ -296,6 +296,7 @@
   "entity.hardwired.lift_car": "Lift Car",
   "device.hardwired.status.shaft_blocked": "Something is blocking the shaft.",
   "device.hardwired.status.no_lift": "No Lift above on its wire.",
+  "device.hardwired.too_fast": "Too fast. Try again.",
   "device.hardwired.lift.called": "Lift called.",
   "device.hardwired.lift.going": "Going to floor %s.",
   "screen.hardwired.lift.floor": "Floor %s",

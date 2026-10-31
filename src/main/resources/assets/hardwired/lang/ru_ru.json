@@ -296,6 +296,7 @@
   "entity.hardwired.lift_car": "Кабина лифта",
   "device.hardwired.status.shaft_blocked": "Что-то мешает в шахте.",
   "device.hardwired.status.no_lift": "На его проводе нет Лифта сверху.",
+  "device.hardwired.too_fast": "Слишком быстро. Повторите попытку.",
   "device.hardwired.lift.called": "Лифт вызван.",
   "device.hardwired.lift.going": "Едем на этаж %s.",
   "screen.hardwired.lift.floor": "Этаж %s",

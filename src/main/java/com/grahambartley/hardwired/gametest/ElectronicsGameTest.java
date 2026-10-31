@@ -27,6 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.message.ChatVisibility;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.test.AfterBatch;
 import net.minecraft.test.BeforeBatch;
@@ -264,6 +265,31 @@ public class ElectronicsGameTest implements FabricGameTest {
           context.expectBlockProperty(RADIO, RadioBlock.PLAYING, false);
           expectSpeaker(context, LEFT_SPEAKER, false);
           context.assertTrue(discsHeld(player) == 1, "the disc must come back");
+          player.leave();
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 80)
+  public void aSpeakerKeepsItsPlaceInTheSongThroughAReload(TestContext context) {
+    buildRadio(context, 200);
+    ConnectedTestPlayer player = playerAt(context, 3);
+    context.waitAndRun(SETTLE_TICKS, () -> putDisc(context, player));
+    context.waitAndRun(
+        SETTLE_TICKS * 2L,
+        () -> {
+          SpeakerBlockEntity speaker = context.getBlockEntity(LEFT_SPEAKER);
+          RegistryWrapper.WrapperLookup registries = context.getWorld().getRegistryManager();
+          NbtCompound saved = speaker.createNbt(registries);
+          SpeakerBlockEntity reloaded =
+              new SpeakerBlockEntity(speaker.getPos(), speaker.getCachedState());
+          reloaded.setWorld(context.getWorld());
+          reloaded.read(saved, registries);
+          context.assertTrue(reloaded.isSounding(), "a reloaded Speaker is still playing");
+          radio(context).song().ifPresent(reloaded::play);
+          context.assertTrue(
+              saved.equals(reloaded.createNbt(registries)),
+              "the next beat must carry on from the saved place, not start the song again");
           player.leave();
           context.complete();
         });

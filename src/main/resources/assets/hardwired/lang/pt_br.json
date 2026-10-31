@@ -296,6 +296,7 @@
   "entity.hardwired.lift_car": "Cabine de Elevador",
   "device.hardwired.status.shaft_blocked": "Algo está bloqueando o poço.",
   "device.hardwired.status.no_lift": "Nenhum Elevador acima no seu fio.",
+  "device.hardwired.too_fast": "Rápido demais. Tente de novo.",
   "device.hardwired.lift.called": "Elevador chamado.",
   "device.hardwired.lift.going": "Indo para o andar %s.",
   "screen.hardwired.lift.floor": "Andar %s",

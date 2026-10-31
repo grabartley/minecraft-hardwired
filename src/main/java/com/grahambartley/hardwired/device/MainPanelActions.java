@@ -17,23 +17,25 @@ import net.minecraft.util.math.BlockPos;
 
 public final class MainPanelActions {
 
-  private static final int MIN_TICKS_BETWEEN_ACTIONS = 2;
-  private static final ActionRate RATE = new ActionRate(MIN_TICKS_BETWEEN_ACTIONS);
+  private static final PanelRates RATES = new PanelRates();
   private static final float CLICK_VOLUME = 0.4F;
   private static final float CLICK_PITCH = 1.3F;
 
   private MainPanelActions() {}
 
   public static void open(ServerPlayerEntity player, BlockPos panel) {
-    send(player, panel, true);
+    if (RATES.allowOpen(player.getUuid(), player.getServer().getTicks())) {
+      send(player, panel, true);
+    }
   }
 
   public static void forget(ServerPlayerEntity player) {
-    RATE.forget(player.getUuid());
+    RATES.forget(player.getUuid());
   }
 
   public static void act(ServerPlayerEntity player, MainPanelActionPayload action) {
-    if (RATE.allow(player.getUuid(), player.getServer().getTicks()) && perform(player, action)) {
+    if (RATES.allow(player.getUuid(), action.action(), player.getServer().getTicks())
+        && perform(player, action)) {
       send(player, action.panel(), false);
     }
   }
@@ -93,7 +95,9 @@ public final class MainPanelActions {
     if (world.getBlockEntity(panel) instanceof MainPanelBlockEntity entity) {
       PanelRoster.Listing listing =
           PanelRoster.list(world, panel, WireViewer.of(player), entity.memory());
-      entity.markDirty();
+      if (listing.memoryChanged()) {
+        entity.markDirty();
+      }
       ServerPlayNetworking.send(
           player,
           new MainPanelViewPayload(

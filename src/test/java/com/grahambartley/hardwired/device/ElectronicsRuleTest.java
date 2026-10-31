@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.device;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -50,6 +51,27 @@ class ElectronicsRuleTest {
   @MethodSource("lightsOutCases")
   void lightsOutNeedsTheLastRunningDeviceToRunDry(
       DeviceStatus before, DeviceStatus after, List<DeviceStatus> network, boolean earned) {
-    assertEquals(earned, ElectronicsRule.lightsOut(before, after, network));
+    assertEquals(earned, ElectronicsRule.lightsOut(before, after, () -> network));
+  }
+
+  @ParameterizedTest(name = "{0} to {1} reads the network: {2}")
+  @CsvSource({
+    "RUNNING,NO_CHARGE,true",
+    "RUNNING,RUNNING,false",
+    "RUNNING,NO_CELL,false",
+    "NO_CHARGE,NO_CHARGE,false",
+    "READY,NO_CHARGE,false"
+  })
+  void theNetworkIsOnlyReadWhenADeviceHasJustRunDry(
+      DeviceStatus before, DeviceStatus after, boolean read) {
+    AtomicBoolean asked = new AtomicBoolean();
+    ElectronicsRule.lightsOut(
+        before,
+        after,
+        () -> {
+          asked.set(true);
+          return List.of();
+        });
+    assertEquals(read, asked.get());
   }
 }

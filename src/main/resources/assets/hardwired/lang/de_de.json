@@ -296,6 +296,7 @@
   "entity.hardwired.lift_car": "Aufzugskabine",
   "device.hardwired.status.shaft_blocked": "Etwas blockiert den Schacht.",
   "device.hardwired.status.no_lift": "Kein Aufzug darüber an seinem Draht.",
+  "device.hardwired.too_fast": "Zu schnell. Versuche es erneut.",
   "device.hardwired.lift.called": "Aufzug gerufen.",
   "device.hardwired.lift.going": "Fahrt zu Etage %s.",
   "screen.hardwired.lift.floor": "Etage %s",

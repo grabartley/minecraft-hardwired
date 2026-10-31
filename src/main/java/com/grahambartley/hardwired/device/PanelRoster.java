@@ -18,7 +18,8 @@ public final class PanelRoster {
 
   private PanelRoster() {}
 
-  public record Listing(List<PanelRow> rows, int unknownPoints, int omitted) {}
+  public record Listing(
+      List<PanelRow> rows, int unknownPoints, int omitted, boolean memoryChanged) {}
 
   public static boolean reaches(
       WireEngine engine, BlockPos panel, BlockPos target, WireViewer viewer) {
@@ -36,6 +37,7 @@ public final class PanelRoster {
     Set<BlockPos> anchors = new HashSet<>();
     List<PanelRow> rows = new ArrayList<>();
     int unknown = 0;
+    boolean memoryChanged = false;
     for (BlockPos pos : touched) {
       if (!engine.isLoaded(pos)) {
         PanelRow known = memory.recall(pos).map(PanelRow::asStale).orElse(null);
@@ -50,15 +52,16 @@ public final class PanelRoster {
       if (state.getBlock() instanceof PanelDevice device) {
         if (anchors.add(device.anchor(pos, state))) {
           PanelRow row = device.read(world, pos, state);
-          memory.remember(row);
+          memoryChanged |= memory.remember(row);
           rows.add(row);
         }
       } else {
-        memory.forget(pos);
+        memoryChanged |= memory.forget(pos);
       }
     }
     List<PanelRow> ordered = PanelRows.ordered(rows, panel);
-    return new Listing(PanelRows.capped(ordered), unknown, PanelRows.omitted(ordered));
+    return new Listing(
+        PanelRows.capped(ordered), unknown, PanelRows.omitted(ordered), memoryChanged);
   }
 
   private static Stream<WireNetwork> networks(

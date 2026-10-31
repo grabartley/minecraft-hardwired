@@ -273,7 +273,7 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 | CIRC-2 | A finished design is saved onto a Circuit Block. Each of its four sides is one port, set on the board as input, output or unused. Wire connects only to sides that are in use, and its top and bottom are unused. Every wire touching a side in use joins that port. The far side of the design faces the way the player looks when placing the block, and the other sides turn with it |
 | CIRC-3 | A Circuit Block takes one block space and works anywhere |
 | CIRC-4 | A design can be tested live on the board before it is made. The test runs on the player's screen at the same rate and with the same rules as a real block, and the player clicks input sides to switch them. It changes nothing in the world |
-| CIRC-5 | A design can be copied onto a blank block for the cost of the materials: Load reads the design from a held Circuit Block on to the board, and Make then makes another. Make always uses the board's last saved design |
+| CIRC-5 | A design can be copied onto a blank block for the cost of the materials: Load reads the design from a held Circuit Block on to the board, and Make then makes another. Make always uses the board's last saved design. Creative players make one for free, with no blank block or redstone |
 | CIRC-6 | A design can be exported as text and pasted on another world. Pasted text can be up to 32 KiB, and a good paste becomes the board's saved design |
 | CIRC-7 | The cost of a block rises with the number of parts in its design: one Blank Circuit Block, plus one redstone for every `partsPerRedstone` parts, rounded up. No custom crafting recipe is involved, so every recipe stays plain crafting |
 | CIRC-8 | A Circuit Block runs on the server at a fixed rate of one step every 2 game ticks, and only while something can still change. A design that fails a check for loops without delay is refused at the board. Latches, timers and counters count as delay, since their outputs show what they held at the end of the last step, while gates answer within a step. Loops through wire outside the block follow LINK-7 and LINK-8 |
@@ -483,6 +483,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | Charge | kept | kept | cell does not move | drops as item data | kept to the last save |
 | A disc in a Radio | kept | kept | Radio does not move | drops | kept to the last save |
 | A Radio's place in a song | kept | kept | Radio does not move | lost | kept to the last save |
+| A Speaker's place in a song, in step with its Radio | kept | kept | Speaker does not move | lost | kept to the last save |
 | Why a device stopped | kept | kept | not applicable | lost | kept to the last save |
 | Network state, including a trip | kept | kept | not applicable | not applicable | kept to the last save |
 | Junction rule and a switch's scene | kept | kept | block does not move | drops as item data | kept to the last save |
