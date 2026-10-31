@@ -191,6 +191,8 @@ public class DeviceGameTest implements FabricGameTest {
     context.setBlockState(
         base.up(), ModBlocks.STREETLIGHT.getDefaultState().with(StreetlightBlock.PART, 1));
     context.setBlockState(
+        base.up(2), ModBlocks.STREETLIGHT.getDefaultState().with(StreetlightBlock.PART, 2));
+    context.setBlockState(
         base.up(StreetlightBlock.HEAD),
         ModBlocks.STREETLIGHT.getDefaultState().with(StreetlightBlock.PART, StreetlightBlock.HEAD));
   }

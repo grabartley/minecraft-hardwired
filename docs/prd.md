@@ -216,7 +216,7 @@ This is the first wow moment. A player wires lamps to a switch, then changes all
 | ID | Requirement |
 |---|---|
 | LIGHT-1 | A Copper Lamp comes in ceiling and wall forms, made from copper, redstone and a torch, so the first lamp needs no trip to the Nether |
-| LIGHT-2 | A Light Strip is a rail of small bulbs along a wall, floor or ceiling, and a Streetlight stands on a post |
+| LIGHT-2 | A Light Strip is a rail of small bulbs along a wall, floor or ceiling, and a Streetlight is a four block tall 1920s street lamp on a fluted post |
 | LIGHT-3 | A lamp starts as warm white and can show that or any of the 16 dye colours. Using a dye on a lamp sets its colour |
 | LIGHT-4 | Brightness runs from the vanilla light level 0 to 15 |
 | LIGHT-5 | Exposed lamps age like copper over time, and honeycomb stops it. Age changes the look, not the light |
