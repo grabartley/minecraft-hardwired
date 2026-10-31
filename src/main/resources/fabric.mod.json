@@ -14,6 +14,7 @@
     "issues": "https://github.com/grabartley/minecraft-hardwired/issues"
   },
   "license": "MIT",
+  "icon": "assets/hardwired/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
