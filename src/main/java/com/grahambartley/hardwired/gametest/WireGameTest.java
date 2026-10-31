@@ -78,7 +78,7 @@ public class WireGameTest implements FabricGameTest {
   @GameTest(templateName = BENCH)
   public void aSwitchLightsALampAcrossWire(TestContext context) {
     context.setBlockState(standing(1, 1), floorSwitch(false));
-    context.setBlockState(standing(6, 1), ModBlocks.COPPER_LAMP);
+    context.setBlockState(standing(6, 1), ModBlocks.LIGHT_STRIP);
     layRun(context, 1, 6, 1, Hue.PLAIN);
     context.waitAndRun(
         SETTLE_TICKS,
@@ -96,7 +96,7 @@ public class WireGameTest implements FabricGameTest {
   @GameTest(templateName = BENCH)
   public void wireOfAnotherColourDoesNotCarryTheSignal(TestContext context) {
     context.setBlockState(standing(1, 1), floorSwitch(true));
-    context.setBlockState(standing(4, 1), ModBlocks.COPPER_LAMP);
+    context.setBlockState(standing(4, 1), ModBlocks.LIGHT_STRIP);
     layRun(context, 1, 2, 1, Hue.RED);
     layRun(context, 3, 4, 1, Hue.BLUE);
     context.waitAndRun(
@@ -123,7 +123,7 @@ public class WireGameTest implements FabricGameTest {
   @GameTest(templateName = BENCH)
   public void vanillaPowerTurnsANetworkOn(TestContext context) {
     context.setBlockState(standing(1, 1), Blocks.REDSTONE_BLOCK);
-    context.setBlockState(standing(5, 1), ModBlocks.COPPER_LAMP);
+    context.setBlockState(standing(5, 1), ModBlocks.LIGHT_STRIP);
     layRun(context, 1, 5, 1, Hue.PLAIN);
     context.waitAndRun(
         SETTLE_TICKS,
@@ -256,7 +256,7 @@ public class WireGameTest implements FabricGameTest {
   @GameTest(templateName = BENCH)
   public void extendingALiveNetworkLightsTheNewLamp(TestContext context) {
     context.setBlockState(standing(1, 1), floorSwitch(true));
-    context.setBlockState(standing(6, 1), ModBlocks.COPPER_LAMP);
+    context.setBlockState(standing(6, 1), ModBlocks.LIGHT_STRIP);
     layRun(context, 1, 3, 1, Hue.PLAIN);
     context.waitAndRun(
         SETTLE_TICKS,
@@ -295,7 +295,7 @@ public class WireGameTest implements FabricGameTest {
   @GameTest(templateName = BENCH)
   public void cuttingTheInputOffARunTurnsItOff(TestContext context) {
     context.setBlockState(standing(1, 1), floorSwitch(true));
-    context.setBlockState(standing(5, 1), ModBlocks.COPPER_LAMP);
+    context.setBlockState(standing(5, 1), ModBlocks.LIGHT_STRIP);
     layRun(context, 1, 5, 1, Hue.PLAIN);
     context.waitAndRun(
         SETTLE_TICKS,
@@ -366,8 +366,8 @@ public class WireGameTest implements FabricGameTest {
   @GameTest(templateName = BENCH)
   public void aPanelSetsEveryLampOnItsNetwork(TestContext context) {
     context.setBlockState(standing(1, 1), floorSwitch(true));
-    context.setBlockState(standing(4, 1), ModBlocks.COPPER_LAMP);
-    context.setBlockState(standing(6, 1), ModBlocks.COPPER_LAMP);
+    context.setBlockState(standing(4, 1), ModBlocks.LIGHT_STRIP);
+    context.setBlockState(standing(6, 1), ModBlocks.LIGHT_STRIP);
     BlockPos panelPos = standing(3, 1);
     context.setBlockState(
         panelPos,
@@ -400,7 +400,7 @@ public class WireGameTest implements FabricGameTest {
             .getDefaultState()
             .with(JunctionBlock.RULE, JunctionRule.NOT)
             .with(JunctionBlock.OUTPUT, Hue.BLUE));
-    context.setBlockState(standing(5, 1), ModBlocks.COPPER_LAMP);
+    context.setBlockState(standing(5, 1), ModBlocks.LIGHT_STRIP);
     layRun(context, 1, 3, 1, Hue.RED);
     layRun(context, 3, 5, 1, Hue.BLUE);
     context.waitAndRun(

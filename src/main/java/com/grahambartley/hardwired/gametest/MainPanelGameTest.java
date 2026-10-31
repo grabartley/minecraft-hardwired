@@ -76,7 +76,7 @@ public class MainPanelGameTest implements FabricGameTest {
 
   private static void buildHouse(TestContext context, UUID owner) {
     context.setBlockState(PANEL, floor(ModBlocks.MAIN_PANEL));
-    context.setBlockState(LAMP, ModBlocks.COPPER_LAMP);
+    context.setBlockState(LAMP, ModBlocks.LIGHT_STRIP);
     context.setBlockState(SWITCH, floor(ModBlocks.WALL_SWITCH));
     context.setBlockState(CONTROLLER, ModBlocks.CONTROLLER);
     for (int x = 1; x <= 7; x++) {
@@ -432,7 +432,7 @@ public class MainPanelGameTest implements FabricGameTest {
     }
     lamps.add(at(7, 2));
     lamps.add(at(7, 3));
-    lamps.forEach(lamp -> context.setBlockState(lamp, ModBlocks.COPPER_LAMP));
+    lamps.forEach(lamp -> context.setBlockState(lamp, ModBlocks.LIGHT_STRIP));
     for (int x = 1; x <= 7; x++) {
       engine(context).lay(cell(context, x, 1, null));
     }

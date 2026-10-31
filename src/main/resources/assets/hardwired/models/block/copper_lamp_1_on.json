@@ -1,8 +1,0 @@
-{
-  "parent": "hardwired:block/base/copper_lamp",
-  "textures": {
-    "1": "hardwired:block/lamp_glass_on",
-    "5": "hardwired:block/lamp_frame_1",
-    "particle": "minecraft:block/exposed_copper"
-  }
-}

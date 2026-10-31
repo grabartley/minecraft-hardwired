@@ -7,7 +7,6 @@ import com.grahambartley.hardwired.block.CircuitBlock;
 import com.grahambartley.hardwired.block.CircuitBoardBlock;
 import com.grahambartley.hardwired.block.ControlPanelBlock;
 import com.grahambartley.hardwired.block.ControllerBlock;
-import com.grahambartley.hardwired.block.CopperLampBlock;
 import com.grahambartley.hardwired.block.DuskClock;
 import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.block.JunctionBlock;
@@ -37,9 +36,9 @@ import net.minecraft.util.Identifier;
 
 public final class ModBlocks {
 
-  private static final double[] CEILING_LAMP_BOX = {3, 0, 3, 13, 13, 13};
-  private static final double[] WALL_LAMP_BOX = {5, 0, 5, 11, 10, 11};
-  private static final double[] STRIP_BOX = {0, 0, 6, 16, 4, 10};
+  private static final double[] CEILING_LAMP_BOX = {4, 0, 4, 12, 16, 12};
+  private static final double[] WALL_LAMP_BOX = {4, 0, 2, 12, 6, 15};
+  private static final double[] STRIP_BOX = {0, 0, 5, 16, 4, 11};
   private static final double[] PANEL_BOX = {2, 0, 1, 14, 2, 15};
   private static final double[] MAIN_PANEL_BOX = {0, 0, 0, 16, 3, 16};
   private static final double[] SWITCH_BOX = {5, 0, 5, 11, 4, 11};
@@ -52,13 +51,6 @@ public final class ModBlocks {
   private static final double[] INTERCOM_BOX = {5, 0, 5, 11, 12, 11};
   private static final int RADIO_GLOW = 7;
 
-  public static final Block COPPER_LAMP =
-      register(
-          "copper_lamp",
-          new CopperLampBlock(
-              AbstractBlock.Settings.copy(Blocks.COPPER_BULB)
-                  .luminance(AbstractLampBlock::lightLevel)
-                  .emissiveLighting(AbstractLampBlock::isGlowing)));
   public static final Block COPPER_CEILING_LAMP =
       register("copper_ceiling_lamp", mountedLamp(CEILING_LAMP_BOX, Set.of(BlockFace.CEILING)));
   public static final Block COPPER_WALL_LAMP =
@@ -166,9 +158,7 @@ public final class ModBlocks {
   public static void register() {}
 
   public static Block[] lamps() {
-    return new Block[] {
-      COPPER_LAMP, COPPER_CEILING_LAMP, COPPER_WALL_LAMP, LIGHT_STRIP, STREETLIGHT
-    };
+    return new Block[] {COPPER_CEILING_LAMP, COPPER_WALL_LAMP, LIGHT_STRIP, STREETLIGHT};
   }
 
   public static Block[] animatedDevices() {

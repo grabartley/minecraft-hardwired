@@ -1,0 +1,6 @@
+{
+  "parent": "hardwired:block/base/streetlight_post_upper",
+  "textures": {
+    "particle": "minecraft:block/polished_blackstone"
+  }
+}
