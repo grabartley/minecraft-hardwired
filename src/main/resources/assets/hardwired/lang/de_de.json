@@ -147,5 +147,11 @@
   "advancement.hardwired.short_circuit.title": "Kurzschluss",
   "advancement.hardwired.short_circuit.description": "Durchtrenne einen Draht, der an ist",
   "advancement.hardwired.vintage.title": "Vintage",
-  "advancement.hardwired.vintage.description": "Sieh, wie eine Lampe ganz altert"
+  "advancement.hardwired.vintage.description": "Sieh, wie eine Lampe ganz altert",
+  "message.hardwired.sealed": "Netz versiegelt",
+  "message.hardwired.unsealed": "Siegel entfernt",
+  "message.hardwired.already_sealed": "Dieses Netz ist bereits versiegelt",
+  "command.hardwired.override.on": "Zugriff auf versiegelte Drähte ist an",
+  "command.hardwired.override.off": "Zugriff auf versiegelte Drähte ist aus",
+  "command.hardwired.help.override": "- /hardwired override: Versiegelte Drähte sehen und ändern"
 }

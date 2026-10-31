@@ -147,5 +147,11 @@
   "advancement.hardwired.short_circuit.title": "Cortocircuito",
   "advancement.hardwired.short_circuit.description": "Corta un cable encendido",
   "advancement.hardwired.vintage.title": "Vintage",
-  "advancement.hardwired.vintage.description": "Ve una lámpara alcanzar la edad máxima"
+  "advancement.hardwired.vintage.description": "Ve una lámpara alcanzar la edad máxima",
+  "message.hardwired.sealed": "Red sellada",
+  "message.hardwired.unsealed": "Sello retirado",
+  "message.hardwired.already_sealed": "Esta red ya está sellada",
+  "command.hardwired.override.on": "El acceso a cables sellados está activado",
+  "command.hardwired.override.off": "El acceso a cables sellados está desactivado",
+  "command.hardwired.help.override": "- /hardwired override: ver y cambiar cables sellados"
 }

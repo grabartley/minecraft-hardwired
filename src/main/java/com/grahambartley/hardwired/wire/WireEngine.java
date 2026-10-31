@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -42,6 +43,19 @@ public final class WireEngine {
     WireNetwork network = grid.add(cell);
     state.markDirty();
     return network;
+  }
+
+  public WireNetwork layJoining(WireCell cell) {
+    lay(cell);
+    if (cell.isSealed()) {
+      grid.openNetworksAround(cell).forEach(open -> reown(open, cell.owner()));
+    }
+    return grid.networkOf(cell);
+  }
+
+  public void reown(WireNetwork network, UUID owner) {
+    grid.reown(network, owner).forEach(this::dropItem);
+    state.markDirty();
   }
 
   public void cut(WireCell cell) {
@@ -168,6 +182,10 @@ public final class WireEngine {
 
   private void drop(WireCell cell) {
     cut(cell);
+    dropItem(cell);
+  }
+
+  private void dropItem(WireCell cell) {
     Block.dropStack(world, cell.face().pos(), new ItemStack(ModItems.wire(cell.color())));
   }
 

@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.wire;
 
 import java.util.List;
+import java.util.UUID;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -10,6 +11,7 @@ import net.minecraft.util.math.Direction;
 public final class WireGridNbt {
 
   private static final String NETWORKS = "networks";
+  private static final String OWNER = "owner";
   private static final String COLOR = "color";
   private static final String ON = "on";
   private static final String TRIPPED = "tripped";
@@ -55,6 +57,9 @@ public final class WireGridNbt {
     nbt.putBoolean(TRIPPED, network.isTripped());
     nbt.putLongArray(POSITIONS, positions);
     nbt.putByteArray(SIDES, sides);
+    if (network.isSealed()) {
+      nbt.putUuid(OWNER, network.owner());
+    }
     nbt.putLongArray(REMEMBERED, network.rememberedInputs().toLongArray());
     if (network.look() != null) {
       nbt.putString(LOOK_COLOR, network.look().color().asString());
@@ -67,12 +72,15 @@ public final class WireGridNbt {
     Hue color = Hue.byName(nbt.getString(COLOR));
     long[] positions = nbt.getLongArray(POSITIONS);
     byte[] sides = nbt.getByteArray(SIDES);
+    UUID owner = nbt.containsUuid(OWNER) ? nbt.getUuid(OWNER) : null;
     WireNetwork network = null;
     for (int i = 0; i < Math.min(positions.length, sides.length); i++) {
       network =
           grid.add(
               new WireCell(
-                  new WireFace(BlockPos.fromLong(positions[i]), Direction.byId(sides[i])), color));
+                  new WireFace(BlockPos.fromLong(positions[i]), Direction.byId(sides[i])),
+                  color,
+                  owner));
     }
     if (network == null) {
       return;

@@ -147,5 +147,11 @@
   "advancement.hardwired.short_circuit.title": "Curto-circuito",
   "advancement.hardwired.short_circuit.description": "Corte um fio ligado",
   "advancement.hardwired.vintage.title": "Vintage",
-  "advancement.hardwired.vintage.description": "Veja uma lâmpada chegar à idade máxima"
+  "advancement.hardwired.vintage.description": "Veja uma lâmpada chegar à idade máxima",
+  "message.hardwired.sealed": "Rede selada",
+  "message.hardwired.unsealed": "Selo removido",
+  "message.hardwired.already_sealed": "Esta rede já está selada",
+  "command.hardwired.override.on": "O acesso a fios selados está ligado",
+  "command.hardwired.override.off": "O acesso a fios selados está desligado",
+  "command.hardwired.help.override": "- /hardwired override: ver e alterar fios selados"
 }

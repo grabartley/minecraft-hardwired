@@ -147,5 +147,11 @@
   "advancement.hardwired.short_circuit.title": "Court-circuit",
   "advancement.hardwired.short_circuit.description": "Coupez un fil sous tension",
   "advancement.hardwired.vintage.title": "Vintage",
-  "advancement.hardwired.vintage.description": "Voyez une lampe atteindre son âge maximal"
+  "advancement.hardwired.vintage.description": "Voyez une lampe atteindre son âge maximal",
+  "message.hardwired.sealed": "Réseau scellé",
+  "message.hardwired.unsealed": "Sceau retiré",
+  "message.hardwired.already_sealed": "Ce réseau est déjà scellé",
+  "command.hardwired.override.on": "L'accès aux fils scellés est activé",
+  "command.hardwired.override.off": "L'accès aux fils scellés est désactivé",
+  "command.hardwired.help.override": "- /hardwired override : voir et modifier les fils scellés"
 }

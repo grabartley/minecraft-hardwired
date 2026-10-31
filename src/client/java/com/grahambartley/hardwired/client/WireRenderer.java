@@ -8,8 +8,6 @@ import com.grahambartley.hardwired.network.WireChunkPayload.MarkView;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.WireFace;
 import com.grahambartley.hardwired.wire.WireTopology;
-import java.util.HashSet;
-import java.util.Set;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -42,6 +40,8 @@ public final class WireRenderer {
   private static final int OPAQUE = 0xFF000000;
   private static final int FAINT = 0x70000000;
   private static final int WHITE = 0xFFFFFF;
+  private static final int WAX_AMBER = 0xE8A020;
+  private static final float WAX_SCALE = 2.0F;
 
   private WireRenderer() {}
 
@@ -66,15 +66,9 @@ public final class WireRenderer {
 
   private static void drawAll(
       VertexConsumer consumer, Matrix4f matrix, int alpha, boolean bothSides) {
-    Set<Long> present = new HashSet<>();
     for (WireChunkPayload chunk : WireViewStore.chunks()) {
       for (CellView cell : chunk.cells()) {
-        present.add(key(cell.pos(), cell.side(), cell.color()));
-      }
-    }
-    for (WireChunkPayload chunk : WireViewStore.chunks()) {
-      for (CellView cell : chunk.cells()) {
-        drawCell(consumer, matrix, cell, present, alpha, bothSides);
+        drawCell(consumer, matrix, cell, alpha, bothSides);
       }
       for (MarkView mark : chunk.marks()) {
         drawMark(consumer, matrix, mark, alpha);
@@ -83,31 +77,35 @@ public final class WireRenderer {
   }
 
   private static void drawCell(
-      VertexConsumer consumer,
-      Matrix4f matrix,
-      CellView view,
-      Set<Long> present,
-      int alpha,
-      boolean bothSides) {
+      VertexConsumer consumer, Matrix4f matrix, CellView view, int alpha, boolean bothSides) {
     WireFace face = new WireFace(BlockPos.fromLong(view.pos()), Direction.byId(view.side()));
     boolean on = (view.flags() & WireChunkPayload.ON) != 0;
     int argb = alpha | Hue.byIndex(view.color()).rgb();
-    Set<Direction> arms =
-        WireTopology.arms(
-            face,
-            other ->
-                present.contains(key(other.pos().asLong(), other.side().getId(), view.color())));
     Vec3d center = faceCenter(face);
     Direction reference = WireTopology.edges(face.side()).get(0);
     quad(
         consumer, matrix, center, face.side(), reference, on ? NODE_ON : NODE_OFF, argb, bothSides);
-    for (Direction arm : arms) {
-      quad(consumer, matrix, center, face.side(), arm, on ? ARM_ON : ARM_OFF, argb, bothSides);
+    for (Direction arm : WireTopology.edges(face.side())) {
+      if (view.hasArm(arm)) {
+        quad(consumer, matrix, center, face.side(), arm, on ? ARM_ON : ARM_OFF, argb, bothSides);
+      }
     }
     if ((view.flags() & WireChunkPayload.TRIPPED) != 0) {
       quad(consumer, matrix, center, face.side(), reference, TRIPPED, alpha | WHITE, bothSides);
     } else if ((view.flags() & WireChunkPayload.LOOSE_END) != 0) {
       quad(consumer, matrix, center, face.side(), reference, LOOSE_END, alpha | WHITE, bothSides);
+    }
+    if (view.isSealed()) {
+      quad(
+          consumer,
+          matrix,
+          center,
+          face.side(),
+          reference,
+          NODE_ON,
+          alpha | WAX_AMBER,
+          bothSides,
+          WAX_SCALE);
     }
   }
 
@@ -142,7 +140,20 @@ public final class WireRenderer {
       int tile,
       int argb,
       boolean bothSides) {
-    Vec3d upward = Vec3d.of(up.getVector()).multiply(0.5);
+    quad(consumer, matrix, center, normal, up, tile, argb, bothSides, 1.0F);
+  }
+
+  private static void quad(
+      VertexConsumer consumer,
+      Matrix4f matrix,
+      Vec3d center,
+      Direction normal,
+      Direction up,
+      int tile,
+      int argb,
+      boolean bothSides,
+      float scale) {
+    Vec3d upward = Vec3d.of(up.getVector()).multiply(0.5 * scale);
     Vec3d right = Vec3d.of(normal.getVector()).crossProduct(upward);
     float u0 = (tile % TILES) / (float) TILES;
     float v0 = (tile / TILES) / (float) TILES;
@@ -170,9 +181,5 @@ public final class WireRenderer {
         .color(argb)
         .texture(u, v)
         .light(LightmapTextureManager.MAX_LIGHT_COORDINATE);
-  }
-
-  private static long key(long pos, int side, int color) {
-    return (pos * 31 + side) * 31 + color;
   }
 }

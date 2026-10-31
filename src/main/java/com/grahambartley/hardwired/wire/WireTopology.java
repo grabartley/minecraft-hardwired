@@ -5,11 +5,16 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public final class WireTopology {
 
   private WireTopology() {}
+
+  public static List<WireFace> targets(BlockPos hit, Direction side) {
+    return List.of(new WireFace(hit, side), new WireFace(hit.offset(side.getOpposite()), side));
+  }
 
   public static List<Direction> edges(Direction side) {
     List<Direction> edges = new ArrayList<>(4);

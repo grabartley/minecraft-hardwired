@@ -147,5 +147,11 @@
   "advancement.hardwired.short_circuit.title": "Короткое замыкание",
   "advancement.hardwired.short_circuit.description": "Перережьте включённый провод",
   "advancement.hardwired.vintage.title": "Винтаж",
-  "advancement.hardwired.vintage.description": "Увидьте, как лампа полностью состарилась"
+  "advancement.hardwired.vintage.description": "Увидьте, как лампа полностью состарилась",
+  "message.hardwired.sealed": "Сеть запечатана",
+  "message.hardwired.unsealed": "Печать снята",
+  "message.hardwired.already_sealed": "Эта сеть уже запечатана",
+  "command.hardwired.override.on": "Доступ к запечатанным проводам включён",
+  "command.hardwired.override.off": "Доступ к запечатанным проводам выключен",
+  "command.hardwired.help.override": "- /hardwired override: видеть и менять запечатанные провода"
 }

@@ -148,7 +148,7 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 | Sneak and click a wire | Removes that piece and returns it to you |
 | Surround a dye with eight wire in the crafting grid | Makes eight coloured wire |
 | With wire in the other hand, use honeycomb on a wire | Seals that network to you |
-| With wire in the other hand, use an axe on sealed wire | Removes your seal, as an axe scrapes wax from copper |
+| With wire in the other hand, use an axe on sealed wire | Removes your seal, as an axe scrapes wax from copper, and wears the axe the same way |
 
 | ID | Requirement |
 |---|---|
@@ -164,8 +164,8 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 | WIRE-10 | Breaking a block drops the wire on its faces. So does an explosion, a piston that destroys the block, or the block starting to fall |
 | WIRE-11 | A block moved by a piston takes its wire with it, and connections re-form where it lands |
 | WIRE-12 | A network crossing chunks behaves as one network. An input in an unloaded chunk keeps the state it had when it unloaded, and an output in an unloaded chunk catches up when it loads |
-| WIRE-13 | Wire never joins a sealed network unless its owner, or an operator using PERM-6, lays it. Anyone else's wire sits beside it with no sign that it is there |
-| WIRE-14 | Wire that joins a sealed network becomes sealed, and any open wire it connects to is sealed along with it at no cost. Networks sealed by different players never join |
+| WIRE-13 | Wire never joins a sealed network unless its owner, or an operator using PERM-6, lays it. Anyone else's wire sits beside it, or on the same face in the same colour, with no sign that it is there |
+| WIRE-14 | Wire that joins a sealed network becomes sealed, and any open wire it connects to is sealed along with it at no cost. Networks sealed by different players never join, and an operator's wire laid between two seals joins only one of them: their own if they have one there, otherwise the same one every time |
 
 **Not supported:** wire that decays; wire as a block; repeaters.
 
@@ -395,11 +395,11 @@ A modified client is assumed. Hiding a control is never the enforcement of a rul
 | ID | Requirement |
 |---|---|
 | PERM-1 | Every action in the matrix is checked on the server |
-| PERM-2 | Sealing a network seals every wire in it. A player cannot seal a network that already has a seal. If a sealed network is split, each part stays sealed to the same owner |
-| PERM-3 | Sealing a network uses up one honeycomb. A seal is a mark on the wire, not an item: removing it or breaking the wire returns no honeycomb. Only the owner, or an operator using PERM-6, can remove it |
+| PERM-2 | Sealing a network seals every wire in it. A player cannot seal a network that already has a seal. If a sealed network is split, each part stays sealed to the same owner. A seal that would join a player's own wire past the size limit (PERF-2) is refused and uses no honeycomb |
+| PERM-3 | Sealing a network uses up one honeycomb. A seal is a mark on the wire, not an item: removing it or breaking the wire returns no honeycomb. Only the owner, or an operator using PERM-6, can remove it. Open wire left on the same face in the same colour joins it when the seal comes off, and the spare wire drops |
 | PERM-4 | Sealed wire data never reaches a client that may not see it (VIEW-6) |
 | PERM-5 | An owner who leaves the server keeps their seals. Nobody inherits them, and an operator can clear them |
-| PERM-6 | An operator sees and changes sealed wire only after turning on `/hardwired override`, which stays on for that operator until they turn it off |
+| PERM-6 | An operator sees and changes sealed wire only after turning on `/hardwired override`, which stays on for that operator through a world reload until they turn it off. It counts only while the player is still an operator |
 
 ## 7. Client And Server
 

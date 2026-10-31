@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public final class WireNetwork {
 
@@ -19,13 +20,27 @@ public final class WireNetwork {
   private boolean on;
   private boolean tripped;
   private LampLook look;
+  private UUID owner;
 
-  WireNetwork(Hue color) {
+  WireNetwork(Hue color, UUID owner) {
     this.color = color;
+    this.owner = owner;
   }
 
   public Hue color() {
     return color;
+  }
+
+  public UUID owner() {
+    return owner;
+  }
+
+  public boolean isSealed() {
+    return owner != null;
+  }
+
+  void setOwner(UUID owner) {
+    this.owner = owner;
   }
 
   public int size() {

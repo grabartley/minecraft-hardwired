@@ -14,6 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 
@@ -97,11 +98,69 @@ public final class WireGrid {
   }
 
   public int sizeAfterAdding(WireCell cell) {
-    int size = 1;
-    for (WireNetwork network : adjacentNetworks(cell)) {
-      size += network.size();
+    Set<WireNetwork> joined = adjacentNetworks(cell);
+    if (cell.isSealed()) {
+      for (WireNetwork open : openNetworksAround(cell)) {
+        joined.add(open);
+        joined.addAll(networksInLayer(open.cells, cell.owner()));
+      }
     }
-    return size;
+    return 1 + totalSize(joined);
+  }
+
+  public int sizeAfterReowning(WireNetwork network, UUID owner) {
+    Set<WireNetwork> joined = networksInLayer(network.cells, owner);
+    joined.remove(network);
+    return network.size() + totalSize(joined);
+  }
+
+  public Set<WireNetwork> openNetworksAround(WireCell cell) {
+    return networksInLayer(List.of(cell), null);
+  }
+
+  public Set<UUID> sealedOwnersAround(WireFace face, Hue color) {
+    List<WireFace> around = new ArrayList<>(WireTopology.neighbours(face));
+    around.add(face);
+    Set<UUID> owners = new HashSet<>();
+    for (WireFace near : around) {
+      for (WireCell cell : cellsOn(near.pos())) {
+        if (cell.isSealed() && cell.color() == color && cell.face().equals(near)) {
+          owners.add(cell.owner());
+        }
+      }
+    }
+    return owners;
+  }
+
+  public List<WireCell> reown(WireNetwork network, UUID owner) {
+    List<WireCell> rekeyed = new ArrayList<>(network.size());
+    for (WireCell cell : List.copyOf(network.cells)) {
+      unplace(cell, network);
+      rekeyed.add(cell.ownedBy(owner));
+    }
+    network.setOwner(owner);
+    List<WireCell> doubled = new ArrayList<>();
+    Set<WireNetwork> merged = new HashSet<>();
+    for (WireCell cell : rekeyed) {
+      WireNetwork already = cells.get(cell);
+      if (already == null) {
+        place(cell, network);
+      } else {
+        doubled.add(cell);
+        merged.add(already);
+      }
+    }
+    merged.addAll(networksInLayer(rekeyed, owner));
+    merged.remove(network);
+    merged.forEach(other -> absorb(network, other));
+    List.copyOf(network.cells).forEach(this::refreshTouches);
+    if (merged.isEmpty()) {
+      dirty.add(network);
+      markChanged(network);
+    } else {
+      wireChanged(network);
+    }
+    return doubled;
   }
 
   public WireNetwork add(WireCell cell) {
@@ -110,7 +169,8 @@ public final class WireGrid {
       return existing;
     }
     Set<WireNetwork> adjacent = adjacentNetworks(cell);
-    WireNetwork target = adjacent.isEmpty() ? newNetwork(cell.color()) : largest(adjacent);
+    WireNetwork target =
+        adjacent.isEmpty() ? newNetwork(cell.color(), cell.owner()) : largest(adjacent);
     for (WireNetwork other : adjacent) {
       if (other != target) {
         absorb(target, other);
@@ -128,11 +188,7 @@ public final class WireGrid {
       return;
     }
     List<WireCell> adjacent = adjacentCells(cell);
-    clearTouches(cell, network);
-    cells.remove(cell);
-    removeFromIndex(byHost, hostKey(cell), cell);
-    removeFromIndex(byChunk, chunkKey(cell), cell);
-    leave(cell, network);
+    unplace(cell, network);
     chunkVersions.addTo(chunkKey(cell), 1);
     adjacent.forEach(this::refreshTouches);
     if (network.cells.isEmpty()) {
@@ -165,7 +221,7 @@ public final class WireGrid {
   }
 
   private void split(WireNetwork network, Set<WireCell> part) {
-    WireNetwork fresh = newNetwork(network.color());
+    WireNetwork fresh = newNetwork(network.color(), network.owner());
     fresh.setOn(network.isOn());
     fresh.setLook(network.look());
     fresh.rememberedInputs().addAll(network.rememberedInputs());
@@ -228,6 +284,14 @@ public final class WireGrid {
     byChunk.computeIfAbsent(chunkKey(cell), key -> new HashSet<>()).add(cell);
   }
 
+  private void unplace(WireCell cell, WireNetwork network) {
+    clearTouches(cell, network);
+    cells.remove(cell);
+    removeFromIndex(byHost, hostKey(cell), cell);
+    removeFromIndex(byChunk, chunkKey(cell), cell);
+    leave(cell, network);
+  }
+
   private void refreshAround(WireCell cell) {
     refreshTouches(cell);
     adjacentCells(cell).forEach(this::refreshTouches);
@@ -243,8 +307,7 @@ public final class WireGrid {
     List<TouchPoint> touches =
         WireTopology.touches(
             cell.face(),
-            WireTopology.arms(
-                cell.face(), face -> cells.containsKey(new WireCell(face, cell.color()))));
+            WireTopology.arms(cell.face(), face -> cells.containsKey(cell.onFace(face))));
     cellTouches.put(cell, touches);
     for (TouchPoint touch : touches) {
       network.touches.addTo(touch, 1);
@@ -292,10 +355,22 @@ public final class WireGrid {
     return adjacent;
   }
 
+  private Set<WireNetwork> networksInLayer(Collection<WireCell> around, UUID owner) {
+    Set<WireNetwork> found = new HashSet<>();
+    for (WireCell cell : around) {
+      WireCell inLayer = cell.ownedBy(owner);
+      if (cells.containsKey(inLayer)) {
+        found.add(cells.get(inLayer));
+      }
+      found.addAll(adjacentNetworks(inLayer));
+    }
+    return found;
+  }
+
   private List<WireCell> adjacentCells(WireCell cell) {
     List<WireCell> adjacent = new ArrayList<>(4);
     for (WireFace face : WireTopology.neighbours(cell.face())) {
-      WireCell neighbour = new WireCell(face, cell.color());
+      WireCell neighbour = cell.onFace(face);
       if (cells.containsKey(neighbour)) {
         adjacent.add(neighbour);
       }
@@ -303,8 +378,8 @@ public final class WireGrid {
     return adjacent;
   }
 
-  private WireNetwork newNetwork(Hue color) {
-    WireNetwork network = new WireNetwork(color);
+  private WireNetwork newNetwork(Hue color, UUID owner) {
+    WireNetwork network = new WireNetwork(color, owner);
     networks.add(network);
     return network;
   }
@@ -317,6 +392,14 @@ public final class WireGrid {
       }
     }
     return largest;
+  }
+
+  private static int totalSize(Set<WireNetwork> networks) {
+    int size = 0;
+    for (WireNetwork network : networks) {
+      size += network.size();
+    }
+    return size;
   }
 
   private static long hostKey(WireCell cell) {

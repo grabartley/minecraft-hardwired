@@ -9,9 +9,11 @@ import com.grahambartley.hardwired.config.LiftSettings;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.config.WireSettings;
 import com.grahambartley.hardwired.server.ServerConfigService;
+import com.grahambartley.hardwired.wire.WireOverrides;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -176,11 +178,28 @@ public final class HardwiredCommand {
                 CommandManager.literal("status")
                     .requires(HardwiredCommand::isOp)
                     .executes(HardwiredCommand::status))
+            .then(
+                CommandManager.literal("override")
+                    .requires(HardwiredCommand::isOp)
+                    .executes(HardwiredCommand::override))
             .then(config.then(CommandManager.literal("reset").executes(HardwiredCommand::reset))));
   }
 
   private static boolean isOp(final ServerCommandSource source) {
     return source.hasPermissionLevel(ServerConfigService.OP_PERMISSION_LEVEL);
+  }
+
+  private static int override(final CommandContext<ServerCommandSource> ctx)
+      throws CommandSyntaxException {
+    final ServerCommandSource source = ctx.getSource();
+    final boolean on =
+        WireOverrides.of(source.getServer()).toggle(source.getPlayerOrThrow().getUuid());
+    source.sendFeedback(
+        () ->
+            Text.translatable(
+                on ? "command.hardwired.override.on" : "command.hardwired.override.off"),
+        true);
+    return 1;
   }
 
   private static int help(final CommandContext<ServerCommandSource> ctx) {
@@ -191,6 +210,10 @@ public final class HardwiredCommand {
                   Text.translatable(
                       "command.hardwired.help.setting", option.name(), option.min(), option.max()),
               false);
+    }
+    if (isOp(ctx.getSource())) {
+      ctx.getSource()
+          .sendFeedback(() -> Text.translatable("command.hardwired.help.override"), false);
     }
     return 1;
   }

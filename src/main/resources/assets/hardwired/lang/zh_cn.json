@@ -147,5 +147,11 @@
   "advancement.hardwired.short_circuit.title": "短路",
   "advancement.hardwired.short_circuit.description": "切断一根通电的电线",
   "advancement.hardwired.vintage.title": "复古",
-  "advancement.hardwired.vintage.description": "看着一盏灯完全老化"
+  "advancement.hardwired.vintage.description": "看着一盏灯完全老化",
+  "message.hardwired.sealed": "网络已封蜡",
+  "message.hardwired.unsealed": "封蜡已移除",
+  "message.hardwired.already_sealed": "此网络已封蜡",
+  "command.hardwired.override.on": "封蜡铜线访问已开启",
+  "command.hardwired.override.off": "封蜡铜线访问已关闭",
+  "command.hardwired.help.override": "- /hardwired override：查看并更改封蜡铜线"
 }

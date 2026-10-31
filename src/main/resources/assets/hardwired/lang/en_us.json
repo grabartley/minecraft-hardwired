@@ -147,5 +147,11 @@
   "advancement.hardwired.short_circuit.title": "Short Circuit",
   "advancement.hardwired.short_circuit.description": "Cut a wire that is on",
   "advancement.hardwired.vintage.title": "Vintage",
-  "advancement.hardwired.vintage.description": "See a lamp reach full age"
+  "advancement.hardwired.vintage.description": "See a lamp reach full age",
+  "message.hardwired.sealed": "Network sealed",
+  "message.hardwired.unsealed": "Seal removed",
+  "message.hardwired.already_sealed": "This network is already sealed",
+  "command.hardwired.override.on": "Sealed wire override is on",
+  "command.hardwired.override.off": "Sealed wire override is off",
+  "command.hardwired.help.override": "- /hardwired override: see and change sealed wire"
 }

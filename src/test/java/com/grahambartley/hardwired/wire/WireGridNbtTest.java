@@ -1,15 +1,24 @@
 package com.grahambartley.hardwired.wire;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class WireGridNbtTest {
+
+  private static final UUID STRANGER = new UUID(9, 9);
 
   private static WireCell cell(int x, Hue hue) {
     return new WireCell(new WireFace(new BlockPos(x, 70, -3), Direction.NORTH), hue);
@@ -37,5 +46,41 @@ class WireGridNbtTest {
     assertEquals(new LampLook(Hue.CYAN, 9), restored.look());
     assertTrue(restored.rememberedInputs().contains(1234L));
     assertEquals(List.of(), read.drainDirty());
+  }
+
+  @ParameterizedTest(name = "owner {0}")
+  @MethodSource("owners")
+  void ownerSurvivesARoundTrip(UUID owner) {
+    WireGrid grid = new WireGrid();
+    grid.add(cell(0, Hue.RED).ownedBy(owner));
+    grid.add(cell(1, Hue.RED).ownedBy(owner));
+    grid.add(cell(0, Hue.RED).ownedBy(STRANGER));
+
+    WireGrid read = WireGridNbt.read(WireGridNbt.write(grid));
+
+    assertEquals(2, read.networks().size());
+    WireNetwork restored = read.networkOf(cell(1, Hue.RED).ownedBy(owner));
+    assertEquals(2, restored.size());
+    assertEquals(owner, restored.owner());
+  }
+
+  private static Stream<UUID> owners() {
+    return Stream.of(null, new UUID(1, 2));
+  }
+
+  @Test
+  void aSaveWithoutOwnersLoadsAsOpenWire() {
+    NbtCompound network = new NbtCompound();
+    network.putString("color", Hue.RED.asString());
+    network.putLongArray("positions", new long[] {cell(0, Hue.RED).face().pos().asLong()});
+    network.putByteArray("sides", new byte[] {(byte) Direction.NORTH.getId()});
+    NbtList networks = new NbtList();
+    networks.add(network);
+    NbtCompound root = new NbtCompound();
+    root.put("networks", networks);
+
+    WireGrid read = WireGridNbt.read(root);
+
+    assertFalse(read.networkOf(cell(0, Hue.RED)).isSealed());
   }
 }
