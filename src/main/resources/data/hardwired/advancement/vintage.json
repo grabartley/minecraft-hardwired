@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:copper_lamp"
+    },
+    "title": {
+      "translate": "advancement.hardwired.vintage.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.vintage.description"
+    },
+    "frame": "task",
+    "hidden": true
+  },
+  "criteria": {
+    "aged": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "lamp_aged"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light"
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "hardwired:item/light_strip_item",
+    "layer1": "hardwired:item/light_strip_item_glow"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "values": [
+    "hardwired:copper_lamp",
+    "hardwired:copper_ceiling_lamp",
+    "hardwired:copper_wall_lamp",
+    "hardwired:light_strip",
+    "hardwired:streetlight",
+    "hardwired:control_panel",
+    "hardwired:junction",
+    "hardwired:wall_switch",
+    "hardwired:push_button",
+    "hardwired:motion_sensor",
+    "hardwired:dusk_sensor"
+  ]
+}

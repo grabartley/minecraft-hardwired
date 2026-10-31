@@ -1,0 +1,9 @@
+{
+  "parent": "hardwired:block/base/junction",
+  "textures": {
+    "8": "hardwired:block/junction_side",
+    "9": "hardwired:block/junction_or",
+    "11": "hardwired:block/junction_band",
+    "particle": "hardwired:block/junction_side"
+  }
+}

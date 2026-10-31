@@ -1,0 +1,428 @@
+{
+  "variants": {
+    "face=floor,facing=north,age=0,lit=false": {
+      "model": "hardwired:block/light_strip_0_off"
+    },
+    "face=floor,facing=north,age=0,lit=true": {
+      "model": "hardwired:block/light_strip_0_on"
+    },
+    "face=floor,facing=north,age=1,lit=false": {
+      "model": "hardwired:block/light_strip_1_off"
+    },
+    "face=floor,facing=north,age=1,lit=true": {
+      "model": "hardwired:block/light_strip_1_on"
+    },
+    "face=floor,facing=north,age=2,lit=false": {
+      "model": "hardwired:block/light_strip_2_off"
+    },
+    "face=floor,facing=north,age=2,lit=true": {
+      "model": "hardwired:block/light_strip_2_on"
+    },
+    "face=floor,facing=north,age=3,lit=false": {
+      "model": "hardwired:block/light_strip_3_off"
+    },
+    "face=floor,facing=north,age=3,lit=true": {
+      "model": "hardwired:block/light_strip_3_on"
+    },
+    "face=floor,facing=east,age=0,lit=false": {
+      "model": "hardwired:block/light_strip_0_off",
+      "y": 90
+    },
+    "face=floor,facing=east,age=0,lit=true": {
+      "model": "hardwired:block/light_strip_0_on",
+      "y": 90
+    },
+    "face=floor,facing=east,age=1,lit=false": {
+      "model": "hardwired:block/light_strip_1_off",
+      "y": 90
+    },
+    "face=floor,facing=east,age=1,lit=true": {
+      "model": "hardwired:block/light_strip_1_on",
+      "y": 90
+    },
+    "face=floor,facing=east,age=2,lit=false": {
+      "model": "hardwired:block/light_strip_2_off",
+      "y": 90
+    },
+    "face=floor,facing=east,age=2,lit=true": {
+      "model": "hardwired:block/light_strip_2_on",
+      "y": 90
+    },
+    "face=floor,facing=east,age=3,lit=false": {
+      "model": "hardwired:block/light_strip_3_off",
+      "y": 90
+    },
+    "face=floor,facing=east,age=3,lit=true": {
+      "model": "hardwired:block/light_strip_3_on",
+      "y": 90
+    },
+    "face=floor,facing=south,age=0,lit=false": {
+      "model": "hardwired:block/light_strip_0_off",
+      "y": 180
+    },
+    "face=floor,facing=south,age=0,lit=true": {
+      "model": "hardwired:block/light_strip_0_on",
+      "y": 180
+    },
+    "face=floor,facing=south,age=1,lit=false": {
+      "model": "hardwired:block/light_strip_1_off",
+      "y": 180
+    },
+    "face=floor,facing=south,age=1,lit=true": {
+      "model": "hardwired:block/light_strip_1_on",
+      "y": 180
+    },
+    "face=floor,facing=south,age=2,lit=false": {
+      "model": "hardwired:block/light_strip_2_off",
+      "y": 180
+    },
+    "face=floor,facing=south,age=2,lit=true": {
+      "model": "hardwired:block/light_strip_2_on",
+      "y": 180
+    },
+    "face=floor,facing=south,age=3,lit=false": {
+      "model": "hardwired:block/light_strip_3_off",
+      "y": 180
+    },
+    "face=floor,facing=south,age=3,lit=true": {
+      "model": "hardwired:block/light_strip_3_on",
+      "y": 180
+    },
+    "face=floor,facing=west,age=0,lit=false": {
+      "model": "hardwired:block/light_strip_0_off",
+      "y": 270
+    },
+    "face=floor,facing=west,age=0,lit=true": {
+      "model": "hardwired:block/light_strip_0_on",
+      "y": 270
+    },
+    "face=floor,facing=west,age=1,lit=false": {
+      "model": "hardwired:block/light_strip_1_off",
+      "y": 270
+    },
+    "face=floor,facing=west,age=1,lit=true": {
+      "model": "hardwired:block/light_strip_1_on",
+      "y": 270
+    },
+    "face=floor,facing=west,age=2,lit=false": {
+      "model": "hardwired:block/light_strip_2_off",
+      "y": 270
+    },
+    "face=floor,facing=west,age=2,lit=true": {
+      "model": "hardwired:block/light_strip_2_on",
+      "y": 270
+    },
+    "face=floor,facing=west,age=3,lit=false": {
+      "model": "hardwired:block/light_strip_3_off",
+      "y": 270
+    },
+    "face=floor,facing=west,age=3,lit=true": {
+      "model": "hardwired:block/light_strip_3_on",
+      "y": 270
+    },
+    "face=wall,facing=north,age=0,lit=false": {
+      "model": "hardwired:block/light_strip_0_off",
+      "x": 90
+    },
+    "face=wall,facing=north,age=0,lit=true": {
+      "model": "hardwired:block/light_strip_0_on",
+      "x": 90
+    },
+    "face=wall,facing=north,age=1,lit=false": {
+      "model": "hardwired:block/light_strip_1_off",
+      "x": 90
+    },
+    "face=wall,facing=north,age=1,lit=true": {
+      "model": "hardwired:block/light_strip_1_on",
+      "x": 90
+    },
+    "face=wall,facing=north,age=2,lit=false": {
+      "model": "hardwired:block/light_strip_2_off",
+      "x": 90
+    },
+    "face=wall,facing=north,age=2,lit=true": {
+      "model": "hardwired:block/light_strip_2_on",
+      "x": 90
+    },
+    "face=wall,facing=north,age=3,lit=false": {
+      "model": "hardwired:block/light_strip_3_off",
+      "x": 90
+    },
+    "face=wall,facing=north,age=3,lit=true": {
+      "model": "hardwired:block/light_strip_3_on",
+      "x": 90
+    },
+    "face=wall,facing=east,age=0,lit=false": {
+      "model": "hardwired:block/light_strip_0_off",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=east,age=0,lit=true": {
+      "model": "hardwired:block/light_strip_0_on",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=east,age=1,lit=false": {
+      "model": "hardwired:block/light_strip_1_off",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=east,age=1,lit=true": {
+      "model": "hardwired:block/light_strip_1_on",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=east,age=2,lit=false": {
+      "model": "hardwired:block/light_strip_2_off",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=east,age=2,lit=true": {
+      "model": "hardwired:block/light_strip_2_on",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=east,age=3,lit=false": {
+      "model": "hardwired:block/light_strip_3_off",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=east,age=3,lit=true": {
+      "model": "hardwired:block/light_strip_3_on",
+      "x": 90,
+      "y": 90
+    },
+    "face=wall,facing=south,age=0,lit=false": {
+      "model": "hardwired:block/light_strip_0_off",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=south,age=0,lit=true": {
+      "model": "hardwired:block/light_strip_0_on",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=south,age=1,lit=false": {
+      "model": "hardwired:block/light_strip_1_off",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=south,age=1,lit=true": {
+      "model": "hardwired:block/light_strip_1_on",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=south,age=2,lit=false": {
+      "model": "hardwired:block/light_strip_2_off",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=south,age=2,lit=true": {
+      "model": "hardwired:block/light_strip_2_on",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=south,age=3,lit=false": {
+      "model": "hardwired:block/light_strip_3_off",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=south,age=3,lit=true": {
+      "model": "hardwired:block/light_strip_3_on",
+      "x": 90,
+      "y": 180
+    },
+    "face=wall,facing=west,age=0,lit=false": {
+      "model": "hardwired:block/light_strip_0_off",
+      "x": 90,
+      "y": 270
+    },
+    "face=wall,facing=west,age=0,lit=true": {
+      "model": "hardwired:block/light_strip_0_on",
+      "x": 90,
+      "y": 270
+    },
+    "face=wall,facing=west,age=1,lit=false": {
+      "model": "hardwired:block/light_strip_1_off",
+      "x": 90,
+      "y": 270
+    },
+    "face=wall,facing=west,age=1,lit=true": {
+      "model": "hardwired:block/light_strip_1_on",
+      "x": 90,
+      "y": 270
+    },
+    "face=wall,facing=west,age=2,lit=false": {
+      "model": "hardwired:block/light_strip_2_off",
+      "x": 90,
+      "y": 270
+    },
+    "face=wall,facing=west,age=2,lit=true": {
+      "model": "hardwired:block/light_strip_2_on",
+      "x": 90,
+      "y": 270
+    },
+    "face=wall,facing=west,age=3,lit=false": {
+      "model": "hardwired:block/light_strip_3_off",
+      "x": 90,
+      "y": 270
+    },
+    "face=wall,facing=west,age=3,lit=true": {
+      "model": "hardwired:block/light_strip_3_on",
+      "x": 90,
+      "y": 270
+    },
+    "face=ceiling,facing=north,age=0,lit=false": {
+      "model": "hardwired:block/light_strip_0_off",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=north,age=0,lit=true": {
+      "model": "hardwired:block/light_strip_0_on",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=north,age=1,lit=false": {
+      "model": "hardwired:block/light_strip_1_off",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=north,age=1,lit=true": {
+      "model": "hardwired:block/light_strip_1_on",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=north,age=2,lit=false": {
+      "model": "hardwired:block/light_strip_2_off",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=north,age=2,lit=true": {
+      "model": "hardwired:block/light_strip_2_on",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=north,age=3,lit=false": {
+      "model": "hardwired:block/light_strip_3_off",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=north,age=3,lit=true": {
+      "model": "hardwired:block/light_strip_3_on",
+      "x": 180,
+      "y": 180
+    },
+    "face=ceiling,facing=east,age=0,lit=false": {
+      "model": "hardwired:block/light_strip_0_off",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=east,age=0,lit=true": {
+      "model": "hardwired:block/light_strip_0_on",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=east,age=1,lit=false": {
+      "model": "hardwired:block/light_strip_1_off",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=east,age=1,lit=true": {
+      "model": "hardwired:block/light_strip_1_on",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=east,age=2,lit=false": {
+      "model": "hardwired:block/light_strip_2_off",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=east,age=2,lit=true": {
+      "model": "hardwired:block/light_strip_2_on",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=east,age=3,lit=false": {
+      "model": "hardwired:block/light_strip_3_off",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=east,age=3,lit=true": {
+      "model": "hardwired:block/light_strip_3_on",
+      "x": 180,
+      "y": 270
+    },
+    "face=ceiling,facing=south,age=0,lit=false": {
+      "model": "hardwired:block/light_strip_0_off",
+      "x": 180
+    },
+    "face=ceiling,facing=south,age=0,lit=true": {
+      "model": "hardwired:block/light_strip_0_on",
+      "x": 180
+    },
+    "face=ceiling,facing=south,age=1,lit=false": {
+      "model": "hardwired:block/light_strip_1_off",
+      "x": 180
+    },
+    "face=ceiling,facing=south,age=1,lit=true": {
+      "model": "hardwired:block/light_strip_1_on",
+      "x": 180
+    },
+    "face=ceiling,facing=south,age=2,lit=false": {
+      "model": "hardwired:block/light_strip_2_off",
+      "x": 180
+    },
+    "face=ceiling,facing=south,age=2,lit=true": {
+      "model": "hardwired:block/light_strip_2_on",
+      "x": 180
+    },
+    "face=ceiling,facing=south,age=3,lit=false": {
+      "model": "hardwired:block/light_strip_3_off",
+      "x": 180
+    },
+    "face=ceiling,facing=south,age=3,lit=true": {
+      "model": "hardwired:block/light_strip_3_on",
+      "x": 180
+    },
+    "face=ceiling,facing=west,age=0,lit=false": {
+      "model": "hardwired:block/light_strip_0_off",
+      "x": 180,
+      "y": 90
+    },
+    "face=ceiling,facing=west,age=0,lit=true": {
+      "model": "hardwired:block/light_strip_0_on",
+      "x": 180,
+      "y": 90
+    },
+    "face=ceiling,facing=west,age=1,lit=false": {
+      "model": "hardwired:block/light_strip_1_off",
+      "x": 180,
+      "y": 90
+    },
+    "face=ceiling,facing=west,age=1,lit=true": {
+      "model": "hardwired:block/light_strip_1_on",
+      "x": 180,
+      "y": 90
+    },
+    "face=ceiling,facing=west,age=2,lit=false": {
+      "model": "hardwired:block/light_strip_2_off",
+      "x": 180,
+      "y": 90
+    },
+    "face=ceiling,facing=west,age=2,lit=true": {
+      "model": "hardwired:block/light_strip_2_on",
+      "x": 180,
+      "y": 90
+    },
+    "face=ceiling,facing=west,age=3,lit=false": {
+      "model": "hardwired:block/light_strip_3_off",
+      "x": 180,
+      "y": 90
+    },
+    "face=ceiling,facing=west,age=3,lit=true": {
+      "model": "hardwired:block/light_strip_3_on",
+      "x": 180,
+      "y": 90
+    }
+  }
+}

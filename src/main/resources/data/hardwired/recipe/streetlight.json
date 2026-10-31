@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "L",
+    "C",
+    "C"
+  ],
+  "key": {
+    "L": {
+      "item": "hardwired:copper_lamp"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    }
+  },
+  "result": {
+    "id": "hardwired:streetlight",
+    "count": 1
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:streetlight"
+    },
+    "title": {
+      "translate": "advancement.hardwired.street_smart.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.street_smart.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "lit": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "streetlight_lit"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light"
+}

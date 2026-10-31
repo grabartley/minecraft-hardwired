@@ -1,0 +1,11 @@
+{
+  "values": [
+    "#minecraft:slabs",
+    "#minecraft:stairs",
+    "#minecraft:impermeable",
+    {
+      "id": "#c:glass_panes",
+      "required": false
+    }
+  ]
+}

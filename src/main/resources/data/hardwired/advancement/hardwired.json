@@ -1,0 +1,21 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:copper_wire"
+    },
+    "title": {
+      "translate": "advancement.hardwired.hardwired.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.hardwired.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "background": "hardwired:textures/wire/advancement_background.png"
+  },
+  "criteria": {
+    "tick": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}

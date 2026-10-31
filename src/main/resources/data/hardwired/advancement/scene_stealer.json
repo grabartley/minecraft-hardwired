@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:control_panel"
+    },
+    "title": {
+      "translate": "advancement.hardwired.scene_stealer.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.scene_stealer.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "saved": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "scene_saved"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light"
+}

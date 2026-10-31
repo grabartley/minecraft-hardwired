@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "hardwired:item/wire_spool",
+    "layer1": "hardwired:item/wire_spool_coil"
+  }
+}

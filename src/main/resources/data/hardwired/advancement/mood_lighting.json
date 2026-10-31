@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:control_panel"
+    },
+    "title": {
+      "translate": "advancement.hardwired.mood_lighting.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.mood_lighting.description"
+    },
+    "frame": "goal",
+    "hidden": false
+  },
+  "criteria": {
+    "panel": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "panel_color"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light",
+  "rewards": {
+    "experience": 50
+  }
+}
