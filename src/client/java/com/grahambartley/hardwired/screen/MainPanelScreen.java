@@ -18,14 +18,14 @@ import net.minecraft.util.math.BlockPos;
 
 public final class MainPanelScreen extends Screen {
 
-  private static final int WIDTH = 320;
+  private static final int WIDTH = 336;
   private static final int HEIGHT = 236;
   private static final int PADDING = 10;
   private static final int ROW = 24;
   private static final int ROWS_TOP = 22;
-  private static final int STATE_X = 128;
-  private static final int DIAL_X = 186;
-  private static final int CONTROLS_X = 204;
+  private static final int STATE_X = 116;
+  private static final int DIAL_X = 232;
+  private static final int CONTROLS_X = 250;
   private static final int BUTTON_HEIGHT = 16;
   private static final int WIDE_BUTTON = 60;
   private static final int SMALL_BUTTON = 16;
@@ -248,14 +248,6 @@ public final class MainPanelScreen extends Screen {
           y + 7,
           SlatePlate.MUTED_COLOR,
           false);
-    } else if (row.kind() == PanelKind.CONTROLLER) {
-      context.drawText(
-          textRenderer,
-          Text.translatable("screen.hardwired.main_panel.progress", row.level(), row.maxLevel()),
-          left() + CONTROLS_X + WIDE_BUTTON + 2,
-          y + 7,
-          SlatePlate.MUTED_COLOR,
-          false);
     }
   }
 
@@ -273,15 +265,19 @@ public final class MainPanelScreen extends Screen {
         y + 2,
         SlatePlate.TITLE_COLOR,
         false);
-    if (row.stale()) {
-      context.drawText(
-          textRenderer,
-          Text.translatable("screen.hardwired.main_panel.last_seen"),
-          x,
-          y + 12,
-          SlatePlate.MUTED_COLOR,
-          false);
+    Text note = stateNote(row);
+    if (note != null) {
+      context.drawText(textRenderer, note, x, y + 12, SlatePlate.MUTED_COLOR, false);
     }
+  }
+
+  private static Text stateNote(PanelRow row) {
+    if (row.stale()) {
+      return Text.translatable("screen.hardwired.main_panel.last_seen");
+    }
+    return row.kind() == PanelKind.CONTROLLER
+        ? Text.translatable("screen.hardwired.main_panel.progress", row.level(), row.maxLevel())
+        : null;
   }
 
   private void drawFooter(DrawContext context) {

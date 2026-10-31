@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 public final class ControllerScreen extends Screen {
 
   private static final int WIDTH = 300;
-  private static final int HEIGHT = 226;
+  private static final int HEIGHT = 234;
   private static final int PADDING = 10;
   private static final int CELL = 14;
   private static final int SWATCH = 14;
@@ -81,7 +81,7 @@ public final class ControllerScreen extends Screen {
         () -> draft.adjustAutoReverse(REVERSE_STEP_TICKS));
     addSmall("<", left() + WIDTH - 2 * SMALL_BUTTON - PADDING - 2, top() + 42, () -> page(-1));
     addSmall(">", left() + WIDTH - SMALL_BUTTON - PADDING, top() + 42, () -> page(1));
-    int bottom = top() + HEIGHT - 26;
+    int bottom = top() + HEIGHT - 24;
     addSmall("-", left() + PADDING, bottom, () -> draft.adjustWait(selected, -WAIT_STEP_TICKS));
     addSmall(
         "+",
@@ -268,12 +268,7 @@ public final class ControllerScreen extends Screen {
                 steps,
                 seconds(draft.steps().get(selected).waitTicks()));
     context.drawText(
-        textRenderer,
-        info,
-        left() + PADDING + 2 * SMALL_BUTTON + 6,
-        top() + HEIGHT - 22,
-        SlatePlate.TITLE_COLOR,
-        false);
+        textRenderer, info, left() + PADDING, top() + HEIGHT - 37, SlatePlate.TITLE_COLOR, false);
     if (steps > TimelineGrid.VISIBLE_STEPS) {
       Text shown =
           Text.translatable(
@@ -284,8 +279,8 @@ public final class ControllerScreen extends Screen {
       context.drawText(
           textRenderer,
           shown,
-          left() + WIDTH - PADDING - 2 * SMALL_BUTTON - 6 - textRenderer.getWidth(shown),
-          top() + 46,
+          left() + WIDTH - PADDING - textRenderer.getWidth(shown),
+          top() + 9,
           SlatePlate.MUTED_COLOR,
           false);
     }
