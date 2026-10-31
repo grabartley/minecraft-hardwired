@@ -21,11 +21,10 @@ Hardwired is practical 1920s electrics for Minecraft, built from copper and reds
 ### Experience It Aims For
 
 - **Thirty seconds to light a room.** Wiring is a quick job, not a puzzle.
-- **Nothing in the way.** Wiring never changes how a build looks or what can be placed in it.
+- **Nothing in the way.** Wiring never changes how a build looks or what can be placed in it. Wire is hidden, and even when shown it is a hair-thin line.
 - **You can always see why.** Holding wire shows every connection and whether it is on.
 - **Depth when you want it.** A homeowner never has to meet a logic gate, and an engineer can still build real circuits.
-- **Vanilla plus.** Everything looks like it belongs in the game: copper, redstone and clean, simple shapes. It is sleek, never high resolution or plastic.
-- **Early electrics, in Minecraft.** Devices capture how exciting early electricity was: the showmanship and elegance of old world meeting new. Most of the mod is analog and styled on the 1920s, redrawn in vanilla's style: filament bulbs, cloth wire, tumbler switches, slate switchboards and brass dials, in Art Deco shapes. Anything that computes takes its look from the 1980s and 1990s instead.
+- **Early electrics, in vanilla's style.** Everything looks like it belongs in the game, and captures how exciting early electricity was: the showmanship and elegance of old world meeting new. It is sleek, never bulky, high resolution or plastic.
 - **Vanilla at heart.** Recipes and behaviour echo what vanilla already teaches: copper ages, honeycomb waxes, lightning strikes rods, dyes colour things.
 
 ### What Makes It Different
@@ -46,7 +45,7 @@ Hardwired is practical 1920s electrics for Minecraft, built from copper and reds
 - **Not an energy mod.** No voltages, generators to balance or power tiers. A lamp and a door never need a power plant.
 - **Not a logistics mod.** It moves signals, never items.
 - **Not a change to vanilla redstone.** Dust, repeaters and machines built from them behave as they always have.
-- **Not a modern decoration pack.** Devices are made of copper and redstone, not plastic and screens. Nothing looks newer than the 1990s, and only computing blocks look newer than the 1920s.
+- **Not a modern decoration pack.** Devices follow the period looks in LOOK-8 and LOOK-9, not today's plastic and flat screens.
 
 ## 2. Release Scope
 
@@ -105,7 +104,8 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | Face | One of the six sides of a block |
 | Wire | A line along a block face, in plain copper or one of the 16 dye colours. It is saved with the world and takes no block space |
 | Network | All wire of one colour joined together, plus everything connected to it |
-| Wire end | Any point where a wire touches a block it can connect to. A branching network has many |
+| Touching | Wire touches the block it lies on and the block sitting on that face. A wire end also touches the blocks around it on every side except back along itself |
+| Wire end | The last face of a line of wire. A branching network has many |
 | Device | Any block in this mod that connects to wire |
 | On | A network with at least one active input |
 | Input | Anything that turns a network on: a switch, a sensor, a Junction, a Controller or Circuit Block output, or vanilla redstone power |
@@ -177,8 +177,8 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 
 | ID | Requirement |
 |---|---|
-| VIEW-1 | Wire draws nothing until a player is holding wire. It then shows within range, through blocks, on every face |
-| VIEW-2 | Each network shows its colour, and whether it is on, with a shape as well as a colour |
+| VIEW-1 | Wire draws nothing until a player is holding wire. It then shows within range, through blocks, on every face, as a line as thin as tripwire |
+| VIEW-2 | Each network shows its colour, and whether it is on, with a shape as well as a colour: solid when on and dashed when off |
 | VIEW-3 | Looking at a wire shows its colour and lists what is driving it |
 | VIEW-4 | Inputs and outputs are marked, so a player can trace why something is on or off |
 | VIEW-5 | A broken connection is marked on the wire where it ends, and a tripped network is marked as tripped |
@@ -194,7 +194,7 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 
 | ID | Requirement |
 |---|---|
-| LINK-1 | Every device connects to a wire that touches it, on any side, except a Circuit Block (CIRC-2) |
+| LINK-1 | Every device connects to wire that touches it, except a Circuit Block (CIRC-2) |
 | LINK-2 | The mod adds a Wall Switch, a Push Button, a Motion Sensor and a Dusk Sensor, all of which turn a network on |
 | LINK-3 | A wire ending at a vanilla component powers it fully: pistons, doors, lamps, note blocks, dispensers, hoppers and the like |
 | LINK-4 | Any vanilla redstone power next to a wire end turns its network on. A wire end ignores power its own network supplied at that end, so wiring into dust does not hold a network on |
@@ -216,7 +216,7 @@ This is the first wow moment. A player wires lamps to a switch, then changes all
 | ID | Requirement |
 |---|---|
 | LIGHT-1 | A Copper Lamp comes in block, ceiling and wall forms, made from copper, redstone and a torch, so the first lamp needs no trip to the Nether |
-| LIGHT-2 | A Light Strip follows a wall or ceiling edge, and a Streetlight stands on a post |
+| LIGHT-2 | A Light Strip is a rail of small bulbs along a wall, floor or ceiling, and a Streetlight stands on a post |
 | LIGHT-3 | A lamp starts as warm white and can show that or any of the 16 dye colours. Using a dye on a lamp sets its colour |
 | LIGHT-4 | Brightness runs from the vanilla light level 0 to 15 |
 | LIGHT-5 | Exposed lamps age like copper over time, and honeycomb stops it. Age changes the look, not the light |
@@ -327,7 +327,7 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 | CFG-2 | Settings are saved per world as JSON in the world save directory |
 | CFG-3 | A missing file gives defaults. A broken file gives defaults, is logged and is kept |
 | CFG-4 | Out-of-range values are clamped on load |
-| CFG-5 | Options cover wire view range, network size, circuit size, cell capacity, charge use and lamp ageing |
+| CFG-5 | Every balance value is a setting with a balanced default, never a fixed number in code. That covers wire view range, network size, circuit size, cell capacity, charge use, lamp ageing, Motion Sensor range and Push Button hold time. Accessibility and safety limits such as ACC-3 and LINK-8 are requirements, not settings |
 | CFG-6 | A settings screen through Mod Menu shows the same server options and shares their validation with the commands |
 | CFG-7 | An option that only changes what one player sees, such as how wire is drawn, is a client setting saved on that player's device |
 
@@ -474,7 +474,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | Controller timeline and place | kept | kept | Controller does not move | timeline drops as item data | kept to the last save |
 | Circuit design | kept | kept | block does not move | drops as item data | kept to the last save |
 | Charge | kept | kept | cell does not move | drops as item data | kept to the last save |
-| Network state, including a trip | kept, saved outside the chunk | kept | not applicable | not applicable | kept to the last save |
+| Network state, including a trip | kept | kept | not applicable | not applicable | kept to the last save |
 | Junction rule and a switch's scene | kept | kept | block does not move | drops as item data | kept to the last save |
 | Settings | not applicable | kept | not applicable | not applicable | written atomically |
 
@@ -489,8 +489,8 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | LOOK-5 | Blocks and items look like vanilla ones wherever they are held or shown: GUI, first and third person, item frames and the ground |
 | LOOK-6 | Sounds use vanilla first, and real recordings next |
 | LOOK-7 | A lit device shows a lit texture, as a redstone lamp does |
-| LOOK-8 | Every analog block, item, screen and icon is styled on real electrics of the 1920s and redrawn in vanilla's style, with the showmanship and elegance of old world meeting new. That means filament bulbs in glass, marquee bulb rails, cloth-covered wire on wooden spools, porcelain knobs, tumbler switches, doorbell presses, slate switchboards with brass dials and knife switches, and Art Deco stepped and fan shapes. Accents use vanilla's gold, blackstone and calcite tones beside copper |
-| LOOK-9 | Anything that computes, such as Junctions, Circuit Boards and Circuit Blocks, is styled on 1980s and 1990s computing and redrawn in vanilla's style: beige cases, green circuit boards, chips and green phosphor glyphs. Nothing in the mod looks like modern plastic, flat screens or LEDs |
+| LOOK-8 | Every analog block, item, screen and icon is styled on real electrics of the 1920s: filament bulbs in smoked glass, marquee bulb rails, cloth-covered wire on wooden spools, porcelain knobs, tumbler switches, doorbell presses, slate switchboards with brass dials and knife switches, and Art Deco stepped and fan shapes. Accents use vanilla's gold, blackstone and calcite tones |
+| LOOK-9 | Anything that computes, such as Junctions, Circuit Boards and Circuit Blocks, is styled on 1980s and 1990s computing: beige cases, green circuit boards, chips and green phosphor glyphs |
 
 ### Accessibility
 
