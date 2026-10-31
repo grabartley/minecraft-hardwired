@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
@@ -96,6 +97,15 @@ public final class StreetlightBlock extends AbstractLampBlock {
   public void onPlaced(
       World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
     update(world, pos, state);
+  }
+
+  @Override
+  public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    if (!world.isClient && player.isCreative() && state.get(PART) != 0) {
+      world.setBlockState(
+          lampPos(pos, state), Blocks.AIR.getDefaultState(), NOTIFY_ALL | SKIP_DROPS);
+    }
+    return super.onBreak(world, pos, state, player);
   }
 
   @Override

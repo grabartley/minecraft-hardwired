@@ -292,6 +292,55 @@ public class WireGameTest implements FabricGameTest {
   }
 
   @GameTest(templateName = BENCH)
+  public void cuttingTheInputOffARunTurnsItOff(TestContext context) {
+    context.setBlockState(standing(1, 1), floorSwitch(true));
+    context.setBlockState(standing(5, 1), ModBlocks.COPPER_LAMP);
+    layRun(context, 1, 5, 1, Hue.PLAIN);
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          context.expectBlockProperty(standing(5, 1), AbstractLampBlock.LEVEL, 15);
+          engine(context).cut(floorCell(context, 2, 1, Hue.PLAIN));
+          context.waitAndRun(
+              SETTLE_TICKS + 8,
+              () -> {
+                context.expectBlockProperty(standing(5, 1), AbstractLampBlock.LEVEL, 0);
+                context.assertTrue(
+                    engine(context)
+                        .grid()
+                        .networkOf(floorCell(context, 4, 1, Hue.PLAIN))
+                        .rememberedInputs()
+                        .isEmpty(),
+                    "the cut part must forget the switch");
+                context.complete();
+              });
+        });
+  }
+
+  @GameTest(templateName = BENCH)
+  public void readingPowerAtAChunkEdgeLoadsNoChunk(TestContext context) {
+    BlockPos start = context.getAbsolutePos(standing(4, 4));
+    int x = start.getX();
+    while (context.getWorld().getChunkManager().isChunkLoaded(x >> 4, start.getZ() >> 4)) {
+      x += 16;
+    }
+    int unloadedChunk = x >> 4;
+    BlockPos edge = new BlockPos((unloadedChunk << 4) - 1, start.getY(), start.getZ());
+    context.setBlockState(context.getRelativePos(edge), Blocks.STONE);
+    WireCell cell = new WireCell(new WireFace(edge, Direction.UP), Hue.PLAIN);
+    engine(context).lay(cell);
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          context.assertFalse(
+              context.getWorld().getChunkManager().isChunkLoaded(unloadedChunk, start.getZ() >> 4),
+              "reading power must not load the next chunk");
+          engine(context).cut(cell);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH)
   public void layingAndRemovingConservesItems(TestContext context) {
     ServerPlayerEntity player = context.createMockCreativeServerPlayerInWorld();
     player.getAbilities().creativeMode = false;

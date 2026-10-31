@@ -220,7 +220,7 @@ This is the first wow moment. A player wires lamps to a switch, then changes all
 | LIGHT-3 | A lamp starts as warm white and can show that or any of the 16 dye colours. Using a dye on a lamp sets its colour |
 | LIGHT-4 | Brightness runs from the vanilla light level 0 to 15 |
 | LIGHT-5 | Exposed lamps age like copper over time, and honeycomb stops it. Age changes the look, not the light |
-| LIGHT-6 | A lamp on a network with no panel turns on at full brightness in the colour set on it |
+| LIGHT-6 | A lamp on a network with no panel turns on at full brightness in the last colour it was given, by a dye or a panel |
 | LIGHT-7 | A Streetlight with a Dusk Sensor on its network turns on at dusk and off at dawn |
 
 **Not supported:** coloured light cast on other blocks (Section 2).

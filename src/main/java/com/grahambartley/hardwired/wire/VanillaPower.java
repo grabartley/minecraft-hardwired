@@ -15,6 +15,7 @@ import net.minecraft.util.math.Direction;
 public final class VanillaPower {
 
   private static final int DUST_REACH = 15;
+  private static final int READ_REACH = 2;
   private static final Direction[] DIRECTIONS = Direction.values();
 
   private static boolean ignoringWire;
@@ -79,7 +80,7 @@ public final class VanillaPower {
   private static boolean receives(ServerWorld world, BlockPos pos) {
     for (Direction direction : DIRECTIONS) {
       BlockPos neighbour = pos.offset(direction);
-      if (!isLoaded(world, neighbour)) {
+      if (!isReadable(world, neighbour)) {
         continue;
       }
       BlockState state = world.getBlockState(neighbour);
@@ -96,8 +97,9 @@ public final class VanillaPower {
     return false;
   }
 
-  private static boolean isLoaded(ServerWorld world, BlockPos pos) {
-    return WireEngine.of(world).isLoaded(pos);
+  public static boolean isReadable(ServerWorld world, BlockPos pos) {
+    return world.isRegionLoaded(
+        pos.add(-READ_REACH, 0, -READ_REACH), pos.add(READ_REACH, 0, READ_REACH));
   }
 
   private static boolean emitsWithoutDust(ServerWorld world, BlockPos pos, Direction direction) {
@@ -124,7 +126,7 @@ public final class VanillaPower {
         for (Direction direction : Direction.Type.HORIZONTAL) {
           for (int rise = -1; rise <= 1; rise++) {
             BlockPos next = dust.offset(direction).up(rise);
-            if (isLoaded(world, next)
+            if (isReadable(world, next)
                 && world.getBlockState(next).isOf(Blocks.REDSTONE_WIRE)
                 && visited.add(next)) {
               frontier.add(next);
@@ -139,7 +141,7 @@ public final class VanillaPower {
   private static boolean hasOtherSource(ServerWorld world, BlockPos dust) {
     for (Direction direction : DIRECTIONS) {
       BlockPos neighbour = dust.offset(direction);
-      if (isLoaded(world, neighbour)
+      if (isReadable(world, neighbour)
           && !world.getBlockState(neighbour).isOf(Blocks.REDSTONE_WIRE)
           && emitsWithoutDust(world, neighbour, direction)) {
         return true;

@@ -202,9 +202,9 @@ public final class WireEngine {
   }
 
   private boolean readInputs(WireNetwork network) {
-    boolean changed = false;
+    boolean changed = network.rememberedInputs().retainAll(network.touchedPositions.keySet());
     for (TouchPoint touch : new ArrayList<>(network.touches())) {
-      if (isLoaded(touch.pos())) {
+      if (VanillaPower.isReadable(world, touch.pos())) {
         long key = touch.pos().asLong();
         changed |=
             isInput(touch, network.color())

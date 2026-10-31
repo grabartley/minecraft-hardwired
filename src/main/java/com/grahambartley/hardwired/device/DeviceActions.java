@@ -41,7 +41,7 @@ public final class DeviceActions {
       return;
     }
     if (action.slot() >= 0 && action.slot() < Scene.MAX_SCENES) {
-      panel.saveScene(action.slot(), action.sceneName(), lookAt(player, action.pos()));
+      panel.saveScene(action.slot(), action.sceneName(), action.look());
       ModCriteria.DEVICE.trigger(player, ModCriteria.SCENE_SAVED);
       return;
     }
@@ -73,6 +73,8 @@ public final class DeviceActions {
   }
 
   private static boolean canUse(ServerPlayerEntity player, BlockPos pos) {
-    return !player.isSpectator() && player.canInteractWithBlockAt(pos, REACH_MARGIN);
+    return !player.isSpectator()
+        && player.canInteractWithBlockAt(pos, REACH_MARGIN)
+        && player.getServerWorld().canPlayerModifyAt(player, pos);
   }
 }

@@ -99,7 +99,8 @@ public final class WireView {
       var arms =
           WireTopology.arms(cell.face(), face -> grid.contains(new WireCell(face, cell.color())));
       for (TouchPoint touch : WireTopology.touches(cell.face(), arms)) {
-        if (ChunkPos.toLong(touch.pos()) != chunk || !engine.isLoaded(touch.pos())) {
+        if (!VanillaPower.isReadable(world, touch.pos())) {
+          endsConnected = true;
           continue;
         }
         boolean output = WireRules.isOutput(world.getBlockState(touch.pos()));
