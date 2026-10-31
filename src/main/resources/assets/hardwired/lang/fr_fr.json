@@ -221,7 +221,7 @@
   "screen.hardwired.circuit.testing": "Test en direct. Cliquez sur une entrée pour la basculer.",
   "screen.hardwired.circuit.cost": "Composants %s/%s, coût %s redstone",
   "screen.hardwired.circuit.delay": "Délai %s s",
-  "screen.hardwired.circuit.count": "Compte jusqu'à %s",
+  "screen.hardwired.circuit.count": "Compte à %s",
   "screen.hardwired.circuit.side": "%s : %s",
   "screen.hardwired.circuit.side.north": "Côté opposé",
   "screen.hardwired.circuit.side.east": "Côté droit",

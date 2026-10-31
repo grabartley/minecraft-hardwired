@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public record CircuitLayout(int left, int top) {
 
-  public static final int WIDTH = 404;
+  public static final int WIDTH = 416;
   public static final int HEIGHT = 232;
   public static final int CELL = 14;
   public static final int PAD_LENGTH = 26;
@@ -20,7 +20,7 @@ public record CircuitLayout(int left, int top) {
   private static final int GRID_INSET_X = 16;
   private static final int GRID_INSET_Y = 26;
   private static final int COLUMN_GAP = 14;
-  private static final int COLUMN_WIDTH = 86;
+  private static final int COLUMN_WIDTH = 98;
   private static final int UPPER_PIN = 4;
   private static final int LOWER_PIN = 10;
   private static final int MIDDLE_PIN = 7;

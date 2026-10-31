@@ -106,7 +106,7 @@ public final class CircuitPainter {
 
   public void pad(Side side, PortMode mode, boolean on) {
     Rect pad = layout.pad(side);
-    int edge = mode == PortMode.UNUSED ? PhosphorScreen.GRID_DOT : ink(on);
+    int edge = ink(on);
     context.fill(pad.x(), pad.y(), pad.x() + pad.width(), pad.y() + pad.height(), edge);
     context.fill(
         pad.x() + 1,

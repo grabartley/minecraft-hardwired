@@ -221,7 +221,7 @@
   "screen.hardwired.circuit.testing": "Prueba en vivo. Haz clic en una entrada para cambiarla.",
   "screen.hardwired.circuit.cost": "Piezas %s/%s, coste %s de redstone",
   "screen.hardwired.circuit.delay": "Retardo %s s",
-  "screen.hardwired.circuit.count": "Cuenta hasta %s",
+  "screen.hardwired.circuit.count": "Cuenta a %s",
   "screen.hardwired.circuit.side": "%s: %s",
   "screen.hardwired.circuit.side.north": "Lado lejano",
   "screen.hardwired.circuit.side.east": "Lado derecho",

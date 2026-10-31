@@ -8,7 +8,7 @@ import net.minecraft.text.Text;
 
 public final class PhosphorButton extends ButtonWidget {
 
-  private static final int TEXT_TOP = 4;
+  private static final int FONT_HEIGHT = 8;
   private static final int MARGIN = 2;
 
   public PhosphorButton(int x, int y, int width, int height, Text label, Runnable action) {
@@ -32,7 +32,7 @@ public final class PhosphorButton extends ButtonWidget {
         font,
         shown,
         getX() + (width - font.getWidth(shown)) / 2,
-        getY() + TEXT_TOP,
+        getY() + (height - FONT_HEIGHT + 1) / 2,
         active ? PhosphorScreen.BRIGHT : PhosphorScreen.DIM,
         false);
   }

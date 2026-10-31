@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -91,15 +92,10 @@ class ValidatorTest {
   void thePartLimitComesFromTheCaller(int count, int limit, boolean refused) {
     List<Part> parts = new ArrayList<>();
     for (int index = 0; index < count; index++) {
-      parts.add(Part.of(PartType.AND, index % Design.GRID_WIDTH, index / Design.GRID_WIDTH % 13));
+      parts.add(Part.of(PartType.AND, index % Design.GRID_WIDTH, index / Design.GRID_WIDTH));
     }
-    Design design = new Design(SIDES, parts.stream().distinct().toList(), List.of());
-    assertEquals(
-        refused,
-        Validator.check(new Design(SIDES, parts, List.of()), limit)
-            .filter(Refusal.TOO_MANY_PARTS::equals)
-            .isPresent(),
-        design.parts().size() + " distinct");
+    Optional<Refusal> expected = refused ? Optional.of(Refusal.TOO_MANY_PARTS) : Optional.empty();
+    assertEquals(expected, Validator.check(new Design(SIDES, parts, List.of()), limit));
   }
 
   @ParameterizedTest(name = "a working {0}")
@@ -124,13 +120,13 @@ class ValidatorTest {
     assertEquals(Optional.empty(), Validator.check(parts(Part.of(PartType.OR, x, y)), LIMIT));
   }
 
-  @org.junit.jupiter.api.Test
+  @Test
   void oneOutputMayFeedManyInputs() {
     Design design = lines(new Line(NORTH, part(0), 0), new Line(NORTH, part(0), 1));
     assertEquals(Optional.empty(), Validator.check(design, LIMIT));
   }
 
-  @org.junit.jupiter.api.Test
+  @Test
   void aFloodOfLinesIsRefusedBeforeAnyWalk() {
     List<Line> flood = new ArrayList<>();
     for (int index = 0; index < 4096; index++) {
@@ -140,7 +136,7 @@ class ValidatorTest {
     assertEquals(Optional.of(Refusal.INPUT_TAKEN), Validator.check(design, LIMIT));
   }
 
-  @org.junit.jupiter.api.Test
+  @Test
   void aDesignWithoutFourSidesIsRefused() {
     Design design = new Design(List.of(PortMode.INPUT));
     assertEquals(Optional.of(Refusal.BAD_TEXT), Validator.check(design, LIMIT));

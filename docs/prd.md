@@ -269,14 +269,15 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 
 | ID | Requirement |
 |---|---|
-| CIRC-1 | A Circuit Board block opens a grid screen where a player places gates, latches, timers and counters and joins them with drawn lines |
-| CIRC-2 | A finished design is saved onto a Circuit Block. Each of its four sides is one port, set on the board as input, output or unused. Wire connects only to sides that are in use, and its top and bottom are unused |
+| CIRC-1 | A Circuit Board block opens a grid screen, 20 squares by 13, where a player places AND, OR, NOT, XOR, NAND and NOR gates, SR and D latches, timers and counters, and joins them with drawn lines. One output can feed many inputs, and each input takes one line. The board keeps one design |
+| CIRC-2 | A finished design is saved onto a Circuit Block. Each of its four sides is one port, set on the board as input, output or unused. Wire connects only to sides that are in use, and its top and bottom are unused. Every wire touching a side in use joins that port. The far side of the design faces the way the player looks when placing the block, and the other sides turn with it |
 | CIRC-3 | A Circuit Block takes one block space and works anywhere |
-| CIRC-4 | A design can be tested live on the board before it is made |
-| CIRC-5 | A design can be copied onto a blank block for the cost of the materials |
-| CIRC-6 | A design can be exported as text and pasted on another world |
-| CIRC-7 | The cost of a block rises with the number of parts in its design |
-| CIRC-8 | A Circuit Block runs on the server at a fixed rate, and a design that fails a check for loops without delay is refused at the board. Loops through wire outside the block follow LINK-7 and LINK-8 |
+| CIRC-4 | A design can be tested live on the board before it is made. The test runs on the player's screen at the same rate and with the same rules as a real block, and the player clicks input sides to switch them. It changes nothing in the world |
+| CIRC-5 | A design can be copied onto a blank block for the cost of the materials: Load reads the design from a held Circuit Block on to the board, and Make then makes another. Make always uses the board's last saved design |
+| CIRC-6 | A design can be exported as text and pasted on another world. Pasted text can be up to 32 KiB, and a good paste becomes the board's saved design |
+| CIRC-7 | The cost of a block rises with the number of parts in its design: one Blank Circuit Block, plus one redstone for every `partsPerRedstone` parts, rounded up. No custom crafting recipe is involved, so every recipe stays plain crafting |
+| CIRC-8 | A Circuit Block runs on the server at a fixed rate of one step every 2 game ticks, and only while something can still change. A design that fails a check for loops without delay is refused at the board. Latches, timers and counters count as delay, since their outputs show what they held at the end of the last step, while gates answer within a step. Loops through wire outside the block follow LINK-7 and LINK-8 |
+| CIRC-9 | A timer turns on once its input has been on for its delay, up to 1200 steps, and turns off when its input does. A counter counts rising inputs up to its setting, from 2 to 256, then starts again. Its output is on for the last count, so a setting of 2 toggles |
 
 **Not supported:** scripts or programming languages; circuits that read inventories.
 
@@ -450,7 +451,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | SAFE-2 | Charge is never created except by POWER-1, POWER-4 and POWER-5 |
 | SAFE-3 | A bad config file never stops a server starting (CFG-3, CFG-4) |
 | SAFE-4 | Every payload is size-limited: drag paths, scene names, timelines, designs and pasted text |
-| SAFE-5 | A pasted design is checked in full before it is accepted |
+| SAFE-5 | A pasted design is checked in full before it is accepted, and a player's board actions are rate limited so a client cannot force endless rechecks |
 
 ### Performance
 
@@ -476,7 +477,8 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | A Main Panel's last known devices | kept | kept | panel does not move | lost | kept to the last save |
 | Devices worked towards Smart Home | kept | kept | not applicable | not applicable | kept to the last save |
 | Controller timeline and place | kept | kept | Controller does not move | timeline drops as item data | kept to the last save |
-| Circuit design | kept | kept | block does not move | drops as item data | kept to the last save |
+| Circuit design, on a board or a block | kept | kept | block does not move | drops as item data | kept to the last save |
+| A Circuit Block's running state | kept | kept | block does not move | lost | kept to the last save |
 | Charge | kept | kept | cell does not move | drops as item data | kept to the last save |
 | Network state, including a trip | kept | kept | not applicable | not applicable | kept to the last save |
 | Junction rule and a switch's scene | kept | kept | block does not move | drops as item data | kept to the last save |
