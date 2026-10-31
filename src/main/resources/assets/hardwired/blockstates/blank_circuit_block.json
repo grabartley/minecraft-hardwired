@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "hardwired:block/blank_circuit_block"
+    }
+  }
+}

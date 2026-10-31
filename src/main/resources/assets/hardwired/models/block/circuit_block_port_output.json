@@ -1,0 +1,114 @@
+{
+  "textures": {
+    "parts": "hardwired:block/circuit_parts",
+    "particle": "hardwired:block/circuit_case_side"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        5,
+        2
+      ],
+      "to": [
+        11,
+        11,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6,
+            6,
+            12
+          ],
+          "texture": "#parts"
+        }
+      }
+    },
+    {
+      "from": [
+        6,
+        6,
+        0
+      ],
+      "to": [
+        10,
+        10,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            6,
+            10,
+            10
+          ],
+          "texture": "#parts",
+          "cullface": "north"
+        },
+        "east": {
+          "uv": [
+            12,
+            6,
+            13,
+            7
+          ],
+          "texture": "#parts"
+        },
+        "west": {
+          "uv": [
+            12,
+            6,
+            13,
+            7
+          ],
+          "texture": "#parts"
+        },
+        "up": {
+          "uv": [
+            12,
+            6,
+            13,
+            7
+          ],
+          "texture": "#parts"
+        },
+        "down": {
+          "uv": [
+            12,
+            6,
+            13,
+            7
+          ],
+          "texture": "#parts"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        15.02,
+        1
+      ],
+      "to": [
+        11,
+        15.02,
+        4
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            12,
+            6,
+            15
+          ],
+          "texture": "#parts"
+        }
+      }
+    }
+  ]
+}
