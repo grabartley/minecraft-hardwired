@@ -154,5 +154,11 @@
   "screen.hardwired.settings.surfaceopacity": "Провод на поверхностях",
   "screen.hardwired.settings.surfaceopacity.tooltip": "Насколько заметен провод на видимых гранях.",
   "screen.hardwired.settings.showmarkers": "Метки входов и выходов",
-  "screen.hardwired.settings.showmarkers.tooltip": "Показывает метки на блоках, которые питают или читают провод."
+  "screen.hardwired.settings.showmarkers.tooltip": "Показывает метки на блоках, которые питают или читают провод.",
+  "message.hardwired.sealed": "Сеть запечатана",
+  "message.hardwired.unsealed": "Печать снята",
+  "message.hardwired.already_sealed": "Эта сеть уже запечатана",
+  "command.hardwired.override.on": "Доступ к запечатанным проводам включён",
+  "command.hardwired.override.off": "Доступ к запечатанным проводам выключен",
+  "command.hardwired.help.override": "- /hardwired override: видеть и менять запечатанные провода"
 }

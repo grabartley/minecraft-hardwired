@@ -154,5 +154,11 @@
   "screen.hardwired.settings.surfaceopacity": "表面上的电线",
   "screen.hardwired.settings.surfaceopacity.tooltip": "电线在可见表面上显示的强度。",
   "screen.hardwired.settings.showmarkers": "输入和输出标记",
-  "screen.hardwired.settings.showmarkers.tooltip": "显示驱动或读取电线的方块上的标记。"
+  "screen.hardwired.settings.showmarkers.tooltip": "显示驱动或读取电线的方块上的标记。",
+  "message.hardwired.sealed": "网络已封蜡",
+  "message.hardwired.unsealed": "封蜡已移除",
+  "message.hardwired.already_sealed": "此网络已封蜡",
+  "command.hardwired.override.on": "封蜡铜线访问已开启",
+  "command.hardwired.override.off": "封蜡铜线访问已关闭",
+  "command.hardwired.help.override": "- /hardwired override：查看并更改封蜡铜线"
 }

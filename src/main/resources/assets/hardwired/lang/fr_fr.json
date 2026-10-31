@@ -154,5 +154,11 @@
   "screen.hardwired.settings.surfaceopacity": "Fil sur les surfaces",
   "screen.hardwired.settings.surfaceopacity.tooltip": "Visibilité du fil sur les faces que vous voyez.",
   "screen.hardwired.settings.showmarkers": "Marques d'entrée et de sortie",
-  "screen.hardwired.settings.showmarkers.tooltip": "Affiche les marques sur les blocs qui activent ou lisent un fil."
+  "screen.hardwired.settings.showmarkers.tooltip": "Affiche les marques sur les blocs qui activent ou lisent un fil.",
+  "message.hardwired.sealed": "Réseau scellé",
+  "message.hardwired.unsealed": "Sceau retiré",
+  "message.hardwired.already_sealed": "Ce réseau est déjà scellé",
+  "command.hardwired.override.on": "L'accès aux fils scellés est activé",
+  "command.hardwired.override.off": "L'accès aux fils scellés est désactivé",
+  "command.hardwired.help.override": "- /hardwired override : voir et modifier les fils scellés"
 }

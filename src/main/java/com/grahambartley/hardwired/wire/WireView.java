@@ -7,7 +7,9 @@ import com.grahambartley.hardwired.network.WireChunkPayload.CellView;
 import com.grahambartley.hardwired.network.WireChunkPayload.MarkView;
 import com.grahambartley.hardwired.network.WireViewClearPayload;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,8 +26,20 @@ public final class WireView {
 
   private static final int UPDATE_INTERVAL = 2;
   private static final Map<UUID, Viewer> VIEWERS = new HashMap<>();
+  private static final Comparator<CellView> CELL_ORDER =
+      Comparator.comparingLong(CellView::pos)
+          .thenComparingInt(CellView::side)
+          .thenComparingInt(CellView::color)
+          .thenComparingInt(CellView::flags)
+          .thenComparingInt(CellView::arms);
+  private static final Comparator<MarkView> MARK_ORDER =
+      Comparator.comparingLong(MarkView::pos).thenComparing(MarkView::input);
 
-  private record Viewer(ServerWorld world, Long2IntOpenHashMap sent) {}
+  private record Viewer(
+      ServerWorld world,
+      WireViewer access,
+      Long2IntOpenHashMap sent,
+      Long2ObjectOpenHashMap<WireChunkPayload> shown) {}
 
   private WireView() {}
 
@@ -51,11 +65,19 @@ public final class WireView {
       }
       return;
     }
-    if (viewer == null || viewer.world != player.getServerWorld()) {
+    WireViewer access = WireViewer.of(player);
+    if (viewer == null
+        || viewer.world != player.getServerWorld()
+        || !viewer.access.equals(access)) {
       if (viewer != null) {
         ServerPlayNetworking.send(player, WireViewClearPayload.INSTANCE);
       }
-      viewer = new Viewer(player.getServerWorld(), new Long2IntOpenHashMap());
+      viewer =
+          new Viewer(
+              player.getServerWorld(),
+              access,
+              new Long2IntOpenHashMap(),
+              new Long2ObjectOpenHashMap<>());
       VIEWERS.put(player.getUuid(), viewer);
     }
     sendChanges(player, viewer);
@@ -71,11 +93,26 @@ public final class WireView {
         int version = engine.grid().chunkVersion(chunk);
         if (viewer.sent.get(chunk) != version) {
           viewer.sent.put(chunk, version);
-          ServerPlayNetworking.send(player, describe(viewer.world, engine, chunk));
+          sendIfDifferent(player, viewer, describe(viewer.world, engine, chunk, viewer.access));
         }
       }
     }
     forgetChunksOutOfRange(player, viewer, center, radius);
+  }
+
+  private static void sendIfDifferent(
+      ServerPlayerEntity player, Viewer viewer, WireChunkPayload payload) {
+    WireChunkPayload last = viewer.shown.get(payload.chunk());
+    boolean empty = payload.cells().isEmpty();
+    if (empty ? last == null : payload.equals(last)) {
+      return;
+    }
+    if (empty) {
+      viewer.shown.remove(payload.chunk());
+    } else {
+      viewer.shown.put(payload.chunk(), payload);
+    }
+    ServerPlayNetworking.send(player, payload);
   }
 
   private static void forgetChunksOutOfRange(
@@ -84,20 +121,25 @@ public final class WireView {
       ChunkPos pos = new ChunkPos(chunk);
       if (Math.abs(pos.x - center.x) > radius || Math.abs(pos.z - center.z) > radius) {
         viewer.sent.remove(chunk);
-        ServerPlayNetworking.send(player, new WireChunkPayload(chunk, List.of(), List.of()));
+        if (viewer.shown.remove(chunk) != null) {
+          ServerPlayNetworking.send(player, new WireChunkPayload(chunk, List.of(), List.of()));
+        }
       }
     }
   }
 
-  static WireChunkPayload describe(ServerWorld world, WireEngine engine, long chunk) {
+  static WireChunkPayload describe(
+      ServerWorld world, WireEngine engine, long chunk, WireViewer access) {
     List<CellView> cells = new ArrayList<>();
     Set<MarkView> marks = new HashSet<>();
     WireGrid grid = engine.grid();
     for (WireCell cell : grid.cellsInChunk(chunk)) {
+      if (!access.canSee(cell)) {
+        continue;
+      }
       WireNetwork network = grid.networkOf(cell);
       boolean endsConnected = false;
-      var arms =
-          WireTopology.arms(cell.face(), face -> grid.contains(new WireCell(face, cell.color())));
+      var arms = WireTopology.arms(cell.face(), face -> grid.contains(cell.onFace(face)));
       for (TouchPoint touch : WireTopology.touches(cell.face(), arms)) {
         if (!VanillaPower.isReadable(world, touch.pos())) {
           endsConnected = true;
@@ -113,13 +155,18 @@ public final class WireView {
       int flags = network.isOn() ? WireChunkPayload.ON : 0;
       flags |= network.isTripped() ? WireChunkPayload.TRIPPED : 0;
       flags |= arms.size() <= 1 && !endsConnected ? WireChunkPayload.LOOSE_END : 0;
+      flags |= cell.isSealed() ? WireChunkPayload.SEALED : 0;
       cells.add(
           new CellView(
               cell.face().pos().asLong(),
               cell.face().side().getId(),
               cell.color().ordinal(),
-              flags));
+              flags,
+              CellView.armMask(arms)));
     }
-    return new WireChunkPayload(chunk, cells, List.copyOf(marks));
+    cells.sort(CELL_ORDER);
+    List<MarkView> sortedMarks = new ArrayList<>(marks);
+    sortedMarks.sort(MARK_ORDER);
+    return new WireChunkPayload(chunk, cells, sortedMarks);
   }
 }

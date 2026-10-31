@@ -154,5 +154,11 @@
   "screen.hardwired.settings.surfaceopacity": "Cable en superficies",
   "screen.hardwired.settings.surfaceopacity.tooltip": "Con qué fuerza se ve el cable en las caras visibles.",
   "screen.hardwired.settings.showmarkers": "Marcas de entrada y salida",
-  "screen.hardwired.settings.showmarkers.tooltip": "Muestra las marcas en los bloques que activan o leen un cable."
+  "screen.hardwired.settings.showmarkers.tooltip": "Muestra las marcas en los bloques que activan o leen un cable.",
+  "message.hardwired.sealed": "Red sellada",
+  "message.hardwired.unsealed": "Sello retirado",
+  "message.hardwired.already_sealed": "Esta red ya está sellada",
+  "command.hardwired.override.on": "El acceso a cables sellados está activado",
+  "command.hardwired.override.off": "El acceso a cables sellados está desactivado",
+  "command.hardwired.help.override": "- /hardwired override: ver y cambiar cables sellados"
 }

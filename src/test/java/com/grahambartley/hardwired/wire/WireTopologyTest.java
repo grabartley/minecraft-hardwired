@@ -78,4 +78,13 @@ class WireTopologyTest {
         WireTopology.touches(new WireFace(ORIGIN, Direction.UP), EnumSet.noneOf(Direction.class))
             .size());
   }
+
+  @ParameterizedTest(name = "{0}")
+  @EnumSource(Direction.class)
+  void targetsAreTheHitFaceThenTheFaceBehindIt(Direction side) {
+    BlockPos hit = new BlockPos(3, 70, -2);
+    assertEquals(
+        List.of(new WireFace(hit, side), new WireFace(hit.offset(side.getOpposite()), side)),
+        WireTopology.targets(hit, side));
+  }
 }

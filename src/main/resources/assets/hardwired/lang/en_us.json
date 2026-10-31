@@ -154,5 +154,11 @@
   "screen.hardwired.settings.surfaceopacity": "Wire On Surfaces",
   "screen.hardwired.settings.surfaceopacity.tooltip": "How strongly wire shows on the faces you can see.",
   "screen.hardwired.settings.showmarkers": "Input and Output Marks",
-  "screen.hardwired.settings.showmarkers.tooltip": "Shows the marks on blocks that drive or read a wire."
+  "screen.hardwired.settings.showmarkers.tooltip": "Shows the marks on blocks that drive or read a wire.",
+  "message.hardwired.sealed": "Network sealed",
+  "message.hardwired.unsealed": "Seal removed",
+  "message.hardwired.already_sealed": "This network is already sealed",
+  "command.hardwired.override.on": "Sealed wire override is on",
+  "command.hardwired.override.off": "Sealed wire override is off",
+  "command.hardwired.help.override": "- /hardwired override: see and change sealed wire"
 }

@@ -19,10 +19,11 @@ public final class WireInspector {
     }
     WireEngine engine = WireEngine.of(player.getServerWorld());
     Hue color = Hue.byIndex(request.color());
-    WireNetwork network = engine.grid().networkOf(new WireCell(request.face(), color));
-    if (network == null) {
+    WireCell cell = WireViewer.of(player).find(engine.grid(), request.face(), color).orElse(null);
+    if (cell == null) {
       return;
     }
+    WireNetwork network = engine.grid().networkOf(cell);
     List<String> drivers =
         Arrays.stream(network.rememberedInputs().toLongArray())
             .sorted()

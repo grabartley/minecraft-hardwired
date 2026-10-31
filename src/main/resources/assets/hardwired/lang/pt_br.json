@@ -154,5 +154,11 @@
   "screen.hardwired.settings.surfaceopacity": "Fio nas superfícies",
   "screen.hardwired.settings.surfaceopacity.tooltip": "Quão forte o fio aparece nas faces visíveis.",
   "screen.hardwired.settings.showmarkers": "Marcas de entrada e saída",
-  "screen.hardwired.settings.showmarkers.tooltip": "Mostra as marcas nos blocos que acionam ou leem um fio."
+  "screen.hardwired.settings.showmarkers.tooltip": "Mostra as marcas nos blocos que acionam ou leem um fio.",
+  "message.hardwired.sealed": "Rede selada",
+  "message.hardwired.unsealed": "Selo removido",
+  "message.hardwired.already_sealed": "Esta rede já está selada",
+  "command.hardwired.override.on": "O acesso a fios selados está ligado",
+  "command.hardwired.override.off": "O acesso a fios selados está desligado",
+  "command.hardwired.help.override": "- /hardwired override: ver e alterar fios selados"
 }

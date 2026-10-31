@@ -20,9 +20,7 @@ public final class PistonWireMover {
     }
     carried.forEach(engine::cut);
     for (WireCell cell : carried) {
-      engine.lay(
-          new WireCell(
-              new WireFace(cell.face().pos().offset(motion), cell.face().side()), cell.color()));
+      engine.lay(cell.onFace(new WireFace(cell.face().pos().offset(motion), cell.face().side())));
     }
   }
 }
