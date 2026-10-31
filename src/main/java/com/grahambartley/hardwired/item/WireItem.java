@@ -23,6 +23,12 @@ public final class WireItem extends Item {
         || player.getOffHandStack().getItem() instanceof WireItem;
   }
 
+  public static boolean canLay(PlayerEntity player) {
+    return player.getMainHandStack().getItem() instanceof WireItem
+        || (player.getMainHandStack().isEmpty()
+            && player.getOffHandStack().getItem() instanceof WireItem);
+  }
+
   public static Hand wireHand(PlayerEntity player) {
     return player.getMainHandStack().getItem() instanceof WireItem ? Hand.MAIN_HAND : Hand.OFF_HAND;
   }

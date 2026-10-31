@@ -120,6 +120,18 @@ class WireGridTest {
   }
 
   @Test
+  void layingAndCuttingReportEveryChangedTouch() {
+    WireGrid grid = new WireGrid();
+    grid.add(floor(0, Hue.PLAIN));
+    grid.drainTouchChanges();
+    grid.remove(floor(0, Hue.PLAIN));
+    assertTrue(
+        java.util.Arrays.stream(grid.drainTouchChanges())
+            .anyMatch(pos -> pos == new BlockPos(0, 65, 0).asLong()));
+    assertEquals(0, grid.drainTouchChanges().length);
+  }
+
+  @Test
   void poweredFollowsTheNetworkAtATouchedPosition() {
     WireGrid grid = line(2);
     long occupant = new BlockPos(0, 65, 0).asLong();

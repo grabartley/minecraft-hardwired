@@ -71,6 +71,15 @@ public enum Hue implements StringIdentifiable {
     return values()[Math.floorMod(index, values().length)];
   }
 
+  public static Hue byName(String name) {
+    for (Hue hue : values()) {
+      if (hue.id.equals(name)) {
+        return hue;
+      }
+    }
+    return PLAIN;
+  }
+
   public static Hue ofDye(DyeColor dye) {
     for (Hue hue : values()) {
       if (hue.dye == dye) {

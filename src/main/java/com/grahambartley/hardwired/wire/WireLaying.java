@@ -20,8 +20,8 @@ public final class WireLaying {
   private WireLaying() {}
 
   public static void lay(ServerPlayerEntity player, List<WireFace> faces) {
-    ItemStack stack = player.getMainHandStack();
-    if (!(stack.getItem() instanceof WireItem wire)) {
+    ItemStack stack = player.getStackInHand(WireItem.wireHand(player));
+    if (!WireItem.canLay(player) || !(stack.getItem() instanceof WireItem wire)) {
       return;
     }
     ServerWorld world = player.getServerWorld();
@@ -33,7 +33,7 @@ public final class WireLaying {
       }
       WireCell cell = new WireCell(face, wire.color());
       if (engine.grid().contains(cell)
-          || !inReach(player, face)
+          || !canEdit(player, face)
           || !WireRules.accepts(world, face.pos(), face.side())) {
         continue;
       }
@@ -51,7 +51,7 @@ public final class WireLaying {
   }
 
   public static void remove(ServerPlayerEntity player, WireFace face) {
-    if (!WireItem.isHolding(player) || !inReach(player, face)) {
+    if (!WireItem.isHolding(player) || !canEdit(player, face)) {
       return;
     }
     WireEngine engine = WireEngine.of(player.getServerWorld());
@@ -83,7 +83,13 @@ public final class WireLaying {
         .orElse(null);
   }
 
-  private static boolean inReach(ServerPlayerEntity player, WireFace face) {
+  private static boolean canEdit(ServerPlayerEntity player, WireFace face) {
+    return inReach(player, face)
+        && player.canModifyBlocks()
+        && player.getServerWorld().canPlayerModifyAt(player, face.pos());
+  }
+
+  static boolean inReach(ServerPlayerEntity player, WireFace face) {
     double reach = player.getBlockInteractionRange() + REACH_MARGIN;
     return player.getEyePos().squaredDistanceTo(Vec3d.ofCenter(face.pos())) <= reach * reach;
   }

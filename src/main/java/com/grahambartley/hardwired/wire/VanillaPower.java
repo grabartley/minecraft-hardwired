@@ -79,6 +79,9 @@ public final class VanillaPower {
   private static boolean receives(ServerWorld world, BlockPos pos) {
     for (Direction direction : DIRECTIONS) {
       BlockPos neighbour = pos.offset(direction);
+      if (!isLoaded(world, neighbour)) {
+        continue;
+      }
       BlockState state = world.getBlockState(neighbour);
       if (state.isOf(Blocks.REDSTONE_WIRE)) {
         if (state.get(RedstoneWireBlock.POWER) > 0
@@ -91,6 +94,10 @@ public final class VanillaPower {
       }
     }
     return false;
+  }
+
+  private static boolean isLoaded(ServerWorld world, BlockPos pos) {
+    return WireEngine.of(world).isLoaded(pos);
   }
 
   private static boolean emitsWithoutDust(ServerWorld world, BlockPos pos, Direction direction) {
@@ -117,7 +124,9 @@ public final class VanillaPower {
         for (Direction direction : Direction.Type.HORIZONTAL) {
           for (int rise = -1; rise <= 1; rise++) {
             BlockPos next = dust.offset(direction).up(rise);
-            if (world.getBlockState(next).isOf(Blocks.REDSTONE_WIRE) && visited.add(next)) {
+            if (isLoaded(world, next)
+                && world.getBlockState(next).isOf(Blocks.REDSTONE_WIRE)
+                && visited.add(next)) {
               frontier.add(next);
             }
           }
@@ -130,7 +139,8 @@ public final class VanillaPower {
   private static boolean hasOtherSource(ServerWorld world, BlockPos dust) {
     for (Direction direction : DIRECTIONS) {
       BlockPos neighbour = dust.offset(direction);
-      if (!world.getBlockState(neighbour).isOf(Blocks.REDSTONE_WIRE)
+      if (isLoaded(world, neighbour)
+          && !world.getBlockState(neighbour).isOf(Blocks.REDSTONE_WIRE)
           && emitsWithoutDust(world, neighbour, direction)) {
         return true;
       }

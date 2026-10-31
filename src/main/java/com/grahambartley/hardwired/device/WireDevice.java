@@ -11,5 +11,9 @@ public interface WireDevice {
     return false;
   }
 
+  default boolean holdsLook() {
+    return false;
+  }
+
   default void onWireChange(ServerWorld world, BlockPos pos, BlockState state) {}
 }

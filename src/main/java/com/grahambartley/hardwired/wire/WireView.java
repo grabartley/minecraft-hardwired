@@ -18,7 +18,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 
 public final class WireView {
@@ -57,7 +56,6 @@ public final class WireView {
         ServerPlayNetworking.send(player, WireViewClearPayload.INSTANCE);
       }
       viewer = new Viewer(player.getServerWorld(), new Long2IntOpenHashMap());
-      viewer.sent.defaultReturnValue(-1);
       VIEWERS.put(player.getUuid(), viewer);
     }
     sendChanges(player, viewer);
@@ -77,6 +75,18 @@ public final class WireView {
         }
       }
     }
+    forgetChunksOutOfRange(player, viewer, center, radius);
+  }
+
+  private static void forgetChunksOutOfRange(
+      ServerPlayerEntity player, Viewer viewer, ChunkPos center, int radius) {
+    for (long chunk : viewer.sent.keySet().toLongArray()) {
+      ChunkPos pos = new ChunkPos(chunk);
+      if (Math.abs(pos.x - center.x) > radius || Math.abs(pos.z - center.z) > radius) {
+        viewer.sent.remove(chunk);
+        ServerPlayNetworking.send(player, new WireChunkPayload(chunk, List.of(), List.of()));
+      }
+    }
   }
 
   static WireChunkPayload describe(ServerWorld world, WireEngine engine, long chunk) {
@@ -89,7 +99,7 @@ public final class WireView {
       var arms =
           WireTopology.arms(cell.face(), face -> grid.contains(new WireCell(face, cell.color())));
       for (TouchPoint touch : WireTopology.touches(cell.face(), arms)) {
-        if (!isInChunk(touch.pos(), chunk)) {
+        if (ChunkPos.toLong(touch.pos()) != chunk || !engine.isLoaded(touch.pos())) {
           continue;
         }
         boolean output = WireRules.isOutput(world.getBlockState(touch.pos()));
@@ -110,9 +120,5 @@ public final class WireView {
               flags));
     }
     return new WireChunkPayload(chunk, cells, List.copyOf(marks));
-  }
-
-  private static boolean isInChunk(BlockPos pos, long chunk) {
-    return ChunkPos.toLong(pos.getX() >> 4, pos.getZ() >> 4) == chunk;
   }
 }

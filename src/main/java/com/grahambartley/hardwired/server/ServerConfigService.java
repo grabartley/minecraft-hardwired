@@ -33,7 +33,7 @@ public final class ServerConfigService {
       Hardwired.SERVER_CONFIG = HardwiredConfig.defaults();
       return;
     }
-    loadFromPath(server.getSavePath(WorldSavePath.ROOT).normalize());
+    loadFromPath(worldRoot(server));
   }
 
   private static void loadFromPath(final Path worldRoot) {
@@ -46,7 +46,7 @@ public final class ServerConfigService {
     if (server == null || updated == null) {
       return false;
     }
-    final ConfigPaths paths = pathsFor(server);
+    final ConfigPaths paths = new ConfigPaths(worldRoot(server));
     if (!HardwiredConfig.save(paths.getServerConfigPath(), updated)) {
       return false;
     }
@@ -69,7 +69,7 @@ public final class ServerConfigService {
     }
   }
 
-  private static ConfigPaths pathsFor(final MinecraftServer server) {
-    return new ConfigPaths(server.getSavePath(WorldSavePath.ROOT).normalize());
+  private static Path worldRoot(final MinecraftServer server) {
+    return server.getSavePath(WorldSavePath.ROOT).normalize();
   }
 }

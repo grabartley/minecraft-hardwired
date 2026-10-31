@@ -21,6 +21,17 @@ class HueTest {
     assertNotEquals(Hue.PLAIN.rgb(), Hue.PLAIN.lampRgb());
   }
 
+  @ParameterizedTest(name = "{0} survives by name")
+  @EnumSource(Hue.class)
+  void namesRoundTrip(Hue hue) {
+    assertEquals(hue, Hue.byName(hue.asString()));
+  }
+
+  @Test
+  void anUnknownNameFallsBackToPlain() {
+    assertEquals(Hue.PLAIN, Hue.byName("sparkly"));
+  }
+
   @Test
   void indexesWrap() {
     assertEquals(Hue.PLAIN, Hue.byIndex(Hue.values().length));

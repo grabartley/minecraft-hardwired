@@ -146,7 +146,7 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 | Hold wire | Shows nearby wiring (5.2) |
 | Click and drag on faces | Lays wire along them |
 | Sneak and click a wire | Removes that piece and returns it to you |
-| Use a dye on wire in the crafting grid | Makes coloured wire |
+| Surround a dye with eight wire in the crafting grid | Makes eight coloured wire |
 | With wire in the other hand, use honeycomb on a wire | Seals that network to you |
 | With wire in the other hand, use an axe on sealed wire | Removes your seal, as an axe scrapes wax from copper |
 
@@ -197,7 +197,7 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 | LINK-1 | Every device connects to wire that touches it, except a Circuit Block (CIRC-2) |
 | LINK-2 | The mod adds a Wall Switch, a Push Button, a Motion Sensor and a Dusk Sensor, all of which turn a network on |
 | LINK-3 | Wire touching a vanilla component powers it fully: pistons, doors, lamps, note blocks, dispensers, hoppers and the like |
-| LINK-4 | Any vanilla redstone power in a block wire touches turns its network on. Wire ignores power its own network supplied, so wiring into dust does not hold a network on |
+| LINK-4 | Any vanilla redstone power in a block wire touches turns its network on. Wire ignores power that wire supplied, so wiring into dust does not hold a network on, and dust never carries a signal between colours |
 | LINK-5 | A Junction joins colours with AND, OR or NOT, chosen from its screen |
 | LINK-6 | A network drives no vanilla block that it does not touch, so quasi-connectivity plays no part in wiring |
 | LINK-7 | A network that feeds itself through a longer path of vanilla redstone or a Junction stays on until the loop is broken. That is allowed, and can be used as memory |

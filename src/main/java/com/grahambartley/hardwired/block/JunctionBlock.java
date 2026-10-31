@@ -1,15 +1,13 @@
 package com.grahambartley.hardwired.block;
 
+import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.device.WireDevice;
-import com.grahambartley.hardwired.network.OpenDevicePayload;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireNetwork;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
@@ -37,10 +35,7 @@ public final class JunctionBlock extends Block implements WireDevice {
   @Override
   protected ActionResult onUse(
       BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-    if (player instanceof ServerPlayerEntity serverPlayer) {
-      ServerPlayNetworking.send(serverPlayer, new OpenDevicePayload(pos));
-    }
-    return ActionResult.SUCCESS;
+    return DeviceActions.open(player, pos);
   }
 
   @Override

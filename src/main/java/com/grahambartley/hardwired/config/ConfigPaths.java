@@ -12,10 +12,6 @@ public final class ConfigPaths {
     this.hardwiredDir = worldDir.resolve(HARDWIRED_DIR);
   }
 
-  public Path getHardwiredDir() {
-    return hardwiredDir;
-  }
-
   public Path getServerConfigPath() {
     return hardwiredDir.resolve(SERVER_CONFIG_FILE);
   }

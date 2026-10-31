@@ -21,30 +21,19 @@ import net.minecraft.util.math.BlockPos;
 
 public final class ControlPanelBlockEntity extends BlockEntity {
 
-  private static final String LOOK = "look";
   private static final String SCENES = "scenes";
 
-  private LampLook look = LampLook.DEFAULT;
   private List<Scene> scenes = new ArrayList<>();
 
   public ControlPanelBlockEntity(BlockPos pos, BlockState state) {
     super(ModBlockEntities.CONTROL_PANEL, pos, state);
   }
 
-  public LampLook look() {
-    return look;
-  }
-
-  public void setLook(LampLook newLook) {
-    look = newLook;
-    sync();
-  }
-
   public List<Scene> scenes() {
     return scenes;
   }
 
-  public void saveScene(int slot, String name) {
+  public void saveScene(int slot, String name, LampLook look) {
     Scene scene = new Scene(name, look);
     if (slot < scenes.size()) {
       scenes.set(slot, scene);
@@ -64,18 +53,12 @@ public final class ControlPanelBlockEntity extends BlockEntity {
   @Override
   protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
     super.writeNbt(nbt, registries);
-    nbt.put(LOOK, LampLook.CODEC.encodeStart(NbtOps.INSTANCE, look).getOrThrow());
     nbt.put(SCENES, Scene.LIST_CODEC.encodeStart(NbtOps.INSTANCE, scenes).getOrThrow());
   }
 
   @Override
   protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
     super.readNbt(nbt, registries);
-    look =
-        LampLook.CODEC
-            .parse(NbtOps.INSTANCE, nbt.get(LOOK))
-            .resultOrPartial(Hardwired.LOGGER::error)
-            .orElse(LampLook.DEFAULT);
     NbtElement saved = nbt.get(SCENES);
     scenes =
         new ArrayList<>(
@@ -99,7 +82,6 @@ public final class ControlPanelBlockEntity extends BlockEntity {
 
   @Override
   public void removeFromCopiedStackNbt(NbtCompound nbt) {
-    nbt.remove(LOOK);
     nbt.remove(SCENES);
   }
 

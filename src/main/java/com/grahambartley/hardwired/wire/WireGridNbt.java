@@ -50,21 +50,21 @@ public final class WireGridNbt {
       sides[i] = (byte) cells.get(i).face().side().getId();
     }
     NbtCompound nbt = new NbtCompound();
-    nbt.putByte(COLOR, (byte) network.color().ordinal());
+    nbt.putString(COLOR, network.color().asString());
     nbt.putBoolean(ON, network.isOn());
     nbt.putBoolean(TRIPPED, network.isTripped());
     nbt.putLongArray(POSITIONS, positions);
     nbt.putByteArray(SIDES, sides);
     nbt.putLongArray(REMEMBERED, network.rememberedInputs().toLongArray());
     if (network.look() != null) {
-      nbt.putByte(LOOK_COLOR, (byte) network.look().color().ordinal());
+      nbt.putString(LOOK_COLOR, network.look().color().asString());
       nbt.putByte(LOOK_BRIGHTNESS, (byte) network.look().brightness());
     }
     return nbt;
   }
 
   private static void readNetwork(WireGrid grid, NbtCompound nbt) {
-    Hue color = Hue.byIndex(nbt.getByte(COLOR));
+    Hue color = Hue.byName(nbt.getString(COLOR));
     long[] positions = nbt.getLongArray(POSITIONS);
     byte[] sides = nbt.getByteArray(SIDES);
     WireNetwork network = null;
@@ -84,7 +84,7 @@ public final class WireGridNbt {
     }
     if (nbt.contains(LOOK_COLOR)) {
       network.setLook(
-          new LampLook(Hue.byIndex(nbt.getByte(LOOK_COLOR)), nbt.getByte(LOOK_BRIGHTNESS)));
+          new LampLook(Hue.byName(nbt.getString(LOOK_COLOR)), nbt.getByte(LOOK_BRIGHTNESS)));
     }
   }
 }

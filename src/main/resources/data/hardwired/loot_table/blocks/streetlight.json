@@ -34,7 +34,7 @@
           "condition": "minecraft:block_state_property",
           "block": "hardwired:streetlight",
           "properties": {
-            "part": "2"
+            "part": "0"
           }
         }
       ]

@@ -1,16 +1,21 @@
 {
-  "type": "minecraft:crafting_shapeless",
+  "type": "minecraft:crafting_shaped",
   "category": "redstone",
-  "ingredients": [
-    {
+  "pattern": [
+    "WWW",
+    "WDW",
+    "WWW"
+  ],
+  "key": {
+    "W": {
       "item": "hardwired:copper_wire"
     },
-    {
+    "D": {
       "item": "minecraft:black_dye"
     }
-  ],
+  },
   "result": {
     "id": "hardwired:black_copper_wire",
-    "count": 1
+    "count": 8
   }
 }

@@ -25,7 +25,8 @@
     ],
     "fabric-gametest": [
       "com.grahambartley.hardwired.gametest.HardwiredBootGameTest",
-      "com.grahambartley.hardwired.gametest.WireGameTest"
+      "com.grahambartley.hardwired.gametest.WireGameTest",
+      "com.grahambartley.hardwired.gametest.DeviceGameTest"
     ],
     "modmenu": [
       "com.grahambartley.hardwired.HardwiredModMenu"

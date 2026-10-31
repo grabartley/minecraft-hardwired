@@ -83,11 +83,7 @@ public final class SwitchBlock extends MountedDeviceBlock {
     engine
         .findOnNetwork(pos, ControlPanelBlockEntity.class)
         .filter(panel -> slot < panel.scenes().size())
-        .ifPresent(
-            panel -> {
-              panel.setLook(panel.scenes().get(slot).look());
-              engine.applyLook(pos, panel.look());
-            });
+        .ifPresent(panel -> engine.applyLook(pos, panel.scenes().get(slot).look()));
   }
 
   private static void flip(BlockState state, World world, BlockPos pos) {

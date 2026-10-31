@@ -48,7 +48,11 @@ public abstract class PistonBlockMixin {
       @Local(argsOnly = true) boolean extending) {
     List<BlockPos> moved = original.call(handler);
     if (world instanceof ServerWorld serverWorld) {
-      PistonWireMover.move(serverWorld, moved, extending ? direction : direction.getOpposite());
+      PistonWireMover.move(
+          serverWorld,
+          handler.getBrokenBlocks(),
+          moved,
+          extending ? direction : direction.getOpposite());
     }
     return moved;
   }

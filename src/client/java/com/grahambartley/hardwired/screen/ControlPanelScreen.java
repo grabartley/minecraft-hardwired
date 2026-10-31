@@ -36,11 +36,11 @@ public final class ControlPanelScreen extends Screen {
   private final ControlPanelBlockEntity panel;
   private LampLook look;
 
-  public ControlPanelScreen(BlockPos pos, ControlPanelBlockEntity panel) {
+  public ControlPanelScreen(BlockPos pos, ControlPanelBlockEntity panel, LampLook look) {
     super(Text.translatable("block.hardwired.control_panel"));
     this.pos = pos;
     this.panel = panel;
-    this.look = panel.look();
+    this.look = look;
   }
 
   private int left() {

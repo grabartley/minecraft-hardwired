@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.wire;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +27,7 @@ public final class WireGrid {
   private final Long2IntOpenHashMap chunkVersions = new Long2IntOpenHashMap();
   private final Set<WireNetwork> networks = new HashSet<>();
   private final Set<WireNetwork> dirty = new LinkedHashSet<>();
+  private final LongOpenHashSet touchChanges = new LongOpenHashSet();
 
   public boolean contains(WireCell cell) {
     return cells.containsKey(cell);
@@ -85,6 +87,12 @@ public final class WireGrid {
   public List<WireNetwork> drainDirty() {
     List<WireNetwork> drained = new ArrayList<>(dirty);
     dirty.clear();
+    return drained;
+  }
+
+  public long[] drainTouchChanges() {
+    long[] drained = touchChanges.toLongArray();
+    touchChanges.clear();
     return drained;
   }
 
@@ -241,6 +249,7 @@ public final class WireGrid {
     for (TouchPoint touch : touches) {
       network.touches.addTo(touch, 1);
       long key = touch.pos().asLong();
+      touchChanges.add(key);
       if (network.touchedPositions.addTo(key, 1) == 0) {
         byTouch.computeIfAbsent(key, ignored -> new HashSet<>()).add(network);
       }
@@ -257,6 +266,7 @@ public final class WireGrid {
         network.touches.removeInt(touch);
       }
       long key = touch.pos().asLong();
+      touchChanges.add(key);
       if (network.touchedPositions.addTo(key, -1) == 1) {
         network.touchedPositions.remove(key);
         unlinkTouch(key, network);
@@ -314,7 +324,7 @@ public final class WireGrid {
   }
 
   private static long chunkKey(WireCell cell) {
-    return ChunkPos.toLong(cell.face().pos().getX() >> 4, cell.face().pos().getZ() >> 4);
+    return ChunkPos.toLong(cell.face().pos());
   }
 
   private static void removeFromIndex(

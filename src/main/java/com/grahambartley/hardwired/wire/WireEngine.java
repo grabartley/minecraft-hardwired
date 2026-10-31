@@ -2,11 +2,12 @@ package com.grahambartley.hardwired.wire;
 
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.registry.ModItems;
+import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -52,22 +53,12 @@ public final class WireEngine {
     return grid.isPowered(pos.asLong());
   }
 
-  public boolean isColorOn(BlockPos pos, Hue color) {
-    for (WireNetwork network : grid.networksTouching(pos)) {
-      if (network.color() == color && network.isOn()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   public LampLook lookAt(BlockPos pos) {
-    for (WireNetwork network : grid.networksTouching(pos)) {
-      if (network.look() != null) {
-        return network.look();
-      }
-    }
-    return null;
+    return grid.networksTouching(pos).stream()
+        .filter(network -> network.look() != null)
+        .min(Comparator.comparing(WireNetwork::color))
+        .map(WireNetwork::look)
+        .orElse(null);
   }
 
   public void applyLook(BlockPos pos, LampLook look) {
@@ -78,32 +69,16 @@ public final class WireEngine {
     state.markDirty();
   }
 
-  public void releaseLook(BlockPos pos, Predicate<BlockState> providesLook) {
-    for (WireNetwork network : grid.networksTouching(pos)) {
-      boolean provided =
-          network.touches().stream()
-              .anyMatch(
-                  touch ->
-                      !touch.pos().equals(pos)
-                          && isLoaded(touch.pos())
-                          && providesLook.test(world.getBlockState(touch.pos())));
-      if (!provided) {
-        network.setLook(null);
-        pushNetwork(network);
-      }
-    }
-    state.markDirty();
-  }
-
   public <T> Optional<T> findOnNetwork(BlockPos pos, Class<T> type) {
-    for (WireNetwork network : grid.networksTouching(pos)) {
-      for (TouchPoint touch : network.touches()) {
-        if (isLoaded(touch.pos()) && type.isInstance(world.getBlockEntity(touch.pos()))) {
-          return Optional.of(type.cast(world.getBlockEntity(touch.pos())));
-        }
-      }
-    }
-    return Optional.empty();
+    return grid.networksTouching(pos).stream()
+        .flatMap(network -> network.touches().stream())
+        .map(TouchPoint::pos)
+        .filter(this::isLoaded)
+        .sorted()
+        .map(world::getBlockEntity)
+        .filter(type::isInstance)
+        .map(type::cast)
+        .findFirst();
   }
 
   public void refresh(BlockPos pos) {
@@ -151,7 +126,7 @@ public final class WireEngine {
   }
 
   private static boolean isIn(TouchPoint touch, ChunkPos chunk) {
-    return touch.pos().getX() >> 4 == chunk.x && touch.pos().getZ() >> 4 == chunk.z;
+    return ChunkPos.toLong(touch.pos()) == chunk.toLong();
   }
 
   public void tick() {
@@ -159,6 +134,7 @@ public final class WireEngine {
     for (WireNetwork network : grid.drainDirty()) {
       evaluate(network);
     }
+    pendingPushes.addAll(LongList.of(grid.drainTouchChanges()));
     if (!pendingPushes.isEmpty()) {
       long[] pushes = pendingPushes.toLongArray();
       pendingPushes.clear();
@@ -178,45 +154,69 @@ public final class WireEngine {
       BlockPos pos = BlockPos.fromLong(packed);
       for (WireCell cell : List.copyOf(grid.cellsOn(pos))) {
         if (!WireRules.accepts(world, pos, cell.face().side())) {
-          cut(cell);
-          Block.dropStack(world, pos, new ItemStack(ModItems.wire(cell.color())));
+          drop(cell);
         }
       }
     }
   }
 
+  public void dropWireOn(BlockPos pos) {
+    List.copyOf(grid.cellsOn(pos)).forEach(this::drop);
+  }
+
+  private void drop(WireCell cell) {
+    cut(cell);
+    Block.dropStack(world, cell.face().pos(), new ItemStack(ModItems.wire(cell.color())));
+  }
+
   private void evaluate(WireNetwork network) {
-    boolean active = readInputs(network) && !network.isTripped();
-    if (active == network.isOn()) {
-      grid.markChanged(network);
-      return;
-    }
-    if (network.tripDetector().recordChange(world.getTime())) {
+    releaseOrphanedLook(network);
+    boolean inputsChanged = readInputs(network);
+    boolean active = hasActiveInput(network) && !network.isTripped();
+    if (active != network.isOn() && network.tripDetector().recordChange(world.getTime())) {
       network.setTripped(true);
       active = false;
     }
     if (active != network.isOn()) {
       network.setOn(active);
-      state.markDirty();
       pushNetwork(network);
+    } else if (inputsChanged) {
+      grid.markChanged(network);
     }
-    grid.markChanged(network);
+    state.markDirty();
+  }
+
+  private void releaseOrphanedLook(WireNetwork network) {
+    if (network.look() == null) {
+      return;
+    }
+    for (TouchPoint touch : network.touches()) {
+      if (!isLoaded(touch.pos())
+          || (world.getBlockState(touch.pos()).getBlock() instanceof WireDevice device
+              && device.holdsLook())) {
+        return;
+      }
+    }
+    network.setLook(null);
+    pushNetwork(network);
   }
 
   private boolean readInputs(WireNetwork network) {
-    boolean active = false;
+    boolean changed = false;
     for (TouchPoint touch : new ArrayList<>(network.touches())) {
-      long key = touch.pos().asLong();
-      if (!isLoaded(touch.pos())) {
-        active |= network.rememberedInputs().contains(key);
-      } else if (isInput(touch, network.color())) {
-        network.rememberedInputs().add(key);
-        active = true;
-      } else {
-        network.rememberedInputs().remove(key);
+      if (isLoaded(touch.pos())) {
+        long key = touch.pos().asLong();
+        changed |=
+            isInput(touch, network.color())
+                ? network.rememberedInputs().add(key)
+                : network.rememberedInputs().remove(key);
       }
     }
-    return active;
+    return changed;
+  }
+
+  private static boolean hasActiveInput(WireNetwork network) {
+    return !network.rememberedInputs().isEmpty();
   }
 
   public boolean isInput(TouchPoint touch, Hue color) {

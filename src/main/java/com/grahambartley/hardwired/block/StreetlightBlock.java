@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.advancement.ModCriteria;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -46,35 +47,38 @@ public final class StreetlightBlock extends AbstractLampBlock {
 
   @Override
   public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-    return state.get(PART) == HEAD ? super.createBlockEntity(pos, state) : null;
+    return state.get(PART) == 0 ? super.createBlockEntity(pos, state) : null;
   }
 
   @Override
-  protected BlockPos signalPos(BlockPos pos, BlockState state) {
+  public BlockPos lampPos(BlockPos pos, BlockState state) {
     return pos.down(state.get(PART));
   }
 
   @Override
-  protected BlockPos lampPos(BlockPos pos, BlockState state) {
-    return pos.up(HEAD - state.get(PART));
+  protected List<BlockPos> parts(BlockPos pos, BlockState state) {
+    BlockPos base = lampPos(pos, state);
+    return List.of(base, base.up(), base.up(HEAD));
   }
 
   @Override
   protected void update(World world, BlockPos pos, BlockState state) {
-    BlockPos base = signalPos(pos, state);
+    BlockPos base = lampPos(pos, state);
     for (int part = 0; part <= HEAD; part++) {
       world.setBlockState(base.up(part), state.with(PART, part), NOTIFY_ALL);
     }
   }
 
   @Override
-  protected String litEvent() {
-    return ModCriteria.STREETLIGHT_LIT;
+  protected String litEvent(World world) {
+    return DuskClock.isDark(world.getTimeOfDay())
+        ? ModCriteria.STREETLIGHT_LIT
+        : super.litEvent(world);
   }
 
   @Override
   protected boolean hasRandomTicks(BlockState state) {
-    return state.get(PART) == HEAD && super.hasRandomTicks(state);
+    return state.get(PART) == 0 && super.hasRandomTicks(state);
   }
 
   @Override
@@ -109,7 +113,7 @@ public final class StreetlightBlock extends AbstractLampBlock {
         linked
             && !(neighborState.isOf(this)
                 && neighborState.get(PART) == part + direction.getOffsetY());
-    if (partMissing && part == HEAD) {
+    if (partMissing && part == 0) {
       world.breakBlock(pos, true);
     }
     return partMissing ? Blocks.AIR.getDefaultState() : state;

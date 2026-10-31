@@ -1,7 +1,6 @@
 package com.grahambartley.hardwired.gametest;
 
 import com.grahambartley.hardwired.block.AbstractLampBlock;
-import com.grahambartley.hardwired.block.ControlPanelBlockEntity;
 import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.JunctionRule;
 import com.grahambartley.hardwired.block.LampBlockEntity;
@@ -10,7 +9,6 @@ import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModItems;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.LampLook;
-import com.grahambartley.hardwired.wire.PistonWireMover;
 import com.grahambartley.hardwired.wire.WireCell;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireFace;
@@ -58,6 +56,18 @@ public class WireGameTest implements FabricGameTest {
         .getDefaultState()
         .with(WallMountedBlock.FACE, BlockFace.FLOOR)
         .with(MountedDeviceBlock.POWERED, on);
+  }
+
+  private static int droppedWire(TestContext context, BlockPos near, Hue hue) {
+    return context
+        .getWorld()
+        .getEntitiesByClass(
+            ItemEntity.class,
+            new net.minecraft.util.math.Box(context.getAbsolutePos(near)).expand(2),
+            item -> item.getStack().isOf(ModItems.wire(hue)))
+        .stream()
+        .mapToInt(item -> item.getStack().getCount())
+        .sum();
   }
 
   private static BlockPos standing(int x, int z) {
@@ -177,16 +187,7 @@ public class WireGameTest implements FabricGameTest {
         SETTLE_TICKS,
         () -> {
           context.assertFalse(engine(context).grid().contains(cell), "wire must leave the grid");
-          int dropped =
-              context
-                  .getWorld()
-                  .getEntitiesByClass(
-                      ItemEntity.class,
-                      new net.minecraft.util.math.Box(context.getAbsolutePos(host)).expand(2),
-                      item -> item.getStack().isOf(ModItems.wire(Hue.ORANGE)))
-                  .stream()
-                  .mapToInt(item -> item.getStack().getCount())
-                  .sum();
+          int dropped = droppedWire(context, host, Hue.ORANGE);
           context.assertTrue(dropped == 1, "exactly one item must drop, got " + dropped);
           context.complete();
         });
@@ -211,16 +212,83 @@ public class WireGameTest implements FabricGameTest {
   @GameTest(templateName = BENCH)
   public void aPistonCarriesWireWithItsBlock(TestContext context) {
     BlockPos host = standing(3, 3);
+    context.setBlockState(
+        standing(2, 3), Blocks.PISTON.getDefaultState().with(Properties.FACING, Direction.EAST));
     context.setBlockState(host, Blocks.STONE);
     WireCell cell =
         new WireCell(new WireFace(context.getAbsolutePos(host), Direction.UP), Hue.PLAIN);
     engine(context).lay(cell);
-    PistonWireMover.move(context.getWorld(), List.of(context.getAbsolutePos(host)), Direction.EAST);
-    WireCell moved =
-        new WireCell(new WireFace(context.getAbsolutePos(host.east()), Direction.UP), Hue.PLAIN);
-    context.assertTrue(engine(context).grid().contains(moved), "wire must arrive");
-    context.assertFalse(engine(context).grid().contains(cell), "wire must leave");
-    context.complete();
+    context.setBlockState(standing(2, 3).west(), Blocks.REDSTONE_BLOCK);
+    context.waitAndRun(
+        SETTLE_TICKS + 4,
+        () -> {
+          WireCell moved =
+              new WireCell(
+                  new WireFace(context.getAbsolutePos(host.east()), Direction.UP), Hue.PLAIN);
+          context.assertTrue(engine(context).grid().contains(moved), "wire must arrive");
+          context.assertFalse(engine(context).grid().contains(cell), "wire must leave");
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH)
+  public void aPistonBreakingABlockDropsItsWire(TestContext context) {
+    BlockPos melon = standing(4, 3);
+    context.setBlockState(
+        standing(2, 3), Blocks.PISTON.getDefaultState().with(Properties.FACING, Direction.EAST));
+    context.setBlockState(standing(3, 3), Blocks.STONE);
+    context.setBlockState(melon, Blocks.MELON);
+    WireCell cell =
+        new WireCell(new WireFace(context.getAbsolutePos(melon), Direction.UP), Hue.ORANGE);
+    engine(context).lay(cell);
+    context.setBlockState(standing(2, 3).west(), Blocks.REDSTONE_BLOCK);
+    context.waitAndRun(
+        SETTLE_TICKS + 4,
+        () -> {
+          context.assertFalse(engine(context).grid().contains(cell), "wire must drop");
+          context.assertTrue(
+              droppedWire(context, melon, Hue.ORANGE) == 1, "exactly one item must drop");
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH)
+  public void extendingALiveNetworkLightsTheNewLamp(TestContext context) {
+    context.setBlockState(standing(1, 1), floorSwitch(true));
+    context.setBlockState(standing(6, 1), ModBlocks.COPPER_LAMP);
+    layRun(context, 1, 3, 1, Hue.PLAIN);
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          layRun(context, 4, 6, 1, Hue.PLAIN);
+          context.waitAndRun(
+              SETTLE_TICKS,
+              () -> {
+                context.expectBlockProperty(standing(6, 1), AbstractLampBlock.LEVEL, 15);
+                context.complete();
+              });
+        });
+  }
+
+  @GameTest(templateName = BENCH)
+  public void cuttingALiveWireTurnsItsOutputOff(TestContext context) {
+    context.setBlockState(standing(1, 1), floorSwitch(true));
+    context.setBlockState(standing(5, 1), Blocks.REDSTONE_LAMP);
+    layRun(context, 1, 5, 1, Hue.PLAIN);
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          context.expectBlockProperty(standing(5, 1), Properties.LIT, true);
+          for (int x = 3; x <= 5; x++) {
+            engine(context).cut(floorCell(context, x, 1, Hue.PLAIN));
+          }
+          context.waitAndRun(
+              SETTLE_TICKS + 4,
+              () -> {
+                context.expectBlockProperty(standing(5, 1), Properties.LIT, false);
+                context.complete();
+              });
+        });
   }
 
   @GameTest(templateName = BENCH)
@@ -276,20 +344,6 @@ public class WireGameTest implements FabricGameTest {
                 context.complete();
               });
         });
-  }
-
-  @GameTest(templateName = BENCH)
-  public void aPanelStoresScenes(TestContext context) {
-    BlockPos panelPos = standing(3, 3);
-    context.setBlockState(
-        panelPos,
-        ModBlocks.CONTROL_PANEL.getDefaultState().with(WallMountedBlock.FACE, BlockFace.FLOOR));
-    ControlPanelBlockEntity panel = context.getBlockEntity(panelPos);
-    panel.setLook(new LampLook(Hue.RED, 4));
-    panel.saveScene(0, "Dinner");
-    context.assertTrue(
-        panel.scenes().get(0).look().equals(new LampLook(Hue.RED, 4)), "scene keeps its look");
-    context.complete();
   }
 
   @GameTest(templateName = BENCH)

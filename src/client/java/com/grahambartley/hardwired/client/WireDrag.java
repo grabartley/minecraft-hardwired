@@ -44,7 +44,7 @@ public final class WireDrag {
 
   public static ActionResult onUseBlock(
       PlayerEntity player, World world, Hand hand, BlockHitResult hit) {
-    if (!world.isClient || !(player.getMainHandStack().getItem() instanceof WireItem)) {
+    if (!world.isClient || !WireItem.canLay(player)) {
       return ActionResult.PASS;
     }
     boolean claimed =
@@ -65,8 +65,7 @@ public final class WireDrag {
       return;
     }
     inspect(hit);
-    if (!client.options.useKey.isPressed()
-        || !(player.getMainHandStack().getItem() instanceof WireItem)) {
+    if (!client.options.useKey.isPressed() || !WireItem.canLay(player)) {
       release();
     } else if (player.isSneaking()) {
       remove(hit);

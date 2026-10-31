@@ -60,17 +60,19 @@ public final class LampBlockEntity extends BlockEntity {
   @Override
   protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
     super.writeNbt(nbt, registries);
-    nbt.putInt(COLOR, color.ordinal());
+    nbt.putString(COLOR, color.asString());
     nbt.putInt(BRIGHTNESS, brightness);
   }
 
   @Override
   protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
     super.readNbt(nbt, registries);
-    color = Hue.byIndex(nbt.getInt(COLOR));
+    color = Hue.byName(nbt.getString(COLOR));
     brightness = nbt.contains(BRIGHTNESS) ? nbt.getInt(BRIGHTNESS) : LampLook.MAX_BRIGHTNESS;
     if (world != null && world.isClient) {
       world.updateListeners(pos, getCachedState(), getCachedState(), RERENDER);
+      world.updateListeners(
+          pos.up(StreetlightBlock.HEAD), getCachedState(), getCachedState(), RERENDER);
     }
   }
 

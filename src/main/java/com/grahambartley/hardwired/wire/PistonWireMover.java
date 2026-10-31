@@ -10,8 +10,10 @@ public final class PistonWireMover {
 
   private PistonWireMover() {}
 
-  public static void move(ServerWorld world, List<BlockPos> moved, Direction motion) {
+  public static void move(
+      ServerWorld world, List<BlockPos> broken, List<BlockPos> moved, Direction motion) {
     WireEngine engine = WireEngine.of(world);
+    broken.forEach(engine::dropWireOn);
     List<WireCell> carried = new ArrayList<>();
     for (BlockPos pos : moved) {
       carried.addAll(engine.grid().cellsOn(pos));

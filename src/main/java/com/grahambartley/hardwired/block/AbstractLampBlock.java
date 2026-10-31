@@ -6,6 +6,8 @@ import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.LampLook;
 import com.grahambartley.hardwired.wire.WireEngine;
+import java.util.List;
+import java.util.Objects;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -70,12 +72,12 @@ public abstract class AbstractLampBlock extends Block implements BlockEntityProv
     return state.get(LEVEL);
   }
 
-  protected BlockPos signalPos(BlockPos pos, BlockState state) {
+  public BlockPos lampPos(BlockPos pos, BlockState state) {
     return pos;
   }
 
-  protected BlockPos lampPos(BlockPos pos, BlockState state) {
-    return pos;
+  protected List<BlockPos> parts(BlockPos pos, BlockState state) {
+    return List.of(pos);
   }
 
   protected void update(World world, BlockPos pos, BlockState state) {
@@ -94,17 +96,18 @@ public abstract class AbstractLampBlock extends Block implements BlockEntityProv
       return;
     }
     WireEngine engine = WireEngine.of(world);
-    BlockPos signal = signalPos(pos, state);
-    LampLook look = engine.lookAt(signal);
+    List<BlockPos> parts = parts(pos, state);
+    LampLook look =
+        parts.stream().map(engine::lookAt).filter(Objects::nonNull).findFirst().orElse(null);
     Hue color = look == null ? lamp.color() : look.color();
     int brightness = look == null ? LampLook.MAX_BRIGHTNESS : look.brightness();
     boolean changed = lamp.setLook(color, brightness);
-    int level = engine.isPowered(signal) ? brightness : 0;
+    int level = parts.stream().anyMatch(engine::isPowered) ? brightness : 0;
     if (state.get(LEVEL) != level) {
       update(world, pos, state.with(LEVEL, level).with(LIT, level > 0));
       changed = true;
       if (level > 0) {
-        ModCriteria.DEVICE.triggerNear(world, pos, litEvent());
+        ModCriteria.DEVICE.triggerNear(world, pos, litEvent(world));
       }
     }
     if (changed) {
@@ -112,7 +115,7 @@ public abstract class AbstractLampBlock extends Block implements BlockEntityProv
     }
   }
 
-  protected String litEvent() {
+  protected String litEvent(World world) {
     return ModCriteria.LAMP_LIT;
   }
 
@@ -148,7 +151,7 @@ public abstract class AbstractLampBlock extends Block implements BlockEntityProv
       Hand hand,
       BlockHitResult hit) {
     if (stack.getItem() instanceof DyeItem dye) {
-      return applyDye(stack, dye, world, pos, player);
+      return applyDye(stack, dye, world, lampPos(pos, state), player);
     }
     if (stack.isOf(Items.HONEYCOMB) && !state.get(WAXED)) {
       stack.decrementUnlessCreative(1, player);

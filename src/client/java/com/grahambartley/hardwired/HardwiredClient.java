@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired;
 
+import com.grahambartley.hardwired.block.AbstractLampBlock;
 import com.grahambartley.hardwired.block.ControlPanelBlockEntity;
 import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.LampBlockEntity;
@@ -66,7 +67,7 @@ public class HardwiredClient implements ClientModInitializer {
   private static void openDevice(MinecraftClient client, OpenDevicePayload payload) {
     BlockPos pos = payload.pos();
     if (client.world.getBlockEntity(pos) instanceof ControlPanelBlockEntity panel) {
-      client.setScreen(new ControlPanelScreen(pos, panel));
+      client.setScreen(new ControlPanelScreen(pos, panel, payload.look()));
     } else if (client.world.getBlockState(pos).getBlock() instanceof JunctionBlock) {
       client.setScreen(new JunctionScreen(pos, client.world.getBlockState(pos)));
     }
@@ -80,7 +81,9 @@ public class HardwiredClient implements ClientModInitializer {
         (state, world, pos, tintIndex) -> {
           if (world == null
               || pos == null
-              || !(world.getBlockEntity(pos) instanceof LampBlockEntity lamp)) {
+              || !(state.getBlock() instanceof AbstractLampBlock block)
+              || !(world.getBlockEntity(block.lampPos(pos, state))
+                  instanceof LampBlockEntity lamp)) {
             return OPAQUE | Hue.PLAIN.lampRgb();
           }
           return OPAQUE | dim(lamp.color().lampRgb(), lamp.brightness());
