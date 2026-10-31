@@ -13,6 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -25,6 +26,7 @@ public final class LiftCarEntity extends Entity {
   private static final double STANDING_REACH = 0.25;
   private static final int ELAPSED_TICKS = 20;
   private static final String HEAD = "head";
+  private static final String TURNS = "turns";
 
   private static final TrackedData<Integer> TRIP_SERIAL =
       DataTracker.registerData(LiftCarEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -35,6 +37,9 @@ public final class LiftCarEntity extends Entity {
   private static final TrackedData<Integer> TRIP_PACE =
       DataTracker.registerData(LiftCarEntity.class, TrackedDataHandlerRegistry.INTEGER);
   private static final TrackedData<Integer> TRIP_ELAPSED =
+      DataTracker.registerData(LiftCarEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+  private static final TrackedData<Integer> QUARTER_TURNS =
       DataTracker.registerData(LiftCarEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
   private final LiftRun run = new LiftRun();
@@ -54,6 +59,14 @@ public final class LiftCarEntity extends Entity {
 
   public BlockPos head() {
     return head;
+  }
+
+  public int quarterTurns() {
+    return dataTracker.get(QUARTER_TURNS);
+  }
+
+  public void faceGate(Direction gateFacing) {
+    dataTracker.set(QUARTER_TURNS, LiftCarTurn.quarterTurns(gateFacing));
   }
 
   public LiftRun run() {
@@ -98,6 +111,7 @@ public final class LiftCarEntity extends Entity {
     builder.add(TRIP_TO, 0F);
     builder.add(TRIP_PACE, 0);
     builder.add(TRIP_ELAPSED, 0);
+    builder.add(QUARTER_TURNS, 0);
   }
 
   @Override
@@ -207,6 +221,7 @@ public final class LiftCarEntity extends Entity {
     if (head != null) {
       nbt.putLong(HEAD, head.asLong());
     }
+    nbt.putInt(TURNS, quarterTurns());
     run.write(nbt);
   }
 
@@ -215,6 +230,7 @@ public final class LiftCarEntity extends Entity {
     if (nbt.contains(HEAD)) {
       head = BlockPos.fromLong(nbt.getLong(HEAD));
     }
+    dataTracker.set(QUARTER_TURNS, nbt.getInt(TURNS));
     run.read(nbt);
     tripChanged();
   }

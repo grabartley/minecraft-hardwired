@@ -61,6 +61,7 @@ public final class LiftActions {
       return Optional.empty();
     }
     car.placeInShaft(shaft.head(), level);
+    shaft.gateFacing(level).ifPresent(car::faceGate);
     shaft.world().spawnEntity(car);
     shaft.showGates(shaft.gates(), level, true);
     return Optional.of(car);

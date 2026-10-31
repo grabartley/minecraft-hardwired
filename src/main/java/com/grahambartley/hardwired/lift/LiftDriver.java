@@ -89,6 +89,7 @@ public final class LiftDriver {
     }
     shaft.showGates(route(), run.level(), false);
     LiftRiders.board(car, shaft);
+    shaft.gateFacing(level).ifPresent(car::faceGate);
     run.begin(new LiftTrip(run.level(), level, ticksPerBlock()), LiftPhase.MOVING);
     car.tripChanged();
     pulse();

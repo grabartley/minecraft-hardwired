@@ -18,6 +18,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 
 public record LiftShaft(ServerWorld world, BlockPos head) {
 
@@ -75,6 +76,13 @@ public record LiftShaft(ServerWorld world, BlockPos head) {
     BlockPos column = LiftFloorBlock.column(lower, state);
     boolean onColumn = column.getX() == head.getX() && column.getZ() == head.getZ();
     return onColumn && lower.getY() + 1 < head.getY() ? Optional.of(lower) : Optional.empty();
+  }
+
+  public Optional<Direction> gateFacing(int level) {
+    return gates().stream()
+        .filter(gate -> gate.getY() == level)
+        .findFirst()
+        .map(gate -> world.getBlockState(gate).get(LiftFloorBlock.FACING));
   }
 
   public static List<Integer> levels(List<BlockPos> gates) {

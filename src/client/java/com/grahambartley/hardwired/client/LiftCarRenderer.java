@@ -13,11 +13,13 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.RotationAxis;
 
 public final class LiftCarRenderer extends EntityRenderer<LiftCarEntity> {
 
   private static final Identifier MODEL = Identifier.of(Hardwired.MOD_ID, "block/lift_car");
   private static final float HALF_WIDTH = 0.5F;
+  private static final float RIGHT_ANGLE = 90F;
 
   public LiftCarRenderer(EntityRendererFactory.Context context) {
     super(context);
@@ -38,6 +40,7 @@ public final class LiftCarRenderer extends EntityRenderer<LiftCarEntity> {
     MinecraftClient client = MinecraftClient.getInstance();
     BakedModel model = client.getBakedModelManager().getModel(MODEL);
     matrices.push();
+    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(RIGHT_ANGLE * car.quarterTurns()));
     matrices.translate(-HALF_WIDTH, LiftCarEntity.PLATE, -HALF_WIDTH);
     client
         .getBlockRenderManager()
