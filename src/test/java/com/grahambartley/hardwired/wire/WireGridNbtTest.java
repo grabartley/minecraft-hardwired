@@ -48,6 +48,20 @@ class WireGridNbtTest {
     assertEquals(List.of(), read.drainDirty());
   }
 
+  @Test
+  void lookStampsSurviveARoundTripAndKeepCountingUp() {
+    WireGrid grid = new WireGrid();
+    WireNetwork network = grid.add(cell(0, Hue.RED));
+    network.setLook(new LampLook(Hue.CYAN, 9));
+    network.stampLook(grid.nextLookStamp());
+    grid.nextLookStamp();
+
+    WireGrid read = WireGridNbt.read(WireGridNbt.write(grid));
+
+    assertEquals(1L, read.networkOf(cell(0, Hue.RED)).lookStamp());
+    assertEquals(3L, read.nextLookStamp());
+  }
+
   @ParameterizedTest(name = "owner {0}")
   @MethodSource("owners")
   void ownerSurvivesARoundTrip(UUID owner) {

@@ -2,6 +2,7 @@ package com.grahambartley.hardwired;
 
 import com.grahambartley.hardwired.block.AbstractLampBlock;
 import com.grahambartley.hardwired.block.ControlPanelBlockEntity;
+import com.grahambartley.hardwired.block.ControllerBlockEntity;
 import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.LampBlockEntity;
 import com.grahambartley.hardwired.client.WireDrag;
@@ -12,6 +13,7 @@ import com.grahambartley.hardwired.client.anim.AnimatedDeviceRenderer;
 import com.grahambartley.hardwired.client.anim.DeviceAnimations;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
+import com.grahambartley.hardwired.network.MainPanelViewPayload;
 import com.grahambartley.hardwired.network.OpenDevicePayload;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.SyncServerConfigS2CPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload;
@@ -22,7 +24,9 @@ import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.registry.ModItems;
 import com.grahambartley.hardwired.screen.ControlPanelScreen;
+import com.grahambartley.hardwired.screen.ControllerScreen;
 import com.grahambartley.hardwired.screen.JunctionScreen;
+import com.grahambartley.hardwired.screen.MainPanelScreen;
 import com.grahambartley.hardwired.wire.Hue;
 import java.util.List;
 import net.fabricmc.api.ClientModInitializer;
@@ -51,7 +55,7 @@ public class HardwiredClient implements ClientModInitializer {
   private static final int TINTED_LAYER = 1;
   private static final int LAMP_TINT_FLOOR = 7;
   private static final List<BlockEntityType<? extends BlockEntity>> ANIMATED_TYPES =
-      List.of(ModBlockEntities.ANIMATED_DEVICE);
+      List.of(ModBlockEntities.ANIMATED_DEVICE, ModBlockEntities.CONTROLLER);
 
   @Override
   public void onInitializeClient() {
@@ -63,6 +67,8 @@ public class HardwiredClient implements ClientModInitializer {
         WireInspectResultPayload.ID, (payload, context) -> WireDrag.acceptResult(payload));
     ClientPlayNetworking.registerGlobalReceiver(
         OpenDevicePayload.ID, (payload, context) -> openDevice(context.client(), payload));
+    ClientPlayNetworking.registerGlobalReceiver(
+        MainPanelViewPayload.ID, (payload, context) -> showMainPanel(context.client(), payload));
     ClientPlayNetworking.registerGlobalReceiver(
         SyncServerConfigS2CPayload.ID,
         (payload, context) -> SyncedServerConfig.apply(payload.config()));
@@ -86,8 +92,19 @@ public class HardwiredClient implements ClientModInitializer {
     BlockPos pos = payload.pos();
     if (client.world.getBlockEntity(pos) instanceof ControlPanelBlockEntity panel) {
       client.setScreen(new ControlPanelScreen(pos, panel, payload.look()));
+    } else if (client.world.getBlockEntity(pos) instanceof ControllerBlockEntity controller) {
+      client.setScreen(new ControllerScreen(pos, controller));
     } else if (client.world.getBlockState(pos).getBlock() instanceof JunctionBlock) {
       client.setScreen(new JunctionScreen(pos, client.world.getBlockState(pos)));
+    }
+  }
+
+  private static void showMainPanel(MinecraftClient client, MainPanelViewPayload payload) {
+    if (payload.open()) {
+      client.setScreen(new MainPanelScreen(payload));
+    } else if (client.currentScreen instanceof MainPanelScreen screen
+        && screen.shows(payload.panel())) {
+      screen.update(payload);
     }
   }
 
@@ -95,6 +112,7 @@ public class HardwiredClient implements ClientModInitializer {
     Block[] lamps = ModBlocks.lamps();
     BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), lamps);
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.JUNCTION, RenderLayer.getCutout());
+    BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CONTROLLER, RenderLayer.getCutout());
     ColorProviderRegistry.BLOCK.register(
         (state, world, pos, tintIndex) -> {
           if (world == null

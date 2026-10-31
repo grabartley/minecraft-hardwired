@@ -27,7 +27,9 @@
       "com.grahambartley.hardwired.gametest.HardwiredBootGameTest",
       "com.grahambartley.hardwired.gametest.WireGameTest",
       "com.grahambartley.hardwired.gametest.DeviceGameTest",
-      "com.grahambartley.hardwired.gametest.WireSealGameTest"
+      "com.grahambartley.hardwired.gametest.WireSealGameTest",
+      "com.grahambartley.hardwired.gametest.ControllerGameTest",
+      "com.grahambartley.hardwired.gametest.MainPanelGameTest"
     ],
     "modmenu": [
       "com.grahambartley.hardwired.HardwiredModMenu"

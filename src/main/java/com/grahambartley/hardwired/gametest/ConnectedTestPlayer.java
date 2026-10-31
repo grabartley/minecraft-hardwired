@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.gametest;
 
+import com.grahambartley.hardwired.network.MainPanelViewPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload.CellView;
 import com.grahambartley.hardwired.network.WireInspectResultPayload;
@@ -25,6 +26,7 @@ import net.minecraft.server.network.ConnectedClientData;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -136,6 +138,30 @@ public final class ConnectedTestPlayer {
       }
     }
     return shown;
+  }
+
+  public List<MainPanelViewPayload> panelViews() {
+    return received(MainPanelViewPayload.class);
+  }
+
+  public boolean hasEarned(Identifier advancement) {
+    return player
+        .getAdvancementTracker()
+        .getProgress(server.getAdvancementLoader().get(advancement))
+        .isDone();
+  }
+
+  public int stepsEarned(Identifier advancement) {
+    int steps = 0;
+    Iterable<String> obtained =
+        player
+            .getAdvancementTracker()
+            .getProgress(server.getAdvancementLoader().get(advancement))
+            .getObtainedCriteria();
+    for (String ignored : obtained) {
+      steps++;
+    }
+    return steps;
   }
 
   public int inspectResults() {

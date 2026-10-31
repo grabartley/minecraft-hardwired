@@ -72,7 +72,7 @@ public final class DeviceActions {
     return look == null ? LampLook.DEFAULT : look;
   }
 
-  private static boolean canUse(ServerPlayerEntity player, BlockPos pos) {
+  public static boolean canUse(ServerPlayerEntity player, BlockPos pos) {
     return !player.isSpectator()
         && player.canInteractWithBlockAt(pos, REACH_MARGIN)
         && player.getServerWorld().canPlayerModifyAt(player, pos);

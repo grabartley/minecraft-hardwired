@@ -17,6 +17,8 @@ public final class WireGridNbt {
   private static final String TRIPPED = "tripped";
   private static final String LOOK_COLOR = "look_color";
   private static final String LOOK_BRIGHTNESS = "look_brightness";
+  private static final String LOOK_STAMP = "look_stamp";
+  private static final String LOOK_CLOCK = "look_clock";
   private static final String REMEMBERED = "remembered";
   private static final String POSITIONS = "positions";
   private static final String SIDES = "sides";
@@ -30,6 +32,7 @@ public final class WireGridNbt {
     }
     NbtCompound root = new NbtCompound();
     root.put(NETWORKS, networks);
+    root.putLong(LOOK_CLOCK, grid.lookClock());
     return root;
   }
 
@@ -39,6 +42,7 @@ public final class WireGridNbt {
     for (int i = 0; i < networks.size(); i++) {
       readNetwork(grid, networks.getCompound(i));
     }
+    grid.restoreLookClock(root.getLong(LOOK_CLOCK));
     grid.drainDirty();
     return grid;
   }
@@ -64,6 +68,7 @@ public final class WireGridNbt {
     if (network.look() != null) {
       nbt.putString(LOOK_COLOR, network.look().color().asString());
       nbt.putByte(LOOK_BRIGHTNESS, (byte) network.look().brightness());
+      nbt.putLong(LOOK_STAMP, network.lookStamp());
     }
     return nbt;
   }
@@ -93,6 +98,7 @@ public final class WireGridNbt {
     if (nbt.contains(LOOK_COLOR)) {
       network.setLook(
           new LampLook(Hue.byName(nbt.getString(LOOK_COLOR)), nbt.getByte(LOOK_BRIGHTNESS)));
+      network.stampLook(nbt.getLong(LOOK_STAMP));
     }
   }
 }

@@ -252,10 +252,10 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 
 | ID | Requirement |
 |---|---|
-| SEQ-1 | A Controller reads an open colour and a close colour, and drives up to 8 output colours |
-| SEQ-2 | Its screen is a timeline: each step sets outputs and waits a set time |
-| SEQ-3 | The open colour runs the timeline forwards, and the close colour runs it backwards |
-| SEQ-4 | A timeline can be told to reverse by itself after a set time |
+| SEQ-1 | A Controller reads an open colour and a close colour, and drives up to 8 output colours. All of them are set on its screen. A colour it reads cannot also be one it drives |
+| SEQ-2 | Its screen is a timeline of up to 32 steps: each step sets outputs and waits a set time, from 0.1 seconds to one minute |
+| SEQ-3 | The open colour turning on runs the timeline forwards, and the close colour turning on runs it backwards, undoing each step in reverse order so every output ends off. If both colours are the same, one switch works the door: on runs it forwards and off runs it backwards |
+| SEQ-4 | A timeline can be told to reverse by itself after a set time, up to five minutes, counted from its last step finishing. Another open order restarts the time |
 | SEQ-5 | A Controller that is interrupted finishes its current step, then follows the new order, so it never strands a piston halfway through a sequence |
 | SEQ-6 | A Controller keeps its place through a chunk unload and a world reload |
 
@@ -310,8 +310,9 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 | DEV-2 | An Alarm sounds when its network turns on |
 | DEV-3 | A Speaker plays a music disc from a Radio on its network, so one Radio can fill a house |
 | DEV-4 | An Intercom shares a chat line with other Intercoms on its network |
-| DEV-5 | A Main Panel on a network lists its lamps, Controllers and switches and works them from one screen |
+| DEV-5 | A Main Panel on a network lists its lamps, Controllers and switches and works them from one screen, with up to 128 rows. It flips switches, runs or stops Controllers, and sets the colour and brightness of one lamp. A stopped Controller finishes its step and holds there, and Run carries on forwards, or backwards from the end. A lamp set this way keeps that look until a Control Panel next changes its network |
 | DEV-6 | Every device has a plain name, a recipe in copper and redstone, and a sound that fits vanilla |
+| DEV-7 | A Main Panel lists only networks the player may see (PERM-4), and every action checks reach of the panel, build rights and that the device is still on a network the player may see. A device in an unloaded chunk shows its last known state and cannot be worked, and other wire points there are counted as unknown |
 
 **Not supported:** video screens (Section 2); anything needing an internet connection.
 
@@ -349,7 +350,7 @@ The mod has its own tab, with a background of copper and redstone traces and a w
 | ADV-6 | Full Spectrum | Using all 16 colours |
 | ADV-7 | Now You See Me | Running a Controller that moves a piston |
 | ADV-8 | Going Up | Riding a Lift |
-| ADV-9 | Smart Home | Working 8 devices from a Main Panel |
+| ADV-9 | Smart Home | Working 8 different devices from a Main Panel |
 | ADV-10 | Logic Gate | Saving a first design |
 | ADV-11 | Pocket Circuit | Making a Circuit Block |
 | ADV-12 | Share The Love | Copying a Circuit Block |
@@ -471,6 +472,9 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | Lamp colour, age and wax | kept | kept | lamp does not move | drops as item data | kept to the last save |
 | Lamp brightness | kept | kept | lamp does not move | set again by its panel | kept to the last save |
 | Scenes | kept | kept | panel does not move | drop with the panel as item data | kept to the last save |
+| A lamp's own look from a Main Panel | kept | kept | lamp does not move | lost | kept to the last save |
+| A Main Panel's last known devices | kept | kept | panel does not move | lost | kept to the last save |
+| Devices worked towards Smart Home | kept | kept | not applicable | not applicable | kept to the last save |
 | Controller timeline and place | kept | kept | Controller does not move | timeline drops as item data | kept to the last save |
 | Circuit design | kept | kept | block does not move | drops as item data | kept to the last save |
 | Charge | kept | kept | cell does not move | drops as item data | kept to the last save |

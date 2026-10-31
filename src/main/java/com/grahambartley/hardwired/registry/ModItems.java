@@ -41,7 +41,9 @@ public final class ModItems {
           ModBlocks.WALL_SWITCH,
           ModBlocks.PUSH_BUTTON,
           ModBlocks.MOTION_SENSOR,
-          ModBlocks.DUSK_SENSOR);
+          ModBlocks.DUSK_SENSOR,
+          ModBlocks.CONTROLLER,
+          ModBlocks.MAIN_PANEL);
 
   private ModItems() {}
 

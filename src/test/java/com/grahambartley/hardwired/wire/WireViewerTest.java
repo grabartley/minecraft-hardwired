@@ -24,6 +24,14 @@ class WireViewerTest {
   private static final WireFace FACE = new WireFace(new BlockPos(0, 64, 0), Direction.UP);
   private static final WireFace NEXT = new WireFace(new BlockPos(1, 64, 0), Direction.UP);
 
+  @ParameterizedTest(name = "network owner {0}, override {1}: visible {2}")
+  @MethodSource("sight")
+  void aSealedNetworkShowsOnlyToItsOwnerOrAnOverride(
+      UUID owner, boolean override, boolean visible) {
+    WireNetwork network = new WireGrid().add(new WireCell(FACE, Hue.RED, owner));
+    assertEquals(visible, new WireViewer(ALICE, override).canSee(network));
+  }
+
   private static Stream<Arguments> sight() {
     return Stream.of(
         Arguments.of(null, false, true),

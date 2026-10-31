@@ -29,6 +29,7 @@ public final class WireGrid {
   private final Set<WireNetwork> networks = new HashSet<>();
   private final Set<WireNetwork> dirty = new LinkedHashSet<>();
   private final LongOpenHashSet touchChanges = new LongOpenHashSet();
+  private long lookClock;
 
   public boolean contains(WireCell cell) {
     return cells.containsKey(cell);
@@ -69,6 +70,18 @@ public final class WireGrid {
       }
     }
     return false;
+  }
+
+  public long nextLookStamp() {
+    return ++lookClock;
+  }
+
+  public long lookClock() {
+    return lookClock;
+  }
+
+  void restoreLookClock(long clock) {
+    lookClock = clock;
   }
 
   public int chunkVersion(long chunk) {
@@ -224,6 +237,7 @@ public final class WireGrid {
     WireNetwork fresh = newNetwork(network.color(), network.owner());
     fresh.setOn(network.isOn());
     fresh.setLook(network.look());
+    fresh.stampLook(network.lookStamp());
     fresh.rememberedInputs().addAll(network.rememberedInputs());
     for (WireCell cell : part) {
       move(cell, network, fresh);
@@ -251,6 +265,7 @@ public final class WireGrid {
     target.setOn(target.isOn() || other.isOn());
     if (target.look() == null) {
       target.setLook(other.look());
+      target.stampLook(other.lookStamp());
     }
     target.rememberedInputs().addAll(other.rememberedInputs());
     networks.remove(other);

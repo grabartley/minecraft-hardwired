@@ -13,6 +13,7 @@ public final class ModCriteria {
   public static final String PANEL_COLOR = "panel_color";
   public static final String SCENE_SAVED = "scene_saved";
   public static final String SHORT_CIRCUIT = "short_circuit";
+  public static final String CONTROLLER_PISTON = "controller_piston";
   public static final DeviceCriterion DEVICE =
       Criteria.register(Hardwired.MOD_ID + ":device", new DeviceCriterion());
 

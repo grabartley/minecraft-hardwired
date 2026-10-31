@@ -3,12 +3,15 @@ package com.grahambartley.hardwired.block;
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.advancement.DeviceCriterion;
 import com.grahambartley.hardwired.advancement.ModCriteria;
+import com.grahambartley.hardwired.device.PanelAction;
+import com.grahambartley.hardwired.device.PanelDevice;
+import com.grahambartley.hardwired.device.PanelKind;
+import com.grahambartley.hardwired.device.PanelRow;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.LampLook;
 import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.List;
-import java.util.Objects;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -35,7 +38,8 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public abstract class AbstractLampBlock extends Block implements BlockEntityProvider, WireDevice {
+public abstract class AbstractLampBlock extends Block
+    implements BlockEntityProvider, WireDevice, PanelDevice {
 
   public static final IntProperty LEVEL = IntProperty.of("level", 0, 15);
   public static final BooleanProperty LIT = Properties.LIT;
@@ -98,8 +102,9 @@ public abstract class AbstractLampBlock extends Block implements BlockEntityProv
     }
     WireEngine engine = WireEngine.of(world);
     List<BlockPos> parts = parts(pos, state);
-    LampLook look =
-        parts.stream().map(engine::lookAt).filter(Objects::nonNull).findFirst().orElse(null);
+    BlockPos lookPart =
+        parts.stream().filter(part -> engine.lookAt(part) != null).findFirst().orElse(pos);
+    LampLook look = lamp.lookOver(engine.lookAt(lookPart), engine.lookStampAt(lookPart));
     Hue color = look == null ? lamp.color() : look.color();
     int brightness = look == null ? LampLook.MAX_BRIGHTNESS : look.brightness();
     boolean changed = lamp.setLook(color, brightness);
@@ -114,6 +119,39 @@ public abstract class AbstractLampBlock extends Block implements BlockEntityProv
     if (changed) {
       lamp.markChanged(world.getTime());
     }
+  }
+
+  @Override
+  public BlockPos anchor(BlockPos pos, BlockState state) {
+    return lampPos(pos, state);
+  }
+
+  @Override
+  public PanelRow read(ServerWorld world, BlockPos pos, BlockState state) {
+    LampLook look =
+        world.getBlockEntity(lampPos(pos, state)) instanceof LampBlockEntity lamp
+            ? new LampLook(lamp.color(), lamp.brightness())
+            : LampLook.DEFAULT;
+    return new PanelRow(
+        pos,
+        PanelKind.LAMP,
+        state.get(LIT),
+        look.color(),
+        look.brightness(),
+        LampLook.MAX_BRIGHTNESS,
+        false);
+  }
+
+  @Override
+  public boolean work(
+      ServerWorld world, BlockPos pos, BlockState state, PanelAction action, LampLook look) {
+    if (action != PanelAction.SET_LOOK
+        || !(world.getBlockEntity(lampPos(pos, state)) instanceof LampBlockEntity lamp)) {
+      return false;
+    }
+    lamp.setOwnLook(look, WireEngine.of(world).nextLookStamp());
+    onWireChange(world, pos, state);
+    return true;
   }
 
   protected String litEvent(World world) {
@@ -172,6 +210,7 @@ public abstract class AbstractLampBlock extends Block implements BlockEntityProv
     Hue hue = Hue.ofDye(dye.getColor());
     if (world.getBlockEntity(pos) instanceof LampBlockEntity lamp
         && lamp.setLook(hue, lamp.brightness())) {
+      lamp.recolourOwnLook(hue);
       stack.decrementUnlessCreative(1, player);
       ModCriteria.DEVICE.trigger((ServerPlayerEntity) player, DeviceCriterion.colorEvent(hue));
       world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS, 1F, 1F);

@@ -1,6 +1,8 @@
 package com.grahambartley.hardwired.network;
 
+import com.grahambartley.hardwired.device.ControllerActions;
 import com.grahambartley.hardwired.device.DeviceActions;
+import com.grahambartley.hardwired.device.MainPanelActions;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.EditServerConfigC2SPayload;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.SyncServerConfigS2CPayload;
 import com.grahambartley.hardwired.network.handler.ServerConfigNetworkHandler;
@@ -30,6 +32,15 @@ public final class ModNetworking {
     PayloadTypeRegistry.playC2S().register(PanelActionPayload.ID, PanelActionPayload.CODEC);
     PayloadTypeRegistry.playC2S().register(JunctionSetPayload.ID, JunctionSetPayload.CODEC);
     PayloadTypeRegistry.playS2C().register(OpenDevicePayload.ID, OpenDevicePayload.CODEC);
+    PayloadTypeRegistry.playC2S().register(ControllerSetPayload.ID, ControllerSetPayload.CODEC);
+    PayloadTypeRegistry.playC2S().register(MainPanelActionPayload.ID, MainPanelActionPayload.CODEC);
+    PayloadTypeRegistry.playS2C().register(MainPanelViewPayload.ID, MainPanelViewPayload.CODEC);
+    ServerPlayNetworking.registerGlobalReceiver(
+        ControllerSetPayload.ID,
+        (payload, context) -> ControllerActions.save(context.player(), payload));
+    ServerPlayNetworking.registerGlobalReceiver(
+        MainPanelActionPayload.ID,
+        (payload, context) -> MainPanelActions.act(context.player(), payload));
     ServerPlayNetworking.registerGlobalReceiver(
         PanelActionPayload.ID,
         (payload, context) -> DeviceActions.panel(context.player(), payload));

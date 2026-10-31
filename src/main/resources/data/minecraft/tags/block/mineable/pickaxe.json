@@ -10,6 +10,8 @@
     "hardwired:wall_switch",
     "hardwired:push_button",
     "hardwired:motion_sensor",
-    "hardwired:dusk_sensor"
+    "hardwired:dusk_sensor",
+    "hardwired:controller",
+    "hardwired:main_panel"
   ]
 }

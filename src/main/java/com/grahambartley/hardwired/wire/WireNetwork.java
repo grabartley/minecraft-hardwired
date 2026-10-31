@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import net.minecraft.util.math.BlockPos;
 
 public final class WireNetwork {
 
@@ -20,6 +21,7 @@ public final class WireNetwork {
   private boolean on;
   private boolean tripped;
   private LampLook look;
+  private long lookStamp;
   private UUID owner;
 
   WireNetwork(Hue color, UUID owner) {
@@ -85,6 +87,18 @@ public final class WireNetwork {
 
   public void setLook(LampLook look) {
     this.look = look;
+  }
+
+  public long lookStamp() {
+    return lookStamp;
+  }
+
+  public void stampLook(long stamp) {
+    lookStamp = stamp;
+  }
+
+  public boolean isTouching(BlockPos pos) {
+    return touchedPositions.containsKey(pos.asLong());
   }
 
   public LongSet rememberedInputs() {

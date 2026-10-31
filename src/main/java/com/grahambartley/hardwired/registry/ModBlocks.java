@@ -3,9 +3,11 @@ package com.grahambartley.hardwired.registry;
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.AbstractLampBlock;
 import com.grahambartley.hardwired.block.ControlPanelBlock;
+import com.grahambartley.hardwired.block.ControllerBlock;
 import com.grahambartley.hardwired.block.CopperLampBlock;
 import com.grahambartley.hardwired.block.DuskClock;
 import com.grahambartley.hardwired.block.JunctionBlock;
+import com.grahambartley.hardwired.block.MainPanelBlock;
 import com.grahambartley.hardwired.block.MountedLampBlock;
 import com.grahambartley.hardwired.block.SensorBlock;
 import com.grahambartley.hardwired.block.StreetlightBlock;
@@ -29,6 +31,7 @@ public final class ModBlocks {
   private static final double[] WALL_LAMP_BOX = {5, 0, 5, 11, 10, 11};
   private static final double[] STRIP_BOX = {0, 0, 6, 16, 4, 10};
   private static final double[] PANEL_BOX = {2, 0, 1, 14, 2, 15};
+  private static final double[] MAIN_PANEL_BOX = {0, 0, 0, 16, 3, 16};
   private static final double[] SWITCH_BOX = {5, 0, 5, 11, 4, 11};
   private static final double[] BUTTON_BOX = {5, 0, 5, 11, 3, 11};
   private static final double[] MOTION_SENSOR_BOX = {5, 0, 5, 11, 4, 11};
@@ -79,6 +82,17 @@ public final class ModBlocks {
               deviceSettings(),
               DUSK_SENSOR_BOX,
               (world, pos) -> DuskClock.isDark(world.getTimeOfDay())));
+
+  public static final Block CONTROLLER =
+      register(
+          "controller",
+          new ControllerBlock(
+              deviceSettings()
+                  .mapColor(MapColor.DEEPSLATE_GRAY)
+                  .sounds(BlockSoundGroup.POLISHED_DEEPSLATE)
+                  .pistonBehavior(PistonBehavior.BLOCK)));
+  public static final Block MAIN_PANEL =
+      register("main_panel", new MainPanelBlock(deviceSettings(), MAIN_PANEL_BOX));
 
   private ModBlocks() {}
 

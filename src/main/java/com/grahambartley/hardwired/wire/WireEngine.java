@@ -67,17 +67,39 @@ public final class WireEngine {
     return grid.isPowered(pos.asLong());
   }
 
+  public boolean isPowered(BlockPos pos, Hue color) {
+    for (WireNetwork network : grid.networksTouching(pos)) {
+      if (network.color() == color && network.isOn()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public LampLook lookAt(BlockPos pos) {
+    return lookNetworkAt(pos).map(WireNetwork::look).orElse(null);
+  }
+
+  public long lookStampAt(BlockPos pos) {
+    return lookNetworkAt(pos).map(WireNetwork::lookStamp).orElse(0L);
+  }
+
+  private Optional<WireNetwork> lookNetworkAt(BlockPos pos) {
     return grid.networksTouching(pos).stream()
         .filter(network -> network.look() != null)
-        .min(Comparator.comparing(WireNetwork::color))
-        .map(WireNetwork::look)
-        .orElse(null);
+        .min(Comparator.comparing(WireNetwork::color));
+  }
+
+  public long nextLookStamp() {
+    state.markDirty();
+    return grid.nextLookStamp();
   }
 
   public void applyLook(BlockPos pos, LampLook look) {
+    long stamp = grid.nextLookStamp();
     for (WireNetwork network : grid.networksTouching(pos)) {
       network.setLook(look);
+      network.stampLook(stamp);
       pushNetwork(network);
     }
     state.markDirty();

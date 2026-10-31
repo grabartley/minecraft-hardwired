@@ -22,15 +22,7 @@ public final class ControlPanelScreen extends Screen {
   private static final int SWATCH_COLUMNS = 9;
   private static final int ROW = 16;
   private static final int PADDING = 10;
-  private static final int OPAQUE = 0xFF000000;
-  private static final int TITLE_COLOR = 0xFFFDF55F;
   private static final int SELECTED_COLOR = 0xFFFFFFFF;
-  private static final int BRASS_SHADOW = 0xFF8A5A0C;
-  private static final int BRASS = 0xFFF5C21C;
-  private static final int SLATE = 0xFF2A2632;
-  private static final int RIVET = 0xFFBE7E12;
-  private static final int RIVET_INSET = 6;
-  private static final int RIVET_SIZE = 2;
 
   private final BlockPos pos;
   private final ControlPanelBlockEntity panel;
@@ -111,29 +103,21 @@ public final class ControlPanelScreen extends Screen {
   @Override
   public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
     super.renderBackground(context, mouseX, mouseY, delta);
-    int right = left() + WIDTH;
-    int bottom = top() + HEIGHT;
-    context.fill(left(), top(), right, bottom, BRASS_SHADOW);
-    context.fill(left() + 1, top() + 1, right - 1, bottom - 1, BRASS);
-    context.fill(left() + 3, top() + 3, right - 3, bottom - 3, SLATE);
-    for (int x : new int[] {left() + RIVET_INSET, right - RIVET_INSET - RIVET_SIZE}) {
-      for (int y : new int[] {top() + RIVET_INSET, bottom - RIVET_INSET - RIVET_SIZE}) {
-        context.fill(x, y, x + RIVET_SIZE, y + RIVET_SIZE, RIVET);
-      }
-    }
+    SlatePlate.draw(context, left(), top(), WIDTH, HEIGHT);
   }
 
   @Override
   public void render(DrawContext context, int mouseX, int mouseY, float delta) {
     super.render(context, mouseX, mouseY, delta);
-    context.drawText(textRenderer, title, left() + PADDING + 4, top() + 9, TITLE_COLOR, false);
+    context.drawText(
+        textRenderer, title, left() + PADDING + 4, top() + 9, SlatePlate.TITLE_COLOR, false);
     Text selected = Text.translatable(look.color().lampKey());
     context.drawText(
         textRenderer,
         selected,
         left() + WIDTH - PADDING - textRenderer.getWidth(selected),
         top() + 8,
-        TITLE_COLOR,
+        SlatePlate.TITLE_COLOR,
         false);
     for (Hue hue : Hue.values()) {
       int x = left() + PADDING + hue.ordinal() % SWATCH_COLUMNS * (SWATCH + 6);
@@ -141,7 +125,7 @@ public final class ControlPanelScreen extends Screen {
       if (hue == look.color()) {
         context.fill(x + 2, y + 2, x + SWATCH - 2, y + SWATCH - 2, SELECTED_COLOR);
       }
-      context.fill(x + 4, y + 4, x + SWATCH - 4, y + SWATCH - 4, OPAQUE | hue.lampRgb());
+      context.fill(x + 4, y + 4, x + SWATCH - 4, y + SWATCH - 4, SlatePlate.OPAQUE | hue.lampRgb());
     }
   }
 
