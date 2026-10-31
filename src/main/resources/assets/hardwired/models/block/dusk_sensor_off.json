@@ -1,0 +1,9 @@
+{
+  "parent": "hardwired:block/base/dusk_sensor",
+  "textures": {
+    "0": "minecraft:block/copper_block",
+    "2": "minecraft:block/gold_block",
+    "6": "hardwired:block/dusk_dial_off",
+    "particle": "minecraft:block/copper_block"
+  }
+}

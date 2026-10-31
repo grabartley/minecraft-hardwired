@@ -24,7 +24,11 @@
       "com.grahambartley.hardwired.HardwiredClient"
     ],
     "fabric-gametest": [
-      "com.grahambartley.hardwired.gametest.HardwiredBootGameTest"
+      "com.grahambartley.hardwired.gametest.HardwiredBootGameTest",
+      "com.grahambartley.hardwired.gametest.WireGameTest"
+    ],
+    "modmenu": [
+      "com.grahambartley.hardwired.HardwiredModMenu"
     ]
   },
   "mixins": [

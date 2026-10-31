@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:copper_wire"
+    },
+    "title": {
+      "translate": "advancement.hardwired.short_circuit.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.short_circuit.description"
+    },
+    "frame": "task",
+    "hidden": true
+  },
+  "criteria": {
+    "cut": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "short_circuit"
+      }
+    }
+  },
+  "parent": "hardwired:live_wire"
+}

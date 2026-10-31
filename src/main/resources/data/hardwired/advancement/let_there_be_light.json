@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:copper_lamp"
+    },
+    "title": {
+      "translate": "advancement.hardwired.let_there_be_light.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.let_there_be_light.description"
+    },
+    "frame": "goal",
+    "hidden": false
+  },
+  "criteria": {
+    "lit": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "lamp_lit"
+      }
+    }
+  },
+  "parent": "hardwired:live_wire",
+  "rewards": {
+    "experience": 50
+  }
+}

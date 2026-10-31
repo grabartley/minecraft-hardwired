@@ -1,0 +1,9 @@
+{
+  "parent": "hardwired:block/base/push_button_on",
+  "textures": {
+    "0": "minecraft:block/copper_block",
+    "2": "minecraft:block/gold_block",
+    "4": "minecraft:block/calcite",
+    "particle": "minecraft:block/polished_blackstone"
+  }
+}

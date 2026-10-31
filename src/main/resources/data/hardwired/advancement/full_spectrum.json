@@ -1,0 +1,167 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:white_dye"
+    },
+    "title": {
+      "translate": "advancement.hardwired.full_spectrum.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.full_spectrum.description"
+    },
+    "frame": "goal",
+    "hidden": false
+  },
+  "criteria": {
+    "white": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_white"
+      }
+    },
+    "orange": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_orange"
+      }
+    },
+    "magenta": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_magenta"
+      }
+    },
+    "light_blue": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_light_blue"
+      }
+    },
+    "yellow": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_yellow"
+      }
+    },
+    "lime": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_lime"
+      }
+    },
+    "pink": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_pink"
+      }
+    },
+    "gray": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_gray"
+      }
+    },
+    "light_gray": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_light_gray"
+      }
+    },
+    "cyan": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_cyan"
+      }
+    },
+    "purple": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_purple"
+      }
+    },
+    "blue": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_blue"
+      }
+    },
+    "brown": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_brown"
+      }
+    },
+    "green": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_green"
+      }
+    },
+    "red": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_red"
+      }
+    },
+    "black": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "color_black"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light",
+  "requirements": [
+    [
+      "white"
+    ],
+    [
+      "orange"
+    ],
+    [
+      "magenta"
+    ],
+    [
+      "light_blue"
+    ],
+    [
+      "yellow"
+    ],
+    [
+      "lime"
+    ],
+    [
+      "pink"
+    ],
+    [
+      "gray"
+    ],
+    [
+      "light_gray"
+    ],
+    [
+      "cyan"
+    ],
+    [
+      "purple"
+    ],
+    [
+      "blue"
+    ],
+    [
+      "brown"
+    ],
+    [
+      "green"
+    ],
+    [
+      "red"
+    ],
+    [
+      "black"
+    ]
+  ],
+  "rewards": {
+    "experience": 50
+  }
+}

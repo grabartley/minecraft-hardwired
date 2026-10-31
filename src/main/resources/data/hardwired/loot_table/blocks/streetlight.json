@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "hardwired:streetlight",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "source": "block_entity",
+              "include": [
+                "hardwired:lamp_color"
+              ]
+            },
+            {
+              "function": "minecraft:copy_state",
+              "block": "hardwired:streetlight",
+              "properties": [
+                "age",
+                "waxed"
+              ]
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        },
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "hardwired:streetlight",
+          "properties": {
+            "part": "2"
+          }
+        }
+      ]
+    }
+  ]
+}

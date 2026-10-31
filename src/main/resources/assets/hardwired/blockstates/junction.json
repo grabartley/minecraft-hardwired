@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "rule=and": {
+      "model": "hardwired:block/junction_and"
+    },
+    "rule=or": {
+      "model": "hardwired:block/junction_or"
+    },
+    "rule=not": {
+      "model": "hardwired:block/junction_not"
+    }
+  }
+}

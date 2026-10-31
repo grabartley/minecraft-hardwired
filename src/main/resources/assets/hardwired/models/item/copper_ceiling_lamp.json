@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "hardwired:item/copper_ceiling_lamp_item",
+    "layer1": "hardwired:item/copper_ceiling_lamp_item_glow"
+  }
+}

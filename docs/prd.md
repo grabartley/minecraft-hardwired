@@ -16,7 +16,7 @@ Redstone can build a working computer, but it struggles to wire a house. Dust fi
 
 ### What The Mod Is
 
-Hardwired is practical electrics for Minecraft, built from copper and redstone. You drag wire across any wall, floor or ceiling and it disappears when you put it away. It takes up no space and follows simple rules. You wire up lamps, change their colour from a panel, build a hidden door without a machine behind it, and pack a whole circuit into one block. Redstone becomes the material everything is made from, so it is worth mining again.
+Hardwired is practical 1920s electrics for Minecraft, built from copper and redstone. You drag wire across any wall, floor or ceiling and it disappears when you put it away. It takes up no space and follows simple rules. You wire up lamps, change their colour from a panel, build a hidden door without a machine behind it, and pack a whole circuit into one block. Redstone becomes the material everything is made from, so it is worth mining again.
 
 ### Experience It Aims For
 
@@ -25,6 +25,7 @@ Hardwired is practical electrics for Minecraft, built from copper and redstone. 
 - **You can always see why.** Holding wire shows every connection and whether it is on.
 - **Depth when you want it.** A homeowner never has to meet a logic gate, and an engineer can still build real circuits.
 - **Vanilla plus.** Everything looks like it belongs in the game: copper, redstone and clean, simple shapes. It is sleek, never high resolution or plastic.
+- **Early electrics, in Minecraft.** Devices capture how exciting early electricity was: the showmanship and elegance of old world meeting new. Most of the mod is analog and styled on the 1920s, redrawn in vanilla's style: filament bulbs, cloth wire, tumbler switches, slate switchboards and brass dials, in Art Deco shapes. Anything that computes takes its look from the 1980s and 1990s instead.
 - **Vanilla at heart.** Recipes and behaviour echo what vanilla already teaches: copper ages, honeycomb waxes, lightning strikes rods, dyes colour things.
 
 ### What Makes It Different
@@ -45,7 +46,7 @@ Hardwired is practical electrics for Minecraft, built from copper and redstone. 
 - **Not an energy mod.** No voltages, generators to balance or power tiers. A lamp and a door never need a power plant.
 - **Not a logistics mod.** It moves signals, never items.
 - **Not a change to vanilla redstone.** Dust, repeaters and machines built from them behave as they always have.
-- **Not a modern decoration pack.** Devices are made of copper and redstone, not plastic and screens.
+- **Not a modern decoration pack.** Devices are made of copper and redstone, not plastic and screens. Nothing looks newer than the 1990s, and only computing blocks look newer than the 1920s.
 
 ## 2. Release Scope
 
@@ -79,7 +80,7 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | Do lights and doors need power? | No. Only bigger devices need a cell | POWER-2 |
 | When can a player start? | Early game, about when vanilla redstone becomes available | WIRE-2 |
 | What is the first wow moment? | Wiring up lamps, then changing their colour | ADV-2, ADV-3 |
-| Which look? | Copper and redstone, in vanilla's style | LOOK-1 to LOOK-4 |
+| Which look? | Early analog electrics in copper and redstone, with 1980s and 1990s computing, in vanilla's style | LOOK-1 to LOOK-4, LOOK-8, LOOK-9 |
 
 ## 3. Actors
 
@@ -102,7 +103,7 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | Term | Definition |
 |---|---|
 | Face | One of the six sides of a block |
-| Wire | A line along a block face, in plain copper or one of the 16 dye colours. It is saved with the chunk and takes no block space |
+| Wire | A line along a block face, in plain copper or one of the 16 dye colours. It is saved with the world and takes no block space |
 | Network | All wire of one colour joined together, plus everything connected to it |
 | Wire end | Any point where a wire touches a block it can connect to. A branching network has many |
 | Device | Any block in this mod that connects to wire |
@@ -488,6 +489,8 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | LOOK-5 | Blocks and items look like vanilla ones wherever they are held or shown: GUI, first and third person, item frames and the ground |
 | LOOK-6 | Sounds use vanilla first, and real recordings next |
 | LOOK-7 | A lit device shows a lit texture, as a redstone lamp does |
+| LOOK-8 | Every analog block, item, screen and icon is styled on real electrics of the 1920s and redrawn in vanilla's style, with the showmanship and elegance of old world meeting new. That means filament bulbs in glass, marquee bulb rails, cloth-covered wire on wooden spools, porcelain knobs, tumbler switches, doorbell presses, slate switchboards with brass dials and knife switches, and Art Deco stepped and fan shapes. Accents use vanilla's gold, blackstone and calcite tones beside copper |
+| LOOK-9 | Anything that computes, such as Junctions, Circuit Boards and Circuit Blocks, is styled on 1980s and 1990s computing and redrawn in vanilla's style: beige cases, green circuit boards, chips and green phosphor glyphs. Nothing in the mod looks like modern plastic, flat screens or LEDs |
 
 ### Accessibility
 

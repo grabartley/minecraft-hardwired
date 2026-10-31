@@ -1,0 +1,43 @@
+{
+  "variants": {
+    "part=0": {
+      "model": "hardwired:block/streetlight_base_0"
+    },
+    "part=2,age=0,lit=false": {
+      "model": "hardwired:block/streetlight_head_0_off"
+    },
+    "part=2,age=0,lit=true": {
+      "model": "hardwired:block/streetlight_head_0_on"
+    },
+    "part=2,age=1,lit=false": {
+      "model": "hardwired:block/streetlight_head_1_off"
+    },
+    "part=2,age=1,lit=true": {
+      "model": "hardwired:block/streetlight_head_1_on"
+    },
+    "part=2,age=2,lit=false": {
+      "model": "hardwired:block/streetlight_head_2_off"
+    },
+    "part=2,age=2,lit=true": {
+      "model": "hardwired:block/streetlight_head_2_on"
+    },
+    "part=2,age=3,lit=false": {
+      "model": "hardwired:block/streetlight_head_3_off"
+    },
+    "part=2,age=3,lit=true": {
+      "model": "hardwired:block/streetlight_head_3_on"
+    },
+    "part=1,age=0": {
+      "model": "hardwired:block/streetlight_post_0"
+    },
+    "part=1,age=1": {
+      "model": "hardwired:block/streetlight_post_1"
+    },
+    "part=1,age=2": {
+      "model": "hardwired:block/streetlight_post_2"
+    },
+    "part=1,age=3": {
+      "model": "hardwired:block/streetlight_post_3"
+    }
+  }
+}

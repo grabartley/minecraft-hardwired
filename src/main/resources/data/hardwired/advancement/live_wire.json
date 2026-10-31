@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:copper_wire"
+    },
+    "title": {
+      "translate": "advancement.hardwired.live_wire.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.live_wire.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "wire": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "hardwired:copper_wire"
+          }
+        ]
+      }
+    }
+  },
+  "parent": "hardwired:hardwired"
+}

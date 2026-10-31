@@ -1,0 +1,9 @@
+{
+  "parent": "hardwired:block/base/light_strip",
+  "textures": {
+    "0": "minecraft:block/copper_block",
+    "1": "hardwired:block/lamp_glass_off",
+    "2": "minecraft:block/gold_block",
+    "particle": "minecraft:block/copper_block"
+  }
+}

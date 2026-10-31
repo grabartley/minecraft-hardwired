@@ -1,0 +1,9 @@
+{
+  "parent": "hardwired:block/base/control_panel",
+  "textures": {
+    "2": "minecraft:block/gold_block",
+    "3": "minecraft:block/polished_blackstone",
+    "7": "hardwired:block/control_panel",
+    "particle": "minecraft:block/polished_blackstone"
+  }
+}
