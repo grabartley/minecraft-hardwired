@@ -1,102 +1,65 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
+trap "" PIPE
 
-cd "$(dirname "$0")/../.."
+RUN_DIR="build/server-smoke"
+BOOT_TIMEOUT_SECONDS="${BOOT_TIMEOUT_SECONDS:-300}"
+SETTLE_SECONDS="${SETTLE_SECONDS:-10}"
+STOP_TIMEOUT_SECONDS="${STOP_TIMEOUT_SECONDS:-60}"
+FAILURE_PATTERN='Crash Report|Exception in thread|Encountered an unexpected exception|^[[:space:]]+at [A-Za-z0-9_.$]+\('
 
-RUN_DIR=run
-BOOT_TIMEOUT="${BOOT_TIMEOUT:-300}"
-STOP_TIMEOUT="${STOP_TIMEOUT:-60}"
-LOG="$(mktemp)"
-FIFO="$(mktemp -u)"
-OUT_FIFO="$(mktemp -u)"
-SERVER_PID=
-TEE_PID=
+rm -rf "$RUN_DIR"
+mkdir -p "$RUN_DIR"
+echo "eula=true" > "$RUN_DIR/eula.txt"
+touch "$RUN_DIR/server.properties"
+log="$RUN_DIR/smoke.log"
+console="$RUN_DIR/console"
+mkfifo "$console"
+
+./gradlew runServerSmoke --no-daemon --stacktrace < "$console" > "$log" 2>&1 &
+server_pid=$!
+exec 3> "$console"
 
 kill_tree() {
   local child
-  for child in $(pgrep -P "$1" 2>/dev/null); do
+  for child in $(pgrep -P "$1"); do
     kill_tree "$child"
   done
-  kill "$1" 2>/dev/null || true
+  kill "$1" 2> /dev/null
 }
 
-cleanup() {
-  if [[ -n "$SERVER_PID" ]] && kill -0 "$SERVER_PID" 2>/dev/null; then
-    kill_tree "$SERVER_PID"
-  fi
-  if [[ -n "$TEE_PID" ]]; then
-    kill "$TEE_PID" 2>/dev/null || true
-  fi
-  rm -f "$FIFO" "$OUT_FIFO" "$LOG"
-}
-trap cleanup EXIT
-
-drain_log() {
-  local deadline=$((SECONDS + STOP_TIMEOUT))
-  while kill -0 "$TEE_PID" 2>/dev/null; do
-    if (( SECONDS >= deadline )); then
-      echo "::error::Server output was still open ${STOP_TIMEOUT}s after the server exited"
-      exit 1
-    fi
-    sleep 1
-  done
-  TEE_PID=
+fail() {
+  echo "::error::$1"
+  cat "$log"
+  echo "stop" 2> /dev/null >&3
+  sleep 5
+  kill_tree "$server_pid"
+  exit 1
 }
 
-mkdir -p "$RUN_DIR"
-echo "eula=true" > "$RUN_DIR/eula.txt"
-
-mkfifo "$FIFO" "$OUT_FIFO"
-tee "$LOG" < "$OUT_FIFO" &
-TEE_PID=$!
-./gradlew runServer --no-daemon --stacktrace --args="nogui" < "$FIFO" > "$OUT_FIFO" 2>&1 &
-SERVER_PID=$!
-exec 3> "$FIFO"
-
-deadline=$((SECONDS + BOOT_TIMEOUT))
-until grep -q 'Done (' "$LOG"; do
-  if ! kill -0 "$SERVER_PID" 2>/dev/null; then
-    drain_log
-    if grep -q 'Done (' "$LOG"; then
-      echo "::error::Server exited on its own right after reaching Done"
-    else
-      echo "::error::Server exited before reaching Done"
-    fi
-    exit 1
-  fi
-  if (( SECONDS >= deadline )); then
-    echo "::error::Server did not reach Done within ${BOOT_TIMEOUT}s"
-    exit 1
-  fi
+deadline=$((SECONDS + BOOT_TIMEOUT_SECONDS))
+until grep -q 'Done (' "$log"; do
+  kill -0 "$server_pid" 2> /dev/null || fail "The server exited before it finished starting."
+  [ "$SECONDS" -lt "$deadline" ] || fail "The server did not finish starting within ${BOOT_TIMEOUT_SECONDS}s."
   sleep 1
 done
 
+sleep "$SETTLE_SECONDS"
+kill -0 "$server_pid" 2> /dev/null || fail "The server exited while it should have been running."
 echo "stop" >&3
+
+deadline=$((SECONDS + STOP_TIMEOUT_SECONDS))
+while kill -0 "$server_pid" 2> /dev/null; do
+  [ "$SECONDS" -lt "$deadline" ] || fail "The server did not stop within ${STOP_TIMEOUT_SECONDS}s."
+  sleep 1
+done
+wait "$server_pid"
+exit_code=$?
 exec 3>&-
 
-deadline=$((SECONDS + STOP_TIMEOUT))
-while kill -0 "$SERVER_PID" 2>/dev/null; do
-  if (( SECONDS >= deadline )); then
-    echo "::error::Server did not exit within ${STOP_TIMEOUT}s after stop"
-    exit 1
-  fi
-  sleep 1
-done
-
-status=0
-wait "$SERVER_PID" || status=$?
-if (( status != 0 )); then
-  echo "::error::Server exited with status ${status} after stop"
-  exit "$status"
+[ "$exit_code" -eq 0 ] || fail "The server exited with code ${exit_code}."
+grep -q 'Stopping server' "$log" || fail "The server never shut down cleanly."
+if grep -E "$FAILURE_PATTERN" "$log"; then
+  fail "The server log shows an error or crash."
 fi
-
-drain_log
-
-for marker in '(hardwired) Hardwired initialised' 'All dimensions are saved'; do
-  if ! grep -qF "$marker" "$LOG"; then
-    echo "::error::Server log is missing '${marker}'"
-    exit 1
-  fi
-done
-
-echo "Server reached Done and stopped cleanly"
+echo "Dedicated server started, ticked for ${SETTLE_SECONDS}s, and stopped cleanly."

@@ -59,6 +59,12 @@ loom {
 			inherit gametest
 			name "Game Test Server"
 		}
+		serverSmoke {
+			server()
+			name "Server Smoke Boot"
+			runDir "build/server-smoke"
+			programArgs "--nogui"
+		}
 	}
 }
 

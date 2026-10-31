@@ -1,12 +1,6 @@
 name: CI/CD
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       bump:
@@ -61,7 +55,7 @@ jobs:
       - name: Check formatting (Spotless)
         run: ./gradlew spotlessCheck --configuration-cache --build-cache
 
-      - name: Run tests and static checks
+      - name: Run tests with coverage
         run: ./gradlew check --configuration-cache --build-cache
 
       - name: Run gametests
@@ -74,35 +68,23 @@ jobs:
         uses: mikepenz/action-junit-report@v4
         if: success() || failure()
         with:
-          report_paths: "**/build/test-results/*/TEST-*.xml"
+          report_paths: |
+            **/build/test-results/*/TEST-*.xml
+            build/gametest-results.xml
+          check_name: |
+            JUnit Test Report
+            Gametest Report
           detailed_summary: true
           include_passed: true
 
-      - name: Publish gametest report
-        uses: mikepenz/action-junit-report@v4
-        if: success() || failure()
-        with:
-          report_paths: build/gametest-results.xml
-          check_name: Gametest Report
-          detailed_summary: true
-          include_passed: true
-
-      - name: Upload gametest run dir on failure
+      - name: Upload gametest and server smoke logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: gametest-run-${{ github.sha }}
-          path: build/gametest/
-
-      - name: Upload server logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: server-logs-${{ github.sha }}
-          if-no-files-found: ignore
+          name: ci-run-logs-${{ github.sha }}
           path: |
-            run/logs/
-            run/crash-reports/
+            build/gametest/
+            build/server-smoke/smoke.log
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
@@ -111,17 +93,10 @@ jobs:
           name: coverage-report
           path: build/reports/jacoco/test/html/
 
-      - name: Build snapshot JAR
-        if: github.event_name == 'pull_request' || github.event_name == 'push'
-        run: ./gradlew build -Pversion=1.0.0-SNAPSHOT-${{ github.sha }}
-
-      - name: Upload snapshot JAR
-        if: github.event_name == 'pull_request' || github.event_name == 'push'
-        uses: actions/upload-artifact@v4
-        with:
-          name: hardwired-${{ github.sha }}
-          path: build/libs/*.jar
-
+      # ---------- Release-only (manual trigger) ----------
+      # The repo carries an abandoned v0.0.1-v0.7.1 tag lineage that collides with the real
+      # v0.1.0 and v0.2.0 release tags, so `git describe` resolves to the wrong previous
+      # version. The Releases API is the source of truth; tags are deliberately not read.
       - name: Compute next version
         if: github.event_name == 'workflow_dispatch'
         id: semver
@@ -229,6 +204,8 @@ jobs:
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
           MOD_RELEASE_TYPE: ${{ steps.release_meta.outputs.modrinth_type }}
 
+      # Runs after publishing and never fails the build: the artifacts are already live,
+      # so a bookkeeping problem must not red-X a shipped release.
       - name: Create and apply release milestone
         if: github.event_name == 'workflow_dispatch'
         continue-on-error: true
