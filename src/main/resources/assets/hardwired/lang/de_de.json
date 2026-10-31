@@ -290,5 +290,16 @@
   "screen.hardwired.intercom.prompt": "Sag etwas",
   "screen.hardwired.intercom.send": "Senden",
   "screen.hardwired.settings.intercomrange": "Reichweite der Sprechanlage (Blöcke)",
-  "screen.hardwired.settings.intercomrange.tooltip": "Wie weit von einer Sprechanlage entfernt Spieler ihre Zeilen hören."
+  "screen.hardwired.settings.intercomrange.tooltip": "Wie weit von einer Sprechanlage entfernt Spieler ihre Zeilen hören.",
+  "block.hardwired.lift": "Aufzug",
+  "block.hardwired.lift_floor": "Aufzugsetage",
+  "entity.hardwired.lift_car": "Aufzugskabine",
+  "device.hardwired.status.shaft_blocked": "Etwas blockiert den Schacht.",
+  "device.hardwired.status.no_lift": "Kein Aufzug darüber an seinem Draht.",
+  "device.hardwired.lift.called": "Aufzug gerufen.",
+  "device.hardwired.lift.going": "Fahrt zu Etage %s.",
+  "screen.hardwired.lift.floor": "Etage %s",
+  "screen.hardwired.lift.here": "Etage %s (hier)",
+  "advancement.hardwired.going_up.title": "Aufwärts",
+  "advancement.hardwired.going_up.description": "Fahre mit einem Aufzug in eine andere Etage"
 }

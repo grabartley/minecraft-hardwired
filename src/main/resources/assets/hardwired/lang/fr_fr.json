@@ -290,5 +290,16 @@
   "screen.hardwired.intercom.prompt": "Dites quelque chose",
   "screen.hardwired.intercom.send": "Envoyer",
   "screen.hardwired.settings.intercomrange": "Portée de l'interphone (blocs)",
-  "screen.hardwired.settings.intercomrange.tooltip": "Distance à laquelle un joueur entend les messages d'un interphone."
+  "screen.hardwired.settings.intercomrange.tooltip": "Distance à laquelle un joueur entend les messages d'un interphone.",
+  "block.hardwired.lift": "Ascenseur",
+  "block.hardwired.lift_floor": "Étage d'ascenseur",
+  "entity.hardwired.lift_car": "Cabine d'ascenseur",
+  "device.hardwired.status.shaft_blocked": "Quelque chose bloque la cage.",
+  "device.hardwired.status.no_lift": "Aucun Ascenseur au-dessus sur son fil.",
+  "device.hardwired.lift.called": "Ascenseur appelé.",
+  "device.hardwired.lift.going": "En route vers l'étage %s.",
+  "screen.hardwired.lift.floor": "Étage %s",
+  "screen.hardwired.lift.here": "Étage %s (ici)",
+  "advancement.hardwired.going_up.title": "Ça monte",
+  "advancement.hardwired.going_up.description": "Prendre un Ascenseur vers un autre étage"
 }

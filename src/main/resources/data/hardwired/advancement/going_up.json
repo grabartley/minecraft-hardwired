@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:lift"
+    },
+    "title": {
+      "translate": "advancement.hardwired.going_up.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.going_up.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "rode": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "lift_ridden"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light"
+}

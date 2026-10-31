@@ -9,7 +9,9 @@ public enum DeviceStatus {
   NO_DISC("no_disc"),
   NO_SPEAKER("no_speaker"),
   NO_RADIO("no_radio"),
-  SONG_ENDED("song_ended");
+  SONG_ENDED("song_ended"),
+  SHAFT_BLOCKED("shaft_blocked"),
+  NO_LIFT("no_lift");
 
   private final String id;
 

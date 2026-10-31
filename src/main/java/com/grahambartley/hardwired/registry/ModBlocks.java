@@ -11,6 +11,8 @@ import com.grahambartley.hardwired.block.CopperLampBlock;
 import com.grahambartley.hardwired.block.DuskClock;
 import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.block.JunctionBlock;
+import com.grahambartley.hardwired.block.LiftBlock;
+import com.grahambartley.hardwired.block.LiftFloorBlock;
 import com.grahambartley.hardwired.block.MainPanelBlock;
 import com.grahambartley.hardwired.block.MountedLampBlock;
 import com.grahambartley.hardwired.block.RadioBlock;
@@ -145,6 +147,17 @@ public final class ModBlocks {
       register("speaker", new SpeakerBlock(deviceSettings(), SPEAKER_BOX));
   public static final Block INTERCOM =
       register("intercom", new IntercomBlock(deviceSettings(), INTERCOM_BOX));
+
+  public static final Block LIFT =
+      register(
+          "lift",
+          new LiftBlock(
+              deviceSettings()
+                  .mapColor(MapColor.DEEPSLATE_GRAY)
+                  .sounds(BlockSoundGroup.POLISHED_DEEPSLATE)
+                  .pistonBehavior(PistonBehavior.BLOCK)));
+  public static final Block LIFT_FLOOR =
+      register("lift_floor", new LiftFloorBlock(deviceSettings()));
 
   private ModBlocks() {}
 

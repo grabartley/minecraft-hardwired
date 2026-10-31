@@ -21,6 +21,8 @@
     "hardwired:alarm",
     "hardwired:radio",
     "hardwired:speaker",
-    "hardwired:intercom"
+    "hardwired:intercom",
+    "hardwired:lift",
+    "hardwired:lift_floor"
   ]
 }

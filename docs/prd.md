@@ -291,10 +291,10 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 |---|---|
 | POWER-1 | A Redstone Cell stores charge. Using redstone dust or a block of redstone on it fills it, using the item up. A dust adds `dustCharge` and a block adds nine times that. An item is used only when all of its charge fits, so a nearly full cell refuses it, says so and keeps the item in the hand, and a cell never holds more than its capacity |
 | POWER-2 | Only the Lift, Alarm, Radio, Speaker and Intercom need charge. Wire, lamps, panels, switches, Controllers, Circuit Blocks and vanilla blocks never do |
-| POWER-3 | A device that needs charge uses it from a cell on its network, only while running. Alarms, Radios and Speakers pay once a second, starting with the second they start in, and an Intercom pays per line |
+| POWER-3 | A device that needs charge uses it from a cell on its network, only while running. Alarms, Radios and Speakers pay once a second, starting with the second they start in, an Intercom pays per line, and a Lift pays `chargePerBlock` for each block it moves, as it enters the block |
 | POWER-4 | A Solar Panel, built from daylight detectors, slowly fills cells on its network by day. It reads sky light as a daylight detector does, counts as day from a reading of 8, shows it is working with its lit state, and earns nothing while its chunk is unloaded |
 | POWER-5 | Lightning striking a vanilla lightning rod that wire touches fills the cells on that wire, once per bolt |
-| POWER-6 | A device that runs out of charge stops, says why when looked at, and starts again when charged. A stopped device shows its reason under the crosshair and on using it: no cell on its wire, out of charge, wire off, no disc, no Speaker, no Radio playing or song ended. A device out of charge checks once a second, so it restarts within a second of charge arriving |
+| POWER-6 | A device that runs out of charge stops, says why when looked at, and starts again when charged. A stopped device shows its reason under the crosshair and on using it: no cell on its wire, out of charge, wire off, no disc, no Speaker, no Radio playing, song ended, shaft blocked or no Lift on its wire. A device out of charge checks once a second, so it restarts within a second of charge arriving. A Lift that runs out mid-ride stops, tells its riders why, then lowers them free of charge at half speed to the nearest floor below and opens the gate, or gives them Slow Falling if there is no floor below. It drops its waiting calls, and once charged it stays where it is and answers the next call |
 | POWER-7 | A cell shows how full it is in its look, without a number: five looks, empty only at no charge and full from just over three quarters |
 
 **Not supported:** generators that burn other fuels; cables with limited capacity; voltage.
@@ -307,13 +307,14 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 
 | ID | Requirement |
 |---|---|
-| DEV-1 | A Lift moves players between Lift Floors on a wired shaft |
+| DEV-1 | A Lift moves players between Lift Floors on a wired shaft. The Lift is a winch head at the top of a one block wide shaft, and each Lift Floor is a two block tall folding gate that opens on to the shaft and shares a wire network with the Lift. Floors at the same height count as one floor, numbered from the bottom. Using a gate calls the car to that floor. Using a gate with the car there lists the floors, and choosing one takes every player standing in the car there and sets them down in the gate, facing out. Calls wait their turn in order. The first use of a shaft brings the car to that floor. A gate has full collision while closed, and only the car opens it: hands and redstone do not. Sneaking does not leave a moving car. Only players ride |
 | DEV-2 | An Alarm sounds when its network turns on. It mounts on a floor, wall or ceiling, rings a vanilla bell once a second while its network is on and it has charge, and shows that in its powered look |
 | DEV-3 | A Speaker plays a music disc from a Radio on its network, so one Radio can fill a house. A Radio holds one disc: using a disc puts it in, using an empty hand takes it out, and breaking the Radio drops it. A Radio plays once it has a disc, a Speaker on its network and charge, whether or not the wire is on, and each Speaker plays the disc as a jukebox would, heard around the Speaker. A Radio with no Speaker stays quiet, uses no charge and says so. A song plays once: when it ends everything stops, and taking the disc out and putting it back plays it again. A song cut off by running out of charge, or a lost Speaker, starts from the top. Breaking a Speaker stops its sound. Note particles and a playing look show it working with the sound off |
 | DEV-4 | An Intercom shares a chat line with other Intercoms on its network. Using it opens a one-line box of up to 256 characters. A line follows chat rules: the server strips characters chat forbids, a player with chat hidden cannot send, only players with full chat receive it, and a player may send one line a second. Every player within `intercomRange` blocks of any Intercom on the network hears it, each Intercom rings briefly, and the line costs `intercomChargePerLine` |
 | DEV-5 | A Main Panel on a network lists its lamps, Controllers and switches and works them from one screen, with up to 128 rows. It flips switches, runs or stops Controllers, and sets the colour and brightness of one lamp. A stopped Controller finishes its step and holds there, and Run carries on forwards, or backwards from the end. A lamp set this way keeps that look until a Control Panel next changes its network |
 | DEV-6 | Every device has a plain name, a recipe in copper and redstone, and a sound that fits vanilla |
 | DEV-7 | A Main Panel lists only networks the player may see (PERM-4), and every action checks reach of the panel, build rights and that the device is still on a network the player may see. A device in an unloaded chunk shows its last known state and cannot be worked, and other wire points there are counted as unknown |
+| DEV-8 | A Lift never hurts its riders. A block in the way refuses the trip, or sends a moving car back to the last floor it can reach. A rider who disconnects is set down in the nearest gate, and the car carries on. Breaking the Lift removes the car, closes the gates and sets riders down in the nearest gate. If no gate is left, riders get Slow Falling for long enough to land |
 
 **Not supported:** video screens (Section 2); anything needing an internet connection.
 
@@ -350,7 +351,7 @@ The mod has its own tab, with a background of copper and redstone traces and a w
 | ADV-5 | Scene Stealer | Saving a scene |
 | ADV-6 | Full Spectrum | Using all 16 colours |
 | ADV-7 | Now You See Me | Running a Controller that moves a piston |
-| ADV-8 | Going Up | Riding a Lift |
+| ADV-8 | Going Up | Finishing a ride in a Lift |
 | ADV-9 | Smart Home | Working 8 different devices from a Main Panel |
 | ADV-10 | Logic Gate | Saving a first design |
 | ADV-11 | Pocket Circuit | Making a Circuit Block |

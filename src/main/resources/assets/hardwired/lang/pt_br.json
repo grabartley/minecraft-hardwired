@@ -290,5 +290,16 @@
   "screen.hardwired.intercom.prompt": "Diga algo",
   "screen.hardwired.intercom.send": "Enviar",
   "screen.hardwired.settings.intercomrange": "Alcance do interfone (blocos)",
-  "screen.hardwired.settings.intercomrange.tooltip": "A que distância de um interfone um jogador ouve as mensagens."
+  "screen.hardwired.settings.intercomrange.tooltip": "A que distância de um interfone um jogador ouve as mensagens.",
+  "block.hardwired.lift": "Elevador",
+  "block.hardwired.lift_floor": "Andar de Elevador",
+  "entity.hardwired.lift_car": "Cabine de Elevador",
+  "device.hardwired.status.shaft_blocked": "Algo está bloqueando o poço.",
+  "device.hardwired.status.no_lift": "Nenhum Elevador acima no seu fio.",
+  "device.hardwired.lift.called": "Elevador chamado.",
+  "device.hardwired.lift.going": "Indo para o andar %s.",
+  "screen.hardwired.lift.floor": "Andar %s",
+  "screen.hardwired.lift.here": "Andar %s (aqui)",
+  "advancement.hardwired.going_up.title": "Subindo",
+  "advancement.hardwired.going_up.description": "Ande de Elevador até outro andar"
 }

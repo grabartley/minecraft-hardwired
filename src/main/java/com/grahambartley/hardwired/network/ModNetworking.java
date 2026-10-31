@@ -5,6 +5,7 @@ import com.grahambartley.hardwired.device.ControllerActions;
 import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.device.IntercomActions;
 import com.grahambartley.hardwired.device.MainPanelActions;
+import com.grahambartley.hardwired.lift.LiftActions;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.EditServerConfigC2SPayload;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.SyncServerConfigS2CPayload;
 import com.grahambartley.hardwired.network.handler.ServerConfigNetworkHandler;
@@ -40,6 +41,10 @@ public final class ModNetworking {
     PayloadTypeRegistry.playC2S().register(CircuitActionPayload.ID, CircuitActionPayload.CODEC);
     PayloadTypeRegistry.playS2C().register(CircuitResultPayload.ID, CircuitResultPayload.CODEC);
     PayloadTypeRegistry.playC2S().register(IntercomSayPayload.ID, IntercomSayPayload.CODEC);
+    PayloadTypeRegistry.playC2S().register(LiftChoosePayload.ID, LiftChoosePayload.CODEC);
+    PayloadTypeRegistry.playS2C().register(LiftViewPayload.ID, LiftViewPayload.CODEC);
+    ServerPlayNetworking.registerGlobalReceiver(
+        LiftChoosePayload.ID, (payload, context) -> LiftActions.choose(context.player(), payload));
     ServerPlayNetworking.registerGlobalReceiver(
         IntercomSayPayload.ID,
         (payload, context) -> IntercomActions.say(context.player(), payload));

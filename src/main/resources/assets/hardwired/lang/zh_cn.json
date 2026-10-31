@@ -290,5 +290,16 @@
   "screen.hardwired.intercom.prompt": "说点什么",
   "screen.hardwired.intercom.send": "发送",
   "screen.hardwired.settings.intercomrange": "对讲机范围(方块)",
-  "screen.hardwired.settings.intercomrange.tooltip": "玩家在距对讲机多远内能听到消息。"
+  "screen.hardwired.settings.intercomrange.tooltip": "玩家在距对讲机多远内能听到消息。",
+  "block.hardwired.lift": "电梯",
+  "block.hardwired.lift_floor": "电梯楼层",
+  "entity.hardwired.lift_car": "电梯轿厢",
+  "device.hardwired.status.shaft_blocked": "有东西挡住了井道。",
+  "device.hardwired.status.no_lift": "它的线路上方没有电梯。",
+  "device.hardwired.lift.called": "已呼叫电梯。",
+  "device.hardwired.lift.going": "正在前往 %s 层。",
+  "screen.hardwired.lift.floor": "%s 层",
+  "screen.hardwired.lift.here": "%s 层(此处)",
+  "advancement.hardwired.going_up.title": "上行",
+  "advancement.hardwired.going_up.description": "乘坐电梯前往另一层"
 }

@@ -290,5 +290,16 @@
   "screen.hardwired.intercom.prompt": "Say something",
   "screen.hardwired.intercom.send": "Send",
   "screen.hardwired.settings.intercomrange": "Intercom Range (blocks)",
-  "screen.hardwired.settings.intercomrange.tooltip": "How far from an Intercom a player hears its lines."
+  "screen.hardwired.settings.intercomrange.tooltip": "How far from an Intercom a player hears its lines.",
+  "block.hardwired.lift": "Lift",
+  "block.hardwired.lift_floor": "Lift Floor",
+  "entity.hardwired.lift_car": "Lift Car",
+  "device.hardwired.status.shaft_blocked": "Something is blocking the shaft.",
+  "device.hardwired.status.no_lift": "No Lift above on its wire.",
+  "device.hardwired.lift.called": "Lift called.",
+  "device.hardwired.lift.going": "Going to floor %s.",
+  "screen.hardwired.lift.floor": "Floor %s",
+  "screen.hardwired.lift.here": "Floor %s (here)",
+  "advancement.hardwired.going_up.title": "Going Up",
+  "advancement.hardwired.going_up.description": "Ride a Lift to another floor"
 }

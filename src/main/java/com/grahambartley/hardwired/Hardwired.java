@@ -5,10 +5,12 @@ import com.grahambartley.hardwired.command.HardwiredCommand;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.device.CircuitActions;
 import com.grahambartley.hardwired.device.IntercomActions;
+import com.grahambartley.hardwired.lift.LiftActions;
 import com.grahambartley.hardwired.network.ModNetworking;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
+import com.grahambartley.hardwired.registry.ModEntities;
 import com.grahambartley.hardwired.registry.ModItems;
 import com.grahambartley.hardwired.server.ServerConfigService;
 import com.grahambartley.hardwired.wire.WireEngine;
@@ -35,6 +37,7 @@ public class Hardwired implements ModInitializer {
     ModComponents.register();
     ModBlocks.register();
     ModBlockEntities.register();
+    ModEntities.register();
     ModItems.register();
     ModNetworking.register();
     ModCriteria.register();
@@ -53,6 +56,7 @@ public class Hardwired implements ModInitializer {
           WireView.forget(handler.getPlayer());
           CircuitActions.forget(handler.getPlayer());
           IntercomActions.forget(handler.getPlayer());
+          LiftActions.forget(handler.getPlayer());
         });
     LOGGER.info("Hardwired initialised");
   }

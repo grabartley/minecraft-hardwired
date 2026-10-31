@@ -290,5 +290,16 @@
   "screen.hardwired.intercom.prompt": "Скажите что-нибудь",
   "screen.hardwired.intercom.send": "Отправить",
   "screen.hardwired.settings.intercomrange": "Дальность интеркома (блоки)",
-  "screen.hardwired.settings.intercomrange.tooltip": "На каком расстоянии от интеркома игрок слышит сообщения."
+  "screen.hardwired.settings.intercomrange.tooltip": "На каком расстоянии от интеркома игрок слышит сообщения.",
+  "block.hardwired.lift": "Лифт",
+  "block.hardwired.lift_floor": "Этаж лифта",
+  "entity.hardwired.lift_car": "Кабина лифта",
+  "device.hardwired.status.shaft_blocked": "Что-то мешает в шахте.",
+  "device.hardwired.status.no_lift": "На его проводе нет Лифта сверху.",
+  "device.hardwired.lift.called": "Лифт вызван.",
+  "device.hardwired.lift.going": "Едем на этаж %s.",
+  "screen.hardwired.lift.floor": "Этаж %s",
+  "screen.hardwired.lift.here": "Этаж %s (здесь)",
+  "advancement.hardwired.going_up.title": "Вверх",
+  "advancement.hardwired.going_up.description": "Прокатитесь на Лифте на другой этаж"
 }

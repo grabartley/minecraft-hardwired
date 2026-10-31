@@ -8,6 +8,7 @@ import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.LampBlockEntity;
 import com.grahambartley.hardwired.client.DeviceHud;
+import com.grahambartley.hardwired.client.LiftCarRenderer;
 import com.grahambartley.hardwired.client.WireDrag;
 import com.grahambartley.hardwired.client.WireHud;
 import com.grahambartley.hardwired.client.WireRenderer;
@@ -17,6 +18,7 @@ import com.grahambartley.hardwired.client.anim.DeviceAnimations;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
 import com.grahambartley.hardwired.network.CircuitResultPayload;
+import com.grahambartley.hardwired.network.LiftViewPayload;
 import com.grahambartley.hardwired.network.MainPanelViewPayload;
 import com.grahambartley.hardwired.network.OpenDevicePayload;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.SyncServerConfigS2CPayload;
@@ -26,12 +28,14 @@ import com.grahambartley.hardwired.network.WireViewClearPayload;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
+import com.grahambartley.hardwired.registry.ModEntities;
 import com.grahambartley.hardwired.registry.ModItems;
 import com.grahambartley.hardwired.screen.CircuitBoardScreen;
 import com.grahambartley.hardwired.screen.ControlPanelScreen;
 import com.grahambartley.hardwired.screen.ControllerScreen;
 import com.grahambartley.hardwired.screen.IntercomScreen;
 import com.grahambartley.hardwired.screen.JunctionScreen;
+import com.grahambartley.hardwired.screen.LiftScreen;
 import com.grahambartley.hardwired.screen.MainPanelScreen;
 import com.grahambartley.hardwired.wire.Hue;
 import java.util.List;
@@ -41,6 +45,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -81,6 +86,9 @@ public class HardwiredClient implements ClientModInitializer {
     ClientPlayNetworking.registerGlobalReceiver(
         MainPanelViewPayload.ID, (payload, context) -> showMainPanel(context.client(), payload));
     ClientPlayNetworking.registerGlobalReceiver(
+        LiftViewPayload.ID,
+        (payload, context) -> context.client().setScreen(new LiftScreen(payload)));
+    ClientPlayNetworking.registerGlobalReceiver(
         CircuitResultPayload.ID,
         (payload, context) -> showCircuitResult(context.client(), payload));
     ClientPlayNetworking.registerGlobalReceiver(
@@ -97,6 +105,8 @@ public class HardwiredClient implements ClientModInitializer {
     ClientSettingsStore.load(FabricLoader.getInstance().getConfigDir());
     DeviceAnimations.register();
     ANIMATED_TYPES.forEach(HardwiredClient::registerAnimated);
+    LiftCarRenderer.registerModel();
+    EntityRendererRegistry.register(ModEntities.LIFT_CAR, LiftCarRenderer::new);
   }
 
   private static <T extends BlockEntity> void registerAnimated(BlockEntityType<T> type) {
@@ -147,7 +157,9 @@ public class HardwiredClient implements ClientModInitializer {
         ModBlocks.ALARM,
         ModBlocks.RADIO,
         ModBlocks.SPEAKER,
-        ModBlocks.INTERCOM);
+        ModBlocks.INTERCOM,
+        ModBlocks.LIFT,
+        ModBlocks.LIFT_FLOOR);
     ColorProviderRegistry.BLOCK.register(
         (state, world, pos, tintIndex) -> {
           if (world == null

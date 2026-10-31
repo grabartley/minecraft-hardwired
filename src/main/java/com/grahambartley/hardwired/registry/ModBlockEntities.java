@@ -80,7 +80,11 @@ public final class ModBlockEntities {
           Registries.BLOCK_ENTITY_TYPE,
           Identifier.of(Hardwired.MOD_ID, "electronic"),
           BlockEntityType.Builder.create(
-                  ElectronicBlockEntity::new, ModBlocks.ALARM, ModBlocks.INTERCOM)
+                  ElectronicBlockEntity::new,
+                  ModBlocks.ALARM,
+                  ModBlocks.INTERCOM,
+                  ModBlocks.LIFT,
+                  ModBlocks.LIFT_FLOOR)
               .build(null));
 
   public static final BlockEntityType<RadioBlockEntity> RADIO =
