@@ -1,0 +1,7 @@
+{
+  "parent": "hardwired:block/controller",
+  "textures": {
+    "7": "minecraft:block/redstone_lamp_on",
+    "14": "minecraft:block/redstone_lamp_on"
+  }
+}

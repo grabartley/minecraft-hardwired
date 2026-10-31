@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,running=false": {
+      "model": "hardwired:block/controller"
+    },
+    "facing=north,running=true": {
+      "model": "hardwired:block/controller_running"
+    },
+    "facing=east,running=false": {
+      "model": "hardwired:block/controller",
+      "y": 90
+    },
+    "facing=east,running=true": {
+      "model": "hardwired:block/controller_running",
+      "y": 90
+    },
+    "facing=south,running=false": {
+      "model": "hardwired:block/controller",
+      "y": 180
+    },
+    "facing=south,running=true": {
+      "model": "hardwired:block/controller_running",
+      "y": 180
+    },
+    "facing=west,running=false": {
+      "model": "hardwired:block/controller",
+      "y": 270
+    },
+    "facing=west,running=true": {
+      "model": "hardwired:block/controller_running",
+      "y": 270
+    }
+  }
+}
