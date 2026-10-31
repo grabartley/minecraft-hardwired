@@ -1,0 +1,95 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:main_panel"
+    },
+    "title": {
+      "translate": "advancement.hardwired.smart_home.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.smart_home.description"
+    },
+    "frame": "challenge",
+    "hidden": false
+  },
+  "criteria": {
+    "device_1": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "panel_device_1"
+      }
+    },
+    "device_2": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "panel_device_2"
+      }
+    },
+    "device_3": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "panel_device_3"
+      }
+    },
+    "device_4": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "panel_device_4"
+      }
+    },
+    "device_5": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "panel_device_5"
+      }
+    },
+    "device_6": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "panel_device_6"
+      }
+    },
+    "device_7": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "panel_device_7"
+      }
+    },
+    "device_8": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "panel_device_8"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light",
+  "requirements": [
+    [
+      "device_1"
+    ],
+    [
+      "device_2"
+    ],
+    [
+      "device_3"
+    ],
+    [
+      "device_4"
+    ],
+    [
+      "device_5"
+    ],
+    [
+      "device_6"
+    ],
+    [
+      "device_7"
+    ],
+    [
+      "device_8"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  }
+}

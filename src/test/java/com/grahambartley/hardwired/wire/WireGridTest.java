@@ -6,12 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class WireGridTest {
@@ -138,5 +144,123 @@ class WireGridTest {
     assertFalse(grid.isPowered(occupant));
     grid.networkOf(floor(0, Hue.PLAIN)).setOn(true);
     assertTrue(grid.isPowered(occupant));
+  }
+
+  private static final UUID ALICE = new UUID(1, 1);
+  private static final UUID BOB = new UUID(2, 2);
+
+  private static WireCell sealed(int x, UUID owner) {
+    return floor(x, Hue.PLAIN).ownedBy(owner);
+  }
+
+  @ParameterizedTest(name = "{0} beside {1}")
+  @MethodSource("differentOwners")
+  void wireOfDifferentOwnersNeverJoins(UUID first, UUID second) {
+    WireGrid grid = new WireGrid();
+    grid.add(floor(0, Hue.PLAIN).ownedBy(first));
+    grid.add(floor(1, Hue.PLAIN).ownedBy(second));
+    assertEquals(2, grid.networks().size());
+  }
+
+  private static Stream<Arguments> differentOwners() {
+    return Stream.of(Arguments.of(ALICE, BOB), Arguments.of(ALICE, null), Arguments.of(null, BOB));
+  }
+
+  @Test
+  void twoOwnersCanHoldTheSameFaceAndColour() {
+    WireGrid grid = new WireGrid();
+    grid.add(floor(0, Hue.PLAIN));
+    grid.add(sealed(0, ALICE));
+    grid.add(sealed(0, BOB));
+    assertEquals(3, grid.networks().size());
+    assertEquals(3, grid.cellsOn(floor(0, Hue.PLAIN).face().pos()).size());
+  }
+
+  @Test
+  void aSplitSealedNetworkStaysSealedOnBothSides() {
+    WireGrid grid = new WireGrid();
+    IntStream.range(0, 5).forEach(x -> grid.add(sealed(x, ALICE)));
+    grid.remove(sealed(2, ALICE));
+    assertEquals(2, grid.networks().size());
+    grid.networks().forEach(network -> assertEquals(ALICE, network.owner()));
+  }
+
+  @Test
+  void reowningMovesEveryCellAndKeepsState() {
+    WireGrid grid = line(3);
+    WireNetwork network = grid.networkOf(floor(1, Hue.PLAIN));
+    network.setOn(true);
+    network.setTripped(true);
+    grid.drainDirty();
+    assertTrue(grid.reown(network, ALICE).isEmpty());
+    assertFalse(grid.contains(floor(1, Hue.PLAIN)));
+    assertSame(network, grid.networkOf(sealed(1, ALICE)));
+    assertEquals(ALICE, network.owner());
+    assertTrue(network.isOn());
+    assertTrue(network.isTripped());
+    assertTrue(network.touches().size() > 0);
+    assertEquals(List.of(network), grid.drainDirty());
+  }
+
+  @Test
+  void reowningChangesTheChunkVersionSoViewersAreResent() {
+    WireGrid grid = line(1);
+    long chunk = new ChunkPos(floor(0, Hue.PLAIN).face().pos()).toLong();
+    int before = grid.chunkVersion(chunk);
+    grid.reown(grid.networkOf(floor(0, Hue.PLAIN)), ALICE);
+    assertTrue(grid.chunkVersion(chunk) > before);
+  }
+
+  @Test
+  void reowningJoinsTheNewOwnersWireAndLeavesOthersAlone() {
+    WireGrid grid = new WireGrid();
+    grid.add(sealed(0, ALICE));
+    grid.add(floor(1, Hue.PLAIN));
+    grid.add(sealed(2, BOB));
+    assertEquals(2, grid.sizeAfterReowning(grid.networkOf(floor(1, Hue.PLAIN)), ALICE));
+    grid.reown(grid.networkOf(floor(1, Hue.PLAIN)), ALICE);
+    assertEquals(2, grid.networkOf(sealed(0, ALICE)).size());
+    assertEquals(1, grid.networkOf(sealed(2, BOB)).size());
+  }
+
+  @Test
+  void reowningOntoAnOccupiedFaceReportsTheSpareCell() {
+    WireGrid grid = new WireGrid();
+    grid.add(sealed(0, ALICE));
+    grid.add(sealed(1, ALICE));
+    grid.add(floor(1, Hue.PLAIN));
+    grid.add(floor(2, Hue.PLAIN));
+    assertEquals(List.of(floor(1, Hue.PLAIN)), grid.reown(grid.networkOf(sealed(0, ALICE)), null));
+    assertEquals(3, grid.networkOf(floor(0, Hue.PLAIN)).size());
+    assertEquals(1, grid.networks().size());
+  }
+
+  @Test
+  void sizeAfterAddingSealedWireCountsOpenWireAndWhatThatReaches() {
+    WireGrid grid = new WireGrid();
+    grid.add(floor(1, Hue.PLAIN));
+    grid.add(floor(2, Hue.PLAIN));
+    grid.add(sealed(3, ALICE));
+    grid.add(sealed(4, ALICE));
+    grid.add(sealed(3, BOB));
+    assertEquals(5, grid.sizeAfterAdding(sealed(0, ALICE)));
+    assertEquals(3, grid.sizeAfterAdding(floor(0, Hue.PLAIN)));
+  }
+
+  @ParameterizedTest(name = "wire at x={0}")
+  @ValueSource(ints = {-1, 0, 1})
+  void sealedOwnersAroundFindsTheFaceAndItsNeighbours(int x) {
+    WireGrid grid = new WireGrid();
+    grid.add(sealed(x, ALICE));
+    grid.add(floor(x, Hue.RED).ownedBy(BOB));
+    assertEquals(Set.of(ALICE), grid.sealedOwnersAround(floor(0, Hue.PLAIN).face(), Hue.PLAIN));
+  }
+
+  @Test
+  void sealedOwnersAroundIgnoresOpenAndDistantWire() {
+    WireGrid grid = new WireGrid();
+    grid.add(floor(1, Hue.PLAIN));
+    grid.add(sealed(2, ALICE));
+    assertEquals(Set.of(), grid.sealedOwnersAround(floor(0, Hue.PLAIN).face(), Hue.PLAIN));
   }
 }

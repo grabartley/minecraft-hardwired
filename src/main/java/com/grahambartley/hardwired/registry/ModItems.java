@@ -11,6 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.TallBlockItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -41,7 +42,19 @@ public final class ModItems {
           ModBlocks.WALL_SWITCH,
           ModBlocks.PUSH_BUTTON,
           ModBlocks.MOTION_SENSOR,
-          ModBlocks.DUSK_SENSOR);
+          ModBlocks.DUSK_SENSOR,
+          ModBlocks.CONTROLLER,
+          ModBlocks.MAIN_PANEL,
+          ModBlocks.CIRCUIT_BOARD,
+          ModBlocks.BLANK_CIRCUIT_BLOCK,
+          ModBlocks.CIRCUIT_BLOCK,
+          ModBlocks.REDSTONE_CELL,
+          ModBlocks.SOLAR_PANEL,
+          ModBlocks.ALARM,
+          ModBlocks.RADIO,
+          ModBlocks.SPEAKER,
+          ModBlocks.INTERCOM,
+          ModBlocks.LIFT);
 
   private ModItems() {}
 
@@ -51,6 +64,8 @@ public final class ModItems {
 
   public static void register() {
     BLOCK_ITEMS.forEach(ModItems::registerBlockItem);
+    Item liftFloor =
+        register("lift_floor", new TallBlockItem(ModBlocks.LIFT_FLOOR, new Item.Settings()));
     RegistryKey<ItemGroup> key =
         RegistryKey.of(RegistryKeys.ITEM_GROUP, Identifier.of(Hardwired.MOD_ID, "hardwired"));
     Registry.register(
@@ -63,6 +78,7 @@ public final class ModItems {
                 (context, entries) -> {
                   WIRES.values().forEach(entries::add);
                   BLOCK_ITEMS.forEach(entries::add);
+                  entries.add(liftFloor);
                 })
             .build());
   }

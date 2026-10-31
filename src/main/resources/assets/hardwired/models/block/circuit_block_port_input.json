@@ -1,0 +1,54 @@
+{
+  "textures": {
+    "parts": "hardwired:block/circuit_parts",
+    "particle": "hardwired:block/circuit_case_side"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        5,
+        2
+      ],
+      "to": [
+        11,
+        11,
+        2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            0,
+            12,
+            6
+          ],
+          "texture": "#parts"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        15.02,
+        1
+      ],
+      "to": [
+        11,
+        15.02,
+        4
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            6,
+            12,
+            12,
+            15
+          ],
+          "texture": "#parts"
+        }
+      }
+    }
+  ]
+}

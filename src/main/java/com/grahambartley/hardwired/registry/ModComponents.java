@@ -1,10 +1,15 @@
 package com.grahambartley.hardwired.registry;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.circuit.Design;
+import com.grahambartley.hardwired.controller.ControllerProgram;
+import com.grahambartley.hardwired.device.DesignCodecs;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.Scene;
+import com.mojang.serialization.Codec;
 import java.util.List;
 import net.minecraft.component.ComponentType;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -24,6 +29,33 @@ public final class ModComponents {
           ComponentType.<List<Scene>>builder()
               .codec(Scene.LIST_CODEC)
               .packetCodec(Scene.LIST_PACKET_CODEC)
+              .build());
+
+  public static final ComponentType<ControllerProgram> CONTROLLER_PROGRAM =
+      Registry.register(
+          Registries.DATA_COMPONENT_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "controller_program"),
+          ComponentType.<ControllerProgram>builder()
+              .codec(ControllerProgram.CODEC)
+              .packetCodec(ControllerProgram.PACKET_CODEC)
+              .build());
+
+  public static final ComponentType<Design> CIRCUIT_DESIGN =
+      Registry.register(
+          Registries.DATA_COMPONENT_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "circuit_design"),
+          ComponentType.<Design>builder()
+              .codec(DesignCodecs.CODEC)
+              .packetCodec(DesignCodecs.PACKET_CODEC)
+              .build());
+
+  public static final ComponentType<Integer> CELL_CHARGE =
+      Registry.register(
+          Registries.DATA_COMPONENT_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "cell_charge"),
+          ComponentType.<Integer>builder()
+              .codec(Codec.intRange(0, Integer.MAX_VALUE))
+              .packetCodec(PacketCodecs.VAR_INT)
               .build());
 
   private ModComponents() {}

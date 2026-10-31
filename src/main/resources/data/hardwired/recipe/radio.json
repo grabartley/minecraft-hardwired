@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "CRC",
+    "PJP",
+    "PPP"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "J": {
+      "item": "minecraft:jukebox"
+    }
+  },
+  "result": {
+    "id": "hardwired:radio",
+    "count": 1
+  }
+}

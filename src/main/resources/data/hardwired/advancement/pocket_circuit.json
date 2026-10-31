@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:circuit_block"
+    },
+    "title": {
+      "translate": "advancement.hardwired.pocket_circuit.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.pocket_circuit.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "made": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "circuit_made"
+      }
+    }
+  },
+  "parent": "hardwired:logic_gate"
+}

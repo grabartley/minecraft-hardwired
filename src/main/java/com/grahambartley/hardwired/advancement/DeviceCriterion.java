@@ -21,6 +21,10 @@ public final class DeviceCriterion extends AbstractCriterion<DeviceCriterion.Con
     return "color_" + hue.asString();
   }
 
+  public static String panelDeviceEvent(int count) {
+    return "panel_device_" + count;
+  }
+
   public record Conditions(Optional<LootContextPredicate> player, String event)
       implements AbstractCriterion.Conditions {
     public static final Codec<Conditions> CODEC =

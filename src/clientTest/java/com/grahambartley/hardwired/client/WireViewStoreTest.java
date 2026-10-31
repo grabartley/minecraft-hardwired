@@ -22,7 +22,7 @@ class WireViewStoreTest {
   private static void store() {
     WireViewStore.put(
         new WireChunkPayload(
-            0L, List.of(new CellView(HOST.asLong(), Direction.NORTH.getId(), 0, 0)), List.of()));
+            0L, List.of(new CellView(HOST.asLong(), Direction.NORTH.getId(), 0, 0, 0)), List.of()));
   }
 
   @AfterEach
@@ -37,6 +37,18 @@ class WireViewStoreTest {
     assertEquals(
         Optional.of(new WireFace(HOST, Direction.NORTH)),
         WireViewStore.wiredFaceAt(HOST.north(blocksInFront), Direction.NORTH));
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void aSealedCellIsFoundOnTheHitFace(boolean sealed) {
+    int flags = sealed ? WireChunkPayload.SEALED : 0;
+    WireViewStore.put(
+        new WireChunkPayload(
+            0L,
+            List.of(new CellView(HOST.asLong(), Direction.NORTH.getId(), 0, flags, 0)),
+            List.of()));
+    assertEquals(sealed, WireViewStore.hasSealedCellAt(HOST, Direction.NORTH));
   }
 
   @Test

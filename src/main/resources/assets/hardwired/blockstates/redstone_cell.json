@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "level=0": {
+      "model": "hardwired:block/redstone_cell_0"
+    },
+    "level=1": {
+      "model": "hardwired:block/redstone_cell_1"
+    },
+    "level=2": {
+      "model": "hardwired:block/redstone_cell_2"
+    },
+    "level=3": {
+      "model": "hardwired:block/redstone_cell_3"
+    },
+    "level=4": {
+      "model": "hardwired:block/redstone_cell_4"
+    }
+  }
+}

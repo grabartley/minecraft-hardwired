@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:circuit_board"
+    },
+    "title": {
+      "translate": "advancement.hardwired.logic_gate.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.logic_gate.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "saved": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "circuit_saved"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light"
+}

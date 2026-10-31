@@ -1,6 +1,12 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.device.PanelAction;
+import com.grahambartley.hardwired.device.PanelDevice;
+import com.grahambartley.hardwired.device.PanelKind;
+import com.grahambartley.hardwired.device.PanelRow;
+import com.grahambartley.hardwired.wire.Hue;
+import com.grahambartley.hardwired.wire.LampLook;
 import com.grahambartley.hardwired.wire.Scene;
 import com.grahambartley.hardwired.wire.WireEngine;
 import net.minecraft.block.Block;
@@ -18,7 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
-public final class SwitchBlock extends MountedDeviceBlock {
+public final class SwitchBlock extends MountedDeviceBlock implements PanelDevice {
 
   public static final IntProperty SCENE = IntProperty.of("scene", 0, Scene.MAX_SCENES);
 
@@ -49,15 +55,34 @@ public final class SwitchBlock extends MountedDeviceBlock {
       return ActionResult.CONSUME;
     }
     if (!world.isClient) {
-      flip(state, world, pos);
-      if (!state.get(POWERED) && state.get(SCENE) > 0) {
-        recallScene((ServerWorld) world, pos, state.get(SCENE) - 1);
-      }
-      if (!latching) {
-        world.scheduleBlockTick(pos, this, Hardwired.SERVER_CONFIG.device().buttonHoldTicks());
-      }
+      press(state, (ServerWorld) world, pos);
     }
     return ActionResult.SUCCESS;
+  }
+
+  private void press(BlockState state, ServerWorld world, BlockPos pos) {
+    flip(state, world, pos);
+    if (!state.get(POWERED) && state.get(SCENE) > 0) {
+      recallScene(world, pos, state.get(SCENE) - 1);
+    }
+    if (!latching) {
+      world.scheduleBlockTick(pos, this, Hardwired.SERVER_CONFIG.device().buttonHoldTicks());
+    }
+  }
+
+  @Override
+  public PanelRow read(ServerWorld world, BlockPos pos, BlockState state) {
+    return new PanelRow(pos, PanelKind.SWITCH, state.get(POWERED), Hue.PLAIN, 0, 0, false);
+  }
+
+  @Override
+  public boolean work(
+      ServerWorld world, BlockPos pos, BlockState state, PanelAction action, LampLook look) {
+    if (action != PanelAction.TOGGLE || (!latching && state.get(POWERED))) {
+      return false;
+    }
+    press(state, world, pos);
+    return true;
   }
 
   @Override

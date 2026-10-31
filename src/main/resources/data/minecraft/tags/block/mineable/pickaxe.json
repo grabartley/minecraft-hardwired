@@ -10,6 +10,19 @@
     "hardwired:wall_switch",
     "hardwired:push_button",
     "hardwired:motion_sensor",
-    "hardwired:dusk_sensor"
+    "hardwired:dusk_sensor",
+    "hardwired:controller",
+    "hardwired:main_panel",
+    "hardwired:circuit_board",
+    "hardwired:blank_circuit_block",
+    "hardwired:circuit_block",
+    "hardwired:redstone_cell",
+    "hardwired:solar_panel",
+    "hardwired:alarm",
+    "hardwired:radio",
+    "hardwired:speaker",
+    "hardwired:intercom",
+    "hardwired:lift",
+    "hardwired:lift_floor"
   ]
 }

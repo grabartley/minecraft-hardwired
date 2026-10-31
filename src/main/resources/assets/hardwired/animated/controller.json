@@ -1,0 +1,14 @@
+{
+  "clip": "hardwired:clips/controller.animation.json",
+  "parts": [
+    {
+      "bone": "controller_drum",
+      "model": "hardwired:block/part/controller_drum",
+      "pivot": [
+        8,
+        9,
+        6
+      ]
+    }
+  ]
+}

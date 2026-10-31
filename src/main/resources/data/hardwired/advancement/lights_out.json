@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:redstone_cell"
+    },
+    "title": {
+      "translate": "advancement.hardwired.lights_out.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.lights_out.description"
+    },
+    "frame": "task",
+    "hidden": true
+  },
+  "criteria": {
+    "stopped": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "lights_out"
+      }
+    }
+  },
+  "parent": "hardwired:charged_up"
+}

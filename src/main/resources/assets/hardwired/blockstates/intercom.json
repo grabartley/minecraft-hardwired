@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,active=false": {
+      "model": "hardwired:block/intercom"
+    },
+    "facing=north,active=true": {
+      "model": "hardwired:block/intercom_active"
+    },
+    "facing=east,active=false": {
+      "model": "hardwired:block/intercom",
+      "y": 90
+    },
+    "facing=east,active=true": {
+      "model": "hardwired:block/intercom_active",
+      "y": 90
+    },
+    "facing=south,active=false": {
+      "model": "hardwired:block/intercom",
+      "y": 180
+    },
+    "facing=south,active=true": {
+      "model": "hardwired:block/intercom_active",
+      "y": 180
+    },
+    "facing=west,active=false": {
+      "model": "hardwired:block/intercom",
+      "y": 270
+    },
+    "facing=west,active=true": {
+      "model": "hardwired:block/intercom_active",
+      "y": 270
+    }
+  }
+}

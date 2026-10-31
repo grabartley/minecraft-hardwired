@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "hardwired:block/solar_panel"
+    },
+    "lit=true": {
+      "model": "hardwired:block/solar_panel_lit"
+    }
+  }
+}

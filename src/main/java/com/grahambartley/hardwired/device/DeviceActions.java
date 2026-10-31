@@ -11,6 +11,7 @@ import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.LampLook;
 import com.grahambartley.hardwired.wire.Scene;
 import com.grahambartley.hardwired.wire.WireEngine;
+import com.grahambartley.hardwired.wire.WireViewer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -68,11 +69,11 @@ public final class DeviceActions {
   }
 
   private static LampLook lookAt(ServerPlayerEntity player, BlockPos pos) {
-    LampLook look = WireEngine.of(player.getServerWorld()).lookAt(pos);
+    LampLook look = WireEngine.of(player.getServerWorld()).lookAt(pos, WireViewer.of(player));
     return look == null ? LampLook.DEFAULT : look;
   }
 
-  private static boolean canUse(ServerPlayerEntity player, BlockPos pos) {
+  public static boolean canUse(ServerPlayerEntity player, BlockPos pos) {
     return !player.isSpectator()
         && player.canInteractWithBlockAt(pos, REACH_MARGIN)
         && player.getServerWorld().canPlayerModifyAt(player, pos);

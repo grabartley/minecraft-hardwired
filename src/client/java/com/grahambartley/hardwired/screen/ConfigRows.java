@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.text.Text;
 
 final class ConfigRows {
@@ -63,6 +64,20 @@ final class ConfigRows {
         max,
         initial,
         sink);
+  }
+
+  ClickableWidget toggle(
+      final String labelKey, final boolean initial, final Consumer<Boolean> sink) {
+    return withTooltip(
+        CyclingButtonWidget.onOffBuilder(initial)
+            .build(
+                0,
+                0,
+                WIDGET_WIDTH,
+                WIDGET_HEIGHT,
+                Text.translatable(labelKey),
+                (button, value) -> sink.accept(value)),
+        Text.translatable(labelKey + ".tooltip"));
   }
 
   private <W extends ClickableWidget> W withTooltip(final W widget, final Text tooltip) {

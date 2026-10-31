@@ -1,0 +1,7 @@
+{
+  "parent": "hardwired:block/intercom",
+  "textures": {
+    "throat": "minecraft:block/redstone_lamp_on",
+    "pilot": "minecraft:block/redstone_lamp_on"
+  }
+}

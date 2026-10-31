@@ -8,6 +8,7 @@ import com.grahambartley.hardwired.network.WireRemovePayload;
 import com.grahambartley.hardwired.wire.WireFace;
 import com.grahambartley.hardwired.wire.WirePath;
 import com.grahambartley.hardwired.wire.WireRules;
+import com.grahambartley.hardwired.wire.WireWax;
 import java.util.List;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -44,7 +45,13 @@ public final class WireDrag {
 
   public static ActionResult onUseBlock(
       PlayerEntity player, World world, Hand hand, BlockHitResult hit) {
-    if (!world.isClient || !WireItem.canLay(player)) {
+    if (!world.isClient) {
+      return ActionResult.PASS;
+    }
+    if (isWaxing(player, hit)) {
+      return ActionResult.SUCCESS;
+    }
+    if (!WireItem.canLay(player)) {
       return ActionResult.PASS;
     }
     boolean claimed =
@@ -65,13 +72,23 @@ public final class WireDrag {
       return;
     }
     inspect(hit);
-    if (!client.options.useKey.isPressed() || !WireItem.canLay(player)) {
+    if (!client.options.useKey.isPressed() || !WireItem.canLay(player) || isWaxing(player, hit)) {
       release();
     } else if (player.isSneaking()) {
       remove(hit);
     } else {
       lay(client, hit);
     }
+  }
+
+  private static boolean isWaxing(PlayerEntity player, BlockHitResult hit) {
+    return WireWax.of(player.getMainHandStack(), player.getOffHandStack(), player.isSneaking())
+        .filter(
+            use ->
+                use.action() == WireWax.Action.SEAL
+                    ? WireViewStore.wiredFaceAt(hit.getBlockPos(), hit.getSide()).isPresent()
+                    : WireViewStore.hasSealedCellAt(hit.getBlockPos(), hit.getSide()))
+        .isPresent();
   }
 
   private static void release() {

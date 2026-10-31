@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:controller"
+    },
+    "title": {
+      "translate": "advancement.hardwired.now_you_see_me.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.now_you_see_me.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "moved": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "controller_piston"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light"
+}

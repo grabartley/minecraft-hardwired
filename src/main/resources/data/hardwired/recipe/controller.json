@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "CRC",
+    "RKR",
+    "CBC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "K": {
+      "item": "minecraft:clock"
+    },
+    "B": {
+      "item": "minecraft:polished_blackstone"
+    }
+  },
+  "result": {
+    "id": "hardwired:controller",
+    "count": 1
+  }
+}

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 
 public final class WireEngine {
 
@@ -44,6 +47,19 @@ public final class WireEngine {
     return network;
   }
 
+  public WireNetwork layJoining(WireCell cell) {
+    lay(cell);
+    if (cell.isSealed()) {
+      grid.openNetworksAround(cell).forEach(open -> reown(open, cell.owner()));
+    }
+    return grid.networkOf(cell);
+  }
+
+  public void reown(WireNetwork network, UUID owner) {
+    grid.reown(network, owner).forEach(this::dropItem);
+    state.markDirty();
+  }
+
   public void cut(WireCell cell) {
     grid.remove(cell);
     state.markDirty();
@@ -53,32 +69,74 @@ public final class WireEngine {
     return grid.isPowered(pos.asLong());
   }
 
+  public boolean isPowered(BlockPos pos, Hue color) {
+    for (WireNetwork network : grid.networksTouching(pos)) {
+      if (network.color() == color && network.isOn()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean isPoweredFrom(BlockPos pos, Direction side) {
+    TouchPoint touch = new TouchPoint(pos, side.getOpposite());
+    for (WireNetwork network : grid.networksTouching(pos)) {
+      if (network.isOn() && network.touches().contains(touch)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public LampLook lookAt(BlockPos pos) {
+    return lookNetworkAt(pos, network -> true).map(WireNetwork::look).orElse(null);
+  }
+
+  public LampLook lookAt(BlockPos pos, WireViewer viewer) {
+    return lookNetworkAt(pos, viewer::canSee).map(WireNetwork::look).orElse(null);
+  }
+
+  public long lookStampAt(BlockPos pos) {
+    return lookNetworkAt(pos, network -> true).map(WireNetwork::lookStamp).orElse(0L);
+  }
+
+  private Optional<WireNetwork> lookNetworkAt(BlockPos pos, Predicate<WireNetwork> visible) {
     return grid.networksTouching(pos).stream()
+        .filter(visible)
         .filter(network -> network.look() != null)
-        .min(Comparator.comparing(WireNetwork::color))
-        .map(WireNetwork::look)
-        .orElse(null);
+        .min(Comparator.comparing(WireNetwork::color));
+  }
+
+  public long nextLookStamp() {
+    state.markDirty();
+    return grid.nextLookStamp();
   }
 
   public void applyLook(BlockPos pos, LampLook look) {
+    long stamp = grid.nextLookStamp();
     for (WireNetwork network : grid.networksTouching(pos)) {
       network.setLook(look);
+      network.stampLook(stamp);
       pushNetwork(network);
     }
     state.markDirty();
   }
 
   public <T> Optional<T> findOnNetwork(BlockPos pos, Class<T> type) {
+    return allOnNetwork(pos, type).stream().findFirst();
+  }
+
+  public <T> List<T> allOnNetwork(BlockPos pos, Class<T> type) {
     return grid.networksTouching(pos).stream()
         .flatMap(network -> network.touches().stream())
         .map(TouchPoint::pos)
+        .distinct()
         .filter(this::isLoaded)
         .sorted()
         .map(world::getBlockEntity)
         .filter(type::isInstance)
         .map(type::cast)
-        .findFirst();
+        .toList();
   }
 
   public void refresh(BlockPos pos) {
@@ -168,6 +226,10 @@ public final class WireEngine {
 
   private void drop(WireCell cell) {
     cut(cell);
+    dropItem(cell);
+  }
+
+  private void dropItem(WireCell cell) {
     Block.dropStack(world, cell.face().pos(), new ItemStack(ModItems.wire(cell.color())));
   }
 
@@ -205,14 +267,22 @@ public final class WireEngine {
 
   private boolean readInputs(WireNetwork network) {
     boolean changed = network.rememberedInputs().retainAll(network.touchedPositions.keySet());
+    LongOpenHashSet read = new LongOpenHashSet();
+    LongOpenHashSet driving = new LongOpenHashSet();
     for (TouchPoint touch : new ArrayList<>(network.touches())) {
-      if (VanillaPower.isReadable(world, touch.pos())) {
+      if (canRead(touch.pos())) {
         long key = touch.pos().asLong();
-        changed |=
-            isInput(touch, network.color())
-                ? network.rememberedInputs().add(key)
-                : network.rememberedInputs().remove(key);
+        read.add(key);
+        if (isInput(touch, network.color())) {
+          driving.add(key);
+        }
       }
+    }
+    for (long key : read) {
+      changed |=
+          driving.contains(key)
+              ? network.rememberedInputs().add(key)
+              : network.rememberedInputs().remove(key);
     }
     return changed;
   }
@@ -221,10 +291,16 @@ public final class WireEngine {
     return !network.rememberedInputs().isEmpty();
   }
 
+  public boolean canRead(BlockPos pos) {
+    return (isLoaded(pos) && world.getBlockState(pos).getBlock() instanceof WireDevice)
+        || VanillaPower.isReadable(world, pos);
+  }
+
   public boolean isInput(TouchPoint touch, Hue color) {
     BlockState blockState = world.getBlockState(touch.pos());
     if (blockState.getBlock() instanceof WireDevice device) {
-      return device.isDriving(world, touch.pos(), blockState, color);
+      return device.isDrivingFrom(
+          world, touch.pos(), blockState, color, touch.awayFromWire().getOpposite());
     }
     return VanillaPower.suppliesWire(world, touch);
   }

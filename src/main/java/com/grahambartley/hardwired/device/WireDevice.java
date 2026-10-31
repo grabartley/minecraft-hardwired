@@ -4,11 +4,21 @@ import com.grahambartley.hardwired.wire.Hue;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 
 public interface WireDevice {
 
   default boolean isDriving(ServerWorld world, BlockPos pos, BlockState state, Hue color) {
     return false;
+  }
+
+  default boolean connectsFrom(BlockState state, Direction side) {
+    return true;
+  }
+
+  default boolean isDrivingFrom(
+      ServerWorld world, BlockPos pos, BlockState state, Hue color, Direction side) {
+    return connectsFrom(state, side) && isDriving(world, pos, state, color);
   }
 
   default boolean holdsLook() {

@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.wire;
 
 import java.util.List;
+import java.util.UUID;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -10,11 +11,14 @@ import net.minecraft.util.math.Direction;
 public final class WireGridNbt {
 
   private static final String NETWORKS = "networks";
+  private static final String OWNER = "owner";
   private static final String COLOR = "color";
   private static final String ON = "on";
   private static final String TRIPPED = "tripped";
   private static final String LOOK_COLOR = "look_color";
   private static final String LOOK_BRIGHTNESS = "look_brightness";
+  private static final String LOOK_STAMP = "look_stamp";
+  private static final String LOOK_CLOCK = "look_clock";
   private static final String REMEMBERED = "remembered";
   private static final String POSITIONS = "positions";
   private static final String SIDES = "sides";
@@ -28,6 +32,7 @@ public final class WireGridNbt {
     }
     NbtCompound root = new NbtCompound();
     root.put(NETWORKS, networks);
+    root.putLong(LOOK_CLOCK, grid.lookClock());
     return root;
   }
 
@@ -37,6 +42,7 @@ public final class WireGridNbt {
     for (int i = 0; i < networks.size(); i++) {
       readNetwork(grid, networks.getCompound(i));
     }
+    grid.restoreLookClock(root.getLong(LOOK_CLOCK));
     grid.drainDirty();
     return grid;
   }
@@ -55,10 +61,14 @@ public final class WireGridNbt {
     nbt.putBoolean(TRIPPED, network.isTripped());
     nbt.putLongArray(POSITIONS, positions);
     nbt.putByteArray(SIDES, sides);
+    if (network.isSealed()) {
+      nbt.putUuid(OWNER, network.owner());
+    }
     nbt.putLongArray(REMEMBERED, network.rememberedInputs().toLongArray());
     if (network.look() != null) {
       nbt.putString(LOOK_COLOR, network.look().color().asString());
       nbt.putByte(LOOK_BRIGHTNESS, (byte) network.look().brightness());
+      nbt.putLong(LOOK_STAMP, network.lookStamp());
     }
     return nbt;
   }
@@ -67,12 +77,15 @@ public final class WireGridNbt {
     Hue color = Hue.byName(nbt.getString(COLOR));
     long[] positions = nbt.getLongArray(POSITIONS);
     byte[] sides = nbt.getByteArray(SIDES);
+    UUID owner = nbt.containsUuid(OWNER) ? nbt.getUuid(OWNER) : null;
     WireNetwork network = null;
     for (int i = 0; i < Math.min(positions.length, sides.length); i++) {
       network =
           grid.add(
               new WireCell(
-                  new WireFace(BlockPos.fromLong(positions[i]), Direction.byId(sides[i])), color));
+                  new WireFace(BlockPos.fromLong(positions[i]), Direction.byId(sides[i])),
+                  color,
+                  owner));
     }
     if (network == null) {
       return;
@@ -85,6 +98,7 @@ public final class WireGridNbt {
     if (nbt.contains(LOOK_COLOR)) {
       network.setLook(
           new LampLook(Hue.byName(nbt.getString(LOOK_COLOR)), nbt.getByte(LOOK_BRIGHTNESS)));
+      network.stampLook(nbt.getLong(LOOK_STAMP));
     }
   }
 }

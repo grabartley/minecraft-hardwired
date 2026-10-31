@@ -148,7 +148,7 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 | Sneak and click a wire | Removes that piece and returns it to you |
 | Surround a dye with eight wire in the crafting grid | Makes eight coloured wire |
 | With wire in the other hand, use honeycomb on a wire | Seals that network to you |
-| With wire in the other hand, use an axe on sealed wire | Removes your seal, as an axe scrapes wax from copper |
+| With wire in the other hand, use an axe on sealed wire | Removes your seal, as an axe scrapes wax from copper, and wears the axe the same way |
 
 | ID | Requirement |
 |---|---|
@@ -164,8 +164,8 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 | WIRE-10 | Breaking a block drops the wire on its faces. So does an explosion, a piston that destroys the block, or the block starting to fall |
 | WIRE-11 | A block moved by a piston takes its wire with it, and connections re-form where it lands |
 | WIRE-12 | A network crossing chunks behaves as one network. An input in an unloaded chunk keeps the state it had when it unloaded, and an output in an unloaded chunk catches up when it loads |
-| WIRE-13 | Wire never joins a sealed network unless its owner, or an operator using PERM-6, lays it. Anyone else's wire sits beside it with no sign that it is there |
-| WIRE-14 | Wire that joins a sealed network becomes sealed, and any open wire it connects to is sealed along with it at no cost. Networks sealed by different players never join |
+| WIRE-13 | Wire never joins a sealed network unless its owner, or an operator using PERM-6, lays it. Anyone else's wire sits beside it, or on the same face in the same colour, with no sign that it is there |
+| WIRE-14 | Wire that joins a sealed network becomes sealed, and any open wire it connects to is sealed along with it at no cost. Networks sealed by different players never join, and an operator's wire laid between two seals joins only one of them: their own if they have one there, otherwise the same one every time |
 
 **Not supported:** wire that decays; wire as a block; repeaters.
 
@@ -252,10 +252,10 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 
 | ID | Requirement |
 |---|---|
-| SEQ-1 | A Controller reads an open colour and a close colour, and drives up to 8 output colours |
-| SEQ-2 | Its screen is a timeline: each step sets outputs and waits a set time |
-| SEQ-3 | The open colour runs the timeline forwards, and the close colour runs it backwards |
-| SEQ-4 | A timeline can be told to reverse by itself after a set time |
+| SEQ-1 | A Controller reads an open colour and a close colour, and drives up to 8 output colours. All of them are set on its screen. A colour it reads cannot also be one it drives |
+| SEQ-2 | Its screen is a timeline of up to 32 steps: each step sets outputs and waits a set time, from 0.1 seconds to one minute |
+| SEQ-3 | The open colour turning on runs the timeline forwards, and the close colour turning on runs it backwards, undoing each step in reverse order so every output ends off. If both colours are the same, one switch works the door: on runs it forwards and off runs it backwards |
+| SEQ-4 | A timeline can be told to reverse by itself after a set time, up to five minutes, counted from its last step finishing. Another open order restarts the time |
 | SEQ-5 | A Controller that is interrupted finishes its current step, then follows the new order, so it never strands a piston halfway through a sequence |
 | SEQ-6 | A Controller keeps its place through a chunk unload and a world reload |
 
@@ -269,14 +269,15 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 
 | ID | Requirement |
 |---|---|
-| CIRC-1 | A Circuit Board block opens a grid screen where a player places gates, latches, timers and counters and joins them with drawn lines |
-| CIRC-2 | A finished design is saved onto a Circuit Block. Each of its four sides is one port, set on the board as input, output or unused. Wire connects only to sides that are in use, and its top and bottom are unused |
+| CIRC-1 | A Circuit Board block opens a grid screen, 20 squares by 13, where a player places AND, OR, NOT, XOR, NAND and NOR gates, SR and D latches, timers and counters, and joins them with drawn lines. One output can feed many inputs, and each input takes one line. The board keeps one design |
+| CIRC-2 | A finished design is saved onto a Circuit Block. Each of its four sides is one port, set on the board as input, output or unused. Wire connects only to sides that are in use, and its top and bottom are unused. Every wire touching a side in use joins that port. The far side of the design faces the way the player looks when placing the block, and the other sides turn with it |
 | CIRC-3 | A Circuit Block takes one block space and works anywhere |
-| CIRC-4 | A design can be tested live on the board before it is made |
-| CIRC-5 | A design can be copied onto a blank block for the cost of the materials |
-| CIRC-6 | A design can be exported as text and pasted on another world |
-| CIRC-7 | The cost of a block rises with the number of parts in its design |
-| CIRC-8 | A Circuit Block runs on the server at a fixed rate, and a design that fails a check for loops without delay is refused at the board. Loops through wire outside the block follow LINK-7 and LINK-8 |
+| CIRC-4 | A design can be tested live on the board before it is made. The test runs on the player's screen at the same rate and with the same rules as a real block, and the player clicks input sides to switch them. It changes nothing in the world |
+| CIRC-5 | A design can be copied onto a blank block for the cost of the materials: Load reads the design from a held Circuit Block on to the board, and Make then makes another. Make always uses the board's last saved design. Creative players make one for free, with no blank block or redstone |
+| CIRC-6 | A design can be exported as text and pasted on another world. Pasted text can be up to 32 KiB, and a good paste becomes the board's saved design |
+| CIRC-7 | The cost of a block rises with the number of parts in its design: one Blank Circuit Block, plus one redstone for every `partsPerRedstone` parts, rounded up. No custom crafting recipe is involved, so every recipe stays plain crafting |
+| CIRC-8 | A Circuit Block runs on the server at a fixed rate of one step every 2 game ticks, and only while something can still change. A design that fails a check for loops without delay is refused at the board. Latches, timers and counters count as delay, since their outputs show what they held at the end of the last step, while gates answer within a step. Loops through wire outside the block follow LINK-7 and LINK-8 |
+| CIRC-9 | A timer turns on once its input has been on for its delay, up to 1200 steps, and turns off when its input does. A counter counts rising inputs up to its setting, from 2 to 256, then starts again. Its output is on for the last count, so a setting of 2 toggles |
 
 **Not supported:** scripts or programming languages; circuits that read inventories.
 
@@ -288,13 +289,13 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 
 | ID | Requirement |
 |---|---|
-| POWER-1 | A Redstone Cell stores charge. Using redstone dust or a block of redstone on it fills it, using the item up |
+| POWER-1 | A Redstone Cell stores charge. Using redstone dust or a block of redstone on it fills it, using the item up. A dust adds `dustCharge` and a block adds nine times that. An item is used only when all of its charge fits, so a nearly full cell refuses it, says so and keeps the item in the hand, and a cell never holds more than its capacity |
 | POWER-2 | Only the Lift, Alarm, Radio, Speaker and Intercom need charge. Wire, lamps, panels, switches, Controllers, Circuit Blocks and vanilla blocks never do |
-| POWER-3 | A device that needs charge uses it from a cell on its network, only while running |
-| POWER-4 | A Solar Panel, built from daylight detectors, slowly fills cells on its network by day |
-| POWER-5 | Lightning striking a lightning rod wired to a cell fills that cell |
-| POWER-6 | A device that runs out of charge stops, says why when looked at, and starts again when charged |
-| POWER-7 | A cell shows how full it is in its look, without a number |
+| POWER-3 | A device that needs charge uses it from a cell on its network, only while running. Alarms, Radios and Speakers pay once a second, starting with the second they start in, an Intercom pays per line, and a Lift pays `chargePerBlock` for each block it moves, as it enters the block |
+| POWER-4 | A Solar Panel, built from daylight detectors, slowly fills cells on its network by day. It reads sky light as a daylight detector does, counts as day from a reading of 8, shows it is working with its lit state, and earns nothing while its chunk is unloaded |
+| POWER-5 | Lightning striking a vanilla lightning rod that wire touches fills the cells on that wire, once per bolt |
+| POWER-6 | A device that runs out of charge stops, says why when looked at, and starts again when charged. A stopped device shows its reason under the crosshair and on using it: no cell on its wire, out of charge, wire off, no disc, no Speaker, no Radio playing, song ended, shaft blocked or no Lift on its wire. A device out of charge checks once a second, so it restarts within a second of charge arriving. A Lift that runs out mid-ride stops, tells its riders why, then lowers them free of charge at half speed to the nearest floor below and opens the gate, or gives them Slow Falling if there is no floor below. It drops its waiting calls, and once charged it stays where it is and answers the next call |
+| POWER-7 | A cell shows how full it is in its look, without a number: five looks, empty only at no charge and full from just over three quarters |
 
 **Not supported:** generators that burn other fuels; cables with limited capacity; voltage.
 
@@ -306,12 +307,14 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 
 | ID | Requirement |
 |---|---|
-| DEV-1 | A Lift moves players between Lift Floors on a wired shaft |
-| DEV-2 | An Alarm sounds when its network turns on |
-| DEV-3 | A Speaker plays a music disc from a Radio on its network, so one Radio can fill a house |
-| DEV-4 | An Intercom shares a chat line with other Intercoms on its network |
-| DEV-5 | A Main Panel on a network lists its lamps, Controllers and switches and works them from one screen |
+| DEV-1 | A Lift moves players between Lift Floors on a wired shaft. The Lift is a winch head at the top of a one block wide shaft, and each Lift Floor is a two block tall folding gate that opens on to the shaft and shares a wire network with the Lift. Floors at the same height count as one floor, numbered from the bottom. Using a gate calls the car to that floor. Using a gate with the car there lists the floors, and choosing one takes every player standing in the car there and sets them down in the gate, facing out. Calls wait their turn in order. The first use of a shaft brings the car to that floor. A gate has full collision while closed, and only the car opens it: hands and redstone do not. Sneaking does not leave a moving car. Only players ride |
+| DEV-2 | An Alarm sounds when its network turns on. It mounts on a floor, wall or ceiling, rings a vanilla bell once a second while its network is on and it has charge, and shows that in its powered look |
+| DEV-3 | A Speaker plays a music disc from a Radio on its network, so one Radio can fill a house. A Radio holds one disc: using a disc puts it in, using an empty hand takes it out, and breaking the Radio drops it. A Radio plays once it has a disc, a Speaker on its network and charge, whether or not the wire is on, and each Speaker plays the disc as a jukebox would, heard around the Speaker. A Radio with no Speaker stays quiet, uses no charge and says so. A song plays once: when it ends everything stops, and taking the disc out and putting it back plays it again. A song cut off by running out of charge, or a lost Speaker, starts from the top. Breaking a Speaker stops its sound. Note particles and a playing look show it working with the sound off |
+| DEV-4 | An Intercom shares a chat line with other Intercoms on its network. Using it opens a one-line box of up to 256 characters. A line follows chat rules: the server strips characters chat forbids, a player with chat hidden cannot send, only players with full chat receive it, and a player may send one line a second. Every player within `intercomRange` blocks of any Intercom on the network hears it, each Intercom rings briefly, and the line costs `intercomChargePerLine` |
+| DEV-5 | A Main Panel on a network lists its lamps, Controllers and switches and works them from one screen, with up to 128 rows. It flips switches, runs or stops Controllers, and sets the colour and brightness of one lamp. A stopped Controller finishes its step and holds there, and Run carries on forwards, or backwards from the end. A lamp set this way keeps that look until a Control Panel next changes its network |
 | DEV-6 | Every device has a plain name, a recipe in copper and redstone, and a sound that fits vanilla |
+| DEV-7 | A Main Panel lists only networks the player may see (PERM-4), and every action checks reach of the panel, build rights and that the device is still on a network the player may see. A device in an unloaded chunk shows its last known state and cannot be worked, and other wire points there are counted as unknown |
+| DEV-8 | A Lift never hurts its riders. A block in the way refuses the trip, or sends a moving car back to the last floor it can reach. A rider who disconnects is set down in the nearest gate, and the car carries on. Breaking the Lift removes the car, closes the gates and sets riders down in the nearest gate. If no gate is left, riders get Slow Falling for long enough to land |
 
 **Not supported:** video screens (Section 2); anything needing an internet connection.
 
@@ -327,7 +330,7 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 | CFG-2 | Settings are saved per world as JSON in the world save directory |
 | CFG-3 | A missing file gives defaults. A broken file gives defaults, is logged and is kept |
 | CFG-4 | Out-of-range values are clamped on load |
-| CFG-5 | Every balance value is a setting with a balanced default, never a fixed number in code. That covers wire view range, network size, circuit size, cell capacity, charge use, lamp ageing, Motion Sensor range and Push Button hold time. Accessibility and safety limits such as ACC-3 and LINK-8 are requirements, not settings |
+| CFG-5 | Every balance value is a setting with a balanced default, never a fixed number in code. That covers wire view range, network size, circuit size, cell capacity, charge use, lamp ageing, Motion Sensor range, Intercom range and Push Button hold time. Accessibility and safety limits such as ACC-3 and LINK-8 are requirements, not settings |
 | CFG-6 | A settings screen through Mod Menu shows the same server options and shares their validation with the commands |
 | CFG-7 | An option that only changes what one player sees, such as how wire is drawn, is a client setting saved on that player's device |
 
@@ -348,17 +351,17 @@ The mod has its own tab, with a background of copper and redstone traces and a w
 | ADV-5 | Scene Stealer | Saving a scene |
 | ADV-6 | Full Spectrum | Using all 16 colours |
 | ADV-7 | Now You See Me | Running a Controller that moves a piston |
-| ADV-8 | Going Up | Riding a Lift |
-| ADV-9 | Smart Home | Working 8 devices from a Main Panel |
+| ADV-8 | Going Up | Finishing a ride in a Lift |
+| ADV-9 | Smart Home | Working 8 different devices from a Main Panel |
 | ADV-10 | Logic Gate | Saving a first design |
 | ADV-11 | Pocket Circuit | Making a Circuit Block |
 | ADV-12 | Share The Love | Copying a Circuit Block |
-| ADV-13 | Charged Up | Filling a Redstone Cell |
-| ADV-14 | Sun Power | Charging a cell with a Solar Panel |
-| ADV-15 | Caught Lightning | Charging a cell by lightning |
+| ADV-13 | Charged Up | Filling a Redstone Cell with redstone |
+| ADV-14 | Sun Power | Being near a Solar Panel as it charges a cell |
+| ADV-15 | Caught Lightning | Being near a wired rod as lightning charges a cell |
 | ADV-16 | Short Circuit | Cutting a wire that is on |
 | ADV-17 | Vintage | A lamp reaching full age |
-| ADV-18 | Lights Out | Every device on a network that needs charge stopping for lack of it |
+| ADV-18 | Lights Out | Being near the last running device on a network as it stops for lack of charge |
 | ADV-19 | Hardwired | Granted on joining a world: the root of the tab |
 
 | ID | Requirement |
@@ -395,11 +398,11 @@ A modified client is assumed. Hiding a control is never the enforcement of a rul
 | ID | Requirement |
 |---|---|
 | PERM-1 | Every action in the matrix is checked on the server |
-| PERM-2 | Sealing a network seals every wire in it. A player cannot seal a network that already has a seal. If a sealed network is split, each part stays sealed to the same owner |
-| PERM-3 | Sealing a network uses up one honeycomb. A seal is a mark on the wire, not an item: removing it or breaking the wire returns no honeycomb. Only the owner, or an operator using PERM-6, can remove it |
+| PERM-2 | Sealing a network seals every wire in it. A player cannot seal a network that already has a seal. If a sealed network is split, each part stays sealed to the same owner. A seal that would join a player's own wire past the size limit (PERF-2) is refused and uses no honeycomb |
+| PERM-3 | Sealing a network uses up one honeycomb. A seal is a mark on the wire, not an item: removing it or breaking the wire returns no honeycomb. Only the owner, or an operator using PERM-6, can remove it. Open wire left on the same face in the same colour joins it when the seal comes off, and the spare wire drops |
 | PERM-4 | Sealed wire data never reaches a client that may not see it (VIEW-6) |
 | PERM-5 | An owner who leaves the server keeps their seals. Nobody inherits them, and an operator can clear them |
-| PERM-6 | An operator sees and changes sealed wire only after turning on `/hardwired override`, which stays on for that operator until they turn it off |
+| PERM-6 | An operator sees and changes sealed wire only after turning on `/hardwired override`, which stays on for that operator through a world reload until they turn it off. It counts only while the player is still an operator |
 
 ## 7. Client And Server
 
@@ -445,11 +448,11 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 
 | ID | Requirement |
 |---|---|
-| SAFE-1 | No game mechanic duplicates or deletes wire or any item the mod handles. Laying and removing wire conserves items |
+| SAFE-1 | No game mechanic duplicates or deletes wire or any item the mod handles. Laying and removing wire conserves items. A Radio has no inventory for hoppers: they neither feed it nor empty it |
 | SAFE-2 | Charge is never created except by POWER-1, POWER-4 and POWER-5 |
 | SAFE-3 | A bad config file never stops a server starting (CFG-3, CFG-4) |
 | SAFE-4 | Every payload is size-limited: drag paths, scene names, timelines, designs and pasted text |
-| SAFE-5 | A pasted design is checked in full before it is accepted |
+| SAFE-5 | A pasted design is checked in full before it is accepted, and a player's board actions are rate limited so a client cannot force endless rechecks |
 
 ### Performance
 
@@ -471,9 +474,17 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | Lamp colour, age and wax | kept | kept | lamp does not move | drops as item data | kept to the last save |
 | Lamp brightness | kept | kept | lamp does not move | set again by its panel | kept to the last save |
 | Scenes | kept | kept | panel does not move | drop with the panel as item data | kept to the last save |
+| A lamp's own look from a Main Panel | kept | kept | lamp does not move | lost | kept to the last save |
+| A Main Panel's last known devices | kept | kept | panel does not move | lost | kept to the last save |
+| Devices worked towards Smart Home | kept | kept | not applicable | not applicable | kept to the last save |
 | Controller timeline and place | kept | kept | Controller does not move | timeline drops as item data | kept to the last save |
-| Circuit design | kept | kept | block does not move | drops as item data | kept to the last save |
+| Circuit design, on a board or a block | kept | kept | block does not move | drops as item data | kept to the last save |
+| A Circuit Block's running state | kept | kept | block does not move | lost | kept to the last save |
 | Charge | kept | kept | cell does not move | drops as item data | kept to the last save |
+| A disc in a Radio | kept | kept | Radio does not move | drops | kept to the last save |
+| A Radio's place in a song | kept | kept | Radio does not move | lost | kept to the last save |
+| A Speaker's place in a song, in step with its Radio. Sound cannot start partway through a song, so after a reload it plays from the top and stops when the Radio's song ends | kept | kept | Speaker does not move | lost | kept to the last save |
+| Why a device stopped | kept | kept | not applicable | lost | kept to the last save |
 | Network state, including a trip | kept | kept | not applicable | not applicable | kept to the last save |
 | Junction rule and a switch's scene | kept | kept | block does not move | drops as item data | kept to the last save |
 | Settings | not applicable | kept | not applicable | not applicable | written atomically |
@@ -506,7 +517,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | ID | Requirement |
 |---|---|
 | COMPAT-1 | Minecraft 1.21.1, Java 21, Fabric Loader 0.16.5 or later, Fabric API 0.107.0+1.21.1 or later |
-| COMPAT-2 | Mod Menu, JEI and EMI are optional. Without them, the mod works fully |
+| COMPAT-2 | Mod Menu, JEI and EMI are optional. Without them, the mod works fully. Every recipe is a plain crafting recipe, so JEI and EMI show them with no code in the mod |
 | COMPAT-3 | Hardwired needs no other mod in the family. With More Doors, wire opens its doors like any other. With Total Storage, wire powers its terminals |
 | COMPAT-4 | Vanilla redstone behaves as it does without the mod |
 | COMPAT-5 | Costs, sensors and loot can be changed by data packs |

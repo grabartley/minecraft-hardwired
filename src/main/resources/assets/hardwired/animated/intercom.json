@@ -1,0 +1,14 @@
+{
+  "clip": "hardwired:clips/intercom.animation.json",
+  "parts": [
+    {
+      "bone": "intercom_ringer",
+      "model": "hardwired:block/part/intercom_ringer",
+      "pivot": [
+        8,
+        11,
+        8
+      ]
+    }
+  ]
+}

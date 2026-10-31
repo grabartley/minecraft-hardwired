@@ -1,0 +1,227 @@
+{
+  "format_version": "1.9.0",
+  "textures": {
+    "1": "minecraft:block/polished_blackstone",
+    "3": "minecraft:block/copper_block",
+    "9": "hardwired:block/controller_drum",
+    "particle": "hardwired:block/controller_drum"
+  },
+  "elements": [
+    {
+      "name": "drum_a",
+      "from": [
+        4,
+        6,
+        3
+      ],
+      "to": [
+        12,
+        12,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            8,
+            6
+          ],
+          "texture": "#9"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            6,
+            6
+          ],
+          "texture": "#3"
+        },
+        "south": {
+          "uv": [
+            0,
+            6,
+            8,
+            12
+          ],
+          "texture": "#9"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            6,
+            6
+          ],
+          "texture": "#3"
+        },
+        "up": {
+          "uv": [
+            8,
+            0,
+            16,
+            6
+          ],
+          "texture": "#9"
+        },
+        "down": {
+          "uv": [
+            8,
+            6,
+            16,
+            12
+          ],
+          "texture": "#9"
+        }
+      }
+    },
+    {
+      "name": "drum_b",
+      "from": [
+        4,
+        6,
+        3
+      ],
+      "to": [
+        12,
+        12,
+        9
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "x",
+        "origin": [
+          8,
+          9,
+          6
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            10,
+            8,
+            16
+          ],
+          "texture": "#9"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            6,
+            6
+          ],
+          "texture": "#3"
+        },
+        "south": {
+          "uv": [
+            0,
+            3,
+            8,
+            9
+          ],
+          "texture": "#9"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            6,
+            6
+          ],
+          "texture": "#3"
+        },
+        "up": {
+          "uv": [
+            8,
+            10,
+            16,
+            16
+          ],
+          "texture": "#9"
+        },
+        "down": {
+          "uv": [
+            8,
+            3,
+            16,
+            9
+          ],
+          "texture": "#9"
+        }
+      }
+    },
+    {
+      "name": "axle",
+      "from": [
+        3,
+        8,
+        5
+      ],
+      "to": [
+        13,
+        10,
+        7
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            10,
+            2
+          ],
+          "texture": "#1"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#1"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            10,
+            2
+          ],
+          "texture": "#1"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#1"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            10,
+            2
+          ],
+          "texture": "#1"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            10,
+            2
+          ],
+          "texture": "#1"
+        }
+      }
+    }
+  ]
+}
