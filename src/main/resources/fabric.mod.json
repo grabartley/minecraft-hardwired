@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "hardwired",
+  "version": "${version}",
+  "name": "Hardwired",
+  "description": "Run hidden wiring through your walls, build compact circuits, and light up your world with copper and redstone electronics.",
+  "authors": [
+    "Vitória Vedana",
+    "Graham Bartley"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/hardwired",
+    "sources": "https://github.com/grabartley/minecraft-hardwired",
+    "issues": "https://github.com/grabartley/minecraft-hardwired/issues"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.grahambartley.hardwired.Hardwired"
+    ],
+    "client": [
+      "com.grahambartley.hardwired.HardwiredClient"
+    ]
+  },
+  "mixins": [
+    "hardwired.mixins.json",
+    {
+      "config": "hardwired.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "accessWidener": "hardwired.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.16.5",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": ">=0.107.0+1.21.1"
+  },
+  "suggests": {
+    "modmenu": "*",
+    "jei": "*",
+    "emi": "*"
+  }
+}
