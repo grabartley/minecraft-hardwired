@@ -12,6 +12,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class WireViewStoreTest {
 
@@ -28,20 +30,13 @@ class WireViewStoreTest {
     WireViewStore.clear();
   }
 
-  @Test
-  void aWireOnTheHitFaceIsFound() {
+  @ParameterizedTest
+  @ValueSource(ints = {0, 1})
+  void aWireIsFoundOnTheHitFaceOrBehindAPlacedBlock(int blocksInFront) {
     store();
     assertEquals(
         Optional.of(new WireFace(HOST, Direction.NORTH)),
-        WireViewStore.wiredFaceAt(HOST, Direction.NORTH));
-  }
-
-  @Test
-  void aWireHiddenBehindAPlacedBlockIsFound() {
-    store();
-    assertEquals(
-        Optional.of(new WireFace(HOST, Direction.NORTH)),
-        WireViewStore.wiredFaceAt(HOST.north(), Direction.NORTH));
+        WireViewStore.wiredFaceAt(HOST.north(blocksInFront), Direction.NORTH));
   }
 
   @Test

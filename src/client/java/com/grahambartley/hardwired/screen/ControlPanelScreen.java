@@ -85,9 +85,7 @@ public final class ControlPanelScreen extends Screen {
             ROW - 2,
             Text.translatable("screen.hardwired.scene_name"));
     name.setMaxLength(Scene.MAX_NAME_LENGTH);
-    if (slot < panel.scenes().size()) {
-      name.setText(panel.scenes().get(slot).name());
-    }
+    Scene.at(panel.scenes(), slot).ifPresent(scene -> name.setText(scene.name()));
     addDrawableChild(name);
     addDrawableChild(
         ButtonWidget.builder(
@@ -100,11 +98,7 @@ public final class ControlPanelScreen extends Screen {
     addDrawableChild(
         ButtonWidget.builder(
                 Text.translatable("screen.hardwired.recall"),
-                button -> {
-                  if (slot < panel.scenes().size()) {
-                    setLook(panel.scenes().get(slot).look());
-                  }
-                })
+                button -> Scene.at(panel.scenes(), slot).ifPresent(scene -> setLook(scene.look())))
             .dimensions(left() + 196, y, 54, ROW - 2)
             .build());
   }

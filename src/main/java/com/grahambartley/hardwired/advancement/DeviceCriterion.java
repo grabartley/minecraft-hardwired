@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.advancement;
 
+import com.grahambartley.hardwired.wire.Hue;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
@@ -15,6 +16,10 @@ import net.minecraft.world.World;
 public final class DeviceCriterion extends AbstractCriterion<DeviceCriterion.Conditions> {
 
   private static final int WITNESS_RANGE = 16;
+
+  public static String colorEvent(Hue hue) {
+    return "color_" + hue.asString();
+  }
 
   public record Conditions(Optional<LootContextPredicate> player, String event)
       implements AbstractCriterion.Conditions {

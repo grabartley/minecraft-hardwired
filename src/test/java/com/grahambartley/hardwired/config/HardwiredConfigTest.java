@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class HardwiredConfigTest {
 
@@ -42,12 +44,20 @@ class HardwiredConfigTest {
     }
   }
 
-  @Test
-  void outOfRangeValuesAreClamped() throws IOException {
-    Files.writeString(file(), "{\"wireViewRangeBlocks\": 9999, \"buttonHoldTicks\": -5}");
-    HardwiredConfig config = HardwiredConfig.load(file());
-    assertEquals(WireSettings.VIEW_RANGE_MAX, config.wire().viewRangeBlocks());
-    assertEquals(DeviceSettings.BUTTON_HOLD_MIN, config.device().buttonHoldTicks());
+  @ParameterizedTest
+  @ValueSource(ints = {-5, 0})
+  void lowValuesAreClamped(int buttonHoldTicks) throws IOException {
+    Files.writeString(file(), "{\"buttonHoldTicks\": " + buttonHoldTicks + "}");
+    assertEquals(
+        DeviceSettings.BUTTON_HOLD_MIN, HardwiredConfig.load(file()).device().buttonHoldTicks());
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {9999, 100000})
+  void highValuesAreClamped(int viewRangeBlocks) throws IOException {
+    Files.writeString(file(), "{\"wireViewRangeBlocks\": " + viewRangeBlocks + "}");
+    assertEquals(
+        WireSettings.VIEW_RANGE_MAX, HardwiredConfig.load(file()).wire().viewRangeBlocks());
   }
 
   @Test

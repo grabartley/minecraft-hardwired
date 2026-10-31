@@ -319,19 +319,20 @@ public class WireGameTest implements FabricGameTest {
   }
 
   @GameTest(templateName = BENCH, batchId = "chunk-edge")
-  public void powerIsNotReadWithinTwoBlocksOfAnUnloadedChunk(TestContext context) {
+  public void powerIsNotReadWithinReachOfAnUnloadedChunk(TestContext context) {
     BlockPos start = context.getAbsolutePos(standing(4, 4));
     int chunkX = start.getX() >> 4;
     while (context.getWorld().getChunkManager().isChunkLoaded(chunkX, start.getZ() >> 4)) {
       chunkX++;
     }
     int borderX = chunkX << 4;
-    BlockPos clear = new BlockPos(borderX - 3, start.getY(), (start.getZ() & ~15) + 8);
+    BlockPos clear =
+        new BlockPos(borderX - VanillaPower.READ_REACH - 1, start.getY(), (start.getZ() & ~15) + 8);
     context.assertTrue(
-        VanillaPower.isReadable(context.getWorld(), clear), "three blocks clear can be read");
+        VanillaPower.isReadable(context.getWorld(), clear), "a position past the reach is read");
     context.assertFalse(
         VanillaPower.isReadable(context.getWorld(), clear.east()),
-        "the second read would cross into the unloaded chunk");
+        "a read within the reach would cross into the unloaded chunk");
     context.complete();
   }
 

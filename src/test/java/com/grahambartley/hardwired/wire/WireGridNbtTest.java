@@ -6,7 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 class WireGridNbtTest {
 
@@ -14,21 +15,22 @@ class WireGridNbtTest {
     return new WireCell(new WireFace(new BlockPos(x, 70, -3), Direction.NORTH), hue);
   }
 
-  @Test
-  void everyFieldSurvivesARoundTrip() {
+  @ParameterizedTest
+  @EnumSource(Hue.class)
+  void everyFieldSurvivesARoundTrip(Hue hue) {
     WireGrid grid = new WireGrid();
-    WireNetwork red = grid.add(cell(0, Hue.RED));
-    grid.add(cell(1, Hue.RED));
+    WireNetwork red = grid.add(cell(0, hue));
+    grid.add(cell(1, hue));
     red.setOn(true);
     red.setTripped(true);
     red.setLook(new LampLook(Hue.CYAN, 9));
     red.rememberedInputs().add(1234L);
-    grid.add(cell(5, Hue.BLUE));
+    grid.add(cell(5, hue == Hue.BLUE ? Hue.RED : Hue.BLUE));
 
     WireGrid read = WireGridNbt.read(WireGridNbt.write(grid));
 
     assertEquals(2, read.networks().size());
-    WireNetwork restored = read.networkOf(cell(1, Hue.RED));
+    WireNetwork restored = read.networkOf(cell(1, hue));
     assertEquals(2, restored.size());
     assertTrue(restored.isOn());
     assertTrue(restored.isTripped());

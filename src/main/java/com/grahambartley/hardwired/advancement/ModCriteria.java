@@ -20,12 +20,8 @@ public final class ModCriteria {
 
   public static void register() {}
 
-  public static String colorEvent(Hue hue) {
-    return "color_" + hue.asString();
-  }
-
   public static void triggerAll(ServerPlayerEntity player, Hue hue) {
     DEVICE.trigger(player, PANEL_COLOR);
-    DEVICE.trigger(player, colorEvent(hue));
+    DEVICE.trigger(player, DeviceCriterion.colorEvent(hue));
   }
 }

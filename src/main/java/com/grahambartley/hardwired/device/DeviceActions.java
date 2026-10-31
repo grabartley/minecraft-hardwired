@@ -50,7 +50,7 @@ public final class DeviceActions {
   }
 
   public static void junction(ServerPlayerEntity player, JunctionSetPayload action) {
-    if (!canUse(player, action.pos())) {
+    if (!player.canModifyBlocks() || !canUse(player, action.pos())) {
       return;
     }
     ServerWorld world = player.getServerWorld();

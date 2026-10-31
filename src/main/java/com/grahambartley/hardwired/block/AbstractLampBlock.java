@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.advancement.DeviceCriterion;
 import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.wire.Hue;
@@ -172,7 +173,7 @@ public abstract class AbstractLampBlock extends Block implements BlockEntityProv
     if (world.getBlockEntity(pos) instanceof LampBlockEntity lamp
         && lamp.setLook(hue, lamp.brightness())) {
       stack.decrementUnlessCreative(1, player);
-      ModCriteria.DEVICE.trigger((ServerPlayerEntity) player, ModCriteria.colorEvent(hue));
+      ModCriteria.DEVICE.trigger((ServerPlayerEntity) player, DeviceCriterion.colorEvent(hue));
       world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS, 1F, 1F);
     }
     return ItemActionResult.SUCCESS;

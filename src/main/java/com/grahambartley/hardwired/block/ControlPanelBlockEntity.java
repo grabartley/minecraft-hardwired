@@ -34,12 +34,7 @@ public final class ControlPanelBlockEntity extends BlockEntity {
   }
 
   public void saveScene(int slot, String name, LampLook look) {
-    Scene scene = new Scene(name, look);
-    if (slot < scenes.size()) {
-      scenes.set(slot, scene);
-    } else if (scenes.size() < Scene.MAX_SCENES) {
-      scenes.add(scene);
-    }
+    Scene.store(scenes, slot, new Scene(name, look));
     sync();
   }
 

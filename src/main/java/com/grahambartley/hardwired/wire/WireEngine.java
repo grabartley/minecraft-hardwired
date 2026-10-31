@@ -103,20 +103,22 @@ public final class WireEngine {
       return;
     }
     for (WireNetwork network : grid.networks()) {
-      if (network.touches().stream().anyMatch(touch -> isIn(touch, chunk))) {
+      if (network.touches().stream()
+          .anyMatch(touch -> VanillaPower.readsFrom(touch.pos(), chunk))) {
         grid.markDirty(network);
-        for (TouchPoint touch : network.touches()) {
-          if (isIn(touch, chunk)) {
-            pendingPushes.add(touch.pos().asLong());
-          }
+      }
+      for (TouchPoint touch : network.touches()) {
+        if (isIn(touch, chunk)) {
+          pendingPushes.add(touch.pos().asLong());
         }
       }
     }
   }
 
   private boolean hasWireNear(ChunkPos chunk) {
-    for (int x = chunk.x - 1; x <= chunk.x + 1; x++) {
-      for (int z = chunk.z - 1; z <= chunk.z + 1; z++) {
+    int radius = (VanillaPower.READ_REACH >> 4) + 2;
+    for (int x = chunk.x - radius; x <= chunk.x + radius; x++) {
+      for (int z = chunk.z - radius; z <= chunk.z + radius; z++) {
         if (!grid.cellsInChunk(ChunkPos.toLong(x, z)).isEmpty()) {
           return true;
         }
