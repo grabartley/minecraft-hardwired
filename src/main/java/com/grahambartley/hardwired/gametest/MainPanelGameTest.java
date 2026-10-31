@@ -339,8 +339,8 @@ public class MainPanelGameTest implements FabricGameTest {
     buildHouse(context, null);
     List<WireCell> run = new ArrayList<>();
     BlockPos unloaded = null;
-    for (int x = 8; x < MAX_RUN_TO_UNLOADED && unloaded == null; x++) {
-      WireCell next = cell(context, x, 1, null);
+    for (int x = 1; x < MAX_RUN_TO_UNLOADED && unloaded == null; x++) {
+      WireCell next = new WireCell(cell(context, x, 1, null).face(), Hue.BROWN, null);
       engine(context).lay(next);
       run.add(next);
       if (!engine(context).isLoaded(next.face().pos())) {
