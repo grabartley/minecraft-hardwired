@@ -187,6 +187,18 @@ public class WireSealGameTest implements FabricGameTest {
   }
 
   @GameTest(templateName = BENCH)
+  public void sealingTwiceInOneTickUsesOneHoneycomb(TestContext context) {
+    ConnectedTestPlayer owner = ConnectedTestPlayer.joinAt(context, standing(3, 4));
+    List<WireFace> faces = run(context, 2, 4, 2);
+    lay(owner, faces, Hue.PLAIN);
+    owner.hold(honeycomb(2), wire(Hue.PLAIN, 1));
+    owner.useOn(faces.get(0));
+    owner.useOn(faces.get(2));
+    context.assertTrue(count(owner, honeycomb(1)) == 1, "a sealed network takes no more wax");
+    finish(context, owner);
+  }
+
+  @GameTest(templateName = BENCH)
   public void aStrangerCannotCutSealedWire(TestContext context) {
     ConnectedTestPlayer owner = ConnectedTestPlayer.joinAt(context, standing(4, 4));
     ConnectedTestPlayer stranger = ConnectedTestPlayer.joinAt(context, standing(5, 4));
