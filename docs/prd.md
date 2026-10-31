@@ -483,7 +483,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | Charge | kept | kept | cell does not move | drops as item data | kept to the last save |
 | A disc in a Radio | kept | kept | Radio does not move | drops | kept to the last save |
 | A Radio's place in a song | kept | kept | Radio does not move | lost | kept to the last save |
-| A Speaker's place in a song, in step with its Radio | kept | kept | Speaker does not move | lost | kept to the last save |
+| A Speaker's place in a song, in step with its Radio. Sound cannot start partway through a song, so after a reload it plays from the top and stops when the Radio's song ends | kept | kept | Speaker does not move | lost | kept to the last save |
 | Why a device stopped | kept | kept | not applicable | lost | kept to the last save |
 | Network state, including a trip | kept | kept | not applicable | not applicable | kept to the last save |
 | Junction rule and a switch's scene | kept | kept | block does not move | drops as item data | kept to the last save |

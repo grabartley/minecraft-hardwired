@@ -141,7 +141,7 @@ public final class WireView {
       boolean endsConnected = false;
       var arms = WireTopology.arms(cell.face(), face -> grid.contains(cell.onFace(face)));
       for (TouchPoint touch : WireTopology.touches(cell.face(), arms)) {
-        if (!VanillaPower.isReadable(world, touch.pos())) {
+        if (!engine.canRead(touch.pos())) {
           endsConnected = true;
           continue;
         }

@@ -270,7 +270,7 @@ public final class WireEngine {
     LongOpenHashSet read = new LongOpenHashSet();
     LongOpenHashSet driving = new LongOpenHashSet();
     for (TouchPoint touch : new ArrayList<>(network.touches())) {
-      if (VanillaPower.isReadable(world, touch.pos())) {
+      if (canRead(touch.pos())) {
         long key = touch.pos().asLong();
         read.add(key);
         if (isInput(touch, network.color())) {
@@ -289,6 +289,11 @@ public final class WireEngine {
 
   private static boolean hasActiveInput(WireNetwork network) {
     return !network.rememberedInputs().isEmpty();
+  }
+
+  public boolean canRead(BlockPos pos) {
+    return (isLoaded(pos) && world.getBlockState(pos).getBlock() instanceof WireDevice)
+        || VanillaPower.isReadable(world, pos);
   }
 
   public boolean isInput(TouchPoint touch, Hue color) {

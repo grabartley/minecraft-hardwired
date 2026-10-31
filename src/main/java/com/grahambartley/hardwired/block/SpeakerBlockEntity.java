@@ -7,10 +7,12 @@ import net.minecraft.block.jukebox.JukeboxManager;
 import net.minecraft.block.jukebox.JukeboxSong;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 public final class SpeakerBlockEntity extends ElectronicBlockEntity {
 
@@ -19,6 +21,7 @@ public final class SpeakerBlockEntity extends ElectronicBlockEntity {
 
   private final JukeboxManager horn = new JukeboxManager(this::markDirty, getPos());
   private RegistryEntry<JukeboxSong> song;
+  private boolean soundLost;
 
   public SpeakerBlockEntity(BlockPos pos, BlockState state) {
     super(ModBlockEntities.SPEAKER, pos, state);
@@ -37,8 +40,19 @@ public final class SpeakerBlockEntity extends ElectronicBlockEntity {
       horn.stopPlaying(world, getCachedState());
       horn.startPlaying(world, next);
       song = next;
+      soundLost = false;
+    } else if (soundLost) {
+      world.syncWorldEvent(
+          WorldEvents.JUKEBOX_STARTS_PLAYING,
+          pos,
+          world.getRegistryManager().get(RegistryKeys.JUKEBOX_SONG).getRawId(next.value()));
+      soundLost = false;
     }
     markDirty();
+  }
+
+  public boolean hasLostSound() {
+    return soundLost;
   }
 
   public void silence() {
@@ -49,12 +63,14 @@ public final class SpeakerBlockEntity extends ElectronicBlockEntity {
   protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
     super.writeNbt(nbt, registries);
     if (horn.isPlaying()) {
-      nbt.put(
-          SONG,
-          JukeboxSong.ENTRY_CODEC
-              .encodeStart(registries.getOps(NbtOps.INSTANCE), song)
-              .getOrThrow());
-      nbt.putLong(SONG_TICKS, horn.getTicksSinceSongStarted());
+      JukeboxSong.ENTRY_CODEC
+          .encodeStart(registries.getOps(NbtOps.INSTANCE), song)
+          .resultOrPartial(Hardwired.LOGGER::error)
+          .ifPresent(
+              encoded -> {
+                nbt.put(SONG, encoded);
+                nbt.putLong(SONG_TICKS, horn.getTicksSinceSongStarted());
+              });
     }
   }
 
@@ -69,6 +85,7 @@ public final class SpeakerBlockEntity extends ElectronicBlockEntity {
               saved -> {
                 song = saved;
                 horn.setValues(saved, nbt.getLong(SONG_TICKS));
+                soundLost = true;
               });
     }
   }

@@ -286,10 +286,12 @@ public class ElectronicsGameTest implements FabricGameTest {
           reloaded.setWorld(context.getWorld());
           reloaded.read(saved, registries);
           context.assertTrue(reloaded.isSounding(), "a reloaded Speaker is still playing");
+          context.assertTrue(reloaded.hasLostSound(), "clients lose the sound over a reload");
           radio(context).song().ifPresent(reloaded::play);
+          context.assertFalse(reloaded.hasLostSound(), "the next beat must start the sound again");
           context.assertTrue(
               saved.equals(reloaded.createNbt(registries)),
-              "the next beat must carry on from the saved place, not start the song again");
+              "the next beat must keep the Radio's place in the song");
           player.leave();
           context.complete();
         });
