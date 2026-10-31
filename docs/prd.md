@@ -57,7 +57,7 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | Settings that need a world restart to apply, if the setting says so | A client being able to change anything the server decides |
 | Missing optional integrations | A crash, or a server that will not start, from a bad config file |
 | Art still being refined, if it reads clearly in game | Wiring lost from a world by a reload or an unloaded chunk |
-| Fewer devices than planned | Any untranslated text in a shipped language |
+| Fewer devices than this document lists | Any untranslated text in a shipped language |
 
 ### Deferred
 
@@ -89,7 +89,7 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | **Tinkerer** | To build hidden doors and timed machines without a pile of redstone |
 | **Engineer** | To design real logic in a small space and share it |
 | **Wire owner** | To keep their wiring working and, when they choose, private |
-| **Visitor** | To use switches placed for them, without being able to cut or change sealed wiring |
+| **Visitor** | To use switches placed for them. A seal stops them cutting or joining wire, but it does not protect the blocks wire sits on |
 | **Server operator** | To configure every option from the command line and trust that clients cannot cheat |
 | **Pack author** | To tune costs, limits and data-driven content without code |
 | **Vanilla redstone** | Keeps working. Dust and components connect to wire at its ends and behave as they do in vanilla |
@@ -104,9 +104,11 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | Face | One of the six sides of a block |
 | Wire | A line along a block face, in plain copper or one of the 16 dye colours. It is saved with the chunk and takes no block space |
 | Network | All wire of one colour joined together, plus everything connected to it |
+| Wire end | Any point where a wire touches a block it can connect to. A branching network has many |
+| Device | Any block in this mod that connects to wire |
 | On | A network with at least one active input |
-| Input | Anything that turns a network on: a switch, a sensor, a circuit output or vanilla redstone power |
-| Output | Anything a network drives: a lamp, a device or a vanilla component |
+| Input | Anything that turns a network on: a switch, a sensor, a Junction, a Controller or Circuit Block output, or vanilla redstone power |
+| Output | Anything a network drives: a device or a vanilla component |
 | Junction | A block that joins different colours under a rule the player sets |
 | Copper Lamp | A wired lamp whose colour and brightness can be set |
 | Control Panel | A wall block that sets lamps on its network and stores scenes |
@@ -116,7 +118,9 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | Circuit Block | One block holding a finished circuit |
 | Redstone Cell | A block that stores charge for devices that need it |
 | Charge | What a cell stores and big devices use |
-| Sealed wire | Wire waxed with honeycomb by a player. Only that player can see or change it |
+| Holding wire | Having wire in the main hand or off hand |
+| Sealed wire | Wire waxed with honeycomb by a player. Only that player, or an operator using PERM-6, can see or change it |
+| Tripped | A network shut off by LINK-8 |
 
 ### What Wire Can Sit On
 
@@ -126,7 +130,7 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | The flat sides of slabs and stairs | Yes | Builders use them on every wall and floor |
 | Glass and other see-through blocks | Yes | Wire is hidden, so it does not spoil them |
 | Air, liquids and plants | No | Nothing to attach to |
-| A bedrock or barrier face | No | Players cannot normally build there |
+| A bedrock or barrier face | No | The block can never be broken, so the wire could be stuck there |
 
 ## 5. Use Cases
 
@@ -142,7 +146,8 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 | Click and drag on faces | Lays wire along them |
 | Sneak and click a wire | Removes that piece and returns it to you |
 | Use a dye on wire in the crafting grid | Makes coloured wire |
-| Use honeycomb on a wire | Seals that network to you |
+| With wire in the other hand, use honeycomb on a wire | Seals that network to you |
+| With wire in the other hand, use an axe on sealed wire | Removes your seal, as an axe scrapes wax from copper |
 
 | ID | Requirement |
 |---|---|
@@ -150,14 +155,15 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 | WIRE-2 | Copper Wire is crafted from copper ingots and redstone dust, with no tool better than vanilla redstone needs |
 | WIRE-3 | Laying wire uses one item per face and refuses to continue when the player runs out. Creative players use none |
 | WIRE-4 | Wire runs across any face in the eligibility table, around inner and outer corners |
-| WIRE-5 | Wires of different colours may share a face and never join. Wires of one colour join wherever they touch, in any direction, so a line can branch freely |
+| WIRE-5 | Wires of different colours may share a face and never join. Wires of one colour join wherever they touch, in any direction, so a line can branch freely, except as WIRE-13 says |
 | WIRE-6 | A network is on or off. Every part of it reads the same state |
 | WIRE-7 | A signal has no length limit, up to the network size limit (PERF-2) |
-| WIRE-8 | A change at an input reaches every output on its network on the next game tick, whatever the distance, the shape of the build or where the wire was laid |
+| WIRE-8 | A change at an input reaches every loaded output on its network on the next game tick, whatever the distance, the shape of the build or where the wire was laid |
 | WIRE-9 | The result never depends on update order, the direction of a run or where in the world it sits |
-| WIRE-10 | Breaking a block drops the wire on its faces. A wire whose block is removed by an explosion or a piston that destroys it also drops |
+| WIRE-10 | Breaking a block drops the wire on its faces. So does an explosion, a piston that destroys the block, or the block starting to fall |
 | WIRE-11 | A block moved by a piston takes its wire with it, and connections re-form where it lands |
-| WIRE-12 | Wire continues to work when its chunk is unloaded and loaded again, and a network crossing a chunk border behaves as one network while its parts are loaded |
+| WIRE-12 | A network crossing chunks behaves as one network. An input in an unloaded chunk keeps the state it had when it unloaded, and an output in an unloaded chunk catches up when it loads |
+| WIRE-13 | Wire never joins a sealed network unless the sealed network's owner lays it. Anyone else's wire sits beside it with no sign that it is there |
 
 **Not supported:** wire that decays; wire as a block; repeaters.
 
@@ -169,12 +175,12 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 
 | ID | Requirement |
 |---|---|
-| VIEW-1 | Wire draws nothing until a player holds wire or a Junction. It then shows within range, through blocks, on every face |
+| VIEW-1 | Wire draws nothing until a player is holding wire. It then shows within range, through blocks, on every face |
 | VIEW-2 | Each network shows its colour, and whether it is on, with a shape as well as a colour |
-| VIEW-3 | Looking at a wire names its network and lists what is driving it |
+| VIEW-3 | Looking at a wire shows its colour and lists what is driving it |
 | VIEW-4 | Inputs and outputs are marked, so a player can trace why something is on or off |
-| VIEW-5 | A broken connection is marked on the wire where it ends |
-| VIEW-6 | The server sends a player wiring only while they are holding wire, within range, and never sends sealed wire to anyone but its owner |
+| VIEW-5 | A broken connection is marked on the wire where it ends, and a tripped network is marked as tripped |
+| VIEW-6 | The server sends a player wiring only while they are holding wire, within range, and never sends sealed wire to anyone but its owner or an operator using PERM-6 |
 
 **Not supported:** seeing wire without holding it; seeing another player's sealed wire.
 
@@ -186,12 +192,14 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 
 | ID | Requirement |
 |---|---|
-| LINK-1 | Every device in the mod connects to a wire that touches it, on any side |
+| LINK-1 | Every device connects to a wire that touches it, on any side, except a Circuit Block (CIRC-2) |
 | LINK-2 | The mod adds a Wall Switch, a Push Button, a Motion Sensor and a Dusk Sensor, all of which turn a network on |
 | LINK-3 | A wire ending at a vanilla component powers it fully: pistons, doors, lamps, note blocks, dispensers, hoppers and the like |
 | LINK-4 | Any vanilla redstone power next to a wire end turns its network on |
 | LINK-5 | A Junction joins colours with AND, OR or NOT, chosen from its screen |
 | LINK-6 | A network drives no vanilla block that it does not touch, so quasi-connectivity plays no part in wiring |
+| LINK-7 | A network that feeds itself through vanilla redstone or a Junction stays on until the loop is broken. That is allowed, and can be used as memory |
+| LINK-8 | A network that flips on and off more than 20 times in one second trips. It stays off until its wire is changed |
 
 **Not supported:** a wire end giving part-strength power.
 
@@ -205,12 +213,12 @@ This is the first wow moment. A player wires lamps to a switch, then changes all
 
 | ID | Requirement |
 |---|---|
-| LIGHT-1 | A Copper Lamp comes in block, ceiling and wall forms, made from copper, glowstone and redstone |
+| LIGHT-1 | A Copper Lamp comes in block, ceiling and wall forms, made from copper, redstone and a torch, so the first lamp needs no trip to the Nether |
 | LIGHT-2 | A Light Strip follows a wall or ceiling edge, and a Streetlight stands on a post |
-| LIGHT-3 | Every lamp shows one of the 16 dye colours, or plain warm white |
+| LIGHT-3 | A lamp starts as warm white and can show that or any of the 16 dye colours. Using a dye on a lamp sets its colour |
 | LIGHT-4 | Brightness runs from the vanilla light level 0 to 15 |
 | LIGHT-5 | Exposed lamps age like copper over time, and honeycomb stops it. Age changes the look, not the light |
-| LIGHT-6 | A lamp on a network with no panel turns on at full brightness in its own colour |
+| LIGHT-6 | A lamp on a network with no panel turns on at full brightness in the colour set on it |
 | LIGHT-7 | A Streetlight with a Dusk Sensor on its network turns on at dusk and off at dawn |
 
 **Not supported:** coloured light cast on other blocks (Section 2).
@@ -224,11 +232,11 @@ This is the first wow moment. A player wires lamps to a switch, then changes all
 | ID | Requirement |
 |---|---|
 | PANEL-1 | A Control Panel on a network sets colour and brightness for all its lamps at once |
-| PANEL-2 | Colours are picked from the 16 dye colours, shown by name as well as swatch |
+| PANEL-2 | Colours are picked from warm white and the 16 dye colours, shown by name as well as swatch |
 | PANEL-3 | A panel stores up to 8 scenes, each with a player-given name |
 | PANEL-4 | A wired Wall Switch can be set to recall a scene |
 | PANEL-5 | A change reaches every lamp on the network within one game tick (WIRE-8) |
-| PANEL-6 | Two players using one panel at once see one result, and the last change wins |
+| PANEL-6 | Two players, or two panels on one network, changing lamps at once give one result, and the last change wins |
 
 **Not supported:** a colour wheel outside the dye colours.
 
@@ -242,9 +250,9 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 
 | ID | Requirement |
 |---|---|
-| SEQ-1 | A Controller has one input network and up to 8 output colours |
+| SEQ-1 | A Controller reads an open colour and a close colour, and drives up to 8 output colours |
 | SEQ-2 | Its screen is a timeline: each step sets outputs and waits a set time |
-| SEQ-3 | An input can start the timeline, and a second input can run it backwards to close |
+| SEQ-3 | The open colour runs the timeline forwards, and the close colour runs it backwards |
 | SEQ-4 | A timeline can be told to reverse by itself after a set time |
 | SEQ-5 | A Controller that is interrupted finishes its current step, then follows the new order, so it never strands a piston halfway through a sequence |
 | SEQ-6 | A Controller keeps its place through a chunk unload and a world reload |
@@ -260,13 +268,13 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 | ID | Requirement |
 |---|---|
 | CIRC-1 | A Circuit Board block opens a grid screen where a player places gates, latches, timers and counters and joins them with drawn lines |
-| CIRC-2 | A finished design is saved onto a Circuit Block, with up to 4 inputs and 4 outputs on its sides |
+| CIRC-2 | A finished design is saved onto a Circuit Block. Each of its four sides is one port, set on the board as input, output or unused. Wire connects only to sides that are in use, and its top and bottom are unused |
 | CIRC-3 | A Circuit Block takes one block space and works anywhere |
 | CIRC-4 | A design can be tested live on the board before it is made |
 | CIRC-5 | A design can be copied onto a blank block for the cost of the materials |
 | CIRC-6 | A design can be exported as text and pasted on another world |
 | CIRC-7 | The cost of a block rises with the number of parts in its design |
-| CIRC-8 | A Circuit Block runs on the server at a fixed rate, and a design that fails a check for loops without delay is refused at the board |
+| CIRC-8 | A Circuit Block runs on the server at a fixed rate, and a design that fails a check for loops without delay is refused at the board. Loops through wire outside the block follow LINK-7 and LINK-8 |
 
 **Not supported:** scripts or programming languages; circuits that read inventories.
 
@@ -279,11 +287,11 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 | ID | Requirement |
 |---|---|
 | POWER-1 | A Redstone Cell stores charge. Using redstone dust or a block of redstone on it fills it, using the item up |
-| POWER-2 | Wire, lamps, panels, switches, Controllers, Circuit Blocks and vanilla blocks never need charge. Only the devices in 5.9 do |
-| POWER-3 | A device on a network with a cell uses charge only while running |
+| POWER-2 | Only the Lift, Alarm, Radio, Speaker and Intercom need charge. Wire, lamps, panels, switches, Controllers, Circuit Blocks and vanilla blocks never do |
+| POWER-3 | A device that needs charge uses it from a cell on its network, only while running |
 | POWER-4 | A Solar Panel, built from daylight detectors, slowly fills cells on its network by day |
 | POWER-5 | Lightning striking a lightning rod wired to a cell fills that cell |
-| POWER-6 | A device with no charge stops, says why when looked at, and starts again when charged |
+| POWER-6 | A device that runs out of charge stops, says why when looked at, and starts again when charged |
 | POWER-7 | A cell shows how full it is in its look, without a number |
 
 **Not supported:** generators that burn other fuels; cables with limited capacity; voltage.
@@ -296,8 +304,8 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 
 | ID | Requirement |
 |---|---|
-| DEV-1 | A Lift moves players between Lift Floors on a wired shaft, and needs charge |
-| DEV-2 | An Alarm sounds when its network turns on, and needs charge |
+| DEV-1 | A Lift moves players between Lift Floors on a wired shaft |
+| DEV-2 | An Alarm sounds when its network turns on |
 | DEV-3 | A Speaker plays a music disc from a Radio on its network, so one Radio can fill a house |
 | DEV-4 | An Intercom shares a chat line with other Intercoms on its network |
 | DEV-5 | A Main Panel on a network lists its lamps, Controllers and switches and works them from one screen |
@@ -319,6 +327,7 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 | CFG-4 | Out-of-range values are clamped on load |
 | CFG-5 | Options cover wire view range, network size, circuit size, cell capacity, charge use and lamp ageing |
 | CFG-6 | A settings screen through Mod Menu shows the same options and shares their validation with the commands |
+| CFG-7 | An option that only changes what one player sees, such as how wire is drawn, is a client setting saved on that player's device |
 
 **Enforcement:** server.
 
@@ -347,16 +356,17 @@ The mod has its own tab, with a background of copper and redstone traces and a w
 | ADV-15 | Caught Lightning | Charging a cell by lightning |
 | ADV-16 | Short Circuit | Cutting a wire that is on |
 | ADV-17 | Vintage | A lamp reaching full age |
-| ADV-18 | Lights Out | Every device on a network stopping for lack of charge |
+| ADV-18 | Lights Out | Every device on a network that needs charge stopping for lack of it |
+| ADV-19 | Hardwired | Granted on joining a world: the root of the tab |
 
 | ID | Requirement |
 |---|---|
-| ADV-19 | Live Wire, Let There Be Light and Mood Lighting are shown from the start and chain in that order. Their descriptions tell the player what to do next |
-| ADV-20 | Lighting, Mechanisms, Circuits and Power each branch from Let There Be Light, in any order |
-| ADV-21 | Short Circuit, Vintage and Lights Out stay hidden until earned |
-| ADV-22 | Let There Be Light, Mood Lighting, Full Spectrum and Share The Love are goals. Smart Home and Caught Lightning are challenges. Goals give 50 experience and challenges give 100 |
-| ADV-23 | An advancement earned in steps shows its progress |
-| ADV-24 | Icons use the mod's own items where one fits |
+| ADV-20 | Hardwired, Live Wire, Let There Be Light and Mood Lighting are shown from the start and chain in that order. Their descriptions tell the player what to do next |
+| ADV-21 | Lighting (ADV-4 to ADV-6), Mechanisms (ADV-7 to ADV-9), Circuits (ADV-10 to ADV-12) and Power (ADV-13 to ADV-15) each branch from Let There Be Light, in any order |
+| ADV-22 | Short Circuit, Vintage and Lights Out stay hidden until earned |
+| ADV-23 | Let There Be Light, Mood Lighting, Full Spectrum and Share The Love are goals. Smart Home and Caught Lightning are challenges. Goals give 50 experience and challenges give 100 |
+| ADV-24 | An advancement earned in steps shows its progress |
+| ADV-25 | Icons use the mod's own items where one fits |
 
 **Enforcement:** server.
 
@@ -370,8 +380,8 @@ A modified client is assumed. Hiding a control is never the enforcement of a rul
 |---|---|---|---|
 | See open wire while holding wire | Yes | Yes | Yes |
 | Cut or join open wire | Yes | Yes | Yes |
-| See sealed wire | No | Yes | Yes, by command |
-| Cut or join sealed wire | No | Yes | Yes, by command |
+| See sealed wire | No | Yes | Yes, through PERM-6 |
+| Cut or join sealed wire | No | Yes | Yes, through PERM-6 |
 | Break a block with sealed wire on it | Yes, the wire drops | Yes | Yes |
 | Use a switch, panel or Controller | Yes | Yes | Yes |
 | Change settings | No | No | Yes |
@@ -381,10 +391,11 @@ A modified client is assumed. Hiding a control is never the enforcement of a rul
 | ID | Requirement |
 |---|---|
 | PERM-1 | Every action in the matrix is checked on the server |
-| PERM-2 | Sealing a network seals every wire in it. A player cannot seal a network with another player's seal in it |
-| PERM-3 | Sealing costs one honeycomb, and the owner can remove it |
+| PERM-2 | Sealing a network seals every wire in it. A player cannot seal a network with another player's seal in it. If a sealed network is split, each part stays sealed to the same owner |
+| PERM-3 | Sealing a network uses up one honeycomb. A seal is a mark on the wire, not an item: removing it or breaking the wire returns no honeycomb. Only the owner can remove it |
 | PERM-4 | Sealed wire data never reaches a client that may not see it (VIEW-6) |
 | PERM-5 | An owner who leaves the server keeps their seals. Nobody inherits them, and an operator can clear them |
+| PERM-6 | An operator sees and changes sealed wire only after turning on `/hardwired override`, which stays on for that operator until they turn it off |
 
 ## 7. Client And Server
 
@@ -404,7 +415,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 
 | ID | Requirement |
 |---|---|
-| CS-1 | Two players laying wire on one face place one wire and pay once |
+| CS-1 | Two players laying wire of one colour on one face place one wire and pay once |
 | CS-2 | Two inputs turning a network on and off in one tick give a defined result: the network is on while any input is on |
 | CS-3 | A wire cut in the same tick as a network change leaves two correct networks |
 | CS-4 | Two players filling one cell never lose or duplicate items or charge |
@@ -451,13 +462,14 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 
 | What | Chunk unload | World reload | Piston move | Block broken | Power loss |
 |---|---|---|---|---|---|
-| Wire | kept | kept | moves with block | drops | kept to the last save |
-| Seal | kept | kept | moves with wire | drops with wire | kept to the last save |
-| Lamp colour and brightness | kept | kept | follows vanilla for blocks with data | item keeps nothing | kept to the last save |
-| Scenes | kept | kept | kept | drop with the panel as item data | kept to the last save |
-| Controller timeline and place | kept | kept | kept | timeline drops as item data | kept to the last save |
-| Circuit design | kept | kept | kept | drops as item data | kept to the last save |
-| Charge | kept | kept | kept | drops as item data | kept to the last save |
+| Wire | kept | kept | moves with its block | drops | kept to the last save |
+| Seal | kept | kept | moves with its wire | lost | kept to the last save |
+| Lamp colour, age and wax | kept | kept | lamp does not move | drops as item data | kept to the last save |
+| Lamp brightness | kept | kept | lamp does not move | set again by its panel | kept to the last save |
+| Scenes | kept | kept | panel does not move | drop with the panel as item data | kept to the last save |
+| Controller timeline and place | kept | kept | Controller does not move | timeline drops as item data | kept to the last save |
+| Circuit design | kept | kept | block does not move | drops as item data | kept to the last save |
+| Charge | kept | kept | cell does not move | drops as item data | kept to the last save |
 | Settings | not applicable | kept | not applicable | not applicable | written atomically |
 
 ### Look And Sound
@@ -478,7 +490,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 |---|---|
 | ACC-1 | No state relies on colour alone: wire shows on and off by shape, and colours carry names |
 | ACC-2 | No meaning relies on particles alone |
-| ACC-3 | Lamps have a setting that turns off flicker on change |
+| ACC-3 | A lamp never changes more than 3 times a second, however fast its network flips |
 | ACC-4 | Every string is translated into every shipped language |
 
 ### Compatibility

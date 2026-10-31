@@ -22,6 +22,9 @@
     ],
     "client": [
       "com.grahambartley.hardwired.HardwiredClient"
+    ],
+    "fabric-gametest": [
+      "com.grahambartley.hardwired.gametest.HardwiredBootGameTest"
     ]
   },
   "mixins": [
@@ -37,10 +40,5 @@
     "minecraft": "~1.21.1",
     "java": ">=21",
     "fabric-api": ">=0.107.0+1.21.1"
-  },
-  "suggests": {
-    "modmenu": "*",
-    "jei": "*",
-    "emi": "*"
   }
 }

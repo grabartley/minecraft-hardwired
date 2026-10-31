@@ -16,7 +16,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class ModIconTest {
+class ModIconAssetsTest {
 
   private static final Path MANIFEST = Path.of("src/main/resources/fabric.mod.json");
   private static final Path RESOURCE_ROOT = Path.of("src/main/resources");

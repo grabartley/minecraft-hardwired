@@ -311,9 +311,6 @@ modrinth {
 		: 'No changelog provided.'
 	dependencies {
 		required.project 'fabric-api'
-		optional.project 'modmenu'
-		optional.project 'jei'
-		optional.project 'emi'
 	}
 }
 
