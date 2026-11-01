@@ -47,9 +47,13 @@ public final class LampBlockEntity extends BlockEntity implements GlowSource {
   @Override
   public Optional<Glow> glow() {
     BlockState state = getCachedState();
-    return state.getBlock() instanceof AbstractLampBlock block
-        ? Glow.of(block.lightPos(pos), state.get(AbstractLampBlock.LEVEL), color)
-        : Optional.empty();
+    return Glow.of(lightPos(), AbstractLampBlock.lightLevel(state), color);
+  }
+
+  private BlockPos lightPos() {
+    return getCachedState().getBlock() instanceof AbstractLampBlock block
+        ? block.lightPos(pos)
+        : pos;
   }
 
   public long lastChangeTick() {
@@ -115,8 +119,7 @@ public final class LampBlockEntity extends BlockEntity implements GlowSource {
     ownStamp = nbt.getLong(OWN_STAMP);
     if (world != null && world.isClient) {
       world.updateListeners(pos, getCachedState(), getCachedState(), RERENDER);
-      world.updateListeners(
-          pos.up(StreetlightBlock.HEAD), getCachedState(), getCachedState(), RERENDER);
+      world.updateListeners(lightPos(), getCachedState(), getCachedState(), RERENDER);
     }
   }
 

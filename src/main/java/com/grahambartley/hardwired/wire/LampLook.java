@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.wire;
 
+import com.grahambartley.hardwired.light.Glow;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.RegistryByteBuf;
@@ -8,7 +9,7 @@ import net.minecraft.network.codec.PacketCodecs;
 
 public record LampLook(Hue color, int brightness) {
 
-  public static final int MAX_BRIGHTNESS = 15;
+  public static final int MAX_BRIGHTNESS = Glow.MAX_LEVEL;
   public static final LampLook DEFAULT = new LampLook(Hue.PLAIN, MAX_BRIGHTNESS);
   public static final Codec<LampLook> CODEC =
       RecordCodecBuilder.create(

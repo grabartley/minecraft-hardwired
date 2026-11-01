@@ -4,10 +4,13 @@ import com.grahambartley.hardwired.client.radio.MicrophoneSource;
 import com.grahambartley.hardwired.config.ClientRadioSettings;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.grahambartley.hardwired.config.ClientWireSettings;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import java.util.function.BiFunction;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -66,24 +69,9 @@ public final class ClientConfigCommand {
                                                     ClientWireSettings.SURFACE_MIN,
                                                     ClientWireSettings.SURFACE_MAX))
                                             .executes(ClientConfigCommand::setOnSurface)))
-                            .then(
-                                ClientCommandManager.literal("showmarkers")
-                                    .then(
-                                        ClientCommandManager.argument(
-                                                VALUE, BoolArgumentType.bool())
-                                            .executes(ClientConfigCommand::setShowMarkers)))
-                            .then(
-                                ClientCommandManager.literal("colouredlight")
-                                    .then(
-                                        ClientCommandManager.argument(
-                                                VALUE, BoolArgumentType.bool())
-                                            .executes(ClientConfigCommand::setColouredLight)))
-                            .then(
-                                ClientCommandManager.literal("hearvoicebroadcasts")
-                                    .then(
-                                        ClientCommandManager.argument(
-                                                VALUE, BoolArgumentType.bool())
-                                            .executes(ClientConfigCommand::setHearing)))
+                            .then(toggle("showmarkers", ClientConfigCommand::setShowMarkers))
+                            .then(toggle("colouredlight", ClientConfigCommand::setColouredLight))
+                            .then(toggle("hearvoicebroadcasts", ClientConfigCommand::setHearing))
                             .then(
                                 ClientCommandManager.literal("microphone")
                                     .then(
@@ -94,6 +82,12 @@ public final class ClientConfigCommand {
                                                     CommandSource.suggestMatching(
                                                         MicrophoneSource.names(), builder))
                                             .executes(ClientConfigCommand::setMicrophone))))));
+  }
+
+  private static LiteralArgumentBuilder<FabricClientCommandSource> toggle(
+      String name, Command<FabricClientCommandSource> command) {
+    return ClientCommandManager.literal(name)
+        .then(ClientCommandManager.argument(VALUE, BoolArgumentType.bool()).executes(command));
   }
 
   private static int setNoise(CommandContext<FabricClientCommandSource> context) {
@@ -133,21 +127,11 @@ public final class ClientConfigCommand {
   }
 
   private static int setShowMarkers(CommandContext<FabricClientCommandSource> context) {
-    boolean value = BoolArgumentType.getBool(context, VALUE);
-    return applyWire(
-        context,
-        ClientSettingsStore.get().withShowMarkers(value),
-        "showmarkers",
-        Boolean.toString(value));
+    return applyWireToggle(context, "showmarkers", ClientWireSettings::withShowMarkers);
   }
 
   private static int setColouredLight(CommandContext<FabricClientCommandSource> context) {
-    boolean value = BoolArgumentType.getBool(context, VALUE);
-    return applyWire(
-        context,
-        ClientSettingsStore.get().withColouredLight(value),
-        "colouredlight",
-        Boolean.toString(value));
+    return applyWireToggle(context, "colouredlight", ClientWireSettings::withColouredLight);
   }
 
   private static int setHearing(CommandContext<FabricClientCommandSource> context) {
@@ -164,6 +148,15 @@ public final class ClientConfigCommand {
     String chosen =
         value.equals(DEFAULT_MICROPHONE) ? ClientRadioSettings.DEFAULT_MICROPHONE : value;
     return apply(context, ClientSettingsStore.radio().withMicrophone(chosen), "microphone", value);
+  }
+
+  private static int applyWireToggle(
+      CommandContext<FabricClientCommandSource> context,
+      String label,
+      BiFunction<ClientWireSettings, Boolean, ClientWireSettings> setter) {
+    boolean value = BoolArgumentType.getBool(context, VALUE);
+    return applyWire(
+        context, setter.apply(ClientSettingsStore.get(), value), label, Boolean.toString(value));
   }
 
   private static int applyWire(

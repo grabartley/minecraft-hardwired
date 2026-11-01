@@ -57,17 +57,8 @@ public record ClientWireSettings(
     return new ClientWireSettings(
         fields.readInt(KEY_THROUGH, DEFAULTS.throughBlocksPercent, THROUGH_MIN, THROUGH_MAX),
         fields.readInt(KEY_SURFACE, DEFAULTS.onSurfacePercent, SURFACE_MIN, SURFACE_MAX),
-        readBoolean(root, KEY_MARKERS, DEFAULTS.showMarkers),
-        readBoolean(root, KEY_COLOURED_LIGHT, DEFAULTS.colouredLight));
-  }
-
-  private static boolean readBoolean(
-      final JsonObject root, final String key, final boolean fallback) {
-    return root.has(key)
-            && root.get(key).isJsonPrimitive()
-            && root.getAsJsonPrimitive(key).isBoolean()
-        ? root.get(key).getAsBoolean()
-        : fallback;
+        fields.readBoolean(KEY_MARKERS, DEFAULTS.showMarkers),
+        fields.readBoolean(KEY_COLOURED_LIGHT, DEFAULTS.colouredLight));
   }
 
   JsonObject toJson() {

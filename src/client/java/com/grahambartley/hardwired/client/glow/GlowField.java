@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.function.Predicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 
 final class GlowField {
 
@@ -16,8 +17,8 @@ final class GlowField {
   static final int GREEN = 1;
   static final int BLUE = 2;
   static final int WEIGHT = 3;
-  static final float MAX_LEVEL = 15F;
   private static final int CHANNELS = 4;
+  private static final double CELL_CENTRE = 0.5D;
 
   private final Predicate<BlockPos> blocksLight;
   private final Long2ObjectOpenHashMap<float[]> cells = new Long2ObjectOpenHashMap<>();
@@ -29,7 +30,7 @@ final class GlowField {
   }
 
   void add(Glow glow) {
-    float[] hue = GlowColor.saturated(glow.rgb());
+    float[] hue = GlowColor.channels(glow.rgb());
     Long2IntOpenHashMap reached = new Long2IntOpenHashMap();
     LongArrayFIFOQueue queue = new LongArrayFIFOQueue();
     long origin = glow.pos().asLong();
@@ -38,7 +39,7 @@ final class GlowField {
     while (!queue.isEmpty()) {
       long pos = queue.dequeueLong();
       int level = reached.get(pos);
-      mix(pos, hue, level / MAX_LEVEL);
+      mix(pos, hue, (float) level / Glow.MAX_LEVEL);
       if (level > 1) {
         spread(pos, level - 1, reached, queue);
       }
@@ -55,6 +56,45 @@ final class GlowField {
 
   float[] at(long pos) {
     return cells.get(pos);
+  }
+
+  float[] sample(double x, double y, double z) {
+    double cornerX = x - CELL_CENTRE;
+    double cornerY = y - CELL_CENTRE;
+    double cornerZ = z - CELL_CENTRE;
+    int baseX = MathHelper.floor(cornerX);
+    int baseY = MathHelper.floor(cornerY);
+    int baseZ = MathHelper.floor(cornerZ);
+    float[] sum = new float[CHANNELS];
+    float open = 0F;
+    BlockPos.Mutable pos = new BlockPos.Mutable();
+    for (int dx = 0; dx <= 1; dx++) {
+      for (int dy = 0; dy <= 1; dy++) {
+        for (int dz = 0; dz <= 1; dz++) {
+          float share =
+              share(cornerX - baseX, dx) * share(cornerY - baseY, dy) * share(cornerZ - baseZ, dz);
+          pos.set(baseX + dx, baseY + dy, baseZ + dz);
+          if (share > 0F && !blocksLight(pos)) {
+            open += share;
+            addShare(sum, cells.get(pos.asLong()), share);
+          }
+        }
+      }
+    }
+    for (int channel = 0; channel < CHANNELS && open > 0F; channel++) {
+      sum[channel] /= open;
+    }
+    return sum;
+  }
+
+  private static float share(double fraction, int step) {
+    return (float) (step == 1 ? fraction : 1D - fraction);
+  }
+
+  private static void addShare(float[] sum, float[] cell, float share) {
+    for (int channel = 0; cell != null && channel < CHANNELS; channel++) {
+      sum[channel] += cell[channel] * share;
+    }
   }
 
   private void spread(long pos, int level, Long2IntOpenHashMap reached, LongArrayFIFOQueue queue) {

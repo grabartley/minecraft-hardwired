@@ -1,10 +1,11 @@
 package com.grahambartley.hardwired.client.glow;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import com.grahambartley.hardwired.light.Glow;
-import it.unimi.dsi.fastutil.floats.FloatArrayList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.util.math.BlockPos;
@@ -16,7 +17,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 class GlowMeshTest {
 
   private static final int RED = 0xFF0000;
-  private static final int PER_FACE = GlowMesh.FLOATS_PER_VERTEX * 4;
 
   private record Surfaces(Predicate<BlockPos> solid, List<Box> parts, float daylight)
       implements GlowSurfaces {
@@ -40,17 +40,23 @@ class GlowMeshTest {
     return new Surfaces(pos -> pos.getY() < 0, List.of(), daylight);
   }
 
+  private record Vertex(
+      float x, float y, float z, float red, float green, float blue, float strength) {}
+
+  private static List<Vertex> vertices(GlowMesh mesh) {
+    List<Vertex> out = new ArrayList<>();
+    mesh.forEachVertex(
+        (x, y, z, red, green, blue, strength) ->
+            out.add(new Vertex(x, y, z, red, green, blue, strength)));
+    return out;
+  }
+
   private static int faces(GlowMesh mesh) {
-    return mesh.vertices().size() / PER_FACE;
+    return vertices(mesh).size() / 4;
   }
 
   private static float strongest(GlowMesh mesh) {
-    FloatArrayList vertices = mesh.vertices();
-    float top = 0F;
-    for (int i = GlowMesh.STRENGTH_OFFSET; i < vertices.size(); i += GlowMesh.FLOATS_PER_VERTEX) {
-      top = Math.max(top, vertices.getFloat(i));
-    }
-    return top;
+    return (float) vertices(mesh).stream().mapToDouble(Vertex::strength).max().orElse(0D);
   }
 
   @Test
@@ -76,9 +82,8 @@ class GlowMeshTest {
   void faceSitsJustOffTheBlockTowardsTheLight() {
     Surfaces block = new Surfaces(pos -> pos.equals(new BlockPos(0, 0, 1)), List.of(), 0F);
     GlowMesh mesh = GlowMesh.build(List.of(new Glow(BlockPos.ORIGIN, 2, RED)), block);
-    for (int i = 2; i < mesh.vertices().size(); i += GlowMesh.FLOATS_PER_VERTEX) {
-      assertEquals(0.998F, mesh.vertices().getFloat(i), 0.0001F);
-    }
+    assertFalse(vertices(mesh).isEmpty());
+    vertices(mesh).forEach(vertex -> assertEquals(0.99F, vertex.z(), 0.0001F));
   }
 
   @ParameterizedTest(name = "daylight {0} keeps strength at most {1}")
@@ -93,9 +98,10 @@ class GlowMeshTest {
   void floorColourIsTheLightsColour() {
     GlowMesh mesh =
         GlowMesh.build(List.of(new Glow(BlockPos.ORIGIN, 15, RED)), floorAtMinusOne(0F));
-    assertEquals(1F, mesh.vertices().getFloat(3), 0.001F);
-    assertEquals(0F, mesh.vertices().getFloat(4), 0.001F);
-    assertEquals(0F, mesh.vertices().getFloat(5), 0.001F);
+    Vertex first = vertices(mesh).get(0);
+    assertEquals(1F, first.red(), 0.001F);
+    assertEquals(0F, first.green(), 0.001F);
+    assertEquals(0F, first.blue(), 0.001F);
   }
 
   @Test

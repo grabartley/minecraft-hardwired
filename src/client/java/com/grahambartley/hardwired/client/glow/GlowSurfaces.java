@@ -4,7 +4,7 @@ import java.util.List;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
-public interface GlowSurfaces {
+interface GlowSurfaces {
 
   boolean isSolid(BlockPos pos);
 

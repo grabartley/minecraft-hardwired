@@ -3,7 +3,6 @@ package com.grahambartley.hardwired.client.glow;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -24,6 +23,10 @@ public final class GlowRenderer {
 
   private GlowRenderer() {}
 
+  public static void clear() {
+    TRACKER.clear();
+  }
+
   public static void render(WorldRenderContext context) {
     ClientWorld world = context.world();
     if (world == null || !ClientSettingsStore.get().colouredLight()) {
@@ -31,7 +34,7 @@ public final class GlowRenderer {
     }
     Vec3d camera = context.camera().getPos();
     GlowMesh mesh = TRACKER.mesh(world, BlockPos.ofFloored(camera));
-    if (mesh.vertices().isEmpty()) {
+    if (mesh.isEmpty()) {
       return;
     }
     RenderSystem.enableBlend();
@@ -40,7 +43,11 @@ public final class GlowRenderer {
     RenderSystem.depthFunc(GL11.GL_LEQUAL);
     RenderSystem.disableCull();
     RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-    RenderSystem.blendFunc(GlStateManager.SrcFactor.DST_COLOR, GlStateManager.DstFactor.ONE);
+    RenderSystem.blendFuncSeparate(
+        GlStateManager.SrcFactor.DST_COLOR,
+        GlStateManager.DstFactor.ONE,
+        GlStateManager.SrcFactor.ZERO,
+        GlStateManager.DstFactor.ONE);
     RenderSystem.blendEquation(GL14.GL_FUNC_REVERSE_SUBTRACT);
     draw(mesh, camera, true);
     RenderSystem.blendEquation(GL14.GL_FUNC_ADD);
@@ -52,26 +59,21 @@ public final class GlowRenderer {
   }
 
   private static void draw(GlowMesh mesh, Vec3d camera, boolean removing) {
-    FloatArrayList vertices = mesh.vertices();
     BlockPos anchor = mesh.anchor();
     float offsetX = (float) (anchor.getX() - camera.x);
     float offsetY = (float) (anchor.getY() - camera.y);
     float offsetZ = (float) (anchor.getZ() - camera.z);
     BufferBuilder buffer =
         Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-    for (int index = 0; index < vertices.size(); index += GlowMesh.FLOATS_PER_VERTEX) {
-      float strength = vertices.getFloat(index + GlowMesh.STRENGTH_OFFSET);
-      buffer
-          .vertex(
-              vertices.getFloat(index) + offsetX,
-              vertices.getFloat(index + 1) + offsetY,
-              vertices.getFloat(index + 2) + offsetZ)
-          .color(
-              GlowColor.blend(vertices.getFloat(index + 3), strength, removing),
-              GlowColor.blend(vertices.getFloat(index + 4), strength, removing),
-              GlowColor.blend(vertices.getFloat(index + 5), strength, removing),
-              1F);
-    }
+    mesh.forEachVertex(
+        (x, y, z, red, green, blue, strength) ->
+            buffer
+                .vertex(x + offsetX, y + offsetY, z + offsetZ)
+                .color(
+                    GlowColor.blend(red, strength, removing),
+                    GlowColor.blend(green, strength, removing),
+                    GlowColor.blend(blue, strength, removing),
+                    1F));
     BuiltBuffer built = buffer.endNullable();
     if (built != null) {
       BufferRenderer.drawWithGlobalProgram(built);

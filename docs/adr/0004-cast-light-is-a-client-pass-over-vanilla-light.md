@@ -10,14 +10,14 @@ The pass uses two blends that do nothing at zero: one removes the colours the li
 
 ## Why
 
-Vanilla light stores a brightness and no colour. The coloured light mods we checked have no Fabric build for 1.21.1, and a lighting engine change would touch code that Sodium replaces.
+Vanilla light stores a brightness and no colour. No coloured light library we checked has a Fabric build for 1.21.1, and a lighting engine change would touch code that Sodium replaces.
 
 Shader packs draw to high range buffers, where a white or grey vertex can come out brighter than it went in. Multiplying by white or grey is not neutral there, so the edge of the mesh shows as a hard line. Black stays black in any range, which is why both blends are neutral at zero. Vanilla render layers have no blend of this kind.
 
-Building the mesh for 64 glows took up to 85 ms on the render thread, which shows as a stutter. Block entities are read on the render thread and the rest of the build reads only block states and light.
+Building the mesh for 64 glows took up to 85 ms on the render thread, which shows as a stutter. Block entities are read on the render thread. The rest of the build reads block states, shapes and light, and shapes use an empty block view so no block entity is touched off the main thread.
 
 ## Consequences
 
 - Mobs, players, dropped items and held items do not pick up the colour.
-- Blocks with a block entity, and blocks whose outline differs from their collision shape such as plants and fences, take no tint on their own faces.
+- Blocks with a block entity, and blocks with no collision such as plants, take no tint on their own faces.
 - Shader packs draw the pass differently from each other. A faint stepped shadow remains at the far edge of the light under one pack we tried.

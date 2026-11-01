@@ -23,4 +23,10 @@ class GlowTest {
   void glowCarriesPositionLevelAndColour(Hue hue, int rgb) {
     assertEquals(Optional.of(new Glow(POS, 9, rgb)), Glow.of(POS, 9, hue));
   }
+
+  @ParameterizedTest(name = "fixed colour at level {0} glows: {1}")
+  @CsvSource({"15,true", "1,true", "0,false"})
+  void anyColourFollowsTheSameLevelRule(int level, boolean glows) {
+    assertEquals(glows, Glow.of(POS, level, 0x123456).isPresent());
+  }
 }

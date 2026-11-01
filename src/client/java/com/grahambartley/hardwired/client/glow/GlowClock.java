@@ -13,7 +13,7 @@ final class GlowClock {
   }
 
   boolean checkDue(long time) {
-    if (time >= checkedAt && time - checkedAt < checkTicks) {
+    if (isRecent(time, checkedAt, checkTicks)) {
       return false;
     }
     checkedAt = time;
@@ -21,10 +21,14 @@ final class GlowClock {
   }
 
   boolean rebuildDue(long time, boolean changed) {
-    if (!changed && time >= builtAt && time - builtAt < rebuildTicks) {
+    if (!changed && isRecent(time, builtAt, rebuildTicks)) {
       return false;
     }
     builtAt = time;
     return true;
+  }
+
+  private static boolean isRecent(long time, long at, int ticks) {
+    return time >= at && time - at < ticks;
   }
 }

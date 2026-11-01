@@ -60,4 +60,32 @@ class GlowFieldTest {
     assertEquals(12 / 15F, middle[GlowField.BLUE], EPSILON);
     assertEquals(24 / 15F, middle[GlowField.WEIGHT], EPSILON);
   }
+
+  @ParameterizedTest(name = "halfway between cells {0} and {1} blocks away is the mean")
+  @CsvSource({"1,2", "3,4"})
+  void sampleBlendsNeighbouringCells(int near, int far) {
+    GlowField field = new GlowField(pos -> false);
+    field.add(new Glow(BlockPos.ORIGIN, 15, RED));
+    float[] nearCell = field.at(new BlockPos(near, 0, 0).asLong());
+    float[] farCell = field.at(new BlockPos(far, 0, 0).asLong());
+    float[] sample = field.sample(far, 0.5D, 0.5D);
+    assertEquals(
+        (nearCell[GlowField.WEIGHT] + farCell[GlowField.WEIGHT]) / 2F,
+        sample[GlowField.WEIGHT],
+        EPSILON);
+  }
+
+  @Test
+  void sampleIgnoresBlockedCells() {
+    GlowField field = new GlowField(pos -> pos.getX() >= 1);
+    field.add(new Glow(BlockPos.ORIGIN, 15, RED));
+    float[] sample = field.sample(1D, 0.5D, 0.5D);
+    assertEquals(1F, sample[GlowField.WEIGHT], EPSILON);
+  }
+
+  @Test
+  void sampleInsideRockIsDark() {
+    GlowField field = new GlowField(pos -> true);
+    assertEquals(0F, field.sample(0.5D, 0.5D, 0.5D)[GlowField.WEIGHT], EPSILON);
+  }
 }

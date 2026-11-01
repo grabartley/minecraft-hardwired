@@ -6,47 +6,62 @@ import java.util.List;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 
-public final class GlowMesh {
+final class GlowMesh {
 
-  public static final GlowMesh EMPTY = new GlowMesh(BlockPos.ORIGIN, new FloatArrayList());
-  public static final int FLOATS_PER_VERTEX = 7;
-  public static final int STRENGTH_OFFSET = 6;
+  static final GlowMesh EMPTY = new GlowMesh(BlockPos.ORIGIN);
+  private static final int POSITION = 0;
+  private static final int HUE = 3;
+  private static final int STRENGTH = 6;
+  private static final int FLOATS_PER_VERTEX = 7;
   private static final int VERTICES_PER_FACE = 4;
-  private static final float SURFACE_OFFSET = 0.002F;
+  private static final float SURFACE_OFFSET = 0.01F;
   private static final float SAMPLE_REACH = 0.5F;
   private static final float INVISIBLE = 0.002F;
   private static final Box FULL_BLOCK = new Box(0, 0, 0, 1, 1, 1);
-  private static final int[][] FACE_CORNERS = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
+  private static final boolean[][] FACE_CORNERS = {
+    {false, false}, {false, true}, {true, true}, {true, false}
+  };
 
   private final BlockPos anchor;
-  private final FloatArrayList vertices;
+  private final FloatArrayList vertices = new FloatArrayList();
 
-  private GlowMesh(BlockPos anchor, FloatArrayList vertices) {
+  private GlowMesh(BlockPos anchor) {
     this.anchor = anchor;
-    this.vertices = vertices;
   }
 
-  public static GlowMesh build(List<Glow> glows, GlowSurfaces surfaces) {
+  static GlowMesh build(List<Glow> glows, GlowSurfaces surfaces) {
     if (glows.isEmpty()) {
       return EMPTY;
     }
     GlowField field = new GlowField(surfaces::isSolid);
     glows.forEach(field::add);
-    GlowMesh mesh = new GlowMesh(glows.get(0).pos(), new FloatArrayList());
+    GlowMesh mesh = new GlowMesh(glows.get(0).pos());
     for (long key : field.cells()) {
       mesh.addCell(field, surfaces, BlockPos.fromLong(key));
     }
     return mesh;
   }
 
-  public BlockPos anchor() {
+  boolean isEmpty() {
+    return vertices.isEmpty();
+  }
+
+  BlockPos anchor() {
     return anchor;
   }
 
-  public FloatArrayList vertices() {
-    return vertices;
+  void forEachVertex(GlowVertexSink sink) {
+    for (int start = 0; start < vertices.size(); start += FLOATS_PER_VERTEX) {
+      sink.vertex(
+          vertices.getFloat(start + POSITION),
+          vertices.getFloat(start + POSITION + 1),
+          vertices.getFloat(start + POSITION + 2),
+          vertices.getFloat(start + HUE),
+          vertices.getFloat(start + HUE + 1),
+          vertices.getFloat(start + HUE + 2),
+          vertices.getFloat(start + STRENGTH));
+    }
   }
 
   private void addCell(GlowField field, GlowSurfaces surfaces, BlockPos cell) {
@@ -69,86 +84,45 @@ public final class GlowMesh {
     boolean visible = false;
     for (int vertex = 0; vertex < VERTICES_PER_FACE; vertex++) {
       int start = vertex * FLOATS_PER_VERTEX;
-      corner(field, box, side, FACE_CORNERS[vertex], daylight, face, start);
-      visible |= face[start + STRENGTH_OFFSET] > INVISIBLE;
+      double[] corner = corner(box, side, FACE_CORNERS[vertex]);
+      writeVertex(field, side, corner, daylight, face, start);
+      visible |= face[start + STRENGTH] > INVISIBLE;
     }
     if (visible) {
       vertices.addElements(vertices.size(), face);
     }
   }
 
-  private void corner(
-      GlowField field,
-      Box box,
-      Direction side,
-      int[] corner,
-      float daylight,
-      float[] out,
-      int start) {
+  private static double[] corner(Box box, Direction side, boolean[] highs) {
     Direction.Axis first = side.getAxis() == Direction.Axis.X ? Direction.Axis.Y : Direction.Axis.X;
-    Direction.Axis second =
-        side.getAxis() == Direction.Axis.Z ? Direction.Axis.Y : Direction.Axis.Z;
-    double[] point = new double[3];
+    double[] point = new double[Direction.Axis.values().length];
     for (Direction.Axis axis : Direction.Axis.values()) {
       boolean high =
           axis == side.getAxis()
               ? side.getDirection() == Direction.AxisDirection.POSITIVE
-              : corner[axis == first ? 0 : 1] == 1;
+              : highs[axis == first ? 0 : 1];
       point[axis.ordinal()] = high ? box.getMax(axis) : box.getMin(axis);
     }
-    float[] sample = sample(field, side, point);
-    for (int axis = 0; axis < point.length; axis++) {
-      double push = axis == side.getAxis().ordinal() ? side.getDirection().offset() : 0;
-      out[start + axis] = (float) (point[axis] + push * SURFACE_OFFSET - anchorAxis(axis));
-    }
-    float total = Math.max(sample[GlowField.WEIGHT], Float.MIN_NORMAL);
-    out[start + 3] = sample[GlowField.RED] / total;
-    out[start + 4] = sample[GlowField.GREEN] / total;
-    out[start + 5] = sample[GlowField.BLUE] / total;
-    out[start + STRENGTH_OFFSET] = GlowColor.strength(sample[GlowField.WEIGHT], daylight);
+    return point;
   }
 
-  private static float[] sample(GlowField field, Direction side, double[] point) {
-    double x = point[0] + side.getOffsetX() * SAMPLE_REACH - SAMPLE_REACH;
-    double y = point[1] + side.getOffsetY() * SAMPLE_REACH - SAMPLE_REACH;
-    double z = point[2] + side.getOffsetZ() * SAMPLE_REACH - SAMPLE_REACH;
-    int baseX = MathHelper.floor(x);
-    int baseY = MathHelper.floor(y);
-    int baseZ = MathHelper.floor(z);
-    float[] sum = new float[4];
-    float open = 0F;
-    BlockPos.Mutable pos = new BlockPos.Mutable();
-    for (int dx = 0; dx <= 1; dx++) {
-      for (int dy = 0; dy <= 1; dy++) {
-        for (int dz = 0; dz <= 1; dz++) {
-          float share = share(x - baseX, dx) * share(y - baseY, dy) * share(z - baseZ, dz);
-          pos.set(baseX + dx, baseY + dy, baseZ + dz);
-          if (share == 0F || field.blocksLight(pos)) {
-            continue;
-          }
-          open += share;
-          float[] cell = field.at(pos.asLong());
-          if (cell != null) {
-            for (int channel = 0; channel < sum.length; channel++) {
-              sum[channel] += cell[channel] * share;
-            }
-          }
-        }
-      }
+  private void writeVertex(
+      GlowField field, Direction side, double[] point, float daylight, float[] out, int start) {
+    float[] light =
+        field.sample(
+            point[0] + side.getOffsetX() * SAMPLE_REACH,
+            point[1] + side.getOffsetY() * SAMPLE_REACH,
+            point[2] + side.getOffsetZ() * SAMPLE_REACH);
+    for (Direction.Axis axis : Direction.Axis.values()) {
+      double push = side.getAxis() == axis ? side.getDirection().offset() * SURFACE_OFFSET : 0D;
+      out[start + POSITION + axis.ordinal()] =
+          (float) (point[axis.ordinal()] + push - anchor.getComponentAlongAxis(axis));
     }
-    if (open > 0F) {
-      for (int channel = 0; channel < sum.length; channel++) {
-        sum[channel] /= open;
-      }
-    }
-    return sum;
-  }
-
-  private static float share(double fraction, int step) {
-    return (float) (step == 1 ? fraction : 1D - fraction);
-  }
-
-  private int anchorAxis(int axis) {
-    return axis == 0 ? anchor.getX() : axis == 1 ? anchor.getY() : anchor.getZ();
+    float weight = light[GlowField.WEIGHT];
+    float total = Math.max(weight, Float.MIN_NORMAL);
+    out[start + HUE] = light[GlowField.RED] / total;
+    out[start + HUE + 1] = light[GlowField.GREEN] / total;
+    out[start + HUE + 2] = light[GlowField.BLUE] / total;
+    out[start + STRENGTH] = GlowColor.strength(weight, daylight);
   }
 }
