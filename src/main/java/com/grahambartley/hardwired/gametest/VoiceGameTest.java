@@ -217,11 +217,30 @@ public class VoiceGameTest implements FabricGameTest {
         ON_AIR_TICKS + 2L * BEAT,
         () -> {
           expectStatus(context, SPEAKER, DeviceStatus.RUNNING);
-          var heard = DeskVoice.listeners(context.getWorld(), panel);
+          var heard = DeskVoice.listeners(context.getWorld(), panel, far.player());
           context.assertTrue(heard.contains(near.player()), "a player by the Radio hears it");
           context.assertFalse(heard.contains(far.player()), "a far player is sent nothing");
           near.leave();
           far.leave();
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 100)
+  public void aSpeakerIsNotSentTheirOwnVoice(TestContext context) {
+    ConnectedTestPlayer speaker = goOnAir(context);
+    ConnectedTestPlayer listener = playerAt(context, 4);
+    context.waitAndRun(
+        ON_AIR_TICKS + 2L * BEAT,
+        () -> {
+          expectStatus(context, RADIO, DeviceStatus.RUNNING);
+          var heard =
+              DeskVoice.listeners(
+                  context.getWorld(), context.getAbsolutePos(PANEL), speaker.player());
+          context.assertFalse(heard.contains(speaker.player()), "the speaker hears no echo");
+          context.assertTrue(heard.contains(listener.player()), "a player beside them still does");
+          speaker.leave();
+          listener.leave();
           context.complete();
         });
   }

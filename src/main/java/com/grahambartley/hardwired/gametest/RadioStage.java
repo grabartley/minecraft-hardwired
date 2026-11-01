@@ -54,7 +54,8 @@ final class RadioStage {
   static final Identifier TUNED_IN = Identifier.of(Hardwired.MOD_ID, "tuned_in");
   static final Identifier ON_THE_AIR = Identifier.of(Hardwired.MOD_ID, "on_the_air");
 
-  static final int STATION_SPACING = 50;
+  static final int STATION_SPACING = 40;
+  private static final int STATION_SLOTS = (Frequency.MAX - Frequency.MIN) / STATION_SPACING;
   private static final int MIN_STEPS_FROM_DEFAULT = 2;
   private static final AtomicInteger nextStation = new AtomicInteger();
 
@@ -118,7 +119,7 @@ final class RadioStage {
   static int nextFrequency() {
     int frequency;
     do {
-      frequency = Frequency.MIN + STATION_SPACING * nextStation.getAndIncrement();
+      frequency = Frequency.MIN + STATION_SPACING * (nextStation.getAndIncrement() % STATION_SLOTS);
     } while (Frequency.stepsApart(frequency, Frequency.DEFAULT) <= MIN_STEPS_FROM_DEFAULT);
     return frequency;
   }

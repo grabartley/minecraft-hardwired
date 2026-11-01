@@ -73,6 +73,92 @@ class DeskMicTest {
     assertEquals(gaveUp, mic.gaveUp(silent));
   }
 
+  @ParameterizedTest(name = "{0} take and release cycles")
+  @ValueSource(ints = {1, 10})
+  void takingAndReleasingDoesNotRefillTheBurst(int cycles) {
+    DeskMic mic = new DeskMic();
+    int accepted = 0;
+    for (int i = 0; i < cycles; i++) {
+      mic.take(FIRST, 0);
+      for (int frame = 0; frame < 50; frame++) {
+        accepted += mic.accepts(FIRST, 100, 0) ? 1 : 0;
+      }
+      mic.release(FIRST);
+    }
+    assertEquals(6, accepted);
+  }
+
+  @ParameterizedTest(name = "next speaker {0}")
+  @ValueSource(booleans = {true, false})
+  void aChangeOfSpeakerDoesNotRefillTheBurst(boolean sameSpeaker) {
+    DeskMic mic = new DeskMic();
+    mic.take(FIRST, 0);
+    for (int frame = 0; frame < 6; frame++) {
+      mic.accepts(FIRST, 100, 0);
+    }
+    mic.clear();
+    UUID next = sameSpeaker ? FIRST : SECOND;
+    mic.take(next, 0);
+    assertFalse(mic.accepts(next, 100, 0));
+  }
+
+  @ParameterizedTest(name = "pressing again at {0}")
+  @ValueSource(longs = {1000, 2900})
+  void pressingAgainDoesNotKeepASilentSpeakerOnTheMic(long pressedAgain) {
+    DeskMic mic = new DeskMic();
+    mic.take(FIRST, 0);
+    assertTrue(mic.take(FIRST, pressedAgain));
+    assertTrue(mic.gaveUp(3001));
+  }
+
+  @ParameterizedTest(name = "cycled at {0}")
+  @ValueSource(longs = {1000, 2900})
+  void cyclingTheMicDoesNotKeepASilentSpeakerOnIt(long cycledAt) {
+    DeskMic mic = new DeskMic();
+    mic.take(FIRST, 0);
+    mic.release(FIRST);
+    assertTrue(mic.take(FIRST, cycledAt));
+    assertTrue(mic.gaveUp(3001));
+  }
+
+  @ParameterizedTest(name = "heard at {0}")
+  @CsvSource({"1000,4000,false", "1000,4001,true", "2500,5500,false", "2500,5501,true"})
+  void onlyAnAcceptedFrameKeepsTheMic(long heardAt, long now, boolean gaveUp) {
+    DeskMic mic = new DeskMic();
+    mic.take(FIRST, 0);
+    assertTrue(mic.accepts(FIRST, 100, heardAt));
+    assertEquals(gaveUp, mic.gaveUp(now));
+  }
+
+  @ParameterizedTest(name = "{0} bytes")
+  @ValueSource(ints = {3, 804})
+  void aRefusedFrameDoesNotKeepTheMic(int bytes) {
+    DeskMic mic = new DeskMic();
+    mic.take(FIRST, 0);
+    assertFalse(mic.accepts(FIRST, bytes, 2000));
+    assertTrue(mic.gaveUp(3001));
+  }
+
+  @ParameterizedTest(name = "taken at {0}")
+  @ValueSource(longs = {0, 100000})
+  void aNewSpeakerHasTheWholeWindowToStart(long takenAt) {
+    DeskMic mic = new DeskMic();
+    mic.take(FIRST, 0);
+    mic.release(FIRST);
+    mic.take(SECOND, takenAt);
+    assertFalse(mic.gaveUp(takenAt + DeskMic.SILENT_MILLIS));
+  }
+
+  @ParameterizedTest(name = "back after {0} ms")
+  @ValueSource(longs = {3001, 60000})
+  void aSpeakerComingBackLaterHasTheWholeWindowAgain(long away) {
+    DeskMic mic = new DeskMic();
+    mic.take(FIRST, 0);
+    mic.release(FIRST);
+    mic.take(FIRST, away);
+    assertFalse(mic.gaveUp(away + DeskMic.SILENT_MILLIS));
+  }
+
   @ParameterizedTest(name = "shown {0}")
   @ValueSource(booleans = {true, false})
   void aClientOnlyShowsWhoIsTalking(boolean someone) {

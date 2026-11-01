@@ -4,6 +4,7 @@ import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.block.BroadcastDeskBlock;
 import com.grahambartley.hardwired.block.BroadcastDeskBlockEntity;
 import com.grahambartley.hardwired.block.DeskLayout;
+import com.grahambartley.hardwired.device.ActionRate;
 import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
@@ -18,7 +19,14 @@ import net.minecraft.util.math.BlockPos;
 
 public final class DeskActions {
 
+  private static final int MIN_TICKS_BETWEEN_AIR_TOGGLES = 4;
+  private static final ActionRate AIR_TOGGLES = new ActionRate(MIN_TICKS_BETWEEN_AIR_TOGGLES);
+
   private DeskActions() {}
+
+  public static void forget(ServerPlayerEntity player) {
+    AIR_TOGGLES.forget(player.getUuid());
+  }
 
   public static boolean mayWork(ServerPlayerEntity player, BlockPos panel) {
     if (!player.canModifyBlocks() || !DeviceActions.canUse(player, panel)) {
@@ -26,6 +34,9 @@ public final class DeskActions {
     }
     ServerWorld world = player.getServerWorld();
     BlockState state = world.getBlockState(panel);
+    if (!(state.getBlock() instanceof BroadcastDeskBlock)) {
+      return false;
+    }
     WireViewer viewer = WireViewer.of(player);
     boolean mayWork =
         DeskLayout.cells(state.get(BroadcastDeskBlock.FACING), panel).stream()
@@ -44,21 +55,20 @@ public final class DeskActions {
   }
 
   public static void act(ServerPlayerEntity player, DeskActionPayload action) {
-    ServerWorld world = player.getServerWorld();
     BlockPos panel = action.pos();
-    if (!(world.getBlockEntity(panel) instanceof BroadcastDeskBlockEntity desk)
-        || !mayWork(player, panel)) {
+    DeskAction asked = DeskAction.byIndex(action.action());
+    ServerWorld world = player.getServerWorld();
+    if (asked == null
+        || !mayWork(player, panel)
+        || !(world.getBlockEntity(panel) instanceof BroadcastDeskBlockEntity desk)) {
       return;
     }
-    switch (DeskAction.byIndex(action.action())) {
+    switch (asked) {
       case SET_FREQUENCY -> {
         desk.setFrequency(action.value());
         desk.publish(world);
       }
-      case TOGGLE_AIR -> {
-        desk.setWantsAir(!desk.wantsAir());
-        ElectronicsDriver.pulse(world, panel);
-      }
+      case TOGGLE_AIR -> toggleAir(player, world, desk);
       case PLAY -> play(player, world, desk);
       case STOP -> {
         desk.stopSong();
@@ -71,6 +81,14 @@ public final class DeskActions {
       }
       case TAKE_MIC -> DeskVoice.take(player, desk);
       case RELEASE_MIC -> DeskVoice.release(player, desk);
+    }
+  }
+
+  private static void toggleAir(
+      ServerPlayerEntity player, ServerWorld world, BroadcastDeskBlockEntity desk) {
+    if (AIR_TOGGLES.allow(player.getUuid(), player.getServer().getTicks())) {
+      desk.setWantsAir(!desk.wantsAir());
+      ElectronicsDriver.pulse(world, desk.getPos());
     }
   }
 

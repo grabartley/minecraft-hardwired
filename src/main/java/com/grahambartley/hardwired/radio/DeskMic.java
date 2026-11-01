@@ -10,7 +10,9 @@ public final class DeskMic {
   public static final long SILENT_MILLIS = 3000;
 
   @Nullable private UUID speaker;
-  private VoiceRateLimit limit;
+  @Nullable private UUID lastSpeaker;
+  private boolean taken;
+  private final VoiceRateLimit limit = new VoiceRateLimit(0);
   private long lastHeard;
 
   public static boolean mayBeLive(DeviceStatus status, boolean voiceBroadcasts) {
@@ -30,10 +32,17 @@ public final class DeskMic {
     if (speaker != null && !speaker.equals(player)) {
       return false;
     }
+    if (speaker == null && startsAfresh(player, nowMillis)) {
+      lastHeard = nowMillis;
+    }
     speaker = player;
-    limit = new VoiceRateLimit(nowMillis);
-    lastHeard = nowMillis;
+    lastSpeaker = player;
+    taken = true;
     return true;
+  }
+
+  private boolean startsAfresh(UUID player, long nowMillis) {
+    return !player.equals(lastSpeaker) || nowMillis - lastHeard > SILENT_MILLIS;
   }
 
   public boolean release(UUID player) {
@@ -46,12 +55,12 @@ public final class DeskMic {
 
   public void clear() {
     speaker = null;
-    limit = null;
+    taken = false;
   }
 
   public boolean accepts(UUID player, int frameBytes, long nowMillis) {
-    if (!player.equals(speaker)
-        || limit == null
+    if (!taken
+        || !player.equals(speaker)
         || frameBytes <= AdpcmCodec.HEADER_BYTES
         || frameBytes > MOST_FRAME_BYTES
         || !limit.allows(nowMillis)) {

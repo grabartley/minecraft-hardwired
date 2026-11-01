@@ -15,13 +15,9 @@ import org.jetbrains.annotations.Nullable;
 
 public final class TalkControl {
 
-  private static final int ASK_AGAIN_TICKS = 10;
-
   private final BlockPos pos;
   private final BroadcastDeskBlockEntity desk;
-  private boolean held;
-  private boolean focused = true;
-  private int ticksSinceAsked;
+  private final TalkState state = new TalkState();
   @Nullable private VoiceCapture capture;
   @Nullable private MicProblem problem;
 
@@ -31,42 +27,34 @@ public final class TalkControl {
   }
 
   public void press() {
-    if (!held && available()) {
-      held = true;
+    if (state.press(available())) {
       problem = null;
-      ticksSinceAsked = 0;
       send(DeskAction.TAKE_MIC);
     }
   }
 
   public void letGo() {
-    if (held) {
-      held = false;
-      closeCapture();
-      send(DeskAction.RELEASE_MIC);
+    if (state.release()) {
+      giveUpMic();
     }
   }
 
   public void tick(MinecraftClient client) {
-    boolean nowFocused = client.isWindowFocused();
-    boolean lostFocus = focused && !nowFocused;
-    focused = nowFocused;
-    if (lostFocus
-        || !available()
-        || !client.player.canInteractWithBlockAt(pos, DeviceActions.REACH_MARGIN)) {
-      letGo();
+    boolean inReach = client.player.canInteractWithBlockAt(pos, DeviceActions.REACH_MARGIN);
+    if (state.mustDrop(client.isWindowFocused(), available(), inReach)) {
+      drop();
     }
-    if (held && desk.mic().speaker() == null && ++ticksSinceAsked >= ASK_AGAIN_TICKS) {
-      ticksSinceAsked = 0;
+    if (state.askAgain(desk.mic().speaker() == null)) {
       send(DeskAction.TAKE_MIC);
     }
-    if (capture != null && !mine(client)) {
-      closeCapture();
-    } else if (held && capture == null && mine(client)) {
-      capture =
-          VoiceCapture.start(
-              frame -> client.execute(() -> send(frame)),
-              failure -> client.execute(() -> fail(failure)));
+    switch (state.capture(capture != null, mine(client))) {
+      case START ->
+          capture =
+              VoiceCapture.start(
+                  frame -> client.execute(() -> send(frame)),
+                  failure -> client.execute(() -> fail(failure)));
+      case STOP -> closeCapture();
+      case KEEP -> {}
     }
   }
 
@@ -94,7 +82,18 @@ public final class TalkControl {
 
   private void fail(MicProblem failure) {
     problem = failure;
-    letGo();
+    drop();
+  }
+
+  private void drop() {
+    if (state.drop()) {
+      giveUpMic();
+    }
+  }
+
+  private void giveUpMic() {
+    closeCapture();
+    send(DeskAction.RELEASE_MIC);
   }
 
   private void closeCapture() {

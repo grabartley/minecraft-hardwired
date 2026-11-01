@@ -10,6 +10,7 @@ public enum DeskAction {
   RELEASE_MIC;
 
   public static DeskAction byIndex(int index) {
-    return values()[Math.floorMod(index, values().length)];
+    DeskAction[] all = values();
+    return index >= 0 && index < all.length ? all[index] : null;
   }
 }

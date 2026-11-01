@@ -38,15 +38,19 @@ public final class ElectronicsDriver {
     DeviceStatus before = entity.status();
     DeviceStatus demand = device.demand(world, pos, state);
     BlockPos wired = device.wiredAt(world, pos, state);
-    boolean paid =
-        demand == DeviceStatus.RUNNING
-            && ChargeNetwork.tryDrain(world, wired, device.chargePerSecond());
-    boolean unpaid = demand == DeviceStatus.RUNNING && !paid;
+    long now = world.getTime();
+    boolean wanted = demand == DeviceStatus.RUNNING;
+    boolean covered = wanted && ElectronicsRule.beatPaid(entity.paidAt(), now);
+    boolean drained =
+        wanted && !covered && ChargeNetwork.tryDrain(world, wired, device.chargePerSecond());
+    boolean paid = covered || drained;
+    boolean unpaid = wanted && !paid;
     boolean hasCell = unpaid && !ChargeNetwork.storesFor(world, wired).isEmpty();
     DeviceStatus next = ElectronicsRule.next(demand, paid, hasCell);
     entity.setStatus(next);
     device.show(world, pos, state, next);
-    if (paid) {
+    if (drained) {
+      entity.notePaid(now);
       device.beat(world, pos);
     }
     if (device.keepsChecking(next)) {

@@ -1,13 +1,9 @@
 package com.grahambartley.hardwired.client.radio;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.DoubleSupplier;
 import java.util.function.LongSupplier;
 import net.minecraft.client.sound.AudioStream;
-import net.minecraft.client.sound.BufferedAudioStream;
 import net.minecraft.client.sound.SoundLoader;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -34,21 +30,8 @@ public final class BroadcastSoundInstance extends DeviceSoundInstance {
       SoundLoader loader, Identifier id, boolean repeatInstantly) {
     return loader
         .loadStreamed(id, false)
-        .thenApplyAsync(this::seek, Util.getDownloadWorkerExecutor());
-  }
-
-  private AudioStream seek(AudioStream stream) {
-    try {
-      if (stream instanceof BufferedAudioStream buffered) {
-        SongSeek.skipTo(buffered, songMillis, this::isDone);
-      }
-      if (isDone()) {
-        stream.close();
-        throw new CancellationException();
-      }
-    } catch (IOException failure) {
-      throw new UncheckedIOException(failure);
-    }
-    return stream;
+        .thenApplyAsync(
+            stream -> SongSeek.seek(stream, songMillis, this::isDone),
+            Util.getDownloadWorkerExecutor());
   }
 }

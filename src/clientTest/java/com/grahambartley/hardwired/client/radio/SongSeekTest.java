@@ -1,12 +1,18 @@
 package com.grahambartley.hardwired.client.radio;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import it.unimi.dsi.fastutil.floats.FloatConsumer;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.concurrent.CancellationException;
 import javax.sound.sampled.AudioFormat;
 import net.minecraft.client.sound.BufferedAudioStream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SongSeekTest {
 
@@ -46,6 +52,34 @@ class SongSeekTest {
     public void close() {}
   }
 
+  private static final class ClosableStream implements BufferedAudioStream {
+
+    private final boolean failsToRead;
+    private int closes;
+
+    ClosableStream(boolean failsToRead) {
+      this.failsToRead = failsToRead;
+    }
+
+    @Override
+    public AudioFormat getFormat() {
+      return new AudioFormat(RATE, 16, 1, true, false);
+    }
+
+    @Override
+    public boolean read(FloatConsumer consumer) throws IOException {
+      if (failsToRead) {
+        throw new IOException("bad stream");
+      }
+      return false;
+    }
+
+    @Override
+    public void close() {
+      closes++;
+    }
+  }
+
   @ParameterizedTest(name = "{0} channels to {1} ms")
   @CsvSource({"1,0,0", "1,500,500", "1,510,600", "2,500,1000", "1,99999,2000"})
   void skippingStopsAtTheFirstPacketPastTheTarget(int channels, long target, long samples)
@@ -61,6 +95,27 @@ class SongSeekTest {
     int[] asked = new int[1];
     SongSeek.skipTo(stream, () -> 1000, () -> ++asked[0] >= checks);
     assertEquals(packets, stream.packets);
+  }
+
+  @ParameterizedTest(name = "cancelled {0}")
+  @ValueSource(booleans = {true, false})
+  void aSeekClosesTheStreamOnlyWhenItWillNotBeUsed(boolean cancelled) {
+    ClosableStream stream = new ClosableStream(false);
+    if (cancelled) {
+      assertThrows(CancellationException.class, () -> SongSeek.seek(stream, () -> 10, () -> true));
+    } else {
+      assertSame(stream, SongSeek.seek(stream, () -> 10, () -> false));
+    }
+    assertEquals(cancelled ? 1 : 0, stream.closes);
+  }
+
+  @ParameterizedTest(name = "target {0}")
+  @ValueSource(longs = {1, 1000})
+  void aFailedSeekClosesTheStream(long target) {
+    ClosableStream stream = new ClosableStream(true);
+    assertThrows(
+        UncheckedIOException.class, () -> SongSeek.seek(stream, () -> target, () -> false));
+    assertEquals(1, stream.closes);
   }
 
   @ParameterizedTest(name = "a moving target of {0} per check")

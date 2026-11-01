@@ -70,12 +70,17 @@ public final class BroadcastSounds {
   }
 
   private static void forgetAll(MinecraftClient client) {
-    PLAYING.values().forEach(playing -> client.getSoundManager().stop(playing.sound()));
+    PLAYING.values().forEach(playing -> silence(client, playing));
     PLAYING.clear();
     DEVICES.clear();
     VoiceSounds.forgetAll(client);
     StaticSounds.forgetAll(client);
     VoiceFeed.clear();
+  }
+
+  private static void silence(MinecraftClient client, Playing playing) {
+    playing.sound().silence();
+    client.getSoundManager().stop(playing.sound());
   }
 
   private static void tick(MinecraftClient client) {
@@ -90,8 +95,7 @@ public final class BroadcastSounds {
     while (playing.hasNext()) {
       Map.Entry<SoundingBlockEntity, Playing> entry = playing.next();
       if (!granted.songs().contains(entry.getKey()) || !entry.getValue().plays(entry.getKey())) {
-        entry.getValue().sound().silence();
-        client.getSoundManager().stop(entry.getValue().sound());
+        silence(client, entry.getValue());
         playing.remove();
       }
     }

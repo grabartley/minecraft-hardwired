@@ -19,7 +19,7 @@ public final class MicrophoneSource implements CaptureSource {
   private static final int LINE_BUFFER_FRAMES = 4;
 
   private final String chosen;
-  private TargetDataLine line;
+  private volatile TargetDataLine line;
 
   public MicrophoneSource(String chosen) {
     this.chosen = chosen;
@@ -66,11 +66,19 @@ public final class MicrophoneSource implements CaptureSource {
   }
 
   @Override
-  public void read(short[] frame) {
+  public void read(short[] frame) throws MicFailure {
+    fill(line, frame);
+  }
+
+  static void fill(TargetDataLine source, short[] frame) throws MicFailure {
     byte[] bytes = new byte[frame.length * VoiceFormat.BYTES_PER_SAMPLE];
     int done = 0;
-    while (done < bytes.length && line.isOpen()) {
-      done += line.read(bytes, done, bytes.length - done);
+    while (done < bytes.length) {
+      int got = source.read(bytes, done, bytes.length - done);
+      if (got <= 0) {
+        throw new MicFailure(MicProblem.NO_INPUT);
+      }
+      done += got;
     }
     short[] samples = VoiceFormat.toSamples(bytes, done);
     System.arraycopy(samples, 0, frame, 0, samples.length);
@@ -78,8 +86,9 @@ public final class MicrophoneSource implements CaptureSource {
 
   @Override
   public void close() {
-    if (line != null) {
-      line.close();
+    TargetDataLine opened = line;
+    if (opened != null) {
+      opened.close();
     }
   }
 }

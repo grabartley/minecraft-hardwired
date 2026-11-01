@@ -23,7 +23,8 @@ import net.minecraft.util.Identifier;
 
 public final class DeviceAnimations {
 
-  public record Part(String bone, Identifier model, float[] pivot, boolean glow, String when) {
+  public record Part(
+      String bone, Identifier model, float[] pivot, boolean glow, String when, String movesWhen) {
 
     public boolean drawnWhile(boolean animating) {
       return animating || !glow;
@@ -31,6 +32,10 @@ public final class DeviceAnimations {
 
     public boolean shownIn(BlockState state) {
       return when == null || AnimatedDevice.flagged(state, when);
+    }
+
+    public boolean movesIn(BlockState state) {
+      return movesWhen == null || AnimatedDevice.flagged(state, movesWhen);
     }
 
     public int light(int worldLight) {
@@ -112,6 +117,7 @@ public final class DeviceAnimations {
           pivot.get(0).getAsFloat(), pivot.get(1).getAsFloat(), pivot.get(2).getAsFloat()
         },
         part.has("glow") && part.get("glow").getAsBoolean(),
-        part.has("when") ? part.get("when").getAsString() : null);
+        part.has("when") ? part.get("when").getAsString() : null,
+        part.has("moves_when") ? part.get("moves_when").getAsString() : null);
   }
 }

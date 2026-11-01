@@ -43,14 +43,15 @@ public final class DeskVoice {
     if (!StationRegistry.of(world).audience().tunedTo(panel).isEmpty()) {
       ModCriteria.DEVICE.trigger(player, ModCriteria.LIVE_MIC);
     }
-    for (ServerPlayerEntity listener : listeners(world, panel)) {
+    for (ServerPlayerEntity listener : listeners(world, panel, player)) {
       if (ServerPlayNetworking.canSend(listener, VoiceFramePayload.ID)) {
         ServerPlayNetworking.send(listener, frame);
       }
     }
   }
 
-  public static List<ServerPlayerEntity> listeners(ServerWorld world, BlockPos panel) {
+  public static List<ServerPlayerEntity> listeners(
+      ServerWorld world, BlockPos panel, ServerPlayerEntity speaker) {
     RadioSettings settings = Hardwired.SERVER_CONFIG.radio();
     Set<SoundingBlockEntity> tuned = StationRegistry.of(world).audience().tunedTo(panel);
     if (tuned.isEmpty()) {
@@ -66,7 +67,8 @@ public final class DeskVoice {
             .toList();
     return world.getPlayers(
         listener ->
-            VoiceAudience.hears(listener.getX(), listener.getY(), listener.getZ(), devices));
+            listener != speaker
+                && VoiceAudience.hears(listener.getX(), listener.getY(), listener.getZ(), devices));
   }
 
   public static void beat(ServerWorld world, BroadcastDeskBlockEntity desk) {

@@ -27,6 +27,12 @@ class ElectronicsRuleTest {
     assertEquals(next, ElectronicsRule.next(demand, paid, hasCell));
   }
 
+  @ParameterizedTest(name = "paid at {0}, now {1}")
+  @CsvSource({"100,100,true", "100,119,true", "100,120,false", "100,500,false", "-20,0,false"})
+  void aSecondIsPaidOnceAndCoversItsBeat(long paidAt, long now, boolean covered) {
+    assertEquals(covered, ElectronicsRule.beatPaid(paidAt, now));
+  }
+
   @ParameterizedTest(name = "cost {0} cell {1} available {2}")
   @CsvSource({"1,true,1,READY", "1,true,0,NO_CHARGE", "1,false,0,NO_CELL", "0,false,0,READY"})
   void anIntercomIsReadyWhenItCanPayForALine(

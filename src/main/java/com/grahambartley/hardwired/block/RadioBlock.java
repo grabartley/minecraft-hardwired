@@ -74,16 +74,9 @@ public final class RadioBlock extends TableDeviceBlock {
     if (!(world.getBlockEntity(pos) instanceof RadioBlockEntity radio) || !radio.isOn()) {
       return DeviceStatus.RADIO_OFF;
     }
-    Optional<Reception> heard = RadioTuner.best(world, pos, radio.frequency());
-    if (heard.isEmpty()) {
-      return DeviceStatus.NO_STATION;
-    }
-    radio.hear(
-        heard.get().station().desk(),
-        heard.get().station().song(),
-        heard.get().station().songStart(),
-        heard.get().strength());
-    return DeviceStatus.RUNNING;
+    return RadioTuner.best(world, pos, radio.frequency()).isPresent()
+        ? DeviceStatus.RUNNING
+        : DeviceStatus.NO_STATION;
   }
 
   @Override
@@ -95,9 +88,16 @@ public final class RadioBlock extends TableDeviceBlock {
   public void show(ServerWorld world, BlockPos pos, BlockState state, DeviceStatus status) {
     boolean playing = status == DeviceStatus.RUNNING;
     if (world.getBlockEntity(pos) instanceof RadioBlockEntity radio) {
-      if (!playing) {
-        radio.silence();
-      }
+      Optional<Reception> heard =
+          playing ? RadioTuner.best(world, pos, radio.frequency()) : Optional.empty();
+      heard.ifPresentOrElse(
+          reception ->
+              radio.hear(
+                  reception.station().desk(),
+                  reception.station().song(),
+                  reception.station().songStart(),
+                  reception.strength()),
+          radio::silence);
       radio.setHissing(status == DeviceStatus.NO_STATION && hasCharge(world, pos));
     }
     if (state.get(PLAYING) != playing) {

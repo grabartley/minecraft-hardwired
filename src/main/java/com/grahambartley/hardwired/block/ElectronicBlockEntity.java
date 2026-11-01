@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.device.DeviceStatus;
+import com.grahambartley.hardwired.device.ElectronicsDriver;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -17,6 +18,7 @@ public class ElectronicBlockEntity extends BlockEntity {
   private static final String STATUS = "status";
 
   private DeviceStatus status = DeviceStatus.READY;
+  private long paidAt = -ElectronicsDriver.BEAT_TICKS;
 
   public ElectronicBlockEntity(BlockPos pos, BlockState state) {
     this(ModBlockEntities.ELECTRONIC, pos, state);
@@ -36,6 +38,14 @@ public class ElectronicBlockEntity extends BlockEntity {
     }
     status = next;
     sync();
+  }
+
+  public long paidAt() {
+    return paidAt;
+  }
+
+  public void notePaid(long now) {
+    paidAt = now;
   }
 
   protected void sync() {

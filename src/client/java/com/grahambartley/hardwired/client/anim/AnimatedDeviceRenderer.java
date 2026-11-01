@@ -64,7 +64,9 @@ public final class AnimatedDeviceRenderer<T extends BlockEntity> implements Bloc
         continue;
       }
       DeviceClip.Pose pose =
-          animating ? animation.clip().sample(part.bone(), seconds) : DeviceClip.Pose.REST;
+          animating && part.movesIn(state)
+              ? animation.clip().sample(part.bone(), seconds)
+              : DeviceClip.Pose.REST;
       matrices.push();
       apply(matrices, part.pivot(), pose);
       BakedModel model =

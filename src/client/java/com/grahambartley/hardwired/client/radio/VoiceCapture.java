@@ -5,31 +5,29 @@ import com.grahambartley.hardwired.radio.AdpcmCodec;
 import com.grahambartley.hardwired.radio.MicHealth;
 import com.grahambartley.hardwired.radio.VoiceFormat;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public final class VoiceCapture {
 
-  private static final Supplier<CaptureSource> MICROPHONE =
-      () -> new MicrophoneSource(ClientSettingsStore.radio().microphone());
-  private static Supplier<CaptureSource> sources = MICROPHONE;
-
+  private final CaptureSource source;
   private final Consumer<byte[]> frames;
   private final Consumer<MicProblem> problems;
   private volatile boolean running = true;
 
-  private VoiceCapture(Consumer<byte[]> frames, Consumer<MicProblem> problems) {
+  private VoiceCapture(
+      CaptureSource source, Consumer<byte[]> frames, Consumer<MicProblem> problems) {
+    this.source = source;
     this.frames = frames;
     this.problems = problems;
   }
 
-  public static void useSource(Supplier<CaptureSource> next) {
-    sources = next;
+  public static VoiceCapture start(Consumer<byte[]> frames, Consumer<MicProblem> problems) {
+    return start(new MicrophoneSource(ClientSettingsStore.radio().microphone()), frames, problems);
   }
 
-  public static VoiceCapture start(Consumer<byte[]> frames, Consumer<MicProblem> problems) {
-    VoiceCapture capture = new VoiceCapture(frames, problems);
-    CaptureSource source = sources.get();
-    Thread thread = new Thread(() -> capture.run(source), "Hardwired Microphone");
+  static VoiceCapture start(
+      CaptureSource source, Consumer<byte[]> frames, Consumer<MicProblem> problems) {
+    VoiceCapture capture = new VoiceCapture(source, frames, problems);
+    Thread thread = new Thread(capture::run, "Hardwired Microphone");
     thread.setDaemon(true);
     thread.start();
     return capture;
@@ -37,9 +35,10 @@ public final class VoiceCapture {
 
   public void stop() {
     running = false;
+    source.close();
   }
 
-  private void run(CaptureSource source) {
+  private void run() {
     try {
       source.open();
       AdpcmCodec encoder = new AdpcmCodec();
@@ -47,16 +46,19 @@ public final class VoiceCapture {
       short[] frame = new short[VoiceFormat.FRAME_SAMPLES];
       while (running) {
         source.read(frame);
+        if (!running) {
+          return;
+        }
         if (health.refused(frame)) {
           problems.accept(MicProblem.REFUSED);
           return;
         }
-        if (running) {
-          frames.accept(encoder.encode(frame));
-        }
+        frames.accept(encoder.encode(frame));
       }
     } catch (MicFailure failure) {
-      problems.accept(failure.problem());
+      if (running) {
+        problems.accept(failure.problem());
+      }
     } finally {
       source.close();
     }

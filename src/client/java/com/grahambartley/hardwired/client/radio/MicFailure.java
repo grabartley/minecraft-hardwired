@@ -4,6 +4,11 @@ public final class MicFailure extends Exception {
 
   private final MicProblem problem;
 
+  public MicFailure(MicProblem problem) {
+    super(problem.name());
+    this.problem = problem;
+  }
+
   public MicFailure(MicProblem problem, Throwable cause) {
     super(problem.name(), cause);
     this.problem = problem;

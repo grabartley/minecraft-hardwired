@@ -9,6 +9,8 @@ import com.grahambartley.hardwired.device.IntercomActions;
 import com.grahambartley.hardwired.device.MainPanelActions;
 import com.grahambartley.hardwired.lift.LiftActions;
 import com.grahambartley.hardwired.network.ModNetworking;
+import com.grahambartley.hardwired.radio.DeskActions;
+import com.grahambartley.hardwired.radio.RadioActions;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
@@ -63,6 +65,8 @@ public class Hardwired implements ModInitializer {
           ControllerActions.forget(handler.getPlayer());
           IntercomActions.forget(handler.getPlayer());
           LiftActions.forget(handler.getPlayer());
+          DeskActions.forget(handler.getPlayer());
+          RadioActions.forget(handler.getPlayer());
         });
     LOGGER.info("Hardwired initialised");
   }

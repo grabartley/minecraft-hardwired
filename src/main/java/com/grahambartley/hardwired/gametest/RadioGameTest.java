@@ -11,6 +11,7 @@ import com.grahambartley.hardwired.block.SpeakerBlock;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.device.DeviceStatus;
+import com.grahambartley.hardwired.device.ElectronicsDriver;
 import com.grahambartley.hardwired.radio.DeskAction;
 import com.grahambartley.hardwired.radio.Frequency;
 import com.grahambartley.hardwired.radio.ReceptionMix;
@@ -28,6 +29,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
 public class RadioGameTest implements FabricGameTest {
+
+  private static final int MEASURE_FROM = SETTLE + 2 * BEAT;
+  private static final int DRAIN_WINDOW = 3 * ElectronicsDriver.BEAT_TICKS;
+  private static final int TOGGLE_TICKS = 4;
 
   private static HardwiredConfig savedConfig;
 
@@ -121,6 +126,118 @@ public class RadioGameTest implements FabricGameTest {
         });
   }
 
+  private static void expectTogglingCostsNoMoreThanRunning(
+      TestContext context, RedstoneCellBlockEntity cell, int spareCharge, Runnable toggle) {
+    int[] charge = new int[2];
+    context.runAtTick(MEASURE_FROM, () -> charge[0] = cell.charge());
+    context.runAtTick(MEASURE_FROM + DRAIN_WINDOW, () -> charge[1] = cell.charge());
+    context.runAtEveryTick(
+        () -> {
+          long tick = context.getTick();
+          if (tick > MEASURE_FROM + DRAIN_WINDOW
+              && tick < MEASURE_FROM + 2L * DRAIN_WINDOW
+              && tick % TOGGLE_TICKS == 0) {
+            toggle.run();
+          }
+        });
+    context.runAtTick(
+        MEASURE_FROM + 2L * DRAIN_WINDOW,
+        () -> {
+          int running = charge[0] - charge[1];
+          int toggling = charge[1] - cell.charge();
+          context.assertTrue(running > 0, "the control must drain, it used " + running);
+          context.assertTrue(
+              toggling <= running + spareCharge,
+              "toggling used " + toggling + " where running used " + running);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 200)
+  public void aRadioToggledFlatOutDrainsNoFasterThanOneLeftRunning(TestContext context) {
+    RedstoneCellBlockEntity cell = buildStation(context, 5000);
+    ConnectedTestPlayer player = playerAt(context, 3);
+    context.waitAndRun(SETTLE, () -> act(context, player, PANEL, DeskAction.TOGGLE_AIR));
+    int oneBeat =
+        Hardwired.SERVER_CONFIG.power().radioChargePerSecond()
+            + Hardwired.SERVER_CONFIG.power().speakerChargePerSecond();
+    expectTogglingCostsNoMoreThanRunning(
+        context,
+        cell,
+        oneBeat,
+        () ->
+            setRadio(
+                context,
+                player,
+                !radio(context).isOn(),
+                radio(context).frequency(),
+                ReceptionMix.MAX_VOLUME));
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 200)
+  public void aDeskToggledFlatOutDrainsNoFasterThanOneLeftOnTheAir(TestContext context) {
+    RedstoneCellBlockEntity cell = wiredCell(context, 5000);
+    placeDesk(context, PANEL);
+    raiseTower(context, MASTS, true);
+    desk(context).setFrequency(nextFrequency());
+    ConnectedTestPlayer player = playerAt(context, 3);
+    context.waitAndRun(SETTLE, () -> act(context, player, PANEL, DeskAction.TOGGLE_AIR));
+    expectTogglingCostsNoMoreThanRunning(
+        context,
+        cell,
+        Hardwired.SERVER_CONFIG.power().broadcastChargePerSecond(),
+        () -> act(context, player, PANEL, DeskAction.TOGGLE_AIR));
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 60)
+  public void theLastOfABurstOfRadioSetsIsTheOneThatHolds(TestContext context) {
+    buildStation(context, 500);
+    ConnectedTestPlayer player = playerAt(context, 3);
+    context.waitAndRun(
+        SETTLE,
+        () -> {
+          int frequency = radio(context).frequency();
+          setRadio(context, player, false, frequency, ReceptionMix.MAX_VOLUME);
+          expectStatus(context, RADIO, DeviceStatus.RADIO_OFF);
+          setRadio(context, player, true, frequency, ReceptionMix.MAX_VOLUME);
+          expectStatus(context, RADIO, DeviceStatus.RADIO_OFF);
+          setRadio(context, player, false, frequency, ReceptionMix.MAX_VOLUME);
+          setRadio(context, player, true, Frequency.MAX, 40);
+        });
+    context.waitAndRun(
+        SETTLE + BEAT,
+        () -> {
+          expectStatus(context, RADIO, DeviceStatus.NO_STATION);
+          context.assertTrue(radio(context).frequency() == Frequency.MAX, "the dial must land");
+          context.assertTrue(radio(context).volume() == 40, "the volume must land");
+          player.leave();
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 100)
+  public void aRadioWithNoChargeIsNotToldWhatItCouldHear(TestContext context) {
+    buildStation(context, 500);
+    ConnectedTestPlayer player = playerAt(context, 3);
+    BlockPos unwired = at(6, 3);
+    context.setBlockState(unwired, ModBlocks.RADIO);
+    RadioBlockEntity silent = context.getBlockEntity(unwired);
+    silent.set(true, radio(context).frequency(), ReceptionMix.MAX_VOLUME);
+    context.waitAndRun(SETTLE, () -> act(context, player, PANEL, DeskAction.TOGGLE_AIR));
+    context.waitAndRun(
+        SETTLE + 2L * BEAT,
+        () -> {
+          expectStatus(context, unwired, DeviceStatus.NO_CELL);
+          DeviceStatus demand =
+              ((RadioBlock) ModBlocks.RADIO)
+                  .demand(context.getWorld(), silent.getPos(), context.getBlockState(unwired));
+          context.assertTrue(demand == DeviceStatus.RUNNING, "the station must be in reach");
+          context.assertTrue(silent.station() == null, "working out demand must not tune it");
+          player.leave();
+          context.complete();
+        });
+  }
+
   @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 40)
   public void aDeskWithNoMastsSaysSo(TestContext context) {
     wiredCell(context, 50);
@@ -163,23 +280,25 @@ public class RadioGameTest implements FabricGameTest {
     placeDesk(context, PANEL);
     placeDesk(context, SECOND_PANEL);
     raiseTower(context, MASTS, true);
-    ConnectedTestPlayer player = playerAt(context, 5);
+    ConnectedTestPlayer first = playerAt(context, 5);
+    ConnectedTestPlayer second = playerAt(context, 6);
     context.waitAndRun(
         SETTLE,
         () -> {
-          act(context, player, PANEL, DeskAction.TOGGLE_AIR);
-          act(context, player, SECOND_PANEL, DeskAction.TOGGLE_AIR);
+          act(context, first, PANEL, DeskAction.TOGGLE_AIR);
+          act(context, second, SECOND_PANEL, DeskAction.TOGGLE_AIR);
           expectStatus(context, PANEL, DeviceStatus.RUNNING);
           expectStatus(context, SECOND_PANEL, DeviceStatus.TOWER_IN_USE);
           context.assertFalse(
               onTheAir(context, SECOND_PANEL), "two Desks on one tower give one station");
-          act(context, player, PANEL, DeskAction.TOGGLE_AIR);
         });
+    context.waitAndRun(SETTLE + 5L, () -> act(context, first, PANEL, DeskAction.TOGGLE_AIR));
     context.waitAndRun(
         SETTLE + BEAT,
         () -> {
           expectStatus(context, SECOND_PANEL, DeviceStatus.RUNNING);
-          player.leave();
+          first.leave();
+          second.leave();
           context.complete();
         });
   }
@@ -260,9 +379,13 @@ public class RadioGameTest implements FabricGameTest {
               "one step off must halve the signal");
           context.assertTrue(radio(context).volume() == 50, "the volume must be kept");
           setRadio(context, player, true, frequency + 2 * Frequency.STEP, 50);
-          expectStatus(context, RADIO, DeviceStatus.NO_STATION);
-          player.leave();
-          context.complete();
+          context.waitAndRun(
+              BEAT,
+              () -> {
+                expectStatus(context, RADIO, DeviceStatus.NO_STATION);
+                player.leave();
+                context.complete();
+              });
         });
   }
 

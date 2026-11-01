@@ -8,9 +8,14 @@ import com.grahambartley.hardwired.block.CopperCare;
 import com.grahambartley.hardwired.block.DeskPart;
 import com.grahambartley.hardwired.block.RadioMastBlock;
 import com.grahambartley.hardwired.network.DeskActionPayload;
+import com.grahambartley.hardwired.network.RadioSetPayload;
+import com.grahambartley.hardwired.network.VoiceFramePayload;
 import com.grahambartley.hardwired.radio.DeskAction;
 import com.grahambartley.hardwired.radio.DeskActions;
+import com.grahambartley.hardwired.radio.DeskMic;
+import com.grahambartley.hardwired.radio.DeskVoice;
 import com.grahambartley.hardwired.radio.Frequency;
+import com.grahambartley.hardwired.radio.RadioActions;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireFace;
@@ -22,10 +27,12 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameMode;
 
@@ -177,6 +184,68 @@ public class BroadcastDeskGameTest implements FabricGameTest {
     context.assertFalse(desk(context).wantsAir(), "the Desk must stay off the air");
     spectator.leave();
     distant.leave();
+    context.complete();
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 20)
+  public void aPositionFarAwayIsNeverLoadedByADeskOrRadioPacket(TestContext context) {
+    ConnectedTestPlayer player = playerAt(context, 3);
+    BlockPos far = new BlockPos(1_000_000, 64, 1_000_000);
+    int chunkX = ChunkSectionPos.getSectionCoord(far.getX());
+    int chunkZ = ChunkSectionPos.getSectionCoord(far.getZ());
+    ServerWorld world = context.getWorld();
+    context.assertFalse(world.isChunkLoaded(chunkX, chunkZ), "the far chunk must start unloaded");
+    for (DeskAction action : DeskAction.values()) {
+      DeskActions.act(player.player(), new DeskActionPayload(far, action.ordinal(), 0));
+    }
+    DeskVoice.frame(
+        player.player(), new VoiceFramePayload(far, new byte[DeskMic.MOST_FRAME_BYTES]));
+    RadioActions.set(player.player(), new RadioSetPayload(far, false, Frequency.MAX, 0));
+    context.assertFalse(world.isChunkLoaded(chunkX, chunkZ), "the far chunk must stay unloaded");
+    player.leave();
+    context.complete();
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 20)
+  public void anActionOnAnythingButADeskIsIgnored(TestContext context) {
+    ConnectedTestPlayer player = playerAt(context, 3);
+    context.setBlockState(PANEL, Blocks.STONE);
+    context.assertFalse(
+        DeskActions.mayWork(player.player(), context.getAbsolutePos(PANEL)), "stone is not a Desk");
+    act(context, player, PANEL, DeskAction.TOGGLE_AIR);
+    context.expectBlock(Blocks.STONE, PANEL);
+    player.leave();
+    context.complete();
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 20)
+  public void aSecondAirToggleInTheSameMomentIsDropped(TestContext context) {
+    wiredCell(context, 200);
+    placeDesk(context, PANEL);
+    ConnectedTestPlayer player = playerAt(context, 3);
+    act(context, player, PANEL, DeskAction.TOGGLE_AIR);
+    act(context, player, PANEL, DeskAction.TOGGLE_AIR);
+    context.assertTrue(desk(context).wantsAir(), "only the first toggle may land");
+    context.waitAndRun(
+        SETTLE,
+        () -> {
+          act(context, player, PANEL, DeskAction.TOGGLE_AIR);
+          context.assertFalse(desk(context).wantsAir(), "a later toggle lands");
+          player.leave();
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 20)
+  public void anActionNumberThatDoesNotExistIsIgnored(TestContext context) {
+    wiredCell(context, 200);
+    placeDesk(context, PANEL);
+    ConnectedTestPlayer player = playerAt(context, 3);
+    int wrapsToToggleAir = DeskAction.TOGGLE_AIR.ordinal() + DeskAction.values().length;
+    DeskActions.act(
+        player.player(), new DeskActionPayload(context.getAbsolutePos(PANEL), wrapsToToggleAir, 0));
+    context.assertFalse(desk(context).wantsAir(), "an unknown action must do nothing");
+    player.leave();
     context.complete();
   }
 
