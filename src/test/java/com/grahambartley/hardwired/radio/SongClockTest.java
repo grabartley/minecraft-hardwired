@@ -18,4 +18,22 @@ class SongClockTest {
   void aSongEndsAtItsLength(long now, long start, long length, boolean ended) {
     assertEquals(ended, SongClock.ended(now, start, length));
   }
+
+  @ParameterizedTest(name = "paused at {1} ticks in, resumed at {0}")
+  @CsvSource({"1000,0,1000", "1000,300,700", "50,50,0", "5000,4999,1"})
+  void resumingKeepsTheSameMoment(long now, long place, long start) {
+    assertEquals(start, SongClock.startFor(now, place));
+    assertEquals(place, SongClock.placeAt(now, start));
+  }
+
+  @org.junit.jupiter.api.Test
+  void noPlaceStartsFromTheTop() {
+    assertEquals(700L, SongClock.startFor(700, SongClock.NO_PLACE));
+  }
+
+  @ParameterizedTest(name = "now {0}, started {1}")
+  @CsvSource({"100,200,0", "200,200,0", "201,200,1"})
+  void aPlaceIsNeverNegative(long now, long start, long place) {
+    assertEquals(place, SongClock.placeAt(now, start));
+  }
 }

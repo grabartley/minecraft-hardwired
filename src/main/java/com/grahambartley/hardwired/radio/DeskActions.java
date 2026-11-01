@@ -80,8 +80,15 @@ public final class DeskActions {
       }
       case STOP -> {
         if (SONG_PRESSES.allow(player.getUuid(), player.getServer().getTicks())) {
-          desk.stopSong();
+          desk.pauseSong(world.getTime());
           desk.publish(world);
+          BroadcastDeskBlock.showOnEveryCell(world, panel, desk);
+        }
+      }
+      case RESTART -> {
+        if (SONG_PRESSES.allow(player.getUuid(), player.getServer().getTicks())) {
+          desk.stopSong();
+          play(player, world, desk);
         }
       }
       case EJECT -> {
@@ -107,6 +114,7 @@ public final class DeskActions {
     if (desk.status() == DeviceStatus.RUNNING && desk.song().isPresent()) {
       desk.startSong(world.getTime());
       desk.publish(world);
+      BroadcastDeskBlock.showOnEveryCell(world, desk.getPos(), desk);
       ModCriteria.DEVICE.trigger(player, ModCriteria.ON_THE_AIR);
     }
   }

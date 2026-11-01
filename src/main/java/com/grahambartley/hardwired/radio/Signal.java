@@ -13,7 +13,7 @@ public final class Signal {
     return reach <= 0 ? 0 : Math.clamp(1 - flatDistance / reach, 0, 1);
   }
 
-  public static double byDepth(int depth, int freeDepth, int lossDepth) {
+  public static double byDepth(double depth, int freeDepth, int lossDepth) {
     return Math.clamp(1 - (depth - freeDepth) / (double) lossDepth, 0, 1);
   }
 
@@ -26,7 +26,7 @@ public final class Signal {
   }
 
   public static double strength(
-      double flatDistance, int reach, int depth, int stepsOff, RadioSettings settings) {
+      double flatDistance, int reach, double depth, int stepsOff, RadioSettings settings) {
     return byDistance(flatDistance, reach)
         * byDepth(depth, settings.undergroundFreeDepth(), settings.undergroundLossDepth())
         * byTuning(stepsOff);

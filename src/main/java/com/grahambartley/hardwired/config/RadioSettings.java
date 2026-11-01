@@ -31,7 +31,7 @@ public record RadioSettings(
   public static final int UNDERGROUND_LOSS_DEPTH_MAX = 256;
 
   public static final RadioSettings DEFAULTS =
-      new RadioSettings(5, 32, 64, 32, 24, 64, 8, 40, true);
+      new RadioSettings(5, 32, 64, 32, 24, 64, 20, 100, true);
 
   static final String KEY_TOWER_MIN_MASTS = "towerMinMasts";
   static final String KEY_TOWER_MAX_MASTS = "towerMaxMasts";

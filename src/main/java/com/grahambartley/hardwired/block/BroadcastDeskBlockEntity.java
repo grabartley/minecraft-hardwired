@@ -32,6 +32,7 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
   private static final String WANTS_AIR = "wants_air";
   private static final String SONG_WANTED = "song_wanted";
   private static final String SONG_START = "song_start";
+  private static final String SONG_PLACE = "song_place";
   private static final String ON_AIR_SINCE = "on_air_since";
   private static final String LAST_LIVE = "last_live";
   private static final String SPEAKER = "speaker";
@@ -41,6 +42,7 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
   private boolean wantsAir;
   private boolean songWanted;
   private long songStart = SongClock.STOPPED;
+  private long songPlace = SongClock.NO_PLACE;
   private long onAirSince = DeskRun.NOT_ON_AIR;
   private long lastLive = DeskRun.NOT_ON_AIR;
   private TowerFinder.Found tower;
@@ -109,13 +111,24 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
 
   public void startSong(long now) {
     songWanted = true;
-    songStart = now;
+    songStart = SongClock.startFor(now, songPlace);
+    songPlace = SongClock.NO_PLACE;
     sync();
+  }
+
+  public void pauseSong(long now) {
+    if (songPlaying()) {
+      songPlace = SongClock.placeAt(now, songStart);
+      songWanted = false;
+      songStart = SongClock.STOPPED;
+      sync();
+    }
   }
 
   public void stopSong() {
     songWanted = false;
     songStart = SongClock.STOPPED;
+    songPlace = SongClock.NO_PLACE;
     sync();
   }
 
@@ -215,6 +228,7 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
     nbt.putBoolean(WANTS_AIR, wantsAir);
     nbt.putBoolean(SONG_WANTED, songWanted);
     nbt.putLong(SONG_START, songStart);
+    nbt.putLong(SONG_PLACE, songPlace);
   }
 
   @Override
@@ -236,6 +250,7 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
     wantsAir = nbt.getBoolean(WANTS_AIR);
     songWanted = nbt.getBoolean(SONG_WANTED);
     songStart = nbt.contains(SONG_START) ? nbt.getLong(SONG_START) : SongClock.STOPPED;
+    songPlace = nbt.contains(SONG_PLACE) ? nbt.getLong(SONG_PLACE) : SongClock.NO_PLACE;
     mic.show(nbt.containsUuid(SPEAKER) ? nbt.getUuid(SPEAKER) : null);
     onAirSince = nbt.contains(ON_AIR_SINCE) ? nbt.getLong(ON_AIR_SINCE) : DeskRun.NOT_ON_AIR;
     lastLive = nbt.contains(LAST_LIVE) ? nbt.getLong(LAST_LIVE) : DeskRun.NOT_ON_AIR;
@@ -249,6 +264,7 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
     nbt.remove(WANTS_AIR);
     nbt.remove(SONG_WANTED);
     nbt.remove(SONG_START);
+    nbt.remove(SONG_PLACE);
     nbt.remove(ON_AIR_SINCE);
     nbt.remove(LAST_LIVE);
   }

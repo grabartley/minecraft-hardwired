@@ -11,7 +11,7 @@
         7,
         7.5
       ],
-      "moves_when": "disc"
+      "moves_when": "spinning"
     },
     {
       "bone": "disc",
@@ -21,7 +21,8 @@
         7,
         7.5
       ],
-      "when": "disc"
+      "when": "disc",
+      "moves_when": "spinning"
     },
     {
       "bone": "dial_pointer",

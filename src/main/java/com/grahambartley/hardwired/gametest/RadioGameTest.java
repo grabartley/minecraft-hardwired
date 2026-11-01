@@ -13,11 +13,14 @@ import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.radio.DeskAction;
 import com.grahambartley.hardwired.radio.Frequency;
+import com.grahambartley.hardwired.radio.RadioTuner;
+import com.grahambartley.hardwired.radio.Reception;
 import com.grahambartley.hardwired.radio.ReceptionMix;
 import com.grahambartley.hardwired.radio.Signal;
 import com.grahambartley.hardwired.radio.SongClock;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.test.AfterBatch;
@@ -138,6 +141,73 @@ public class RadioGameTest implements FabricGameTest {
           player.leave();
           context.complete();
         });
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 200)
+  public void stopPausesPlayResumesAndRestartGoesToTheTop(TestContext context) {
+    TestPower.keepFed(context);
+    buildStation(context, 500);
+    ConnectedTestPlayer player = playerAt(context, 3);
+    long[] place = new long[1];
+    context.waitAndRun(SETTLE, () -> goOnAirWithSong(context, player));
+    context.waitAndRun(
+        SETTLE + BEAT,
+        () -> {
+          context.expectBlockProperty(PANEL, BroadcastDeskBlock.SPINNING, true);
+          place[0] = SongClock.placeAt(context.getWorld().getTime(), desk(context).songStart());
+          act(context, player, PANEL, DeskAction.STOP);
+          context.expectBlockProperty(PANEL, BroadcastDeskBlock.SPINNING, false);
+        });
+    context.waitAndRun(
+        SETTLE + 3L * BEAT,
+        () -> {
+          context.expectBlockProperty(PANEL, BroadcastDeskBlock.SPINNING, false);
+          act(context, player, PANEL, DeskAction.PLAY);
+          long resumedAt =
+              SongClock.placeAt(context.getWorld().getTime(), desk(context).songStart());
+          context.assertTrue(resumedAt == place[0], "Play carries on, at " + resumedAt);
+          context.expectBlockProperty(PANEL, BroadcastDeskBlock.SPINNING, true);
+        });
+    context.waitAndRun(
+        SETTLE + 4L * BEAT,
+        () -> {
+          act(context, player, PANEL, DeskAction.RESTART);
+          context.assertTrue(
+              desk(context).songStart() == context.getWorld().getTime(), "Restart goes to the top");
+          player.leave();
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 80)
+  public void toughBlocksCutASignalMoreThanSoftOnes(TestContext context) {
+    TestPower.keepFed(context);
+    buildStation(context, 500);
+    ConnectedTestPlayer player = playerAt(context, 3);
+    BlockPos underStone = at(2, 6);
+    BlockPos underObsidian = at(4, 6);
+    for (int y = 2; y <= 4; y++) {
+      context.setBlockState(underStone.up(y), Blocks.STONE);
+      context.setBlockState(underObsidian.up(y), Blocks.OBSIDIAN);
+    }
+    context.waitAndRun(SETTLE, () -> act(context, player, PANEL, DeskAction.TOGGLE_AIR));
+    context.waitAndRun(
+        SETTLE + 2L * BEAT,
+        () -> {
+          int frequency = desk(context).frequency();
+          double stone = strengthAt(context, underStone, frequency);
+          double obsidian = strengthAt(context, underObsidian, frequency);
+          context.assertTrue(stone > obsidian, "stone " + stone + ", obsidian " + obsidian);
+          context.assertTrue(obsidian > 0, "three layers still leave a fuzzy station");
+          player.leave();
+          context.complete();
+        });
+  }
+
+  private static double strengthAt(TestContext context, BlockPos pos, int frequency) {
+    return RadioTuner.best(context.getWorld(), context.getAbsolutePos(pos), frequency)
+        .map(Reception::strength)
+        .orElse(0D);
   }
 
   @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 60)

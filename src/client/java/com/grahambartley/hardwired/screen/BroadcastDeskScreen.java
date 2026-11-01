@@ -32,7 +32,7 @@ public final class BroadcastDeskScreen extends Screen {
   private static final int STATUS_Y = 166;
   private static final int ROW_HEIGHT = 20;
   private static final int GAP = 4;
-  private static final int TRANSPORT_BUTTONS = 3;
+  private static final int TRANSPORT_BUTTONS = 4;
   private static final int MIC_OPEN_COLOR = 0xFFFF5555;
 
   private final BlockPos pos;
@@ -41,6 +41,7 @@ public final class BroadcastDeskScreen extends Screen {
   private RedButton air;
   private ButtonWidget play;
   private ButtonWidget stop;
+  private ButtonWidget restart;
   private ButtonWidget eject;
   private TalkButton talkButton;
   private final TalkControl talk;
@@ -98,7 +99,8 @@ public final class BroadcastDeskScreen extends Screen {
     int button = (inner - (TRANSPORT_BUTTONS - 1) * GAP) / TRANSPORT_BUTTONS;
     play = transport(x, button, "play", DeskAction.PLAY);
     stop = transport(x + button + GAP, button, "stop", DeskAction.STOP);
-    eject = transport(x + 2 * (button + GAP), button, "eject", DeskAction.EJECT);
+    restart = transport(x + 2 * (button + GAP), button, "restart", DeskAction.RESTART);
+    eject = transport(x + 3 * (button + GAP), button, "eject", DeskAction.EJECT);
     refresh();
   }
 
@@ -121,6 +123,7 @@ public final class BroadcastDeskScreen extends Screen {
     air.setLit(desk.wantsAir());
     play.active = live && desk.hasDisc();
     stop.active = desk.songPlaying();
+    restart.active = play.active;
     eject.active = desk.hasDisc();
     talkButton.active = talk.available();
     talkButton.setLit(talk.micOpen());

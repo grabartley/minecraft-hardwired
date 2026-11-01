@@ -7,7 +7,8 @@ public enum DeskAction {
   STOP,
   EJECT,
   TAKE_MIC,
-  RELEASE_MIC;
+  RELEASE_MIC,
+  RESTART;
 
   public static DeskAction byIndex(int index) {
     DeskAction[] all = values();
