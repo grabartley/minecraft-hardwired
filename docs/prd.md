@@ -425,11 +425,11 @@ The mod has its own tab, with a background of copper and redstone traces and a w
 | ADV-16 | Short Circuit | Cutting a wire that is on |
 | ADV-17 | Vintage | A lamp reaching full age |
 | ADV-18 | Lights Out | Being near the last running device on a network as it stops for lack of power |
+| ADV-19 | Blown Fuse | Being near a grid as it overloads |
 | ADV-26 | Tuned In | Tuning a Radio to a live station |
 | ADV-27 | On The Air | Broadcasting a disc through a tower |
 | ADV-28 | Live Mic | Speaking on a broadcast that a Radio is receiving |
 | ADV-29 | Power's On | Bringing a dark grid back by closing a Master Switch |
-| ADV-19 | Blown Fuse | Being near a grid as it overloads |
 
 | ID | Requirement |
 |---|---|

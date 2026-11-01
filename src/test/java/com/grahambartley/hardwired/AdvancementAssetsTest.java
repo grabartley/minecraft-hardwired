@@ -65,6 +65,10 @@ class AdvancementAssetsTest {
     "on_the_air,hardwired",
     "live_mic,hardwired",
     "short_circuit,hardwired",
+    "lights_out,charged_up",
+    "blown_fuse,charged_up",
+    "pocket_circuit,logic_gate",
+    "share_the_love,pocket_circuit",
     "powers_on,charged_up"
   })
   void everyBranchHangsWhereThePrdSays(String name, String parent) throws IOException {
