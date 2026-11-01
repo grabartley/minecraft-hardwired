@@ -1,5 +1,9 @@
 package com.grahambartley.hardwired.client;
 
+import com.grahambartley.hardwired.block.CircuitBlockEntity;
+import com.grahambartley.hardwired.block.ControllerBlockEntity;
+import com.grahambartley.hardwired.block.LampBlockEntity;
+import com.grahambartley.hardwired.block.MainPanelBlockEntity;
 import com.grahambartley.hardwired.block.MasterSwitchBlockEntity;
 import com.grahambartley.hardwired.block.SourceBlockEntity;
 import com.grahambartley.hardwired.network.DeviceInspectPayload;
@@ -34,10 +38,18 @@ public final class DeviceReadings {
       latest = null;
     }
     BlockEntity entity = DeviceHud.aimedAt(client);
-    if ((entity instanceof SourceBlockEntity || entity instanceof MasterSwitchBlockEntity)
-        && age % INTERVAL == 0) {
+    if (reportsStops(entity) && age % INTERVAL == 0) {
       ClientPlayNetworking.send(new DeviceInspectPayload(entity.getPos()));
     }
+  }
+
+  private static boolean reportsStops(BlockEntity entity) {
+    return entity instanceof SourceBlockEntity
+        || entity instanceof MasterSwitchBlockEntity
+        || entity instanceof LampBlockEntity
+        || entity instanceof ControllerBlockEntity
+        || entity instanceof CircuitBlockEntity
+        || entity instanceof MainPanelBlockEntity;
   }
 
   static DeviceInspectResultPayload at(BlockEntity entity) {

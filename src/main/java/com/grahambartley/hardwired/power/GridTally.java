@@ -46,7 +46,7 @@ public final class GridTally {
   }
 
   public static boolean runs(SourceState state, boolean waiting, boolean masterOpen) {
-    return !masterOpen && !waiting && state == SourceState.READY;
+    return !masterOpen && !waiting && state.isReady();
   }
 
   public static GridRule.Count count(

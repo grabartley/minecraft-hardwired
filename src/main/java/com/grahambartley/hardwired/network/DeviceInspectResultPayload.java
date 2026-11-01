@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.network;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.device.DeviceStatus;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -8,7 +9,8 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
-public record DeviceInspectResultPayload(BlockPos pos, int load, int supply, boolean overloaded)
+public record DeviceInspectResultPayload(
+    BlockPos pos, int load, int supply, boolean overloaded, DeviceStatus status)
     implements CustomPayload {
 
   public static final Id<DeviceInspectResultPayload> ID =
@@ -23,6 +25,9 @@ public record DeviceInspectResultPayload(BlockPos pos, int load, int supply, boo
               DeviceInspectResultPayload::supply,
               PacketCodecs.BOOL,
               DeviceInspectResultPayload::overloaded,
+              PacketCodecs.STRING.xmap(
+                  id -> DeviceStatus.byId(id, DeviceStatus.READY), DeviceStatus::id),
+              DeviceInspectResultPayload::status,
               DeviceInspectResultPayload::new)
           .cast();
 

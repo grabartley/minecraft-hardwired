@@ -4,6 +4,7 @@ import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.advancement.DeviceCriterion;
 import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.config.PowerSettings;
+import com.grahambartley.hardwired.device.DeviceStops;
 import com.grahambartley.hardwired.device.PanelAction;
 import com.grahambartley.hardwired.device.PanelDevice;
 import com.grahambartley.hardwired.device.PanelKind;
@@ -28,6 +29,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -113,17 +115,33 @@ public abstract class AbstractLampBlock extends Block
     Hue color = look == null ? lamp.color() : look.color();
     int brightness = look == null ? LampLook.MAX_BRIGHTNESS : look.brightness();
     boolean changed = lamp.setLook(color, brightness);
-    int level = parts.stream().anyMatch(engine::isLive) ? brightness : 0;
+    int wanted = parts.stream().anyMatch(engine::isLive) ? brightness : 0;
+    boolean darkened = wanted == 0 && parts.stream().anyMatch(engine::isOn);
+    int level = LampFlicker.next(state.get(LEVEL), wanted, darkened);
     if (state.get(LEVEL) != level) {
       update(world, pos, state.with(LEVEL, level).with(LIT, level > 0));
       changed = true;
-      if (level > 0) {
-        ModCriteria.DEVICE.triggerNear(world, pos, litEvent(world));
+      String event = litEvent(world);
+      if (state.get(LEVEL) == 0
+          && (!event.equals(ModCriteria.LAMP_LIT) || hasSwitch(world, engine, parts))) {
+        ModCriteria.DEVICE.triggerNear(world, pos, event);
       }
+    }
+    if (level != wanted) {
+      world.scheduleBlockTick(pos, this, LampRateLimiter.MIN_TICKS_BETWEEN_CHANGES);
     }
     if (changed) {
       lamp.markChanged(world.getTime());
     }
+  }
+
+  private static boolean hasSwitch(ServerWorld world, WireEngine engine, List<BlockPos> parts) {
+    return parts.stream()
+        .flatMap(part -> engine.loadedOnNetwork(part).stream())
+        .anyMatch(
+            touched ->
+                world.getBlockState(touched).getBlock() instanceof WireDevice device
+                    && device.isSwitch());
   }
 
   @Override
@@ -200,6 +218,15 @@ public abstract class AbstractLampBlock extends Block
     return CopperCare.use(stack, state, world, pos, player, hand, next -> update(world, pos, next));
   }
 
+  @Override
+  protected ActionResult onUse(
+      BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    if (world instanceof ServerWorld server) {
+      DeviceStops.tell(server, pos, player);
+    }
+    return ActionResult.PASS;
+  }
+
   private ItemActionResult applyDye(
       ItemStack stack, DyeItem dye, World world, BlockPos pos, PlayerEntity player) {
     if (world.isClient) {
@@ -208,7 +235,8 @@ public abstract class AbstractLampBlock extends Block
     Hue hue = Hue.ofDye(dye.getColor());
     if (world.getBlockEntity(pos) instanceof LampBlockEntity lamp
         && lamp.setLook(hue, lamp.brightness())) {
-      lamp.recolourOwnLook(hue);
+      lamp.setOwnLook(
+          new LampLook(hue, lamp.brightness()), WireEngine.of((ServerWorld) world).nextLookStamp());
       stack.decrementUnlessCreative(1, player);
       ModCriteria.DEVICE.trigger((ServerPlayerEntity) player, DeviceCriterion.colorEvent(hue));
       world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS, 1F, 1F);

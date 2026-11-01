@@ -314,7 +314,8 @@ public class CircuitGameTest implements FabricGameTest {
     WireEngine.of(context.getWorld())
         .lay(
             new WireCell(
-                new WireFace(context.getAbsolutePos(clock.down()), Direction.UP), Hue.PLAIN));
+                new WireFace(context.getAbsolutePos(clock.down().east()), Direction.UP),
+                Hue.PLAIN));
     ServerWorld world = context.getWorld();
     context.waitAndRun(
         SETTLE_TICKS * 2,

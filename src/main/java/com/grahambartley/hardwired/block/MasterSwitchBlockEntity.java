@@ -50,7 +50,7 @@ public final class MasterSwitchBlockEntity extends BlockEntity implements DialDe
   }
 
   public void requestThrow(ServerWorld server, BlockState state) {
-    if (queued) {
+    if (queued || thrownAt == server.getTime()) {
       return;
     }
     if (WireEngine.of(server).power().isStarting(pos)) {

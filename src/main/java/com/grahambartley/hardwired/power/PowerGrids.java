@@ -45,7 +45,13 @@ public final class PowerGrids {
   }
 
   public void changed(BlockPos pos) {
-    dirty.addAll(networksAt(pos));
+    Set<WireNetwork> touching = networksAt(pos);
+    dirty.addAll(touching);
+    if (touching.isEmpty()
+        && engine.isLoaded(pos)
+        && world.getBlockEntity(pos) instanceof SourceBlockEntity source) {
+      source.showGrid(false, 0);
+    }
   }
 
   public void changed(WireNetwork network) {
@@ -60,9 +66,24 @@ public final class PowerGrids {
             : List.of(pos);
     Set<WireNetwork> found = new LinkedHashSet<>();
     for (BlockPos cell : cells) {
-      found.addAll(grid.networksTouching(cell));
+      for (WireNetwork network : grid.networksTouching(cell)) {
+        if (connects(network, cell, state)) {
+          found.add(network);
+        }
+      }
     }
     return found;
+  }
+
+  private boolean connects(WireNetwork network, BlockPos pos, BlockState state) {
+    if (state == null || !(state.getBlock() instanceof WireDevice device) || !device.hasPorts()) {
+      return true;
+    }
+    return network.touches().stream()
+        .anyMatch(
+            touch ->
+                touch.pos().equals(pos)
+                    && device.connectsFrom(state, touch.awayFromWire().getOpposite()));
   }
 
   private BlockState loadedState(BlockPos pos) {
@@ -70,7 +91,11 @@ public final class PowerGrids {
   }
 
   public boolean hasPower(BlockPos pos) {
-    return grid.hasPower(pos.asLong());
+    return networksAt(pos).stream().anyMatch(network -> network.gridState().givesPower());
+  }
+
+  public boolean isOn(BlockPos pos) {
+    return networksAt(pos).stream().anyMatch(WireNetwork::isOn);
   }
 
   public DeviceStatus stopReason(BlockPos pos) {
@@ -173,6 +198,9 @@ public final class PowerGrids {
         continue;
       }
       BlockState state = world.getBlockState(pos);
+      if (!connects(network, pos, state)) {
+        continue;
+      }
       if (state.getBlock() instanceof WireDevice device) {
         network.link(key, device.cells(pos, state));
         GridTally.addLoad(
@@ -197,7 +225,8 @@ public final class PowerGrids {
   private SourceState sourceState(PowerSource source, BlockPos pos, BlockState state) {
     boolean closed =
         !(world.getBlockEntity(pos) instanceof SourceBlockEntity entity) || entity.isClosed();
-    return SourceState.of(closed, source.isFuelled(world, pos, state));
+    return SourceState.of(
+        closed, source.isFuelled(world, pos, state), source.sourceKind().burnsFuel());
   }
 
   private void settle(Set<WireNetwork> members) {
@@ -236,9 +265,9 @@ public final class PowerGrids {
       } else if (stateChanged) {
         grid.markChanged(network);
       }
-      if (next == GridState.RETURNING && now < nextDark) {
-        dirty.add(network);
-      }
+    }
+    if (wasLive && !next.givesPower()) {
+      PowerEffects.stopped(world, engine, members);
     }
     PowerEffects.show(
         world, sources, starts.keySet(), masterOpen, workload, GridRule.blowsFuse(previous, next));

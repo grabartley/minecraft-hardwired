@@ -4,6 +4,7 @@ import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.block.ControlPanelBlockEntity;
 import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.JunctionRule;
+import com.grahambartley.hardwired.block.LampBlockEntity;
 import com.grahambartley.hardwired.network.JunctionSetPayload;
 import com.grahambartley.hardwired.network.OpenDevicePayload;
 import com.grahambartley.hardwired.network.PanelActionPayload;
@@ -46,8 +47,11 @@ public final class DeviceActions {
       ModCriteria.DEVICE.trigger(player, ModCriteria.SCENE_SAVED);
       return;
     }
-    WireEngine.of(world).applyLook(action.pos(), action.look());
-    ModCriteria.triggerAll(player, action.look().color());
+    WireEngine engine = WireEngine.of(world);
+    engine.applyLook(action.pos(), action.look());
+    if (!engine.allOnNetwork(action.pos(), LampBlockEntity.class).isEmpty()) {
+      ModCriteria.triggerAll(player, action.look().color());
+    }
   }
 
   public static void junction(ServerPlayerEntity player, JunctionSetPayload action) {

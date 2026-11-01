@@ -28,6 +28,8 @@ public class SourceBlockEntity extends BlockEntity implements DialDevice {
   private boolean closed = true;
   private boolean running;
   private int workload;
+  private float sun = 0.5F;
+  private float sunAt;
 
   public SourceBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
     super(type, pos, state);
@@ -88,9 +90,20 @@ public class SourceBlockEntity extends BlockEntity implements DialDevice {
     return switch (value) {
       case "switch" -> closed ? 1F : 0F;
       case "load" -> PowerDials.gauge(workload);
-      case "sun" -> world == null ? 0.5F : 1F - PowerDials.sunPhase(world.getSkyAngle(tickDelta));
+      case "sun" -> sunDial(tickDelta);
       default -> 0F;
     };
+  }
+
+  private float sunDial(float tickDelta) {
+    if (world == null) {
+      return sun;
+    }
+    float now = world.getTime() + tickDelta;
+    float target = 1F - PowerDials.sunPhase(world.getSkyAngle(tickDelta));
+    sun = PowerDials.easeSun(sun, target, running, now - sunAt);
+    sunAt = now;
+    return sun;
   }
 
   @Override

@@ -64,12 +64,7 @@ public final class WireGrid {
   }
 
   public boolean isLive(long pos) {
-    for (WireNetwork network : networksTouching(pos)) {
-      if (network.isLive()) {
-        return true;
-      }
-    }
-    return false;
+    return isOn(pos) && hasPower(pos);
   }
 
   public boolean isOn(long pos) {

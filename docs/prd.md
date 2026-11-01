@@ -246,7 +246,7 @@ This is the first wow moment. A player wires lamps to a switch, then changes all
 |---|---|
 | LIGHT-1 | A Copper Lamp comes in ceiling and wall forms, made from copper, redstone and a torch, so the first lamp needs no trip to the Nether |
 | LIGHT-2 | A Light Strip is a rail of small bulbs along a wall, floor or ceiling, and a Streetlight is a four block tall 1920s street lamp on a fluted post |
-| LIGHT-3 | A lamp starts as warm white and can show that or any of the 16 dye colours. Using a dye on a lamp sets its colour |
+| LIGHT-3 | A lamp starts as warm white and can show that or any of the 16 dye colours. Using a dye on a lamp sets its colour, and it holds until a Control Panel next changes its network |
 | LIGHT-4 | Brightness runs from the vanilla light level 0 to 15 |
 | LIGHT-5 | Exposed lamps age like copper over time, and honeycomb stops it. Age changes the look, not the light |
 | LIGHT-6 | A lamp on a network with no panel turns on at full brightness in the last colour it was given, by a dye or a panel |
@@ -490,6 +490,7 @@ A modified client is assumed. Hiding a control is never the enforcement of a rul
 | Cut or join sealed wire | No | Yes | Yes, through PERM-6 |
 | Break a block with sealed wire on it | Yes, the wire drops | Yes | Yes |
 | Use a switch, panel or Controller | Yes | Yes | Yes |
+| Change a Controller's timeline or a Junction's rule | With build rights | With build rights | With build rights |
 | Throw a source switch or Master Switch | Yes | Yes | Yes |
 | Fill a cell or generator | Yes | Yes | Yes |
 | Tune a Radio | Yes | Yes | Yes |
@@ -498,7 +499,7 @@ A modified client is assumed. Hiding a control is never the enforcement of a rul
 | Work a source switch or Master Switch on sealed wire | No | Yes | Yes, through PERM-6 |
 | Seal open wire | Yes | Yes | Yes |
 | Remove a seal | No | Yes | Yes, through PERM-6 |
-| Change server settings | No | No | Yes |
+| Change server settings | The host of their own world, from the settings screen | The host of their own world, from the settings screen | Yes |
 
 ### Requirements
 
@@ -579,7 +580,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | PERF-4 | Wire adds no render cost for a player who is not holding it |
 | PERF-5 | Chunk load adds no noticeable cost for chunks with no wire |
 | PERF-6 | Finding a network's parts never loads a chunk |
-| PERF-7 | A Radio looks for stations once a second, not every tick. A voice is sent only to players within hearing of a Radio or Speaker playing it, and uses about 32 kbit/s for each of them |
+| PERF-7 | A Radio looks for stations once a second, not every tick. A voice is sent only to players within hearing of a Radio or Speaker playing it, and uses about 64 kbit/s for each of them |
 | PERF-8 | A grid adds up its load and supply only when something on it changes, and burns or earns charge once a second. Sending the hum level costs nothing for a player with no running devices in range |
 
 ### Persistence

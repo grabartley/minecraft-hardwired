@@ -21,9 +21,19 @@ final class GridBurn {
     List<SourceBlockEntity> loaded = new ArrayList<>();
     List<SourceBlockEntity> running = new ArrayList<>();
     List<BurnPlan.Source> plan = new ArrayList<>();
+    Long2IntOpenHashMap states = GridTally.sourcesOf(members);
+    int awayFree = 0;
+    int awayFuelled = 0;
     for (Long2IntMap.Entry entry : ratings.long2IntEntrySet()) {
       BlockPos pos = BlockPos.fromLong(entry.getLongKey());
-      if (engine.isLoaded(pos) && world.getBlockEntity(pos) instanceof SourceBlockEntity source) {
+      if (!engine.isLoaded(pos)) {
+        SourceState state = SourceState.byIndex(states.get(entry.getLongKey()));
+        if (state == SourceState.READY_FREE) {
+          awayFree += entry.getIntValue();
+        } else if (state == SourceState.READY) {
+          awayFuelled += entry.getIntValue();
+        }
+      } else if (world.getBlockEntity(pos) instanceof SourceBlockEntity source) {
         loaded.add(source);
         if (source.isRunning()) {
           running.add(source);
@@ -32,7 +42,12 @@ final class GridBurn {
       }
     }
     int load = GridTally.total(GridTally.loadsOf(members));
-    BurnPlan burn = BurnPlan.forSecond(plan, load, Hardwired.SERVER_CONFIG.power().burn());
+    BurnPlan burn =
+        BurnPlan.forSecond(
+            plan,
+            new BurnPlan.Away(awayFree, awayFuelled),
+            load,
+            Hardwired.SERVER_CONFIG.power().burn());
     for (int i = 0; i < running.size(); i++) {
       if (running.get(i) instanceof ChargeStore store) {
         store.burn(burn.burnFor(i));
