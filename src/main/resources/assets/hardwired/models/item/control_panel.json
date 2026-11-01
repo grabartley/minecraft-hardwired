@@ -1,6 +1,107 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "hardwired:item/control_panel_item"
+  "parent": "hardwired:block/control_panel",
+  "display": {
+    "gui": {
+      "rotation": [
+        -60.0,
+        0.0,
+        -135.0
+      ],
+      "translation": [
+        3.96,
+        -1.98,
+        3.429
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ]
+    },
+    "ground": {
+      "rotation": [
+        -90.0,
+        0.0,
+        0.0
+      ],
+      "translation": [
+        0.0,
+        3.0,
+        -1.75
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        -90.0,
+        0.0,
+        0.0
+      ],
+      "translation": [
+        0.0,
+        0.0,
+        -3.5
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        -15.0,
+        0.0,
+        45.0
+      ],
+      "translation": [
+        -1.856,
+        4.293,
+        -0.48
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        -90,
+        0,
+        135
+      ],
+      "translation": [
+        -1.98,
+        0.0,
+        -1.98
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        -90,
+        0,
+        135
+      ],
+      "translation": [
+        -1.98,
+        0.0,
+        -1.98
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    }
   }
 }
