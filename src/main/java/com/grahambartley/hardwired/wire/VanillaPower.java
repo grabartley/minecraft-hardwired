@@ -20,6 +20,7 @@ public final class VanillaPower {
 
   private static final int DUST_REACH = 15;
   public static final int READ_REACH = DUST_REACH + 3;
+  private static final int UPDATE_REACH = 2;
   private static final Direction[] DIRECTIONS = Direction.values();
 
   private static boolean ignoringWire;
@@ -95,13 +96,30 @@ public final class VanillaPower {
     for (Direction direction : DIRECTIONS) {
       BlockPos neighbour = pos.offset(direction);
       BlockState state = world.getBlockState(neighbour);
-      if (state.isOf(Blocks.REDSTONE_WIRE)) {
-        if (state.get(RedstoneWireBlock.POWER) > 0
-            && state.getWeakRedstonePower(world, neighbour, direction) > 0
-            && dustIsFed(world, neighbour)) {
-          return true;
-        }
-      } else if (emitsWithoutDust(world, neighbour, direction)) {
+      if (state.isOf(Blocks.REDSTONE_WIRE)
+          ? fedDustPowers(world, neighbour, state, direction)
+          : emitsWithoutDust(world, neighbour, direction)
+              || conductsFedDust(world, neighbour, state)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean fedDustPowers(
+      ServerWorld world, BlockPos dust, BlockState state, Direction direction) {
+    return state.getWeakRedstonePower(world, dust, direction) > 0 && dustIsFed(world, dust);
+  }
+
+  private static boolean conductsFedDust(ServerWorld world, BlockPos pos, BlockState state) {
+    if (!state.isSolidBlock(world, pos)) {
+      return false;
+    }
+    for (Direction direction : DIRECTIONS) {
+      BlockPos neighbour = pos.offset(direction);
+      BlockState neighbourState = world.getBlockState(neighbour);
+      if (neighbourState.isOf(Blocks.REDSTONE_WIRE)
+          && fedDustPowers(world, neighbour, neighbourState, direction)) {
         return true;
       }
     }
@@ -113,11 +131,24 @@ public final class VanillaPower {
         pos.add(-READ_REACH, 0, -READ_REACH), pos.add(READ_REACH, 0, READ_REACH));
   }
 
+  public static boolean isUpdatable(ServerWorld world, BlockPos pos) {
+    return world.isRegionLoaded(
+        pos.add(-UPDATE_REACH, 0, -UPDATE_REACH), pos.add(UPDATE_REACH, 0, UPDATE_REACH));
+  }
+
   public static boolean readsFrom(BlockPos pos, ChunkPos chunk) {
-    return chunk.x >= (pos.getX() - READ_REACH) >> 4
-        && chunk.x <= (pos.getX() + READ_REACH) >> 4
-        && chunk.z >= (pos.getZ() - READ_REACH) >> 4
-        && chunk.z <= (pos.getZ() + READ_REACH) >> 4;
+    return reaches(pos, chunk, READ_REACH);
+  }
+
+  public static boolean updatesInto(BlockPos pos, ChunkPos chunk) {
+    return reaches(pos, chunk, UPDATE_REACH);
+  }
+
+  private static boolean reaches(BlockPos pos, ChunkPos chunk, int reach) {
+    return chunk.x >= (pos.getX() - reach) >> 4
+        && chunk.x <= (pos.getX() + reach) >> 4
+        && chunk.z >= (pos.getZ() - reach) >> 4
+        && chunk.z <= (pos.getZ() + reach) >> 4;
   }
 
   private static boolean emitsWithoutDust(ServerWorld world, BlockPos pos, Direction direction) {

@@ -26,6 +26,7 @@
     "fabric-gametest": [
       "com.grahambartley.hardwired.gametest.HardwiredBootGameTest",
       "com.grahambartley.hardwired.gametest.WireGameTest",
+      "com.grahambartley.hardwired.gametest.WireEdgeGameTest",
       "com.grahambartley.hardwired.gametest.PowerGridGameTest",
       "com.grahambartley.hardwired.gametest.PowerStopGameTest",
       "com.grahambartley.hardwired.gametest.DeviceGameTest",

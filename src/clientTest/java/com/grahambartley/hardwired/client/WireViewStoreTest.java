@@ -8,6 +8,7 @@ import com.grahambartley.hardwired.network.WireChunkPayload.CellView;
 import com.grahambartley.hardwired.wire.WireFace;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import org.junit.jupiter.api.AfterEach;
@@ -49,6 +50,17 @@ class WireViewStoreTest {
             List.of(new CellView(HOST.asLong(), Direction.NORTH.getId(), 0, flags, 0)),
             List.of()));
     assertEquals(sealed, WireViewStore.hasSealedCellAt(HOST, Direction.NORTH));
+  }
+
+  @ParameterizedTest(name = "{0} cells on the face")
+  @ValueSource(ints = {1, 2, 5})
+  void everyColourOnAFaceIsListed(int colours) {
+    List<CellView> cells =
+        IntStream.range(0, colours)
+            .mapToObj(color -> new CellView(HOST.asLong(), Direction.NORTH.getId(), color, 0, 0))
+            .toList();
+    WireViewStore.put(new WireChunkPayload(0L, cells, List.of()));
+    assertEquals(cells, WireViewStore.cellsOn(new WireFace(HOST, Direction.NORTH)));
   }
 
   @Test

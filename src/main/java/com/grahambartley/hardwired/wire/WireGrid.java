@@ -134,6 +134,10 @@ public final class WireGrid {
     return 1 + totalSize(joined);
   }
 
+  public int sizeAfterJoining(WireCell cell) {
+    return 1 + totalSize(adjacentNetworks(cell));
+  }
+
   public int sizeAfterReowning(WireNetwork network, UUID owner) {
     Set<WireNetwork> joined = networksInLayer(network.cells, owner);
     joined.remove(network);
@@ -142,6 +146,18 @@ public final class WireGrid {
 
   public Set<WireNetwork> openNetworksAround(WireCell cell) {
     return networksInLayer(List.of(cell), null);
+  }
+
+  public Set<WireNetwork> networksNear(ChunkPos center, int radius) {
+    Set<WireNetwork> near = new HashSet<>();
+    for (int x = center.x - radius; x <= center.x + radius; x++) {
+      for (int z = center.z - radius; z <= center.z + radius; z++) {
+        for (WireCell cell : cellsInChunk(ChunkPos.toLong(x, z))) {
+          near.add(cells.get(cell));
+        }
+      }
+    }
+    return near;
   }
 
   public Set<UUID> sealedOwnersAround(WireFace face, Hue color) {

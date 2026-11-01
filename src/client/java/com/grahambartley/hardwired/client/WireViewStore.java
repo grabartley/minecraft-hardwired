@@ -6,8 +6,8 @@ import com.grahambartley.hardwired.wire.WireFace;
 import com.grahambartley.hardwired.wire.WireTopology;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -35,14 +35,15 @@ public final class WireViewStore {
   }
 
   public static Optional<CellView> cellAt(WireFace face) {
-    return cellsOn(face).findFirst();
+    return cellsOn(face).stream().findFirst();
   }
 
-  private static Stream<CellView> cellsOn(WireFace face) {
+  public static List<CellView> cellsOn(WireFace face) {
     long pos = face.pos().asLong();
     return CHUNKS.values().stream()
         .flatMap(chunk -> chunk.cells().stream())
-        .filter(cell -> cell.pos() == pos && cell.side() == face.side().getId());
+        .filter(cell -> cell.pos() == pos && cell.side() == face.side().getId())
+        .toList();
   }
 
   public static Optional<WireFace> wiredFaceAt(BlockPos hit, Direction side) {
@@ -53,7 +54,7 @@ public final class WireViewStore {
 
   public static boolean hasSealedCellAt(BlockPos hit, Direction side) {
     return WireTopology.targets(hit, side).stream()
-        .flatMap(WireViewStore::cellsOn)
+        .flatMap(face -> cellsOn(face).stream())
         .anyMatch(CellView::isSealed);
   }
 }
