@@ -8,6 +8,10 @@ public final class DeskLayout {
 
   private DeskLayout() {}
 
+  public static Direction facingFor(Direction playerFacing) {
+    return playerFacing.rotateYCounterclockwise();
+  }
+
   public static BlockPos panelOf(DeskPart part, Direction facing, BlockPos pos) {
     return switch (part) {
       case PANEL -> pos;

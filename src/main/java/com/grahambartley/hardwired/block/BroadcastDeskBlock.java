@@ -83,7 +83,7 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
 
   @Override
   public BlockState getPlacementState(ItemPlacementContext context) {
-    Direction facing = context.getHorizontalPlayerFacing();
+    Direction facing = DeskLayout.facingFor(context.getHorizontalPlayerFacing());
     BlockPos panel = context.getBlockPos().offset(facing);
     World world = context.getWorld();
     boolean fits =

@@ -13,6 +13,12 @@ class DeskLayoutTest {
 
   private static final BlockPos PANEL = new BlockPos(10, 64, -3);
 
+  @ParameterizedTest(name = "{0} places {1}")
+  @CsvSource({"NORTH,WEST", "EAST,NORTH", "SOUTH,EAST", "WEST,SOUTH"})
+  void thePanelGoesOnThePlayersLeft(Direction playerFacing, Direction expected) {
+    assertEquals(expected, DeskLayout.facingFor(playerFacing));
+  }
+
   @ParameterizedTest(name = "{0} {1}")
   @CsvSource({
     "PANEL,NORTH", "PANEL,EAST", "PANEL,SOUTH", "PANEL,WEST",

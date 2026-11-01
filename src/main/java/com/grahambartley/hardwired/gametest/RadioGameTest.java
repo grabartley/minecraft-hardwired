@@ -259,7 +259,7 @@ public class RadioGameTest implements FabricGameTest {
               Math.abs(radio(context).strength() - tuned[0] / 2) < 1e-3,
               "one step off must halve the signal");
           context.assertTrue(radio(context).volume() == 50, "the volume must be kept");
-          setRadio(context, player, true, frequency + 2 * Frequency.STEP + 1, 50);
+          setRadio(context, player, true, frequency + 2 * Frequency.STEP, 50);
           expectStatus(context, RADIO, DeviceStatus.NO_STATION);
           player.leave();
           context.complete();

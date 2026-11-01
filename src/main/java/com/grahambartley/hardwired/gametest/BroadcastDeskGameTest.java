@@ -219,7 +219,7 @@ public class BroadcastDeskGameTest implements FabricGameTest {
     player.player().setYaw(180F);
     player.useOn(new WireFace(context.getAbsolutePos(at(4, 4)), Direction.UP));
     BlockPos desk = at(4, 4).up();
-    BlockPos panel = desk.north();
+    BlockPos panel = desk.west();
     Block expected = ModBlocks.BROADCAST_DESK;
     context.expectBlock(expected, desk);
     context.expectBlock(expected, panel);

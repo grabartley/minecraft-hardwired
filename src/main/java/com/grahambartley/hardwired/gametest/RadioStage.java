@@ -55,6 +55,7 @@ final class RadioStage {
   static final Identifier ON_THE_AIR = Identifier.of(Hardwired.MOD_ID, "on_the_air");
 
   static final int STATION_SPACING = 50;
+  private static final int MIN_STEPS_FROM_DEFAULT = 2;
   private static final AtomicInteger nextStation = new AtomicInteger();
 
   private RadioStage() {}
@@ -115,7 +116,11 @@ final class RadioStage {
   }
 
   static int nextFrequency() {
-    return Frequency.MIN + STATION_SPACING * nextStation.getAndIncrement();
+    int frequency;
+    do {
+      frequency = Frequency.MIN + STATION_SPACING * nextStation.getAndIncrement();
+    } while (Frequency.stepsApart(frequency, Frequency.DEFAULT) <= MIN_STEPS_FROM_DEFAULT);
+    return frequency;
   }
 
   static boolean onTheAir(TestContext context, BlockPos panel) {
