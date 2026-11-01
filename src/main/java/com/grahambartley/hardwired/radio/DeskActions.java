@@ -111,7 +111,7 @@ public final class DeskActions {
 
   private static void play(
       ServerPlayerEntity player, ServerWorld world, BroadcastDeskBlockEntity desk) {
-    if (desk.status() == DeviceStatus.RUNNING && desk.song().isPresent()) {
+    if (desk.status() == DeviceStatus.RUNNING && desk.song().isPresent() && !desk.songPlaying()) {
       desk.startSong(world.getTime());
       desk.publish(world);
       BroadcastDeskBlock.showOnEveryCell(world, desk.getPos(), desk);

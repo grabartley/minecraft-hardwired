@@ -103,6 +103,10 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
     return songStart;
   }
 
+  public long songPlace() {
+    return songPlace;
+  }
+
   public Optional<RegistryEntry<JukeboxSong>> song() {
     return world == null
         ? Optional.empty()
@@ -167,6 +171,9 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
             .map(entry -> SongClock.ended(now, songStart, entry.value().getLengthInTicks()))
             .orElse(true)) {
       stopSong();
+    }
+    if (!live && DeskRun.wasCutOff(now, lastLive)) {
+      songPlace = SongClock.NO_PLACE;
     }
     onAirSince = DeskRun.onAirSinceAfterBeat(onAirSince, live, now, lastLive);
     if (live) {

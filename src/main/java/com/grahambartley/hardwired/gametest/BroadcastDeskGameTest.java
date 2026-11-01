@@ -7,6 +7,7 @@ import com.grahambartley.hardwired.block.BroadcastDeskBlockEntity;
 import com.grahambartley.hardwired.block.CopperCare;
 import com.grahambartley.hardwired.block.DeskPart;
 import com.grahambartley.hardwired.block.RadioMastBlock;
+import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.network.DeskActionPayload;
 import com.grahambartley.hardwired.network.RadioSetPayload;
 import com.grahambartley.hardwired.network.VoiceFramePayload;
@@ -16,6 +17,7 @@ import com.grahambartley.hardwired.radio.DeskMic;
 import com.grahambartley.hardwired.radio.DeskVoice;
 import com.grahambartley.hardwired.radio.Frequency;
 import com.grahambartley.hardwired.radio.RadioActions;
+import com.grahambartley.hardwired.radio.SongClock;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireFace;
@@ -37,6 +39,63 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameMode;
 
 public class BroadcastDeskGameTest implements FabricGameTest {
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 120)
+  public void aPausedPlaceSurvivesASaveAndClearsWhenItShould(TestContext context) {
+    TestPower.keepFed(context);
+    buildStation(context, 500);
+    ConnectedTestPlayer player = playerAt(context, 3);
+    context.waitAndRun(SETTLE, () -> goOnAirWithSong(context, player));
+    context.waitAndRun(
+        SETTLE + BEAT,
+        () -> {
+          act(context, player, PANEL, DeskAction.STOP);
+          BroadcastDeskBlockEntity paused = desk(context);
+          context.assertTrue(paused.songPlace() > 0, "Stop keeps a place");
+          var registries = context.getWorld().getRegistryManager();
+          BroadcastDeskBlockEntity reloaded =
+              new BroadcastDeskBlockEntity(paused.getPos(), paused.getCachedState());
+          reloaded.read(paused.createNbt(registries), registries);
+          context.assertTrue(reloaded.songPlace() == paused.songPlace(), "the place must save");
+          long now = context.getWorld().getTime();
+          paused.afterBeat(DeviceStatus.NO_SOURCE, now + 1);
+          context.assertTrue(paused.songPlace() > 0, "a short dip keeps the place");
+          paused.afterBeat(DeviceStatus.NO_SOURCE, now + 1000);
+          context.assertTrue(paused.songPlace() == SongClock.NO_PLACE, "a real cut clears it");
+        });
+    context.waitAndRun(
+        SETTLE + 3L * BEAT,
+        () -> {
+          act(context, player, PANEL, DeskAction.PLAY);
+          long now = context.getWorld().getTime();
+          context.assertTrue(desk(context).songStart() == now, "a cleared place starts at the top");
+          desk(context).afterBeat(DeviceStatus.RUNNING, now + 10_000_000L);
+          context.assertTrue(desk(context).songPlace() == SongClock.NO_PLACE, "an end keeps none");
+          act(context, player, PANEL, DeskAction.PLAY);
+          act(context, player, PANEL, DeskAction.EJECT);
+          context.assertTrue(desk(context).songPlace() == SongClock.NO_PLACE, "eject clears it");
+          player.leave();
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 80)
+  public void pressingPlayTwiceDoesNotRestartTheSong(TestContext context) {
+    TestPower.keepFed(context);
+    buildStation(context, 500);
+    ConnectedTestPlayer player = playerAt(context, 3);
+    long[] start = new long[1];
+    context.waitAndRun(SETTLE, () -> goOnAirWithSong(context, player));
+    context.waitAndRun(
+        SETTLE + BEAT,
+        () -> {
+          start[0] = desk(context).songStart();
+          act(context, player, PANEL, DeskAction.PLAY);
+          context.assertTrue(desk(context).songStart() == start[0], "the song carries on");
+          player.leave();
+          context.complete();
+        });
+  }
 
   @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 60)
   public void mastsFitThemselvesToTheColumnInEveryChange(TestContext context) {

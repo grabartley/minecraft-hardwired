@@ -121,9 +121,9 @@ public final class BroadcastDeskScreen extends Screen {
   private void refresh() {
     boolean live = desk.status() == DeviceStatus.RUNNING;
     air.setLit(desk.wantsAir());
-    play.active = live && desk.hasDisc();
+    play.active = live && desk.hasDisc() && !desk.songPlaying();
     stop.active = desk.songPlaying();
-    restart.active = play.active;
+    restart.active = live && desk.hasDisc();
     eject.active = desk.hasDisc();
     talkButton.active = talk.available();
     talkButton.setLit(talk.micOpen());
