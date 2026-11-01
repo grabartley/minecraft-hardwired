@@ -23,7 +23,9 @@ public final class LiftSafety {
     return SLOW_FALL_BASE_TICKS + (int) Math.ceil(Math.max(drop, 0)) * SLOW_FALL_TICKS_PER_BLOCK;
   }
 
-  public static boolean inColumn(double x, double z, int columnX, int columnZ) {
-    return Math.floor(x) == columnX && Math.floor(z) == columnZ;
+  public static boolean inColumn(double x, double z, int columnX, int columnZ, int span) {
+    double east = Math.floor(x) - columnX;
+    double south = Math.floor(z) - columnZ;
+    return east >= 0 && east < span && south >= 0 && south < span;
   }
 }

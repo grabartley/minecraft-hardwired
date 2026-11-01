@@ -13,11 +13,16 @@ import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
-public final class LiftBlock extends TableDeviceBlock {
+public class LiftBlock extends TableDeviceBlock {
 
   public static final BooleanProperty RUNNING = BooleanProperty.of("running");
 
@@ -25,6 +30,34 @@ public final class LiftBlock extends TableDeviceBlock {
 
   public LiftBlock(Settings settings) {
     super(settings, FULL_BOX);
+  }
+
+  public static int spanAt(World world, BlockPos pos) {
+    return world.getBlockState(pos).getBlock() instanceof LiftBlock lift ? lift.span() : 1;
+  }
+
+  public int span() {
+    return 1;
+  }
+
+  public BlockPos head(BlockPos pos, BlockState state) {
+    return pos;
+  }
+
+  @Override
+  public void onWireChange(ServerWorld world, BlockPos pos, BlockState state) {
+    ElectronicsDriver.wake(world, head(pos, state));
+  }
+
+  @Override
+  protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    ElectronicsDriver.pulse(world, head(pos, state));
+  }
+
+  @Override
+  protected ActionResult onUse(
+      BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    return super.onUse(state, world, head(pos, state), player, hit);
   }
 
   @Override
@@ -39,12 +72,13 @@ public final class LiftBlock extends TableDeviceBlock {
 
   @Override
   public DeviceStatus demand(ServerWorld world, BlockPos pos, BlockState state) {
-    Optional<LiftCarEntity> car = new LiftShaft(world, pos).car();
+    BlockPos head = head(pos, state);
+    Optional<LiftCarEntity> car = new LiftShaft(world, head).car();
     PowerGrids power = WireEngine.of(world).power();
     return LiftCharge.demand(
         car.map(found -> found.run().phase()).orElse(LiftPhase.RESTING),
         car.map(found -> found.run().stopReason()).orElse(DeviceStatus.READY),
-        power.hasPower(pos) ? DeviceStatus.READY : power.stopReason(pos));
+        power.hasPower(head) ? DeviceStatus.READY : power.stopReason(head));
   }
 
   @Override
@@ -55,7 +89,7 @@ public final class LiftBlock extends TableDeviceBlock {
   @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
     boolean moving =
-        new LiftShaft(world, pos)
+        new LiftShaft(world, head(pos, state))
             .car()
             .filter(car -> car.run().phase() == LiftPhase.MOVING)
             .isPresent();
@@ -64,9 +98,14 @@ public final class LiftBlock extends TableDeviceBlock {
 
   @Override
   public void show(ServerWorld world, BlockPos pos, BlockState state, DeviceStatus status) {
-    LiftShaft shaft = new LiftShaft(world, pos);
+    LiftShaft shaft = new LiftShaft(world, head(pos, state));
     boolean running = shaft.car().filter(car -> car.run().phase().travelling()).isPresent();
-    ElectronicsDriver.show(world, pos, state, state.with(RUNNING, running));
+    for (BlockPos cell : cells(pos, state)) {
+      BlockState cellState = world.getBlockState(cell);
+      if (cellState.isOf(this)) {
+        ElectronicsDriver.show(world, cell, cellState, cellState.with(RUNNING, running));
+      }
+    }
     shaft.mirror(shaft.gates(), status);
   }
 }

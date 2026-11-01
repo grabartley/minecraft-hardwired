@@ -7,7 +7,7 @@ public record LiftSettings(int ticksPerBlock) {
   public static final int TICKS_PER_BLOCK_MIN = 2;
   public static final int TICKS_PER_BLOCK_MAX = 40;
 
-  public static final LiftSettings DEFAULTS = new LiftSettings(6);
+  public static final LiftSettings DEFAULTS = new LiftSettings(20);
 
   static final String KEY_TICKS_PER_BLOCK = "ticksPerBlock";
 

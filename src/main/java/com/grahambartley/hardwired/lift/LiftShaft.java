@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.lift;
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
 import com.grahambartley.hardwired.block.LiftBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlock;
+import com.grahambartley.hardwired.block.LiftFloorBlockEntity;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.Collection;
@@ -20,11 +21,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 
-public record LiftShaft(ServerWorld world, BlockPos head) {
+public record LiftShaft(ServerWorld world, BlockPos head, int span) {
 
   private static final int CAR_HEIGHT = 2;
   private static final float GATE_VOLUME = 0.7F;
   private static final float GATE_PITCH = 1.3F;
+
+  public LiftShaft(ServerWorld world, BlockPos head) {
+    this(world, head, LiftBlock.spanAt(world, head));
+  }
 
   public static Optional<LiftShaft> forGate(ServerWorld world, BlockPos gate) {
     BlockState state = world.getBlockState(gate);
@@ -33,11 +38,23 @@ public record LiftShaft(ServerWorld world, BlockPos head) {
     }
     BlockPos column = LiftFloorBlock.column(gate, state);
     return devicesOn(world, List.of(gate, gate.up()))
-        .filter(pos -> world.getBlockState(pos).getBlock() instanceof LiftBlock)
-        .filter(pos -> pos.getX() == column.getX() && pos.getZ() == column.getZ())
-        .filter(pos -> pos.getY() > gate.getY() + 1)
-        .min(Comparator.comparingInt(BlockPos::getY))
-        .map(pos -> new LiftShaft(world, pos));
+        .map(pos -> headAt(world, pos))
+        .flatMap(Optional::stream)
+        .map(pos -> new LiftShaft(world, pos))
+        .filter(shaft -> shaft.holds(column))
+        .filter(shaft -> shaft.head().getY() > gate.getY() + 1)
+        .min(Comparator.comparingInt(shaft -> shaft.head().getY()));
+  }
+
+  private static Optional<BlockPos> headAt(ServerWorld world, BlockPos pos) {
+    BlockState state = world.getBlockState(pos);
+    return state.getBlock() instanceof LiftBlock lift
+        ? Optional.of(lift.head(pos, state))
+        : Optional.empty();
+  }
+
+  private boolean holds(BlockPos column) {
+    return LiftSafety.inColumn(column.getX(), column.getZ(), head.getX(), head.getZ(), span);
   }
 
   private static Stream<BlockPos> devicesOn(ServerWorld world, Collection<BlockPos> points) {
@@ -48,12 +65,16 @@ public record LiftShaft(ServerWorld world, BlockPos head) {
         .distinct();
   }
 
+  private List<BlockPos> cells() {
+    return span > 1 ? LiftCorner.cells(head) : List.of(head);
+  }
+
   public boolean standing() {
     return world.getBlockState(head).getBlock() instanceof LiftBlock;
   }
 
   public List<BlockPos> gates() {
-    return devicesOn(world, List.of(head))
+    return devicesOn(world, cells())
         .map(this::lowerGate)
         .flatMap(Optional::stream)
         .distinct()
@@ -74,8 +95,7 @@ public record LiftShaft(ServerWorld world, BlockPos head) {
       return Optional.empty();
     }
     BlockPos column = LiftFloorBlock.column(lower, state);
-    boolean onColumn = column.getX() == head.getX() && column.getZ() == head.getZ();
-    return onColumn && lower.getY() + 1 < head.getY() ? Optional.of(lower) : Optional.empty();
+    return holds(column) && lower.getY() + 1 < head.getY() ? Optional.of(lower) : Optional.empty();
   }
 
   public Optional<Direction> gateFacing(int level) {
@@ -101,7 +121,10 @@ public record LiftShaft(ServerWorld world, BlockPos head) {
   }
 
   private boolean rowClear(int y) {
-    BlockPos pos = new BlockPos(head.getX(), y, head.getZ());
+    return cells().stream().map(cell -> cell.withY(y)).allMatch(this::cellClear);
+  }
+
+  private boolean cellClear(BlockPos pos) {
     BlockState state = world.getBlockState(pos);
     return state.getCollisionShape(world, pos).isEmpty()
         && !state.getFluidState().isIn(FluidTags.LAVA);
@@ -121,9 +144,9 @@ public record LiftShaft(ServerWorld world, BlockPos head) {
             head.getX(),
             world.getBottomY(),
             head.getZ(),
-            head.getX() + 1,
+            head.getX() + span,
             head.getY() + 1,
-            head.getZ() + 1);
+            head.getZ() + span);
     return world
         .getEntitiesByClass(LiftCarEntity.class, column, car -> head.equals(car.head()))
         .stream()
@@ -146,6 +169,14 @@ public record LiftShaft(ServerWorld world, BlockPos head) {
             SoundCategory.BLOCKS,
             GATE_VOLUME,
             GATE_PITCH);
+      }
+    }
+  }
+
+  public void showDial(List<BlockPos> gates, LiftDial dial) {
+    for (BlockPos gate : gates) {
+      if (world.getBlockEntity(gate.up()) instanceof LiftFloorBlockEntity upper) {
+        upper.setDial(dial);
       }
     }
   }

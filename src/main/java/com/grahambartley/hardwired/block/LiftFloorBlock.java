@@ -86,7 +86,9 @@ public final class LiftFloorBlock extends Block implements BlockEntityProvider, 
 
   @Override
   public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-    return new ElectronicBlockEntity(pos, state);
+    return state.get(HALF) == DoubleBlockHalf.UPPER
+        ? new LiftFloorBlockEntity(pos, state)
+        : new ElectronicBlockEntity(pos, state);
   }
 
   @Override

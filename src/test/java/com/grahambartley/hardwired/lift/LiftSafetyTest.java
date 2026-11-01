@@ -42,6 +42,12 @@ class LiftSafetyTest {
     "-0.5,7.5,false"
   })
   void theColumnIsOneBlock(double x, double z, boolean inside) {
-    assertEquals(inside, LiftSafety.inColumn(x, z, 3, 7));
+    assertEquals(inside, LiftSafety.inColumn(x, z, 3, 7, 1));
+  }
+
+  @ParameterizedTest(name = "{0},{1}")
+  @CsvSource({"3.5,7.5,true", "4.9,8.9,true", "5.0,7.5,false", "3.5,9.0,false", "2.9,8.0,false"})
+  void aLargeColumnIsTwoBlocksEachWay(double x, double z, boolean inside) {
+    assertEquals(inside, LiftSafety.inColumn(x, z, 3, 7, 2));
   }
 }

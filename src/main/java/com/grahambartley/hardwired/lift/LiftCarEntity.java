@@ -73,20 +73,28 @@ public final class LiftCarEntity extends Entity {
     return run;
   }
 
+  public int span() {
+    return Math.round(getWidth());
+  }
+
   public void moveToLevel(double level) {
     setPosition(columnX(), level - PLATE, columnZ());
   }
 
   private double columnX() {
-    return head.getX() + COLUMN_CENTER;
+    return head.getX() + COLUMN_CENTER * span();
   }
 
   private double columnZ() {
-    return head.getZ() + COLUMN_CENTER;
+    return head.getZ() + COLUMN_CENTER * span();
   }
 
   public LiftDriver driver(ServerWorld world) {
-    return new LiftDriver(this, run, new LiftShaft(world, head));
+    return new LiftDriver(this, run, shaft(world));
+  }
+
+  private LiftShaft shaft(ServerWorld world) {
+    return new LiftShaft(world, head, span());
   }
 
   public void tripChanged() {
@@ -195,16 +203,18 @@ public final class LiftCarEntity extends Entity {
     int seat = getPassengerList().indexOf(passenger);
     updater.accept(
         passenger,
-        getX() + LiftSafety.seatX(seat),
+        getX() + LiftSafety.seatX(seat) * span(),
         getY() + PLATE,
-        getZ() + LiftSafety.seatZ(seat));
+        getZ() + LiftSafety.seatZ(seat) * span());
   }
 
   @Override
   public Vec3d updatePassengerForDismount(LivingEntity passenger) {
+    if (run.phase() == LiftPhase.RESTING) {
+      return new Vec3d(passenger.getX(), run.level(), passenger.getZ());
+    }
     if (head != null && getWorld() instanceof ServerWorld world) {
-      LiftShaft shaft = new LiftShaft(world, head);
-      return LiftRiders.nearestGate(shaft.gates(), passenger.getY())
+      return LiftRiders.nearestGate(shaft(world).gates(), passenger.getY())
           .map(LiftRiders::spotAt)
           .orElseGet(passenger::getPos);
     }

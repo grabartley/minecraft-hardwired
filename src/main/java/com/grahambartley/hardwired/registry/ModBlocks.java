@@ -12,6 +12,7 @@ import com.grahambartley.hardwired.block.DuskClock;
 import com.grahambartley.hardwired.block.FuelledSourceBlock;
 import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.block.JunctionBlock;
+import com.grahambartley.hardwired.block.LargeLiftBlock;
 import com.grahambartley.hardwired.block.LiftBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlock;
 import com.grahambartley.hardwired.block.LodestoneDynamoBlock;
@@ -179,6 +180,14 @@ public final class ModBlocks {
       register(
           "lift",
           new LiftBlock(
+              deviceSettings()
+                  .mapColor(MapColor.DEEPSLATE_GRAY)
+                  .sounds(BlockSoundGroup.POLISHED_DEEPSLATE)
+                  .pistonBehavior(PistonBehavior.BLOCK)));
+  public static final Block LARGE_LIFT =
+      register(
+          "large_lift",
+          new LargeLiftBlock(
               deviceSettings()
                   .mapColor(MapColor.DEEPSLATE_GRAY)
                   .sounds(BlockSoundGroup.POLISHED_DEEPSLATE)

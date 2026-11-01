@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "LL",
+    "LL"
+  ],
+  "key": {
+    "L": {
+      "item": "hardwired:lift"
+    }
+  },
+  "result": {
+    "id": "hardwired:large_lift",
+    "count": 1
+  }
+}

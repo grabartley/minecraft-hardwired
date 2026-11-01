@@ -90,4 +90,16 @@ class LiftRunTest {
     run.rest(1, 0);
     assertTrue(first < second && second < run.serial());
   }
+
+  @Test
+  void aDelayedGateFallsDueOnceAndSurvivesASave() {
+    LiftRun run = new LiftRun();
+    run.delayGate(2);
+    assertTrue(run.holdingGate());
+    LiftRun loaded = reload(run);
+    assertTrue(loaded.holdingGate());
+    assertFalse(loaded.gateDue());
+    assertTrue(loaded.gateDue());
+    assertFalse(loaded.holdingGate());
+  }
 }

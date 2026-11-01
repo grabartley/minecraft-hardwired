@@ -32,7 +32,8 @@ public final class LiftRiders {
                 !player.isSpectator()
                     && player.isAlive()
                     && !player.hasVehicle()
-                    && LiftSafety.inColumn(player.getX(), player.getZ(), head.getX(), head.getZ())
+                    && LiftSafety.inColumn(
+                        player.getX(), player.getZ(), head.getX(), head.getZ(), shaft.span())
                     && player.getY() >= level - REACH_BELOW_FLOOR
                     && player.getY() <= level + REACH_ABOVE_FLOOR);
   }
@@ -64,6 +65,17 @@ public final class LiftRiders {
             : Direction.fromRotation(rider.getYaw());
     rider.fallDistance = 0;
     rider.teleport(world, spot.x, spot.y, spot.z, out.asRotation(), 0);
+  }
+
+  public static void setDown(
+      ServerWorld world, ServerPlayerEntity rider, List<BlockPos> gates, int level) {
+    Optional<BlockPos> gate = nearestGate(gates, level);
+    if (gate.filter(spot -> spot.getY() == level).isPresent()) {
+      rider.stopRiding();
+      rider.fallDistance = 0;
+    } else {
+      gate.ifPresentOrElse(spot -> stepOut(world, rider, spot), () -> letDown(rider, 0));
+    }
   }
 
   public static Vec3d spotAt(BlockPos gate) {

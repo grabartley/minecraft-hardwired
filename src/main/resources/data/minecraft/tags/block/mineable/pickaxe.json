@@ -25,6 +25,7 @@
     "hardwired:speaker",
     "hardwired:intercom",
     "hardwired:lift",
+    "hardwired:large_lift",
     "hardwired:lift_floor",
     "hardwired:radio_mast",
     "hardwired:broadcast_desk"

@@ -9,6 +9,7 @@ import com.grahambartley.hardwired.block.ControlPanelBlockEntity;
 import com.grahambartley.hardwired.block.ControllerBlockEntity;
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
 import com.grahambartley.hardwired.block.LampBlockEntity;
+import com.grahambartley.hardwired.block.LiftFloorBlockEntity;
 import com.grahambartley.hardwired.block.MainPanelBlockEntity;
 import com.grahambartley.hardwired.block.MasterSwitchBlockEntity;
 import com.grahambartley.hardwired.block.RadioBlockEntity;
@@ -110,7 +111,15 @@ public final class ModBlockEntities {
                   ModBlocks.ALARM,
                   ModBlocks.INTERCOM,
                   ModBlocks.LIFT,
+                  ModBlocks.LARGE_LIFT,
                   ModBlocks.LIFT_FLOOR)
+              .build(null));
+
+  public static final BlockEntityType<LiftFloorBlockEntity> LIFT_FLOOR =
+      Registry.register(
+          Registries.BLOCK_ENTITY_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "lift_floor"),
+          BlockEntityType.Builder.create(LiftFloorBlockEntity::new, ModBlocks.LIFT_FLOOR)
               .build(null));
 
   public static final BlockEntityType<RadioBlockEntity> RADIO =

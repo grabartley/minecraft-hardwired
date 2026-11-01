@@ -19,6 +19,7 @@ public final class LiftRun {
   private static final String REASON = "reason";
   private static final String CALLS = "calls";
   private static final String GATES = "gates";
+  private static final String GATE_DELAY = "gate_delay";
 
   private final LiftQueue queue = new LiftQueue();
   private LiftPhase phase = LiftPhase.RESTING;
@@ -27,6 +28,7 @@ public final class LiftRun {
   private int ticks;
   private int blocksStarted;
   private int pause;
+  private int gateDelay;
   private DeviceStatus stopReason = DeviceStatus.READY;
   private List<BlockPos> knownGates = List.of();
   private int serial;
@@ -130,10 +132,24 @@ public final class LiftRun {
     pause = 0;
   }
 
+  public void delayGate(int ticks) {
+    gateDelay = ticks;
+  }
+
+  public boolean holdingGate() {
+    return gateDelay > 0;
+  }
+
+  public boolean gateDue() {
+    gateDelay--;
+    return gateDelay == 0;
+  }
+
   public void write(NbtCompound nbt) {
     nbt.putString(PHASE, phase.name());
     nbt.putDouble(LEVEL, level);
     nbt.putInt(PAUSE, pause);
+    nbt.putInt(GATE_DELAY, gateDelay);
     nbt.putString(REASON, stopReason.id());
     nbt.putIntArray(CALLS, queue.toArray());
     nbt.putLongArray(GATES, knownGates.stream().mapToLong(BlockPos::asLong).toArray());
@@ -150,6 +166,7 @@ public final class LiftRun {
     phase = LiftPhase.byName(nbt.getString(PHASE));
     level = nbt.getDouble(LEVEL);
     pause = nbt.getInt(PAUSE);
+    gateDelay = nbt.getInt(GATE_DELAY);
     stopReason = DeviceStatus.byId(nbt.getString(REASON), DeviceStatus.READY);
     queue.load(nbt.getIntArray(CALLS));
     knownGates = Arrays.stream(nbt.getLongArray(GATES)).mapToObj(BlockPos::fromLong).toList();

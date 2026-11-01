@@ -59,7 +59,9 @@ public final class LiftActions {
     if (!shaft.pathClear(level, level)) {
       return Optional.empty();
     }
-    LiftCarEntity car = ModEntities.LIFT_CAR.create(shaft.world());
+    LiftCarEntity car =
+        (shaft.span() > 1 ? ModEntities.LARGE_LIFT_CAR : ModEntities.LIFT_CAR)
+            .create(shaft.world());
     if (car == null) {
       return Optional.empty();
     }
