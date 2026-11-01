@@ -4,9 +4,8 @@ import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
-import com.grahambartley.hardwired.power.ChargeLedger;
-import com.grahambartley.hardwired.power.ChargeNetwork;
-import com.grahambartley.hardwired.power.ChargeStore;
+import com.grahambartley.hardwired.power.PowerGrids;
+import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -99,18 +98,16 @@ public final class LiftDriver {
     if (!shaft.pathClear(run.level(), level)) {
       return DeviceStatus.SHAFT_BLOCKED;
     }
-    List<ChargeStore> stores = ChargeNetwork.storesFor(world, shaft.head());
-    DeviceStatus ready =
-        LiftCharge.demand(
-            LiftPhase.RESTING,
-            DeviceStatus.READY,
-            chargePerBlock(),
-            !stores.isEmpty(),
-            ChargeLedger.available(stores));
-    return ready.isStopped() ? ready : null;
+    PowerGrids power = WireEngine.of(world).power();
+    return power.hasPower(shaft.head()) ? null : power.stopReason(shaft.head());
   }
 
   private void travel() {
+    PowerGrids power = WireEngine.of(world).power();
+    if (run.phase() == LiftPhase.MOVING && !power.hasPower(shaft.head())) {
+      stopFor(power.stopReason(shaft.head()));
+      return;
+    }
     LiftTrip trip = run.trip();
     int started = trip.blocksStartedBy(run.ticksAhead());
     if (LiftCharge.owes(started, run.blocksStarted()) && !enterBlock(trip, started)) {
@@ -132,11 +129,6 @@ public final class LiftDriver {
     if (!shaft.pathClear(run.level(), trip.endOfBlock(block))
         || !LiftShaft.levels(route()).contains(target)) {
       blocked(trip.direction());
-      return false;
-    }
-    if (run.phase() == LiftPhase.MOVING
-        && !ChargeNetwork.tryDrain(world, shaft.head(), chargePerBlock())) {
-      stopFor(LiftCharge.stopReason(!ChargeNetwork.storesFor(world, shaft.head()).isEmpty()));
       return false;
     }
     run.startBlock(block);
@@ -267,9 +259,5 @@ public final class LiftDriver {
 
   private static int ticksPerBlock() {
     return Hardwired.SERVER_CONFIG.lift().ticksPerBlock();
-  }
-
-  private static int chargePerBlock() {
-    return Hardwired.SERVER_CONFIG.lift().chargePerBlock();
   }
 }

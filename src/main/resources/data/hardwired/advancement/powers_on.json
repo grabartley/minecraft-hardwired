@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:master_switch"
+    },
+    "title": {
+      "translate": "advancement.hardwired.powers_on.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.powers_on.description"
+    },
+    "frame": "goal",
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "powers_on"
+      }
+    }
+  },
+  "parent": "hardwired:charged_up"
+}

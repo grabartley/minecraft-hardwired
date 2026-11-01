@@ -74,12 +74,12 @@ public final class AlarmBlock extends MountedDeviceBlock
 
   @Override
   public DeviceStatus demand(ServerWorld world, BlockPos pos, BlockState state) {
-    return WireEngine.of(world).isPowered(pos) ? DeviceStatus.RUNNING : DeviceStatus.WIRE_OFF;
+    return WireEngine.of(world).isOn(pos) ? DeviceStatus.RUNNING : DeviceStatus.WIRE_OFF;
   }
 
   @Override
-  public int chargePerSecond() {
-    return Hardwired.SERVER_CONFIG.power().alarmChargePerSecond();
+  public int load(ServerWorld world, BlockPos pos, BlockState state) {
+    return WireEngine.of(world).isOn(pos) ? Hardwired.SERVER_CONFIG.power().alarmLoad() : 0;
   }
 
   @Override

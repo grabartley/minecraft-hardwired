@@ -186,8 +186,16 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
   }
 
   @Override
-  public int chargePerSecond() {
-    return Hardwired.SERVER_CONFIG.power().broadcastChargePerSecond();
+  public int load(ServerWorld world, BlockPos pos, BlockState state) {
+    return world.getBlockEntity(panelOf(pos, state)) instanceof BroadcastDeskBlockEntity desk
+            && desk.wantsAir()
+        ? Hardwired.SERVER_CONFIG.power().broadcastLoad()
+        : 0;
+  }
+
+  @Override
+  public BlockPos loadAnchor(BlockPos pos, BlockState state) {
+    return panelOf(pos, state);
   }
 
   @Override

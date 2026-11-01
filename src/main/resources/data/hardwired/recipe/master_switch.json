@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "RBR",
+    "BVB",
+    " O "
+  ],
+  "key": {
+    "R": {
+      "item": "minecraft:lightning_rod"
+    },
+    "B": {
+      "item": "minecraft:polished_blackstone"
+    },
+    "V": {
+      "item": "minecraft:lever"
+    },
+    "O": {
+      "item": "minecraft:redstone_block"
+    }
+  },
+  "result": {
+    "id": "hardwired:master_switch",
+    "count": 1
+  }
+}

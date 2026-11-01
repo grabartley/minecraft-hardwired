@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "closed=false,facing=north,half=lower": {
+      "model": "hardwired:block/master_switch_lower"
+    },
+    "closed=false,facing=north,half=upper": {
+      "model": "hardwired:block/master_switch_upper"
+    },
+    "closed=true,facing=north,half=lower": {
+      "model": "hardwired:block/master_switch_lower"
+    },
+    "closed=true,facing=north,half=upper": {
+      "model": "hardwired:block/master_switch_upper_closed"
+    },
+    "closed=false,facing=east,half=lower": {
+      "model": "hardwired:block/master_switch_lower",
+      "y": 90
+    },
+    "closed=false,facing=east,half=upper": {
+      "model": "hardwired:block/master_switch_upper",
+      "y": 90
+    },
+    "closed=true,facing=east,half=lower": {
+      "model": "hardwired:block/master_switch_lower",
+      "y": 90
+    },
+    "closed=true,facing=east,half=upper": {
+      "model": "hardwired:block/master_switch_upper_closed",
+      "y": 90
+    },
+    "closed=false,facing=south,half=lower": {
+      "model": "hardwired:block/master_switch_lower",
+      "y": 180
+    },
+    "closed=false,facing=south,half=upper": {
+      "model": "hardwired:block/master_switch_upper",
+      "y": 180
+    },
+    "closed=true,facing=south,half=lower": {
+      "model": "hardwired:block/master_switch_lower",
+      "y": 180
+    },
+    "closed=true,facing=south,half=upper": {
+      "model": "hardwired:block/master_switch_upper_closed",
+      "y": 180
+    },
+    "closed=false,facing=west,half=lower": {
+      "model": "hardwired:block/master_switch_lower",
+      "y": 270
+    },
+    "closed=false,facing=west,half=upper": {
+      "model": "hardwired:block/master_switch_upper",
+      "y": 270
+    },
+    "closed=true,facing=west,half=lower": {
+      "model": "hardwired:block/master_switch_lower",
+      "y": 270
+    },
+    "closed=true,facing=west,half=upper": {
+      "model": "hardwired:block/master_switch_upper_closed",
+      "y": 270
+    }
+  }
+}

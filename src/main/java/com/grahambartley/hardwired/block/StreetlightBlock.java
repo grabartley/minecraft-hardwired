@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.block;
 
+import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.advancement.ModCriteria;
 import java.util.List;
 import net.minecraft.block.Block;
@@ -47,6 +48,11 @@ public final class StreetlightBlock extends AbstractLampBlock {
   @Override
   public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
     return state.get(PART) == 0 ? super.createBlockEntity(pos, state) : null;
+  }
+
+  @Override
+  protected int runningLoad() {
+    return Hardwired.SERVER_CONFIG.power().streetlightLoad();
   }
 
   @Override

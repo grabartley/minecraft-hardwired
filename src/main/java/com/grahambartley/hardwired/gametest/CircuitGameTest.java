@@ -128,7 +128,7 @@ public class CircuitGameTest implements FabricGameTest {
   }
 
   private static boolean outputOn(TestContext context) {
-    return WireEngine.of(context.getWorld()).isPowered(context.getAbsolutePos(at(6, 1)), Hue.RED);
+    return WireEngine.of(context.getWorld()).isOn(context.getAbsolutePos(at(6, 1)), Hue.RED);
   }
 
   private static List<ItemEntity> drops(TestContext context, BlockPos pos, Item item) {
@@ -142,6 +142,7 @@ public class CircuitGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = 80)
   public void aPlacedInverterFollowsItsInputWire(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, STANDING);
     buildSwitchAndInput(context);
     layOutput(context);
@@ -194,6 +195,7 @@ public class CircuitGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = 80)
   public void aTurnedBlockDrivesItsTurnedSide(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, STANDING);
     place(context, player, ALWAYS_ON, YAW_EAST, CIRCUIT);
     for (int z = 2; z <= 3; z++) {
@@ -204,7 +206,7 @@ public class CircuitGameTest implements FabricGameTest {
         () -> {
           context.assertTrue(
               WireEngine.of(context.getWorld())
-                  .isPowered(context.getAbsolutePos(at(4, 3)), Hue.RED),
+                  .isOn(context.getAbsolutePos(at(4, 3)), Hue.RED),
               "design east placed facing east must drive the south side");
           player.leave();
           context.complete();
@@ -213,6 +215,7 @@ public class CircuitGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = 80)
   public void wireOnAnUnusedSideNeitherFeedsNorIsDriven(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, STANDING);
     place(context, player, ALWAYS_ON, YAW_NORTH, CIRCUIT);
     for (int z = 2; z <= 3; z++) {
@@ -225,7 +228,7 @@ public class CircuitGameTest implements FabricGameTest {
           WireEngine engine = WireEngine.of(context.getWorld());
           context.assertTrue(outputOn(context), "the output side must be driven");
           context.assertFalse(
-              engine.isPowered(context.getAbsolutePos(at(4, 3)), Hue.BLUE),
+              engine.isOn(context.getAbsolutePos(at(4, 3)), Hue.BLUE),
               "wire on an unused side must not be driven");
           player.leave();
           context.complete();
@@ -255,6 +258,7 @@ public class CircuitGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = 80)
   public void everyWireOnASideJoinsItsPort(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, STANDING);
     buildSwitchAndInput(context);
     place(context, player, INVERTER, YAW_NORTH, CIRCUIT);
@@ -268,14 +272,14 @@ public class CircuitGameTest implements FabricGameTest {
         SETTLE_TICKS,
         () -> {
           BlockPos circuit = context.getAbsolutePos(CIRCUIT);
-          context.assertTrue(engine.isPowered(circuit, Hue.RED), "floor wire is driven");
-          context.assertTrue(engine.isPowered(circuit, Hue.YELLOW), "side wire is driven too");
+          context.assertTrue(engine.isOn(circuit, Hue.RED), "floor wire is driven");
+          context.assertTrue(engine.isOn(circuit, Hue.YELLOW), "side wire is driven too");
           flipSwitch(context);
           context.waitAndRun(
               SETTLE_TICKS,
               () -> {
                 context.assertFalse(
-                    engine.isPowered(circuit, Hue.RED), "one wire on the input side is enough");
+                    engine.isOn(circuit, Hue.RED), "one wire on the input side is enough");
                 player.leave();
                 context.complete();
               });
@@ -284,6 +288,7 @@ public class CircuitGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = 80)
   public void oneNetworkOnTwoSidesFollowsTheDrivingSide(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, STANDING);
     place(context, player, ALWAYS_ON, YAW_NORTH, CIRCUIT);
     lay(context, 5, 1, Hue.RED);
@@ -294,7 +299,7 @@ public class CircuitGameTest implements FabricGameTest {
         () -> {
           context.assertTrue(
               WireEngine.of(context.getWorld())
-                  .isPowered(context.getAbsolutePos(at(5, 0)), Hue.RED),
+                  .isOn(context.getAbsolutePos(at(5, 0)), Hue.RED),
               "the output side must hold the network on");
           player.leave();
           context.complete();
@@ -303,10 +308,15 @@ public class CircuitGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = 60)
   public void aSettledBlockStopsTickingAndAClockKeepsGoing(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, STANDING);
     place(context, player, INVERTER, YAW_NORTH, CIRCUIT);
     BlockPos clock = at(6, 6);
     place(context, player, CLOCK, YAW_NORTH, clock);
+    WireEngine.of(context.getWorld())
+        .lay(
+            new WireCell(
+                new WireFace(context.getAbsolutePos(clock.down()), Direction.UP), Hue.PLAIN));
     ServerWorld world = context.getWorld();
     context.waitAndRun(
         SETTLE_TICKS * 2,
@@ -328,6 +338,7 @@ public class CircuitGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = 80)
   public void aLoopThroughOutsideWireHoldsOnLikeAnyLoop(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, STANDING);
     Design buffer =
         new Design(
@@ -358,7 +369,7 @@ public class CircuitGameTest implements FabricGameTest {
                     () -> {
                       context.assertTrue(
                           WireEngine.of(context.getWorld())
-                              .isPowered(context.getAbsolutePos(at(5, 0)), Hue.PLAIN),
+                              .isOn(context.getAbsolutePos(at(5, 0)), Hue.PLAIN),
                           "a loop through outside wire is memory");
                       player.leave();
                       context.complete();
@@ -369,6 +380,7 @@ public class CircuitGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = 60)
   public void aLatchKeepsItsStateThroughAReload(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, STANDING);
     buildSwitchAndInput(context);
     layOutput(context);

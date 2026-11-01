@@ -93,7 +93,7 @@ public class ElectronicsGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = 200)
   public void anAlarmStopsOutOfChargeAndRestartsWhenCharged(TestContext context) {
-    RedstoneCellBlockEntity cell = buildAlarm(context, 2);
+    RedstoneCellBlockEntity cell = buildAlarm(context, 1);
     ConnectedTestPlayer player = playerAt(context, 4);
     context.waitAndRun(SETTLE_TICKS, () -> context.useBlock(SWITCH));
     context.waitAndRun(
@@ -106,7 +106,7 @@ public class ElectronicsGameTest implements FabricGameTest {
         SETTLE_TICKS + 3L * BEAT_TICKS,
         () -> {
           context.expectBlockProperty(ALARM, AlarmBlock.POWERED, false);
-          expectStatus(context, ALARM, DeviceStatus.NO_CHARGE);
+          expectStatus(context, ALARM, DeviceStatus.OUT_OF_FUEL);
           context.assertTrue(cell.charge() == 0, "the charge must be used up");
           context.assertTrue(player.hasEarned(LIGHTS_OUT), "the last stop must earn Lights Out");
           cell.fill(50);
@@ -146,7 +146,7 @@ public class ElectronicsGameTest implements FabricGameTest {
     context.waitAndRun(
         SETTLE_TICKS * 3L,
         () -> {
-          expectStatus(context, ALARM, DeviceStatus.NO_CELL);
+          expectStatus(context, ALARM, DeviceStatus.NO_SOURCE);
           context.complete();
         });
   }
@@ -180,9 +180,6 @@ public class ElectronicsGameTest implements FabricGameTest {
           context.assertTrue(lastLine(listener).contains("hello"), lastLine(listener));
           context.assertFalse(lastLine(listener).contains("§"), "codes must be stripped");
           context.assertTrue(lastLine(speaker).contains("hello"), "the speaker hears it too");
-          context.assertTrue(
-              cell.charge() == 10 - Hardwired.SERVER_CONFIG.power().intercomChargePerLine(),
-              "one line must cost one charge");
           context.expectBlockProperty(at(2, 1), IntercomBlock.ACTIVE, true);
           context.expectBlockProperty(at(7, 1), IntercomBlock.ACTIVE, true);
         });
@@ -199,6 +196,7 @@ public class ElectronicsGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = 60)
   public void chatRulesStopALine(TestContext context) {
+    TestPower.keepFed(context);
     RedstoneCellBlockEntity cell = buildIntercoms(context, 10);
     ConnectedTestPlayer hidden = playerAt(context, 2);
     ConnectedTestPlayer deaf = playerAt(context, 3);
@@ -217,9 +215,7 @@ public class ElectronicsGameTest implements FabricGameTest {
           say(context, open, "again");
           context.assertTrue(
               open.intercomLines().size() == 1, "a second line must be rate limited");
-          context.assertTrue(cell.charge() == 9, "a limited line must cost nothing");
           say(context, deaf, "   ");
-          context.assertTrue(cell.charge() == 9, "an empty line must cost nothing");
           hidden.leave();
           deaf.leave();
           open.leave();
@@ -236,7 +232,7 @@ public class ElectronicsGameTest implements FabricGameTest {
         () -> {
           say(context, player, "hello");
           context.assertTrue(player.intercomLines().isEmpty(), "no charge means no line");
-          expectStatus(context, at(2, 1), DeviceStatus.NO_CHARGE);
+          expectStatus(context, at(2, 1), DeviceStatus.OUT_OF_FUEL);
           RedstoneCellBlockEntity cell = context.getBlockEntity(CELL);
           cell.fill(5);
         });

@@ -2,7 +2,7 @@ package com.grahambartley.hardwired.device;
 
 import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
-import com.grahambartley.hardwired.power.ChargeNetwork;
+import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.List;
 import net.minecraft.block.Block;
@@ -24,7 +24,8 @@ public final class ElectronicsDriver {
     if (state.getBlock() instanceof Electronic device
         && world.getBlockEntity(pos) instanceof ElectronicBlockEntity entity
         && !(entity.status() == DeviceStatus.RUNNING
-            && device.demand(world, pos, state) == DeviceStatus.RUNNING)) {
+            && device.demand(world, pos, state) == DeviceStatus.RUNNING
+            && power(world).hasPower(device.wiredAt(world, pos, state)))) {
       pulse(world, pos);
     }
   }
@@ -39,18 +40,17 @@ public final class ElectronicsDriver {
     DeviceStatus demand = device.demand(world, pos, state);
     BlockPos wired = device.wiredAt(world, pos, state);
     long now = world.getTime();
-    boolean wanted = demand == DeviceStatus.RUNNING;
-    boolean covered = wanted && ElectronicsRule.beatPaid(entity.paidAt(), now);
-    boolean drained =
-        wanted && !covered && ChargeNetwork.tryDrain(world, wired, device.chargePerSecond());
-    boolean paid = covered || drained;
-    boolean unpaid = wanted && !paid;
-    boolean hasCell = unpaid && !ChargeNetwork.storesFor(world, wired).isEmpty();
-    DeviceStatus next = ElectronicsRule.next(demand, paid, hasCell);
+    PowerGrids power = power(world);
+    DeviceStatus next =
+        ElectronicsRule.next(demand, power.hasPower(wired), power.stopReason(wired));
+    if (state.getBlock() instanceof WireDevice wiredDevice
+        && entity.noteLoad(wiredDevice.load(world, pos, state))) {
+      power.changed(wired);
+    }
     entity.setStatus(next);
     device.show(world, pos, state, next);
-    if (drained) {
-      entity.notePaid(now);
+    if (next == DeviceStatus.RUNNING && ElectronicsRule.beatDue(entity.beatAt(), now)) {
+      entity.noteBeat(now);
       device.beat(world, pos);
     }
     if (device.keepsChecking(next)) {
@@ -71,6 +71,10 @@ public final class ElectronicsDriver {
     if (world.getBlockEntity(pos) instanceof ElectronicBlockEntity entity) {
       player.sendMessage(Text.translatable(entity.status().translationKey()), true);
     }
+  }
+
+  private static PowerGrids power(ServerWorld world) {
+    return WireEngine.of(world).power();
   }
 
   private static List<DeviceStatus> networkStatuses(ServerWorld world, BlockPos pos) {

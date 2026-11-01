@@ -220,6 +220,7 @@ public class MainPanelGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = TICK_LIMIT)
   public void theScreenFlipsSwitchesSetsLampsAndRunsControllers(TestContext context) {
+    TestPower.keepFed(context);
     buildHouse(context, null);
     ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, NEAR_PANEL);
     ControllerBlockEntity controller = context.getBlockEntity(CONTROLLER);
@@ -251,6 +252,7 @@ public class MainPanelGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = TICK_LIMIT)
   public void aLampKeepsItsOwnLookThroughASwitchFlip(TestContext context) {
+    TestPower.keepFed(context);
     buildHouse(context, null);
     ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, NEAR_PANEL);
     context.waitAndRun(

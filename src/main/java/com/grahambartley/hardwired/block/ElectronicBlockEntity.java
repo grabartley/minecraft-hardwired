@@ -18,7 +18,8 @@ public class ElectronicBlockEntity extends BlockEntity {
   private static final String STATUS = "status";
 
   private DeviceStatus status = DeviceStatus.READY;
-  private long paidAt = -ElectronicsDriver.BEAT_TICKS;
+  private long beatAt = -ElectronicsDriver.BEAT_TICKS;
+  private int load;
 
   public ElectronicBlockEntity(BlockPos pos, BlockState state) {
     this(ModBlockEntities.ELECTRONIC, pos, state);
@@ -40,12 +41,18 @@ public class ElectronicBlockEntity extends BlockEntity {
     sync();
   }
 
-  public long paidAt() {
-    return paidAt;
+  public long beatAt() {
+    return beatAt;
   }
 
-  public void notePaid(long now) {
-    paidAt = now;
+  public void noteBeat(long now) {
+    beatAt = now;
+  }
+
+  public boolean noteLoad(int next) {
+    boolean changed = load != next;
+    load = next;
+    return changed;
   }
 
   protected void sync() {

@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.wire;
 
 import com.grahambartley.hardwired.device.WireDevice;
+import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.registry.ModItems;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -24,6 +25,7 @@ public final class WireEngine {
   private final ServerWorld world;
   private final WireState state;
   private final WireGrid grid;
+  private final PowerGrids power;
   private final LongOpenHashSet pendingPushes = new LongOpenHashSet();
   private final LongOpenHashSet pendingSurfaceChecks = new LongOpenHashSet();
 
@@ -31,6 +33,7 @@ public final class WireEngine {
     this.world = world;
     this.state = world.getPersistentStateManager().getOrCreate(WireState.TYPE, WireState.KEY);
     this.grid = state.grid();
+    this.power = new PowerGrids(world, this, grid);
   }
 
   public static WireEngine of(ServerWorld world) {
@@ -39,6 +42,10 @@ public final class WireEngine {
 
   public WireGrid grid() {
     return grid;
+  }
+
+  public PowerGrids power() {
+    return power;
   }
 
   public WireNetwork lay(WireCell cell) {
@@ -65,11 +72,15 @@ public final class WireEngine {
     state.markDirty();
   }
 
-  public boolean isPowered(BlockPos pos) {
-    return grid.isPowered(pos.asLong());
+  public boolean isLive(BlockPos pos) {
+    return grid.isLive(pos.asLong());
   }
 
-  public boolean isPowered(BlockPos pos, Hue color) {
+  public boolean isOn(BlockPos pos) {
+    return grid.isOn(pos.asLong());
+  }
+
+  public boolean isOn(BlockPos pos, Hue color) {
     for (WireNetwork network : grid.networksTouching(pos)) {
       if (network.color() == color && network.isOn()) {
         return true;
@@ -78,7 +89,7 @@ public final class WireEngine {
     return false;
   }
 
-  public boolean isPoweredFrom(BlockPos pos, Direction side) {
+  public boolean isOnFrom(BlockPos pos, Direction side) {
     TouchPoint touch = new TouchPoint(pos, side.getOpposite());
     for (WireNetwork network : grid.networksTouching(pos)) {
       if (network.isOn() && network.touches().contains(touch)) {
@@ -159,6 +170,7 @@ public final class WireEngine {
       refresh(pos);
       pendingPushes.add(pos.asLong());
       grid.networksTouching(pos).forEach(grid::markChanged);
+      power.changed(pos);
     }
     if (!oldState.isOf(newState.getBlock()) && !grid.cellsOn(pos).isEmpty()) {
       pendingSurfaceChecks.add(pos.asLong());
@@ -177,6 +189,7 @@ public final class WireEngine {
       for (TouchPoint touch : network.touches()) {
         if (isIn(touch, chunk)) {
           pendingPushes.add(touch.pos().asLong());
+          power.changed(network);
         }
       }
     }
@@ -203,7 +216,12 @@ public final class WireEngine {
     for (WireNetwork network : grid.drainDirty()) {
       evaluate(network);
     }
-    pendingPushes.addAll(LongList.of(grid.drainTouchChanges()));
+    power.tick();
+    long[] touchChanges = grid.drainTouchChanges();
+    pendingPushes.addAll(LongList.of(touchChanges));
+    for (long touch : touchChanges) {
+      power.changed(BlockPos.fromLong(touch));
+    }
     if (!pendingPushes.isEmpty()) {
       long[] pushes = pendingPushes.toLongArray();
       pendingPushes.clear();
@@ -253,6 +271,7 @@ public final class WireEngine {
     if (active != network.isOn()) {
       network.setOn(active);
       pushNetwork(network);
+      power.changed(network);
     } else if (inputsChanged) {
       grid.markChanged(network);
     }
@@ -314,7 +333,7 @@ public final class WireEngine {
     return VanillaPower.suppliesWire(world, touch);
   }
 
-  private void pushNetwork(WireNetwork network) {
+  public void pushNetwork(WireNetwork network) {
     for (TouchPoint touch : network.touches()) {
       pendingPushes.add(touch.pos().asLong());
     }

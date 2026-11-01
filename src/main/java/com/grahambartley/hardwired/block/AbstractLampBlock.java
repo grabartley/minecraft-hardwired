@@ -73,6 +73,20 @@ public abstract class AbstractLampBlock extends Block
     return state.get(LEVEL);
   }
 
+  public int load(ServerWorld world, BlockPos pos, BlockState state) {
+    WireEngine engine = WireEngine.of(world);
+    return parts(pos, state).stream().anyMatch(engine::isOn) ? runningLoad() : 0;
+  }
+
+  protected int runningLoad() {
+    return Hardwired.SERVER_CONFIG.power().lampLoad();
+  }
+
+  @Override
+  public BlockPos loadAnchor(BlockPos pos, BlockState state) {
+    return lampPos(pos, state);
+  }
+
   public BlockPos lampPos(BlockPos pos, BlockState state) {
     return pos;
   }
@@ -104,7 +118,7 @@ public abstract class AbstractLampBlock extends Block
     Hue color = look == null ? lamp.color() : look.color();
     int brightness = look == null ? LampLook.MAX_BRIGHTNESS : look.brightness();
     boolean changed = lamp.setLook(color, brightness);
-    int level = parts.stream().anyMatch(engine::isPowered) ? brightness : 0;
+    int level = parts.stream().anyMatch(engine::isLive) ? brightness : 0;
     if (state.get(LEVEL) != level) {
       update(world, pos, state.with(LEVEL, level).with(LIT, level > 0));
       changed = true;

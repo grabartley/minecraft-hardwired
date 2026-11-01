@@ -30,16 +30,28 @@ public final class ServerConfigPayloads {
     buf.writeVarInt(config.device().intercomRangeBlocks());
     PowerSettings power = config.power();
     buf.writeVarInt(power.cellCapacity());
+    buf.writeVarInt(power.generatorCapacity());
     buf.writeVarInt(power.dustCharge());
-    buf.writeVarInt(power.solarChargePerMinute());
     buf.writeVarInt(power.lightningCharge());
-    buf.writeVarInt(power.alarmChargePerSecond());
-    buf.writeVarInt(power.radioChargePerSecond());
-    buf.writeVarInt(power.speakerChargePerSecond());
-    buf.writeVarInt(power.intercomChargePerLine());
-    buf.writeVarInt(power.broadcastChargePerSecond());
+    buf.writeVarInt(power.chargePerLoadMinute());
+    buf.writeVarInt(power.cellRating());
+    buf.writeVarInt(power.generatorRating());
+    buf.writeVarInt(power.solarRating());
+    buf.writeVarInt(power.dynamoRating());
+    buf.writeVarInt(power.lampLoad());
+    buf.writeVarInt(power.streetlightLoad());
+    buf.writeVarInt(power.logicLoad());
+    buf.writeVarInt(power.vanillaLoad());
+    buf.writeVarInt(power.radioLoad());
+    buf.writeVarInt(power.speakerLoad());
+    buf.writeVarInt(power.intercomLoad());
+    buf.writeVarInt(power.alarmLoad());
+    buf.writeVarInt(power.broadcastLoad());
+    buf.writeVarInt(power.liftLoad());
+    buf.writeVarInt(power.humRange());
+    buf.writeVarInt(power.humStartLoad());
+    buf.writeVarInt(power.humFullLoad());
     buf.writeVarInt(config.lift().ticksPerBlock());
-    buf.writeVarInt(config.lift().chargePerBlock());
     buf.writeVarInt(config.circuit().maxParts());
     buf.writeVarInt(config.circuit().partsPerRedstone());
     RadioSettings radio = config.radio();
@@ -68,8 +80,21 @@ public final class ServerConfigPayloads {
             buf.readVarInt(),
             buf.readVarInt(),
             buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
+            buf.readVarInt(),
             buf.readVarInt()),
-        new LiftSettings(buf.readVarInt(), buf.readVarInt()),
+        new LiftSettings(buf.readVarInt()),
         new CircuitSettings(buf.readVarInt(), buf.readVarInt()),
         new RadioSettings(
             buf.readVarInt(),

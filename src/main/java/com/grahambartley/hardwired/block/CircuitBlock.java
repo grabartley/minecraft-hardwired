@@ -1,11 +1,13 @@
 package com.grahambartley.hardwired.block;
 
+import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.circuit.Design;
 import com.grahambartley.hardwired.circuit.Evaluator;
 import com.grahambartley.hardwired.circuit.Side;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.wire.Hue;
+import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.block.Block;
@@ -96,6 +98,11 @@ public final class CircuitBlock extends Block implements BlockEntityProvider, Wi
     if (world.getBlockEntity(pos) instanceof CircuitBlockEntity circuit && !circuit.step(world)) {
       scheduleStep(world, pos);
     }
+  }
+
+  @Override
+  public int load(ServerWorld world, BlockPos pos, BlockState state) {
+    return WireEngine.of(world).isOn(pos) ? Hardwired.SERVER_CONFIG.power().logicLoad() : 0;
   }
 
   @Override

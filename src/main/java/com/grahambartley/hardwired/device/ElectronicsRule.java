@@ -7,28 +7,18 @@ public final class ElectronicsRule {
 
   private ElectronicsRule() {}
 
-  public static DeviceStatus next(DeviceStatus demand, boolean paid, boolean hasCell) {
-    if (demand != DeviceStatus.RUNNING || paid) {
-      return demand;
-    }
-    return hasCell ? DeviceStatus.NO_CHARGE : DeviceStatus.NO_CELL;
+  public static DeviceStatus next(DeviceStatus demand, boolean powered, DeviceStatus stopReason) {
+    return demand != DeviceStatus.RUNNING || powered ? demand : stopReason;
   }
 
-  public static boolean beatPaid(long paidAt, long now) {
-    return now - paidAt < ElectronicsDriver.BEAT_TICKS;
-  }
-
-  public static DeviceStatus readiness(int cost, boolean hasCell, int available) {
-    if (available >= cost) {
-      return DeviceStatus.READY;
-    }
-    return hasCell ? DeviceStatus.NO_CHARGE : DeviceStatus.NO_CELL;
+  public static boolean beatDue(long beatAt, long now) {
+    return now - beatAt >= ElectronicsDriver.BEAT_TICKS;
   }
 
   public static boolean lightsOut(
       DeviceStatus before, DeviceStatus after, Supplier<List<DeviceStatus>> network) {
     return before == DeviceStatus.RUNNING
-        && after == DeviceStatus.NO_CHARGE
+        && after.isPowerStop()
         && network.get().stream().noneMatch(status -> status == DeviceStatus.RUNNING);
   }
 }

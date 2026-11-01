@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.block;
 
+import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.device.AnimatedDevice;
 import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.device.PanelAction;
@@ -10,6 +11,7 @@ import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.LampLook;
+import com.grahambartley.hardwired.wire.WireEngine;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -81,6 +83,11 @@ public final class ControllerBlock extends HorizontalFacingBlock
   public boolean isDriving(ServerWorld world, BlockPos pos, BlockState state, Hue color) {
     return world.getBlockEntity(pos) instanceof ControllerBlockEntity controller
         && controller.drives(color);
+  }
+
+  @Override
+  public int load(ServerWorld world, BlockPos pos, BlockState state) {
+    return WireEngine.of(world).isOn(pos) ? Hardwired.SERVER_CONFIG.power().logicLoad() : 0;
   }
 
   @Override

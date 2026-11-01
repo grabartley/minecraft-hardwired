@@ -21,6 +21,8 @@ public final class ModCriteria {
   public static final String SOLAR_CHARGED = "solar_charged";
   public static final String LIGHTNING_CHARGED = "lightning_charged";
   public static final String LIGHTS_OUT = "lights_out";
+  public static final String POWERS_ON = "powers_on";
+  public static final String BLOWN_FUSE = "blown_fuse";
   public static final String LIFT_RIDDEN = "lift_ridden";
   public static final String TUNED_IN = "tuned_in";
   public static final String ON_THE_AIR = "on_the_air";

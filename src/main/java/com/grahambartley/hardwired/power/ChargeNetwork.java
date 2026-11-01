@@ -9,15 +9,13 @@ public final class ChargeNetwork {
 
   private ChargeNetwork() {}
 
-  public static List<ChargeStore> storesFor(ServerWorld world, BlockPos pos) {
-    return WireEngine.of(world).allOnNetwork(pos, ChargeStore.class);
-  }
-
-  public static boolean tryDrain(ServerWorld world, BlockPos pos, int amount) {
-    return amount == 0 || ChargeLedger.tryDrain(storesFor(world, pos), amount);
+  public static List<ChargeStore> cellsFor(ServerWorld world, BlockPos pos) {
+    return WireEngine.of(world).allOnNetwork(pos, ChargeStore.class).stream()
+        .filter(ChargeStore::acceptsEarnings)
+        .toList();
   }
 
   public static int fill(ServerWorld world, BlockPos pos, int amount) {
-    return ChargeLedger.fill(storesFor(world, pos), amount);
+    return ChargeLedger.fill(cellsFor(world, pos), amount);
   }
 }

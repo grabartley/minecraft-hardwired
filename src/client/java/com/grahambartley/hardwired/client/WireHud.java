@@ -15,6 +15,13 @@ public final class WireHud {
 
   private WireHud() {}
 
+  private static String stateKey(WireInspectResultPayload result) {
+    if (!result.on()) {
+      return "hud.hardwired.off";
+    }
+    return result.powered() ? "hud.hardwired.on" : "hud.hardwired.on_no_power";
+  }
+
   public static void render(DrawContext context, RenderTickCounter tick) {
     WireInspectResultPayload result = WireDrag.inspected();
     MinecraftClient client = MinecraftClient.getInstance();
@@ -24,7 +31,7 @@ public final class WireHud {
     String stateKey =
         result.tripped()
             ? "hud.hardwired.tripped"
-            : result.on() ? "hud.hardwired.on" : "hud.hardwired.off";
+            : stateKey(result);
     Text heading =
         Text.translatable(
             "hud.hardwired.wire",
@@ -33,6 +40,13 @@ public final class WireHud {
     int y = context.getScaledWindowHeight() - BOTTOM_MARGIN - result.drivers().size() * LINE_HEIGHT;
     context.drawCenteredTextWithShadow(
         client.textRenderer, heading, context.getScaledWindowWidth() / 2, y, WHITE);
+    y += LINE_HEIGHT;
+    context.drawCenteredTextWithShadow(
+        client.textRenderer,
+        Text.translatable("hud.hardwired.load", result.load(), result.supply()),
+        context.getScaledWindowWidth() / 2,
+        y,
+        WHITE);
     for (String driver : result.drivers()) {
       y += LINE_HEIGHT;
       context.drawCenteredTextWithShadow(

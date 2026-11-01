@@ -75,6 +75,11 @@ public class HardwiredClient implements ClientModInitializer {
   private static final List<BlockEntityType<? extends BlockEntity>> ANIMATED_TYPES =
       List.of(
           ModBlockEntities.ANIMATED_DEVICE,
+          ModBlockEntities.REDSTONE_CELL,
+          ModBlockEntities.REDSTONE_GENERATOR,
+          ModBlockEntities.SOLAR_PANEL,
+          ModBlockEntities.LODESTONE_DYNAMO,
+          ModBlockEntities.MASTER_SWITCH,
           ModBlockEntities.CONTROLLER,
           ModBlockEntities.ELECTRONIC,
           ModBlockEntities.RADIO,

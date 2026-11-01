@@ -26,4 +26,12 @@ public interface WireDevice {
   }
 
   default void onWireChange(ServerWorld world, BlockPos pos, BlockState state) {}
+
+  default int load(ServerWorld world, BlockPos pos, BlockState state) {
+    return 0;
+  }
+
+  default BlockPos loadAnchor(BlockPos pos, BlockState state) {
+    return pos;
+  }
 }

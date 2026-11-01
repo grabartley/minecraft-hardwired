@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.client.anim;
 
 import com.grahambartley.hardwired.device.AnimatedDevice;
+import com.grahambartley.hardwired.device.DialDevice;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -49,9 +50,15 @@ public final class AnimatedDeviceRenderer<T extends BlockEntity> implements Bloc
     if (animation == null || entity.getWorld() == null) {
       return;
     }
+    DialDevice dials = entity instanceof DialDevice device ? device : null;
     boolean animating =
-        state.getBlock() instanceof AnimatedDevice device && device.isAnimating(state);
-    float seconds = animating ? clock(entity, tickDelta) : 0;
+        dials != null
+            ? dials.isMoving()
+            : state.getBlock() instanceof AnimatedDevice device && device.isAnimating(state);
+    float seconds =
+        dials != null
+            ? DevicePhase.seconds(entity, dials.clipSpeed(), tickDelta)
+            : animating ? clock(entity, tickDelta) : 0;
     VertexConsumer consumer = buffers.getBuffer(TexturedRenderLayers.getEntityCutout());
     DeviceTurn turn = DeviceTurn.of(state);
     matrices.push();
@@ -64,9 +71,11 @@ public final class AnimatedDeviceRenderer<T extends BlockEntity> implements Bloc
         continue;
       }
       DeviceClip.Pose pose =
-          animating && part.movesIn(state)
-              ? animation.clip().sample(part.bone(), seconds)
-              : DeviceClip.Pose.REST;
+          part.dial() != null && dials != null
+              ? dialPose(part.dial(), dials, tickDelta)
+              : moving(animating, dials, part, state)
+                  ? animation.clip().sample(part.bone(), seconds)
+                  : DeviceClip.Pose.REST;
       matrices.push();
       apply(matrices, part.pivot(), pose);
       BakedModel model =
@@ -76,6 +85,18 @@ public final class AnimatedDeviceRenderer<T extends BlockEntity> implements Bloc
       matrices.pop();
     }
     matrices.pop();
+  }
+
+  private static boolean moving(
+      boolean animating, DialDevice dials, DeviceAnimations.Part part, BlockState state) {
+    return (animating || dials != null) && part.movesIn(state);
+  }
+
+  private static DeviceClip.Pose dialPose(
+      DeviceAnimations.Dial dial, DialDevice dials, float tickDelta) {
+    float[] rotation = new float[3];
+    rotation[dial.axis() - 'x'] = dial.degrees(dials.dial(dial.value(), tickDelta));
+    return new DeviceClip.Pose(rotation, new float[3]);
   }
 
   private static float clock(BlockEntity entity, float tickDelta) {

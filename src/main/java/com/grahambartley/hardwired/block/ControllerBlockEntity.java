@@ -52,7 +52,9 @@ public final class ControllerBlockEntity extends BlockEntity {
 
   public static void tick(
       World world, BlockPos pos, BlockState state, ControllerBlockEntity controller) {
-    controller.change(() -> controller.run.tick(controller.timeline()));
+    if (world instanceof ServerWorld server && WireEngine.of(server).power().hasPower(pos)) {
+      controller.change(() -> controller.run.tick(controller.timeline()));
+    }
   }
 
   public ControllerProgram program() {
@@ -74,8 +76,8 @@ public final class ControllerBlockEntity extends BlockEntity {
   public void readWires(ServerWorld server) {
     WireEngine engine = WireEngine.of(server);
     ControllerWiring wiring = program.wiring();
-    boolean open = engine.isPowered(pos, wiring.open());
-    boolean close = engine.isPowered(pos, wiring.close());
+    boolean open = engine.isOn(pos, wiring.open());
+    boolean close = engine.isOn(pos, wiring.close());
     TimelineOrder order =
         TimelineInputs.orderFor(wiring.readsOneColour(), openOn, closeOn, open, close);
     if (open != openOn || close != closeOn) {
@@ -104,8 +106,8 @@ public final class ControllerBlockEntity extends BlockEntity {
         });
     if (world instanceof ServerWorld server) {
       WireEngine engine = WireEngine.of(server);
-      openOn = engine.isPowered(pos, next.wiring().open());
-      closeOn = engine.isPowered(pos, next.wiring().close());
+      openOn = engine.isOn(pos, next.wiring().open());
+      closeOn = engine.isOn(pos, next.wiring().close());
       engine.refresh(pos);
     }
     sync();

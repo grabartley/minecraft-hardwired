@@ -1,11 +1,18 @@
 {
   "radio.voice": {
     "subtitle": "subtitles.hardwired.radio.voice",
-    "sounds": [{"name": "fabric-sound-api-v1:empty", "stream": true}]
+    "sounds": [
+      {
+        "name": "fabric-sound-api-v1:empty",
+        "stream": true
+      }
+    ]
   },
   "radio.hiss": {
     "subtitle": "subtitles.hardwired.radio.hiss",
-    "sounds": ["hardwired:radio/hiss"]
+    "sounds": [
+      "hardwired:radio/hiss"
+    ]
   },
   "radio.crackle": {
     "subtitle": "subtitles.hardwired.radio.crackle",
@@ -24,6 +31,66 @@
       "hardwired:radio/sweep_1",
       "hardwired:radio/sweep_2",
       "hardwired:radio/sweep_3"
+    ]
+  },
+  "power.source_up": {
+    "subtitle": "subtitles.hardwired.power.source_up",
+    "sounds": [
+      "hardwired:power/source_up"
+    ]
+  },
+  "power.source_down": {
+    "subtitle": "subtitles.hardwired.power.source_down",
+    "sounds": [
+      "hardwired:power/source_down"
+    ]
+  },
+  "power.fuse_pop": {
+    "subtitle": "subtitles.hardwired.power.fuse_pop",
+    "sounds": [
+      "hardwired:power/fuse_pop"
+    ]
+  },
+  "power.master_pull": {
+    "subtitle": "subtitles.hardwired.power.master_pull",
+    "sounds": [
+      "hardwired:power/master_pull"
+    ]
+  },
+  "power.master_open": {
+    "subtitle": "subtitles.hardwired.power.master_open",
+    "sounds": [
+      "hardwired:power/master_open"
+    ]
+  },
+  "power.generator_loop": {
+    "subtitle": "subtitles.hardwired.power.generator_loop",
+    "sounds": [
+      "hardwired:power/generator_loop"
+    ]
+  },
+  "power.cell_loop": {
+    "subtitle": "subtitles.hardwired.power.cell_loop",
+    "sounds": [
+      "hardwired:power/cell_loop"
+    ]
+  },
+  "power.dynamo_loop": {
+    "subtitle": "subtitles.hardwired.power.dynamo_loop",
+    "sounds": [
+      "hardwired:power/dynamo_loop"
+    ]
+  },
+  "power.solar_tick": {
+    "subtitle": "subtitles.hardwired.power.solar_tick",
+    "sounds": [
+      "hardwired:power/solar_tick"
+    ]
+  },
+  "power.electric_hum": {
+    "subtitle": "subtitles.hardwired.power.electric_hum",
+    "sounds": [
+      "hardwired:power/electric_hum"
     ]
   }
 }

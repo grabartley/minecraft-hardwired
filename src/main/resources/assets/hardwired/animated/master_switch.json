@@ -1,0 +1,36 @@
+{
+  "clip": "hardwired:clips/master_switch.animation.json",
+  "wide": true,
+  "parts": [
+    {
+      "bone": "lever",
+      "model": "hardwired:block/part/master_switch_lever",
+      "pivot": [
+        8,
+        21,
+        6.75
+      ],
+      "dial": {
+        "value": "throw",
+        "axis": "x",
+        "from": 100,
+        "to": 0
+      }
+    },
+    {
+      "bone": "blades",
+      "model": "hardwired:block/part/master_switch_blades",
+      "pivot": [
+        8,
+        21,
+        6.75
+      ],
+      "dial": {
+        "value": "throw",
+        "axis": "x",
+        "from": 100,
+        "to": 0
+      }
+    }
+  ]
+}

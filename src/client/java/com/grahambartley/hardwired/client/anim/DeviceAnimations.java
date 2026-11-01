@@ -23,8 +23,21 @@ import net.minecraft.util.Identifier;
 
 public final class DeviceAnimations {
 
+  public record Dial(String value, char axis, float from, float to) {
+
+    float degrees(float amount) {
+      return from + (to - from) * amount;
+    }
+  }
+
   public record Part(
-      String bone, Identifier model, float[] pivot, boolean glow, String when, String movesWhen) {
+      String bone,
+      Identifier model,
+      float[] pivot,
+      boolean glow,
+      String when,
+      String movesWhen,
+      Dial dial) {
 
     public boolean drawnWhile(boolean animating) {
       return animating || !glow;
@@ -118,6 +131,15 @@ public final class DeviceAnimations {
         },
         part.has("glow") && part.get("glow").getAsBoolean(),
         part.has("when") ? part.get("when").getAsString() : null,
-        part.has("moves_when") ? part.get("moves_when").getAsString() : null);
+        part.has("moves_when") ? part.get("moves_when").getAsString() : null,
+        part.has("dial") ? dial(part.getAsJsonObject("dial")) : null);
+  }
+
+  private static Dial dial(JsonObject dial) {
+    return new Dial(
+        dial.get("value").getAsString(),
+        dial.get("axis").getAsString().charAt(0),
+        dial.get("from").getAsFloat(),
+        dial.get("to").getAsFloat());
   }
 }

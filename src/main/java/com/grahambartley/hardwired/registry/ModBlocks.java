@@ -9,15 +9,19 @@ import com.grahambartley.hardwired.block.CircuitBoardBlock;
 import com.grahambartley.hardwired.block.ControlPanelBlock;
 import com.grahambartley.hardwired.block.ControllerBlock;
 import com.grahambartley.hardwired.block.DuskClock;
+import com.grahambartley.hardwired.block.FuelledSourceBlock;
 import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.LiftBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlock;
+import com.grahambartley.hardwired.block.LodestoneDynamoBlock;
 import com.grahambartley.hardwired.block.MainPanelBlock;
+import com.grahambartley.hardwired.block.MasterSwitchBlock;
 import com.grahambartley.hardwired.block.MountedLampBlock;
 import com.grahambartley.hardwired.block.RadioBlock;
 import com.grahambartley.hardwired.block.RadioMastBlock;
 import com.grahambartley.hardwired.block.RedstoneCellBlock;
+import com.grahambartley.hardwired.block.RedstoneGeneratorBlock;
 import com.grahambartley.hardwired.block.SensorBlock;
 import com.grahambartley.hardwired.block.SolarPanelBlock;
 import com.grahambartley.hardwired.block.SpeakerBlock;
@@ -118,9 +122,34 @@ public final class ModBlocks {
               deviceSettings()
                   .sounds(BlockSoundGroup.GLASS)
                   .pistonBehavior(PistonBehavior.BLOCK)
-                  .luminance(state -> state.get(RedstoneCellBlock.LEVEL))
+                  .luminance(state -> state.get(FuelledSourceBlock.LEVEL))
                   .emissiveLighting(
-                      (state, world, pos) -> state.get(RedstoneCellBlock.LEVEL) > 0)));
+                      (state, world, pos) -> state.get(FuelledSourceBlock.LEVEL) > 0)));
+  public static final Block REDSTONE_GENERATOR =
+      register(
+          "redstone_generator",
+          new RedstoneGeneratorBlock(
+              deviceSettings()
+                  .mapColor(MapColor.IRON_GRAY)
+                  .sounds(BlockSoundGroup.METAL)
+                  .pistonBehavior(PistonBehavior.BLOCK)
+                  .luminance(state -> state.get(FuelledSourceBlock.LEVEL))));
+  public static final Block LODESTONE_DYNAMO =
+      register(
+          "lodestone_dynamo",
+          new LodestoneDynamoBlock(
+              deviceSettings()
+                  .mapColor(MapColor.GOLD)
+                  .sounds(BlockSoundGroup.LODESTONE)
+                  .pistonBehavior(PistonBehavior.BLOCK)));
+  public static final Block MASTER_SWITCH =
+      register(
+          "master_switch",
+          new MasterSwitchBlock(
+              deviceSettings()
+                  .mapColor(MapColor.DEEPSLATE_GRAY)
+                  .sounds(BlockSoundGroup.POLISHED_DEEPSLATE)
+                  .pistonBehavior(PistonBehavior.DESTROY)));
   public static final Block SOLAR_PANEL =
       register(
           "solar_panel",

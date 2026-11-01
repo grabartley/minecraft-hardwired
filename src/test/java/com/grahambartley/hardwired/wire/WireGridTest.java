@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import com.grahambartley.hardwired.power.GridState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
@@ -138,12 +139,32 @@ class WireGridTest {
   }
 
   @Test
-  void poweredFollowsTheNetworkAtATouchedPosition() {
+  void liveNeedsTheNetworkOnAndItsGridGivingPower() {
     WireGrid grid = line(2);
     long occupant = new BlockPos(0, 65, 0).asLong();
-    assertFalse(grid.isPowered(occupant));
-    grid.networkOf(floor(0, Hue.PLAIN)).setOn(true);
-    assertTrue(grid.isPowered(occupant));
+    WireNetwork network = grid.networkOf(floor(0, Hue.PLAIN));
+    assertFalse(grid.isOn(occupant));
+    network.setOn(true);
+    assertTrue(grid.isOn(occupant));
+    assertFalse(grid.isLive(occupant));
+    assertFalse(grid.hasPower(occupant));
+    network.setGridState(GridState.LIVE);
+    assertTrue(grid.isLive(occupant));
+    assertTrue(grid.hasPower(occupant));
+    network.setOn(false);
+    assertFalse(grid.isLive(occupant));
+    assertTrue(grid.hasPower(occupant));
+  }
+
+  @Test
+  void onlyOpenWireOrOneOwnersSealsSharePower() {
+    WireNetwork open = new WireNetwork(Hue.PLAIN, null);
+    WireNetwork alice = new WireNetwork(Hue.PLAIN, ALICE);
+    WireNetwork aliceToo = new WireNetwork(Hue.BLUE, ALICE);
+    assertTrue(open.sharesPowerWith(new WireNetwork(Hue.BLUE, null)));
+    assertTrue(alice.sharesPowerWith(aliceToo));
+    assertFalse(open.sharesPowerWith(alice));
+    assertFalse(alice.sharesPowerWith(new WireNetwork(Hue.PLAIN, new UUID(2, 2))));
   }
 
   private static final UUID ALICE = new UUID(1, 1);

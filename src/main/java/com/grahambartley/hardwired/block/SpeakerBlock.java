@@ -32,12 +32,18 @@ public final class SpeakerBlock extends TableDeviceBlock {
 
   @Override
   public DeviceStatus demand(ServerWorld world, BlockPos pos, BlockState state) {
-    return receivingRadio(world, pos).isPresent() ? DeviceStatus.RUNNING : DeviceStatus.NO_RADIO;
+    return WireEngine.of(world).allOnNetwork(pos, RadioBlockEntity.class).stream()
+            .anyMatch(radio -> radio.status().wantsPower())
+        ? DeviceStatus.RUNNING
+        : DeviceStatus.NO_RADIO;
   }
 
   @Override
-  public int chargePerSecond() {
-    return Hardwired.SERVER_CONFIG.power().speakerChargePerSecond();
+  public int load(ServerWorld world, BlockPos pos, BlockState state) {
+    return WireEngine.of(world).allOnNetwork(pos, RadioBlockEntity.class).stream()
+            .anyMatch(RadioBlockEntity::isOn)
+        ? Hardwired.SERVER_CONFIG.power().speakerLoad()
+        : 0;
   }
 
   @Override

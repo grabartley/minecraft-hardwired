@@ -8,7 +8,9 @@ import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RedstoneWireBlock;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
@@ -36,7 +38,7 @@ public final class VanillaPower {
     if (quasiGuarded != null && !quasiGuarded.equals(receiver)) {
       return false;
     }
-    return grid.isPowered(receiver.asLong());
+    return grid.isLive(receiver.asLong());
   }
 
   public static void guardQuasiConnectivity(BlockPos pos) {
@@ -45,6 +47,17 @@ public final class VanillaPower {
 
   public static void clearQuasiGuard() {
     quasiGuarded = null;
+  }
+
+  public static boolean isComponent(BlockState state) {
+    return state.isIn(WireRules.OUTPUTS);
+  }
+
+  public static BlockPos loadAnchor(BlockPos pos, BlockState state) {
+    return state.contains(Properties.DOUBLE_BLOCK_HALF)
+            && state.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER
+        ? pos.down()
+        : pos;
   }
 
   public static boolean suppliesWire(ServerWorld world, TouchPoint touch) {

@@ -1,13 +1,12 @@
 package com.grahambartley.hardwired.block;
 
-import com.grahambartley.hardwired.Hardwired;
-import com.grahambartley.hardwired.advancement.ModCriteria;
-import com.grahambartley.hardwired.device.WireDevice;
-import com.grahambartley.hardwired.power.ChargeNetwork;
 import com.grahambartley.hardwired.power.SolarLogic;
+import com.grahambartley.hardwired.power.SourceKind;
+import com.grahambartley.hardwired.registry.ModBlockEntities;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -19,7 +18,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
-public final class SolarPanelBlock extends Block implements WireDevice {
+public final class SolarPanelBlock extends SourceBlock {
 
   public static final BooleanProperty LIT = Properties.LIT;
 
@@ -27,12 +26,28 @@ public final class SolarPanelBlock extends Block implements WireDevice {
 
   public SolarPanelBlock(Settings settings) {
     super(settings);
-    setDefaultState(getStateManager().getDefaultState().with(LIT, false));
+    setDefaultState(getDefaultState().with(LIT, false));
   }
 
   @Override
   protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    super.appendProperties(builder);
     builder.add(LIT);
+  }
+
+  @Override
+  public SourceKind sourceKind() {
+    return SourceKind.SOLAR;
+  }
+
+  @Override
+  public boolean isFuelled(ServerWorld world, BlockPos pos, BlockState state) {
+    return state.get(LIT);
+  }
+
+  @Override
+  public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    return new SourceBlockEntity(ModBlockEntities.SOLAR_PANEL, pos, state);
   }
 
   @Override
@@ -55,9 +70,6 @@ public final class SolarPanelBlock extends Block implements WireDevice {
     if (state.get(LIT) != lit) {
       world.setBlockState(pos, state.with(LIT, lit), NOTIFY_ALL);
     }
-    if (lit) {
-      generate(world, pos);
-    }
     world.scheduleBlockTick(pos, this, SolarLogic.CHECK_TICKS);
   }
 
@@ -68,13 +80,5 @@ public final class SolarPanelBlock extends Block implements WireDevice {
             world.getAmbientDarkness(),
             world.getSkyAngleRadians(1F));
     return world.getDimension().hasSkyLight() && SolarLogic.isDay(power);
-  }
-
-  private static void generate(ServerWorld world, BlockPos pos) {
-    int perMinute = Hardwired.SERVER_CONFIG.power().solarChargePerMinute();
-    int earned = SolarLogic.earned(perMinute, world.getTime(), SolarLogic.CHECK_TICKS);
-    if (earned > 0 && ChargeNetwork.fill(world, pos, earned) > 0) {
-      ModCriteria.DEVICE.triggerNear(world, pos, ModCriteria.SOLAR_CHARGED);
-    }
   }
 }
