@@ -12,7 +12,7 @@ Bring the wonder of early electricity to your world. Run hidden cloth wire throu
 - **Set the mood:** change every lamp at once from a Control Panel, save scenes for a switch to recall, and work the whole house from a Main Panel.
 - **Hide a door:** set a timeline on a Controller and pistons open and close a wall from one switch.
 - **Build a circuit:** design logic on a Circuit Board and pack it into one block you can copy.
-- **Run bigger devices:** fill Redstone Cells with redstone, sunlight or lightning to power alarms, speakers, intercoms and lifts.
+- **Power it all:** run your wiring from Redstone Cells, generators, solar panels and dynamos, chain them as your build grows, and bring it up with one great switch.
 - **Go on the air:** raise a radio tower, then play discs or speak live to every Radio tuned in within its reach.
 - **Work with redstone:** wire drives doors, pistons and lamps, and redstone can drive wire. Sensors and Junctions add a little logic.
 
