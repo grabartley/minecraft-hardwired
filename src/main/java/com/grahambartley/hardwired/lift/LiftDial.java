@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.lift;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.OptionalDouble;
 import net.minecraft.nbt.NbtCompound;
 
 public record LiftDial(
@@ -59,6 +60,13 @@ public record LiftDial(
       levels.forEach(level -> marks.add(degrees(reading(level))));
     }
     return marks;
+  }
+
+  public OptionalDouble litDegrees(double level) {
+    List<Float> marks = markDegrees();
+    return marks.isEmpty()
+        ? OptionalDouble.empty()
+        : OptionalDouble.of(marks.get((int) Math.round(reading(level) * (marks.size() - 1))));
   }
 
   public static float degrees(double reading) {

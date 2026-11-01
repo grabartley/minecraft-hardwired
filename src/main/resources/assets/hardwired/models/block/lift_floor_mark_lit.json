@@ -1,0 +1,86 @@
+{
+  "textures": {
+    "1": "minecraft:block/redstone_lamp_on",
+    "particle": "minecraft:block/gold_block"
+  },
+  "elements": [
+    {
+      "name": "mark_lit",
+      "from": [
+        7.5,
+        10.85,
+        7.85
+      ],
+      "to": [
+        8.5,
+        11.85,
+        8.15
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          8,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            6,
+            7,
+            7
+          ],
+          "texture": "#1"
+        },
+        "east": {
+          "uv": [
+            6,
+            6,
+            7,
+            7
+          ],
+          "texture": "#1"
+        },
+        "south": {
+          "uv": [
+            6,
+            6,
+            7,
+            7
+          ],
+          "texture": "#1"
+        },
+        "west": {
+          "uv": [
+            6,
+            6,
+            7,
+            7
+          ],
+          "texture": "#1"
+        },
+        "up": {
+          "uv": [
+            6,
+            6,
+            7,
+            7
+          ],
+          "texture": "#1"
+        },
+        "down": {
+          "uv": [
+            6,
+            6,
+            7,
+            7
+          ],
+          "texture": "#1"
+        }
+      }
+    }
+  ]
+}

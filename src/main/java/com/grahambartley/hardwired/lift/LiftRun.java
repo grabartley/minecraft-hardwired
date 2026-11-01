@@ -20,6 +20,7 @@ public final class LiftRun {
   private static final String CALLS = "calls";
   private static final String GATES = "gates";
   private static final String GATE_DELAY = "gate_delay";
+  private static final String CLOSING = "closing";
 
   private final LiftQueue queue = new LiftQueue();
   private LiftPhase phase = LiftPhase.RESTING;
@@ -29,6 +30,7 @@ public final class LiftRun {
   private int blocksStarted;
   private int pause;
   private int gateDelay;
+  private boolean closing;
   private DeviceStatus stopReason = DeviceStatus.READY;
   private List<BlockPos> knownGates = List.of();
   private int serial;
@@ -116,6 +118,7 @@ public final class LiftRun {
     phase = LiftPhase.RESTING;
     level = restLevel;
     pause = pauseTicks;
+    closing = false;
     stopReason = DeviceStatus.READY;
     serial++;
   }
@@ -136,6 +139,23 @@ public final class LiftRun {
     return pause == 0 && !queue.isEmpty();
   }
 
+  public boolean closing() {
+    return closing;
+  }
+
+  public void beginClosing(int ticks) {
+    closing = true;
+    pause = ticks;
+  }
+
+  public void endClosing() {
+    closing = false;
+  }
+
+  public boolean sealed() {
+    return closing || phase != LiftPhase.RESTING;
+  }
+
   public void delayGate(int ticks) {
     gateDelay = ticks;
   }
@@ -154,6 +174,7 @@ public final class LiftRun {
     nbt.putDouble(LEVEL, level);
     nbt.putInt(PAUSE, pause);
     nbt.putInt(GATE_DELAY, gateDelay);
+    nbt.putBoolean(CLOSING, closing);
     nbt.putString(REASON, stopReason.id());
     nbt.putIntArray(CALLS, queue.toArray());
     nbt.putLongArray(GATES, knownGates.stream().mapToLong(BlockPos::asLong).toArray());
@@ -171,6 +192,7 @@ public final class LiftRun {
     level = nbt.getDouble(LEVEL);
     pause = nbt.getInt(PAUSE);
     gateDelay = nbt.getInt(GATE_DELAY);
+    closing = nbt.getBoolean(CLOSING);
     stopReason = DeviceStatus.byId(nbt.getString(REASON), DeviceStatus.READY);
     queue.load(nbt.getIntArray(CALLS));
     knownGates = Arrays.stream(nbt.getLongArray(GATES)).mapToObj(BlockPos::fromLong).toList();

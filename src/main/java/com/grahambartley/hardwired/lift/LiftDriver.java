@@ -27,7 +27,9 @@ public final class LiftDriver {
   private static final float CHAIN_VOLUME = 0.5F;
   private static final float CHAIN_PITCH = 0.9F;
   private static final float DING_VOLUME = 2F;
+  private static final float STRIKE_VOLUME = 1F;
   private static final int DING_BEFORE_GATE_TICKS = 12;
+  private static final int GATE_CLOSE_TICKS = LiftGateSwing.TICKS + 2;
 
   private final LiftCarEntity car;
   private final LiftRun run;
@@ -64,6 +66,13 @@ public final class LiftDriver {
       }
       return;
     }
+    if (run.closing()) {
+      if (!run.pausing()) {
+        run.endClosing();
+        depart(run.queue().poll());
+      }
+      return;
+    }
     if (car.age % SYNC_TICKS == 0) {
       shaft.car().filter(first -> first != car).ifPresent(first -> car.discard());
       shaft.showGates(route(), run.level(), true);
@@ -71,7 +80,7 @@ public final class LiftDriver {
       showDial();
     }
     if (!run.pausing() && !run.queue().isEmpty()) {
-      depart(run.queue().poll());
+      closeThenLeave(run.queue().toArray()[0]);
     }
   }
 
@@ -84,19 +93,26 @@ public final class LiftDriver {
     return gates;
   }
 
-  private void depart(int level) {
+  private void closeThenLeave(int level) {
     if (run.level() == level) {
-      arrive(level);
-      return;
+      arrive(run.queue().poll());
+    } else if (refusal(level) != null) {
+      depart(run.queue().poll());
+    } else {
+      shaft.showGates(route(), run.level(), false);
+      run.beginClosing(GATE_CLOSE_TICKS);
+      changed();
     }
+  }
+
+  private void depart(int level) {
     DeviceStatus refused = refusal(level);
     if (refused != null) {
-      LiftRiders.tell(
-          LiftRiders.inColumn(shaft, run.level()), Text.translatable(refused.translationKey()));
+      LiftRiders.tell(LiftRiders.aboard(car), Text.translatable(refused.translationKey()));
+      changed();
+      shaft.showGates(route(), run.level(), true);
       return;
     }
-    shaft.showGates(route(), run.level(), false);
-    LiftRiders.board(car, shaft);
     setOff(new LiftTrip(run.level(), level, ticksPerBlock()), LiftPhase.MOVING);
     pulse();
   }
@@ -126,8 +142,11 @@ public final class LiftDriver {
     if (LiftCharge.owes(started, run.blocksStarted()) && !enterBlock(trip, started)) {
       return;
     }
+    List<ServerPlayerEntity> riders = LiftRiders.aboard(car);
+    double before = run.level();
     run.advance();
     car.moveToLevel(run.level());
+    LiftRiders.carry(riders, run.level() - before);
     car.keepTripInStep();
     if (run.ticks() % SYNC_TICKS == 0) {
       showDial();
@@ -215,6 +234,13 @@ public final class LiftDriver {
     changed();
     world.playSound(
         null, car.getBlockPos().up(), ModSounds.LIFT_DING, SoundCategory.BLOCKS, DING_VOLUME, 1F);
+    world.playSound(
+        null,
+        car.getBlockPos().up(),
+        ModSounds.LIFT_DING_STRIKE,
+        SoundCategory.BLOCKS,
+        STRIKE_VOLUME,
+        1F);
     for (ServerPlayerEntity rider : LiftRiders.aboard(car)) {
       LiftRiders.setDown(world, rider, gates, level);
       if (ride) {

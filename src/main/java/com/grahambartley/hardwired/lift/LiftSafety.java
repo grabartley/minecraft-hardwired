@@ -4,19 +4,20 @@ public final class LiftSafety {
 
   public static final int LOWERING_SLOWDOWN = 2;
 
-  private static final double SEAT_OFFSET = 0.1;
-  private static final int SEATS = 4;
+  private static final double REACH_BELOW_FLOOR = 0.5;
+  private static final double REACH_ABOVE_FLOOR = 1.3;
   private static final int SLOW_FALL_BASE_TICKS = 100;
   private static final int SLOW_FALL_TICKS_PER_BLOCK = 4;
 
   private LiftSafety() {}
 
-  public static double seatX(int passenger) {
-    return passenger % SEATS % 3 == 0 ? -SEAT_OFFSET : SEAT_OFFSET;
-  }
-
-  public static double seatZ(int passenger) {
-    return passenger % SEATS < 2 ? -SEAT_OFFSET : SEAT_OFFSET;
+  public static boolean inCar(
+      double x, double y, double z, double carX, double floorY, double carZ, int span) {
+    double half = span / 2.0;
+    return Math.abs(x - carX) < half
+        && Math.abs(z - carZ) < half
+        && y >= floorY - REACH_BELOW_FLOOR
+        && y <= floorY + REACH_ABOVE_FLOOR;
   }
 
   public static int slowFallTicks(double drop) {

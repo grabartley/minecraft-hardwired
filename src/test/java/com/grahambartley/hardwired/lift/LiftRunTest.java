@@ -114,4 +114,16 @@ class LiftRunTest {
     assertTrue(loaded.gateDue());
     assertFalse(loaded.holdingGate());
   }
+
+  @Test
+  void closingSealsTheCarUntilItRestsAndSurvivesASave() {
+    LiftRun run = new LiftRun();
+    assertFalse(run.sealed());
+    run.beginClosing(3);
+    assertTrue(run.sealed());
+    assertTrue(run.pausing());
+    assertTrue(reload(run).closing());
+    run.rest(0, 0);
+    assertFalse(run.sealed());
+  }
 }

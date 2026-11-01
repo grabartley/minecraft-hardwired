@@ -62,6 +62,18 @@ class LiftDialTest {
     assertEquals(marks, LiftDial.at(levels, 0).markDegrees().size());
   }
 
+  @ParameterizedTest(name = "level {0} lights mark {1}")
+  @CsvSource({"0,0", "1,0", "2,1", "3,1", "6,1", "7,2", "10,2"})
+  void theNearestFloorLightsUp(double level, int mark) {
+    LiftDial dial = LiftDial.at(UNEVEN, 0);
+    assertEquals(dial.markDegrees().get(mark), dial.litDegrees(level).orElseThrow(), 1.0E-4);
+  }
+
+  @Test
+  void aDialWithNoMarksLightsNothing() {
+    assertTrue(LiftDial.at(List.of(4), 4).litDegrees(4).isEmpty());
+  }
+
   @Test
   void clearingRemovesEveryDialKey() {
     NbtCompound nbt = new NbtCompound();

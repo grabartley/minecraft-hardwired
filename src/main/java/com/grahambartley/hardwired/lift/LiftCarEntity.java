@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -16,7 +15,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
@@ -44,6 +42,8 @@ public final class LiftCarEntity extends Entity {
 
   private static final TrackedData<Integer> QUARTER_TURNS =
       DataTracker.registerData(LiftCarEntity.class, TrackedDataHandlerRegistry.INTEGER);
+  private static final TrackedData<Boolean> SEALED =
+      DataTracker.registerData(LiftCarEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
   private final LiftRun run = new LiftRun();
   private final LiftMotion motion = new LiftMotion();
@@ -107,6 +107,7 @@ public final class LiftCarEntity extends Entity {
     dataTracker.set(TRIP_PACE, trip == null ? 0 : trip.ticksPerBlock());
     dataTracker.set(TRIP_ELAPSED, run.ticks());
     dataTracker.set(TRIP_SERIAL, run.serial());
+    dataTracker.set(SEALED, run.sealed());
   }
 
   public void keepTripInStep() {
@@ -123,6 +124,7 @@ public final class LiftCarEntity extends Entity {
     builder.add(TRIP_PACE, 0);
     builder.add(TRIP_ELAPSED, 0);
     builder.add(QUARTER_TURNS, 0);
+    builder.add(SEALED, false);
   }
 
   @Override
@@ -144,7 +146,25 @@ public final class LiftCarEntity extends Entity {
     LiftTrip trip =
         pace == 0 ? null : new LiftTrip(dataTracker.get(TRIP_FROM), dataTracker.get(TRIP_TO), pace);
     motion.sync(dataTracker.get(TRIP_SERIAL), trip, dataTracker.get(TRIP_ELAPSED));
+    double before = getY();
     setPosition(getX(), motion.next(getY() + PLATE) - PLATE, getZ());
+    carryLocalPlayer(getY() - before);
+  }
+
+  private void carryLocalPlayer(double rise) {
+    if (rise != 0) {
+      for (PlayerEntity player : getWorld().getPlayers()) {
+        if (player.isMainPlayer() && holds(player)) {
+          player.setPosition(player.getX(), player.getY() + rise, player.getZ());
+          player.fallDistance = 0;
+        }
+      }
+    }
+  }
+
+  public boolean holds(PlayerEntity player) {
+    return LiftSafety.inCar(
+        player.getX(), player.getY(), player.getZ(), getX(), getY() + PLATE, getZ(), span());
   }
 
   @Override
@@ -159,11 +179,6 @@ public final class LiftCarEntity extends Entity {
       driver(world).abandon();
     }
     super.remove(reason);
-  }
-
-  @Override
-  public boolean isCollidable() {
-    return true;
   }
 
   @Override
@@ -192,39 +207,6 @@ public final class LiftCarEntity extends Entity {
   }
 
   @Override
-  public boolean hasPlayerRider() {
-    return false;
-  }
-
-  @Override
-  protected boolean canAddPassenger(Entity passenger) {
-    return passenger instanceof PlayerEntity;
-  }
-
-  @Override
-  protected void updatePassengerPosition(Entity passenger, PositionUpdater updater) {
-    int seat = getPassengerList().indexOf(passenger);
-    updater.accept(
-        passenger,
-        getX() + LiftSafety.seatX(seat) * span(),
-        getY() + PLATE,
-        getZ() + LiftSafety.seatZ(seat) * span());
-  }
-
-  @Override
-  public Vec3d updatePassengerForDismount(LivingEntity passenger) {
-    if (head != null && getWorld() instanceof ServerWorld world) {
-      if (run.phase() == LiftPhase.RESTING) {
-        return new Vec3d(passenger.getX(), run.level(), passenger.getZ());
-      }
-      return LiftRiders.nearestGate(shaft(world).gates(), passenger.getY())
-          .map(LiftRiders::spotAt)
-          .orElseGet(passenger::getPos);
-    }
-    return passenger.getPos();
-  }
-
-  @Override
   public Box getVisibilityBoundingBox() {
     return getBoundingBox().stretch(0, LiftCarWalls.REACH_ABOVE_FLOOR, 0);
   }
@@ -248,12 +230,17 @@ public final class LiftCarEntity extends Entity {
     tripChanged();
   }
 
+  private Box floorUnder(Entity mover) {
+    return LiftCarWalls.floor(getX(), getY() + PLATE, getZ(), span(), mover.getY());
+  }
+
   public List<Box> walls() {
-    return LiftCarWalls.boxes(getX(), getY() + PLATE, getZ(), span(), quarterTurns());
+    return LiftCarWalls.boxes(
+        getX(), getY() + PLATE, getZ(), span(), quarterTurns(), dataTracker.get(SEALED));
   }
 
   public static List<VoxelShape> withWalls(Entity mover, Box path, List<VoxelShape> shapes) {
-    if (mover instanceof LiftCarEntity || mover.getVehicle() instanceof LiftCarEntity) {
+    if (mover instanceof LiftCarEntity) {
       return shapes;
     }
     Box reach = path.stretch(0, -LiftCarWalls.REACH_ABOVE_FLOOR, 0);
@@ -263,7 +250,10 @@ public final class LiftCarEntity extends Entity {
       return shapes;
     }
     List<VoxelShape> all = new ArrayList<>(shapes);
-    cars.forEach(car -> car.walls().forEach(wall -> all.add(VoxelShapes.cuboid(wall))));
+    for (LiftCarEntity car : cars) {
+      car.walls().forEach(wall -> all.add(VoxelShapes.cuboid(wall)));
+      all.add(VoxelShapes.cuboid(car.floorUnder(mover)));
+    }
     return all;
   }
 
@@ -273,10 +263,18 @@ public final class LiftCarEntity extends Entity {
   }
 
   public static void riderLeaving(ServerPlayerEntity player) {
-    if (player.getVehicle() instanceof LiftCarEntity car
-        && car.head != null
-        && car.getWorld() instanceof ServerWorld world) {
-      car.driver(world).release(player);
+    Box reach = player.getBoundingBox().stretch(0, -LiftCarWalls.REACH_ABOVE_FLOOR, 0);
+    for (LiftCarEntity car :
+        player
+            .getServerWorld()
+            .getEntitiesByClass(LiftCarEntity.class, reach, LiftCarEntity::sealedWithHead)) {
+      if (car.holds(player)) {
+        car.driver(player.getServerWorld()).release(player);
+      }
     }
+  }
+
+  private boolean sealedWithHead() {
+    return head != null && run.sealed();
   }
 }

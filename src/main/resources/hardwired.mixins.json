@@ -9,7 +9,6 @@
 		"LevelStorageMixin",
 		"LightningRodBlockMixin",
 		"PistonBlockMixin",
-		"PlayerEntityMixin",
 		"PlayerManagerMixin",
 		"ServerPlayNetworkHandlerMixin",
 		"ServerWorldMixin",

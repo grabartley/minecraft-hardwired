@@ -48,11 +48,7 @@
     ]
   },
   "mixins": [
-    "hardwired.mixins.json",
-    {
-      "config": "hardwired.client.mixins.json",
-      "environment": "client"
-    }
+    "hardwired.mixins.json"
   ],
   "accessWidener": "hardwired.accesswidener",
   "depends": {

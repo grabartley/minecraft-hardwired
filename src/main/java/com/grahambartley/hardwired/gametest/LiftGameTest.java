@@ -17,6 +17,7 @@ import com.grahambartley.hardwired.lift.LiftCarWalls;
 import com.grahambartley.hardwired.lift.LiftCorner;
 import com.grahambartley.hardwired.lift.LiftDial;
 import com.grahambartley.hardwired.lift.LiftPhase;
+import com.grahambartley.hardwired.lift.LiftRiders;
 import com.grahambartley.hardwired.lift.LiftShaft;
 import com.grahambartley.hardwired.network.LiftChoosePayload;
 import com.grahambartley.hardwired.registry.ModBlocks;
@@ -96,10 +97,10 @@ public class LiftGameTest implements FabricGameTest {
   private static final int HEAD_Y = 9;
   private static final int FULL_CHARGE = 100;
   private static final int START_TICK = 5;
-  private static final int TICKS_FOR_SIX_BLOCKS = 36;
-  private static final int SIX_BLOCK_RIDE_TICKS = 60;
+  private static final int TICKS_FOR_SIX_BLOCKS = 48;
+  private static final int SIX_BLOCK_RIDE_TICKS = 74;
   private static final int AFTER_RIDE_TICKS = 25;
-  private static final int RIDE_TICK_LIMIT = 240;
+  private static final int RIDE_TICK_LIMIT = 300;
   private static final Identifier GOING_UP = Identifier.of(Hardwired.MOD_ID, "going_up");
   private static final BlockPos CELL = new BlockPos(PILLAR_X, FLOOR_Y + 1, 2);
   private static final BlockPos HEAD = new BlockPos(COLUMN_X, HEAD_Y, COLUMN_Z);
@@ -183,12 +184,18 @@ public class LiftGameTest implements FabricGameTest {
       TestContext context, ConnectedTestPlayer rider, int level, String name) {
     ServerPlayerEntity player = rider.player();
     BlockPos spot = context.getAbsolutePos(inCar(level));
-    context.assertFalse(player.hasVehicle(), name + " still riding");
     context.assertTrue(player.getBlockPos().equals(spot), name + " at " + player.getBlockPos());
     context.assertTrue(
         MathHelper.approximatelyEquals(player.getY(), spot.getY()),
         name + " feet " + player.getY());
     context.assertFalse(player.isInsideWall(), name + " in a wall");
+  }
+
+  private static boolean riding(TestContext context, ConnectedTestPlayer rider) {
+    return shaft(context)
+        .car()
+        .filter(car -> car.run().sealed() && car.holds(rider.player()))
+        .isPresent();
   }
 
   private static ConnectedTestPlayer riderFrom(TestContext context, int level) {
@@ -220,7 +227,7 @@ public class LiftGameTest implements FabricGameTest {
     context.runAtTick(
         START_TICK + 2,
         () -> {
-          context.assertTrue(rider.player().hasVehicle(), "rider mounted");
+          context.assertTrue(riding(context, rider), "rider mounted");
           context.assertFalse(isOpen(context, LOW), "gate closed behind the car");
         });
     context.runAtTick(
@@ -259,7 +266,7 @@ public class LiftGameTest implements FabricGameTest {
             ServerPlayerEntity player = rider.player();
             player.setSneaking(true);
             LiftCarEntity car = car(context);
-            context.assertTrue(player.hasVehicle(), "dropped out at tick " + tick);
+            context.assertTrue(riding(context, rider), "dropped out at tick " + tick);
             context.assertFalse(player.isInsideWall(), "in a wall at tick " + tick);
             context.assertTrue(
                 Math.abs(player.getY() - (car.getY() + LiftCarEntity.PLATE)) < 0.51,
@@ -341,7 +348,7 @@ public class LiftGameTest implements FabricGameTest {
           context.assertTrue(isOpen(context, LOW), "the car floor stays open");
         });
     context.runAtTick(
-        START_TICK + 40,
+        START_TICK + 52,
         () -> {
           context.assertTrue(isOpen(context, MIDDLE), "the called car opens the gate");
           context.assertFalse(isOpen(context, LOW), "the left floor shut");
@@ -362,7 +369,7 @@ public class LiftGameTest implements FabricGameTest {
         });
     context.runAtTick(START_TICK + 4, () -> useGate(context, caller, LOW));
     context.runAtTick(
-        START_TICK + 34,
+        START_TICK + 46,
         () -> {
           expectInCar(context, rider, HIGH, "rider");
           context.assertTrue(
@@ -370,7 +377,7 @@ public class LiftGameTest implements FabricGameTest {
               "car waits at the top");
         });
     context.runAtTick(
-        START_TICK + 34 + 100,
+        START_TICK + 46 + 112,
         () -> {
           context.assertTrue(isOpen(context, LOW), "the queued call is answered");
           context.assertFalse(isOpen(context, HIGH), "the top gate shut behind it");
@@ -392,9 +399,7 @@ public class LiftGameTest implements FabricGameTest {
     context.runAtTick(
         START_TICK + 4,
         () -> {
-          context.assertEquals(2, car(context).getPassengerList().size(), "both aboard");
-          context.assertTrue(
-              first.player().squaredDistanceTo(second.player()) > 0.01, "riders stand apart");
+          context.assertEquals(2, LiftRiders.aboard(car(context)).size(), "both aboard");
         });
     context.runAtTick(
         START_TICK + SIX_BLOCK_RIDE_TICKS,
@@ -417,9 +422,9 @@ public class LiftGameTest implements FabricGameTest {
           openAt(context, rider, LOW);
           choose(context, rider, LOW, HIGH);
         });
-    context.runAtTick(START_TICK + 24, () -> cell.setCharge(0));
+    context.runAtTick(START_TICK + 36, () -> cell.setCharge(0));
     context.runAtTick(
-        START_TICK + 30,
+        START_TICK + 42,
         () -> {
           LiftCarEntity car = car(context);
           context.assertTrue(
@@ -427,7 +432,7 @@ public class LiftGameTest implements FabricGameTest {
           context.assertTrue(
               car.run().stopReason() == DeviceStatus.OUT_OF_FUEL,
               "reason " + car.run().stopReason());
-          context.assertTrue(rider.player().hasVehicle(), "still riding while stopped");
+          context.assertTrue(riding(context, rider), "still riding while stopped");
           ElectronicBlockEntity head = context.getBlockEntity(HEAD);
           context.assertTrue(head.status() == DeviceStatus.OUT_OF_FUEL, "head shows why");
         });
@@ -452,7 +457,7 @@ public class LiftGameTest implements FabricGameTest {
           openAt(context, rider, LOW);
           choose(context, rider, LOW, HIGH);
         });
-    context.runAtTick(START_TICK + 24, () -> cell.setCharge(0));
+    context.runAtTick(START_TICK + 36, () -> cell.setCharge(0));
     context.runAtTick(
         START_TICK + 160,
         () -> {
@@ -480,7 +485,7 @@ public class LiftGameTest implements FabricGameTest {
   public void withNoFloorBelowRidersGetSlowFalling(TestContext context) {
     RedstoneCellBlockEntity cell = build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, MIDDLE);
-    context.runAtTick(START_TICK + 8, () -> cell.setCharge(0));
+    context.runAtTick(START_TICK + 20, () -> cell.setCharge(0));
     context.runAtTick(
         START_TICK,
         () -> {
@@ -498,7 +503,7 @@ public class LiftGameTest implements FabricGameTest {
     context.runAtTick(
         START_TICK + 80,
         () -> {
-          context.assertFalse(rider.player().hasVehicle(), "rider let down");
+          context.assertFalse(riding(context, rider), "rider let down");
           context.expectEntityHasEffect(rider.player(), StatusEffects.SLOW_FALLING, 0);
           finish(context, rider);
         });
@@ -514,7 +519,7 @@ public class LiftGameTest implements FabricGameTest {
           openAt(context, rider, LOW);
           choose(context, rider, LOW, HIGH);
         });
-    context.runAtTick(START_TICK + 16, () -> context.setBlockState(inCar(HIGH), Blocks.STONE));
+    context.runAtTick(START_TICK + 28, () -> context.setBlockState(inCar(HIGH), Blocks.STONE));
     context.runAtTick(
         START_TICK + 80,
         () -> {
@@ -538,7 +543,7 @@ public class LiftGameTest implements FabricGameTest {
     context.runAtTick(
         START_TICK + 10,
         () -> {
-          context.assertFalse(rider.player().hasVehicle(), "no ride into a blocked shaft");
+          context.assertFalse(riding(context, rider), "no ride into a blocked shaft");
           context.assertTrue(isOpen(context, LOW), "gate stays open");
           ElectronicBlockEntity gate = context.getBlockEntity(gate(LOW));
           context.assertTrue(gate.status() == DeviceStatus.SHAFT_BLOCKED, "says why");
@@ -557,11 +562,11 @@ public class LiftGameTest implements FabricGameTest {
           choose(context, rider, LOW, HIGH);
         });
     context.runAtTick(
-        START_TICK + 22, () -> context.getWorld().breakBlock(context.getAbsolutePos(HEAD), true));
+        START_TICK + 34, () -> context.getWorld().breakBlock(context.getAbsolutePos(HEAD), true));
     context.runAtTick(
-        START_TICK + 26,
+        START_TICK + 38,
         () -> {
-          context.assertFalse(rider.player().hasVehicle(), "rider off the car");
+          context.assertFalse(riding(context, rider), "rider off the car");
           context.assertTrue(shaft(context).car().isEmpty(), "car removed");
           BlockPos spot = rider.player().getBlockPos();
           context.assertTrue(
@@ -591,7 +596,7 @@ public class LiftGameTest implements FabricGameTest {
           choose(context, leaver, LOW, HIGH);
         });
     context.runAtTick(
-        START_TICK + 22,
+        START_TICK + 34,
         () -> {
           ServerPlayerEntity player = leaver.player();
           leaver.leave();
@@ -619,10 +624,9 @@ public class LiftGameTest implements FabricGameTest {
           choose(context, rider, LOW, HIGH);
         });
     context.runAtTick(
-        START_TICK + 12,
+        START_TICK + 24,
         () -> {
           LiftCarEntity saved = car(context);
-          saved.removeAllPassengers();
           NbtCompound nbt = new NbtCompound();
           saved.writeNbt(nbt);
           saved.setRemoved(Entity.RemovalReason.UNLOADED_TO_CHUNK);
@@ -661,7 +665,7 @@ public class LiftGameTest implements FabricGameTest {
         START_TICK + 10,
         () -> {
           context.assertTrue(car(context).run().phase() == LiftPhase.RESTING, "no one rode");
-          context.assertFalse(rider.player().hasVehicle(), "no one mounted");
+          context.assertFalse(riding(context, rider), "no one mounted");
           finish(context, rider, far, watcher);
         });
   }
@@ -776,15 +780,15 @@ public class LiftGameTest implements FabricGameTest {
         () -> {
           LiftCarEntity car = car(context);
           context.assertEquals(2, car.span(), "a large car");
-          context.assertEquals(2, car.getPassengerList().size(), "both corners aboard");
+          context.assertEquals(2, LiftRiders.aboard(car).size(), "both corners aboard");
           context.assertTrue(
               car.getType() == ModEntities.LARGE_LIFT_CAR, "the large car type: " + car.getType());
         });
     context.runAtTick(
         START_TICK + SIX_BLOCK_RIDE_TICKS,
         () -> {
-          context.assertFalse(near.player().hasVehicle(), "near rider set down");
-          context.assertFalse(far.player().hasVehicle(), "far rider set down");
+          context.assertFalse(riding(context, near), "near rider set down");
+          context.assertFalse(riding(context, far), "far rider set down");
           context.assertTrue(isOpen(context, HIGH), "the gate opens on to the large car");
           finish(context, near, far);
         });
@@ -805,7 +809,7 @@ public class LiftGameTest implements FabricGameTest {
     context.runAtTick(
         START_TICK + 10,
         () -> {
-          context.assertFalse(rider.player().hasVehicle(), "no ride into a blocked column");
+          context.assertFalse(riding(context, rider), "no ride into a blocked column");
           finish(context, rider);
         });
   }
@@ -855,7 +859,7 @@ public class LiftGameTest implements FabricGameTest {
     context.runAtTick(
         START_TICK + 4,
         () -> {
-          context.assertTrue(rider.player().hasVehicle(), "powered through a far cell");
+          context.assertTrue(riding(context, rider), "powered through a far cell");
           finish(context, rider);
         });
   }
@@ -1060,7 +1064,7 @@ public class LiftGameTest implements FabricGameTest {
     context.runAtTick(START_TICK, () -> openAt(context, rider, LOW));
     context.runAtTick(START_TICK + 2, () -> car(context).faceGate(Direction.NORTH));
     context.runAtTick(
-        START_TICK + 30,
+        START_TICK + 42,
         () -> {
           context.assertTrue(
               LiftCarWalls.opening(car(context).quarterTurns()) == Direction.WEST,
@@ -1080,7 +1084,7 @@ public class LiftGameTest implements FabricGameTest {
           choose(context, rider, LOW, HIGH);
         });
     context.runAtTick(
-        START_TICK + 4,
+        START_TICK + 20,
         () -> {
           for (int level : List.of(LOW, MIDDLE, HIGH)) {
             context.setBlockState(gate(level).up(), Blocks.AIR);
@@ -1091,8 +1095,35 @@ public class LiftGameTest implements FabricGameTest {
     context.runAtTick(
         START_TICK + 80,
         () -> {
-          context.assertFalse(rider.player().hasVehicle(), "rider let down");
+          context.assertFalse(riding(context, rider), "rider let down");
           context.assertTrue(shaft(context).car().isEmpty(), "the car is gone");
+          finish(context, rider);
+        });
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void aRiderCanWalkInAMovingCarButNotOutOfIt(TestContext context) {
+    build(context, FULL_CHARGE);
+    ConnectedTestPlayer rider = riderFrom(context, LOW);
+    context.runAtTick(
+        START_TICK,
+        () -> {
+          openAt(context, rider, LOW);
+          choose(context, rider, LOW, HIGH);
+        });
+    context.runAtTick(
+        START_TICK + 34,
+        () -> {
+          ServerPlayerEntity player = rider.player();
+          LiftCarEntity car = car(context);
+          double floor = car.getY() + LiftCarEntity.PLATE;
+          player.setPosition(car.getX(), floor - 0.02, car.getZ());
+          player.move(MovementType.SELF, new Vec3d(0, 0, 0.1));
+          context.assertTrue(
+              player.getZ() > car.getZ() + 0.09, "a sunk rider can still step: " + player.getPos());
+          player.setPosition(car.getX(), floor, car.getZ());
+          player.move(MovementType.SELF, new Vec3d(-1, 0, 0));
+          context.assertTrue(player.getX() > car.getX() - 0.5, "the gate side is shut mid ride");
           finish(context, rider);
         });
   }

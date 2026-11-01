@@ -97,6 +97,15 @@
     "subtitle": "subtitles.hardwired.lift.ding",
     "sounds": [
       {
+        "name": "minecraft:block.bell.use",
+        "type": "event",
+        "pitch": 2.0
+      }
+    ]
+  },
+  "lift.ding_strike": {
+    "sounds": [
+      {
         "name": "minecraft:block.note_block.bell",
         "type": "event",
         "pitch": 1.5
