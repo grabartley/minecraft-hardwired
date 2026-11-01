@@ -1,0 +1,124 @@
+{
+  "variants": {
+    "tier=0,seat=false,age=0": {
+      "model": "hardwired:block/radio_mast_0_0"
+    },
+    "tier=0,seat=false,age=1": {
+      "model": "hardwired:block/radio_mast_0_1"
+    },
+    "tier=0,seat=false,age=2": {
+      "model": "hardwired:block/radio_mast_0_2"
+    },
+    "tier=0,seat=false,age=3": {
+      "model": "hardwired:block/radio_mast_0_3"
+    },
+    "tier=0,seat=true,age=0": {
+      "model": "hardwired:block/radio_mast_0_0_seat"
+    },
+    "tier=0,seat=true,age=1": {
+      "model": "hardwired:block/radio_mast_0_1_seat"
+    },
+    "tier=0,seat=true,age=2": {
+      "model": "hardwired:block/radio_mast_0_2_seat"
+    },
+    "tier=0,seat=true,age=3": {
+      "model": "hardwired:block/radio_mast_0_3_seat"
+    },
+    "tier=1,seat=false,age=0": {
+      "model": "hardwired:block/radio_mast_1_0"
+    },
+    "tier=1,seat=false,age=1": {
+      "model": "hardwired:block/radio_mast_1_1"
+    },
+    "tier=1,seat=false,age=2": {
+      "model": "hardwired:block/radio_mast_1_2"
+    },
+    "tier=1,seat=false,age=3": {
+      "model": "hardwired:block/radio_mast_1_3"
+    },
+    "tier=1,seat=true,age=0": {
+      "model": "hardwired:block/radio_mast_1_0_seat"
+    },
+    "tier=1,seat=true,age=1": {
+      "model": "hardwired:block/radio_mast_1_1_seat"
+    },
+    "tier=1,seat=true,age=2": {
+      "model": "hardwired:block/radio_mast_1_2_seat"
+    },
+    "tier=1,seat=true,age=3": {
+      "model": "hardwired:block/radio_mast_1_3_seat"
+    },
+    "tier=2,seat=false,age=0": {
+      "model": "hardwired:block/radio_mast_2_0"
+    },
+    "tier=2,seat=false,age=1": {
+      "model": "hardwired:block/radio_mast_2_1"
+    },
+    "tier=2,seat=false,age=2": {
+      "model": "hardwired:block/radio_mast_2_2"
+    },
+    "tier=2,seat=false,age=3": {
+      "model": "hardwired:block/radio_mast_2_3"
+    },
+    "tier=2,seat=true,age=0": {
+      "model": "hardwired:block/radio_mast_2_0_seat"
+    },
+    "tier=2,seat=true,age=1": {
+      "model": "hardwired:block/radio_mast_2_1_seat"
+    },
+    "tier=2,seat=true,age=2": {
+      "model": "hardwired:block/radio_mast_2_2_seat"
+    },
+    "tier=2,seat=true,age=3": {
+      "model": "hardwired:block/radio_mast_2_3_seat"
+    },
+    "tier=3,seat=false,age=0": {
+      "model": "hardwired:block/radio_mast_3_0"
+    },
+    "tier=3,seat=false,age=1": {
+      "model": "hardwired:block/radio_mast_3_1"
+    },
+    "tier=3,seat=false,age=2": {
+      "model": "hardwired:block/radio_mast_3_2"
+    },
+    "tier=3,seat=false,age=3": {
+      "model": "hardwired:block/radio_mast_3_3"
+    },
+    "tier=3,seat=true,age=0": {
+      "model": "hardwired:block/radio_mast_3_0_seat"
+    },
+    "tier=3,seat=true,age=1": {
+      "model": "hardwired:block/radio_mast_3_1_seat"
+    },
+    "tier=3,seat=true,age=2": {
+      "model": "hardwired:block/radio_mast_3_2_seat"
+    },
+    "tier=3,seat=true,age=3": {
+      "model": "hardwired:block/radio_mast_3_3_seat"
+    },
+    "tier=4,seat=false,age=0": {
+      "model": "hardwired:block/radio_mast_4_0"
+    },
+    "tier=4,seat=false,age=1": {
+      "model": "hardwired:block/radio_mast_4_1"
+    },
+    "tier=4,seat=false,age=2": {
+      "model": "hardwired:block/radio_mast_4_2"
+    },
+    "tier=4,seat=false,age=3": {
+      "model": "hardwired:block/radio_mast_4_3"
+    },
+    "tier=4,seat=true,age=0": {
+      "model": "hardwired:block/radio_mast_4_0_seat"
+    },
+    "tier=4,seat=true,age=1": {
+      "model": "hardwired:block/radio_mast_4_1_seat"
+    },
+    "tier=4,seat=true,age=2": {
+      "model": "hardwired:block/radio_mast_4_2_seat"
+    },
+    "tier=4,seat=true,age=3": {
+      "model": "hardwired:block/radio_mast_4_3_seat"
+    }
+  }
+}

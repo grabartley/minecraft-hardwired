@@ -4,11 +4,7 @@ import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.AlarmBlock;
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
 import com.grahambartley.hardwired.block.IntercomBlock;
-import com.grahambartley.hardwired.block.RadioBlock;
-import com.grahambartley.hardwired.block.RadioBlockEntity;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
-import com.grahambartley.hardwired.block.SpeakerBlock;
-import com.grahambartley.hardwired.block.SpeakerBlockEntity;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.IntercomActions;
@@ -22,12 +18,7 @@ import java.util.List;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.WallMountedBlock;
 import net.minecraft.block.enums.BlockFace;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.message.ChatVisibility;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.test.AfterBatch;
 import net.minecraft.test.BeforeBatch;
@@ -36,7 +27,6 @@ import net.minecraft.test.TestContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 
 public class ElectronicsGameTest implements FabricGameTest {
@@ -50,9 +40,6 @@ public class ElectronicsGameTest implements FabricGameTest {
   private static final BlockPos CELL = at(1, 1);
   private static final BlockPos SWITCH = at(7, 1);
   private static final BlockPos ALARM = at(4, 1);
-  private static final BlockPos RADIO = at(3, 1);
-  private static final BlockPos LEFT_SPEAKER = at(5, 1);
-  private static final BlockPos RIGHT_SPEAKER = at(7, 1);
   private static final Identifier LIGHTS_OUT = Identifier.of(Hardwired.MOD_ID, "lights_out");
 
   private static HardwiredConfig savedConfig;
@@ -100,55 +87,8 @@ public class ElectronicsGameTest implements FabricGameTest {
     return cell;
   }
 
-  private static RedstoneCellBlockEntity buildRadio(TestContext context, int charge) {
-    RedstoneCellBlockEntity cell = wiredCell(context, charge);
-    context.setBlockState(RADIO, ModBlocks.RADIO);
-    context.setBlockState(LEFT_SPEAKER, ModBlocks.SPEAKER);
-    context.setBlockState(RIGHT_SPEAKER, ModBlocks.SPEAKER);
-    return cell;
-  }
-
-  private static WireFace topOf(TestContext context, BlockPos pos) {
-    return new WireFace(context.getAbsolutePos(pos), Direction.UP);
-  }
-
   private static ConnectedTestPlayer playerAt(TestContext context, int x) {
     return ConnectedTestPlayer.joinAt(context, at(x, 3));
-  }
-
-  private static void putDisc(TestContext context, ConnectedTestPlayer player) {
-    player.hold(new ItemStack(Items.MUSIC_DISC_13), ItemStack.EMPTY);
-    player.useOn(topOf(context, RADIO));
-  }
-
-  private static RadioBlockEntity radio(TestContext context) {
-    return context.getBlockEntity(RADIO);
-  }
-
-  private static boolean sounding(TestContext context, BlockPos pos) {
-    SpeakerBlockEntity speaker = context.getBlockEntity(pos);
-    return speaker.isSounding();
-  }
-
-  private static void expectSpeaker(TestContext context, BlockPos pos, boolean playing) {
-    context.expectBlockProperty(pos, SpeakerBlock.PLAYING, playing);
-    context.assertTrue(sounding(context, pos) == playing, "sound should be " + playing);
-  }
-
-  private static int discsNear(TestContext context, BlockPos pos) {
-    return context
-        .getWorld()
-        .getEntitiesByClass(
-            ItemEntity.class,
-            new Box(context.getAbsolutePos(pos)).expand(3),
-            item -> item.getStack().isOf(Items.MUSIC_DISC_13))
-        .stream()
-        .mapToInt(item -> item.getStack().getCount())
-        .sum();
-  }
-
-  private static int discsHeld(ConnectedTestPlayer player) {
-    return player.player().getInventory().count(Items.MUSIC_DISC_13);
   }
 
   @GameTest(templateName = BENCH, tickLimit = 200)
@@ -207,163 +147,6 @@ public class ElectronicsGameTest implements FabricGameTest {
         SETTLE_TICKS * 3L,
         () -> {
           expectStatus(context, ALARM, DeviceStatus.NO_CELL);
-          context.complete();
-        });
-  }
-
-  @GameTest(templateName = BENCH, tickLimit = 60)
-  public void twoPlayersFightingOverADiscKeepExactlyOne(TestContext context) {
-    context.setBlockState(RADIO, ModBlocks.RADIO);
-    ConnectedTestPlayer first = playerAt(context, 2);
-    ConnectedTestPlayer second = playerAt(context, 4);
-    first.hold(new ItemStack(Items.MUSIC_DISC_13), ItemStack.EMPTY);
-    second.hold(new ItemStack(Items.MUSIC_DISC_13), ItemStack.EMPTY);
-    WireFace top = topOf(context, RADIO);
-    first.useOn(top);
-    second.useOn(top);
-    context.assertTrue(radio(context).hasDisc(), "the first disc must go in");
-    context.assertTrue(discsHeld(first) == 0, "the first player gave theirs up");
-    context.assertTrue(discsHeld(second) == 1, "the second disc must stay in the hand");
-    second.hold(ItemStack.EMPTY, ItemStack.EMPTY);
-    first.useOn(top);
-    second.useOn(top);
-    context.assertTrue(!radio(context).hasDisc(), "the disc must come out");
-    context.assertTrue(
-        discsHeld(first) + discsHeld(second) == 1, "exactly one player takes the disc");
-    first.leave();
-    second.leave();
-    context.complete();
-  }
-
-  @GameTest(templateName = BENCH, tickLimit = 60)
-  public void breakingARadioDropsItsDiscOnce(TestContext context) {
-    context.setBlockState(RADIO, ModBlocks.RADIO);
-    ConnectedTestPlayer player = playerAt(context, 2);
-    putDisc(context, player);
-    context.assertTrue(discsHeld(player) == 0, "the disc must leave the hand");
-    context.getWorld().breakBlock(context.getAbsolutePos(RADIO), true);
-    context.assertTrue(discsNear(context, RADIO) == 1, "one disc must drop");
-    player.leave();
-    context.complete();
-  }
-
-  @GameTest(templateName = BENCH, tickLimit = 80)
-  public void aRadioPlaysThroughEverySpeakerOnItsNetwork(TestContext context) {
-    buildRadio(context, 200);
-    ConnectedTestPlayer player = playerAt(context, 3);
-    context.waitAndRun(SETTLE_TICKS, () -> putDisc(context, player));
-    context.waitAndRun(
-        SETTLE_TICKS * 2L,
-        () -> {
-          context.expectBlockProperty(RADIO, RadioBlock.PLAYING, true);
-          expectSpeaker(context, LEFT_SPEAKER, true);
-          expectSpeaker(context, RIGHT_SPEAKER, true);
-          context.getWorld().breakBlock(context.getAbsolutePos(RIGHT_SPEAKER), false);
-          expectSpeaker(context, LEFT_SPEAKER, true);
-          player.hold(ItemStack.EMPTY, ItemStack.EMPTY);
-          player.useOn(topOf(context, RADIO));
-          context.expectBlockProperty(RADIO, RadioBlock.PLAYING, false);
-          expectSpeaker(context, LEFT_SPEAKER, false);
-          context.assertTrue(discsHeld(player) == 1, "the disc must come back");
-          player.leave();
-          context.complete();
-        });
-  }
-
-  @GameTest(templateName = BENCH, tickLimit = 80)
-  public void aSpeakerKeepsItsPlaceInTheSongThroughAReload(TestContext context) {
-    buildRadio(context, 200);
-    ConnectedTestPlayer player = playerAt(context, 3);
-    context.waitAndRun(SETTLE_TICKS, () -> putDisc(context, player));
-    context.waitAndRun(
-        SETTLE_TICKS * 2L,
-        () -> {
-          SpeakerBlockEntity speaker = context.getBlockEntity(LEFT_SPEAKER);
-          RegistryWrapper.WrapperLookup registries = context.getWorld().getRegistryManager();
-          NbtCompound saved = speaker.createNbt(registries);
-          SpeakerBlockEntity reloaded =
-              new SpeakerBlockEntity(speaker.getPos(), speaker.getCachedState());
-          reloaded.setWorld(context.getWorld());
-          reloaded.read(saved, registries);
-          context.assertTrue(reloaded.isSounding(), "a reloaded Speaker is still playing");
-          context.assertTrue(reloaded.hasLostSound(), "clients lose the sound over a reload");
-          radio(context).song().ifPresent(reloaded::play);
-          context.assertFalse(reloaded.hasLostSound(), "the next beat must start the sound again");
-          context.assertTrue(
-              saved.equals(reloaded.createNbt(registries)),
-              "the next beat must keep the Radio's place in the song");
-          player.leave();
-          context.complete();
-        });
-  }
-
-  @GameTest(templateName = BENCH, tickLimit = 80)
-  public void aRadioWithNoSpeakerStaysQuietAndUsesNoCharge(TestContext context) {
-    RedstoneCellBlockEntity cell = wiredCell(context, 50);
-    context.setBlockState(RADIO, ModBlocks.RADIO);
-    ConnectedTestPlayer player = playerAt(context, 3);
-    putDisc(context, player);
-    context.waitAndRun(
-        2L * BEAT_TICKS,
-        () -> {
-          context.expectBlockProperty(RADIO, RadioBlock.PLAYING, false);
-          expectStatus(context, RADIO, DeviceStatus.NO_SPEAKER);
-          context.assertTrue(cell.charge() == 50, "a quiet radio must use nothing");
-          context.setBlockState(LEFT_SPEAKER, ModBlocks.SPEAKER);
-          context.waitAndRun(
-              BEAT_TICKS,
-              () -> {
-                context.expectBlockProperty(RADIO, RadioBlock.PLAYING, true);
-                expectSpeaker(context, LEFT_SPEAKER, true);
-                player.leave();
-                context.complete();
-              });
-        });
-  }
-
-  @GameTest(templateName = BENCH, tickLimit = 100)
-  public void aSongEndingStopsTheRun(TestContext context) {
-    buildRadio(context, 500);
-    ConnectedTestPlayer player = playerAt(context, 3);
-    putDisc(context, player);
-    context.waitAndRun(
-        SETTLE_TICKS,
-        () -> {
-          expectSpeaker(context, LEFT_SPEAKER, true);
-          RadioBlockEntity radio = radio(context);
-          var registries = context.getWorld().getRegistryManager();
-          NbtCompound nbt = radio.createNbt(registries);
-          nbt.putInt("played_ticks", radio.song().orElseThrow().value().getLengthInTicks());
-          radio.read(nbt, registries);
-        });
-    context.waitAndRun(
-        SETTLE_TICKS + BEAT_TICKS,
-        () -> {
-          context.expectBlockProperty(RADIO, RadioBlock.PLAYING, false);
-          expectStatus(context, RADIO, DeviceStatus.SONG_ENDED);
-          expectSpeaker(context, LEFT_SPEAKER, false);
-          expectSpeaker(context, RIGHT_SPEAKER, false);
-          context.assertTrue(radio(context).hasDisc(), "the disc must stay in the radio");
-          player.leave();
-          context.complete();
-        });
-  }
-
-  @GameTest(templateName = BENCH, tickLimit = 120)
-  public void aRadioOutOfChargeSilencesItsSpeakers(TestContext context) {
-    RedstoneCellBlockEntity cell = buildRadio(context, 4);
-    ConnectedTestPlayer player = playerAt(context, 3);
-    putDisc(context, player);
-    context.waitAndRun(
-        3L * BEAT_TICKS,
-        () -> {
-          context.assertTrue(cell.charge() == 0, "three devices must use the cell up");
-          context.expectBlockProperty(RADIO, RadioBlock.PLAYING, false);
-          expectStatus(context, RADIO, DeviceStatus.NO_CHARGE);
-          expectSpeaker(context, LEFT_SPEAKER, false);
-          expectSpeaker(context, RIGHT_SPEAKER, false);
-          context.assertTrue(radio(context).hasDisc(), "the disc must stay in the radio");
-          player.leave();
           context.complete();
         });
   }

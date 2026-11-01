@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import java.io.IOException;
@@ -21,6 +22,7 @@ public final class ClientSettingsStore {
   private static final String BROKEN_FILE = "hardwired-client.broken.json";
 
   private static volatile ClientWireSettings current = ClientWireSettings.DEFAULTS;
+  private static volatile ClientRadioSettings currentRadio = ClientRadioSettings.DEFAULTS;
   private static volatile Path path;
 
   private ClientSettingsStore() {}
@@ -29,15 +31,30 @@ public final class ClientSettingsStore {
     return current;
   }
 
+  public static ClientRadioSettings radio() {
+    return currentRadio;
+  }
+
   public static void load(final Path configDir) {
     path = configDir.resolve(FILE);
+    currentRadio = readRadio(path);
     current = read(path);
   }
 
   public static void update(final ClientWireSettings settings) {
+    update(settings, currentRadio);
+  }
+
+  public static void update(final ClientRadioSettings settings) {
+    update(current, settings);
+  }
+
+  public static void update(
+      final ClientWireSettings settings, final ClientRadioSettings radioSettings) {
     current = settings;
+    currentRadio = radioSettings;
     if (path != null) {
-      write(path, settings);
+      write(path, settings, radioSettings);
     }
   }
 
@@ -58,11 +75,28 @@ public final class ClientSettingsStore {
     }
   }
 
-  static void write(final Path file, final ClientWireSettings settings) {
+  static ClientRadioSettings readRadio(final Path file) {
+    if (!Files.exists(file)) {
+      return ClientRadioSettings.DEFAULTS;
+    }
+    try {
+      final JsonElement root = JsonParser.parseString(Files.readString(file));
+      return root.isJsonObject()
+          ? ClientRadioSettings.fromJson(root.getAsJsonObject())
+          : ClientRadioSettings.DEFAULTS;
+    } catch (IOException | JsonParseException ex) {
+      return ClientRadioSettings.DEFAULTS;
+    }
+  }
+
+  static void write(
+      final Path file, final ClientWireSettings settings, final ClientRadioSettings radioSettings) {
     try {
       Files.createDirectories(file.getParent());
       final Path temp = file.resolveSibling(file.getFileName() + ".tmp");
-      Files.writeString(temp, GSON.toJson(settings.toJson()), StandardCharsets.UTF_8);
+      final JsonObject root = settings.toJson();
+      radioSettings.writeJson(root);
+      Files.writeString(temp, GSON.toJson(root), StandardCharsets.UTF_8);
       Files.move(temp, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
     } catch (IOException ex) {
       LOGGER.error("Failed to save Hardwired client settings: {}", ex.getMessage());

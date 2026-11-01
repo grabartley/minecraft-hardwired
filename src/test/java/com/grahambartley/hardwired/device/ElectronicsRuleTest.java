@@ -19,12 +19,18 @@ class ElectronicsRuleTest {
     "RUNNING,false,true,NO_CHARGE",
     "RUNNING,false,false,NO_CELL",
     "WIRE_OFF,false,true,WIRE_OFF",
-    "NO_DISC,false,false,NO_DISC",
-    "SONG_ENDED,false,true,SONG_ENDED"
+    "NO_TOWER,false,false,NO_TOWER",
+    "RADIO_OFF,false,true,RADIO_OFF"
   })
   void aRunningDeviceThatCannotPayStopsWithAReason(
       DeviceStatus demand, boolean paid, boolean hasCell, DeviceStatus next) {
     assertEquals(next, ElectronicsRule.next(demand, paid, hasCell));
+  }
+
+  @ParameterizedTest(name = "paid at {0}, now {1}")
+  @CsvSource({"100,100,true", "100,119,true", "100,120,false", "100,500,false", "-20,0,false"})
+  void aSecondIsPaidOnceAndCoversItsBeat(long paidAt, long now, boolean covered) {
+    assertEquals(covered, ElectronicsRule.beatPaid(paidAt, now));
   }
 
   @ParameterizedTest(name = "cost {0} cell {1} available {2}")

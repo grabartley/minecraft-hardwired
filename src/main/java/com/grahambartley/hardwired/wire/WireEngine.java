@@ -127,16 +127,25 @@ public final class WireEngine {
   }
 
   public <T> List<T> allOnNetwork(BlockPos pos, Class<T> type) {
+    return loadedOnNetwork(pos).stream()
+        .map(world::getBlockEntity)
+        .filter(type::isInstance)
+        .map(type::cast)
+        .toList();
+  }
+
+  public List<BlockPos> loadedOnNetwork(BlockPos pos) {
     return grid.networksTouching(pos).stream()
         .flatMap(network -> network.touches().stream())
         .map(TouchPoint::pos)
         .distinct()
         .filter(this::isLoaded)
         .sorted()
-        .map(world::getBlockEntity)
-        .filter(type::isInstance)
-        .map(type::cast)
         .toList();
+  }
+
+  public boolean isWired(BlockPos pos) {
+    return !grid.networksTouching(pos).isEmpty();
   }
 
   public void refresh(BlockPos pos) {

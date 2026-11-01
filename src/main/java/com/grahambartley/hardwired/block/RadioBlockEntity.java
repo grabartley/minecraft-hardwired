@@ -1,96 +1,121 @@
 package com.grahambartley.hardwired.block;
 
-import com.grahambartley.hardwired.device.DeviceStatus;
-import com.grahambartley.hardwired.device.ElectronicsDriver;
-import com.grahambartley.hardwired.device.RadioRun;
+import com.grahambartley.hardwired.config.RadioSettings;
+import com.grahambartley.hardwired.radio.Frequency;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
-import java.util.Optional;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.jukebox.JukeboxSong;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
-public final class RadioBlockEntity extends ElectronicBlockEntity {
+public final class RadioBlockEntity extends SoundingBlockEntity {
 
-  private static final String DISC = "disc";
-  private static final String PLAYED_TICKS = "played_ticks";
+  private static final String ON = "on";
+  private static final String FREQUENCY = "frequency";
+  private static final String OLD_DISC = "disc";
+  private static final String HISSING = "hissing";
 
-  private ItemStack disc = ItemStack.EMPTY;
-  private int playedTicks;
+  private boolean on = true;
+  private int frequency = Frequency.DEFAULT;
+  private ItemStack oldDisc = ItemStack.EMPTY;
+  private boolean hissing;
 
   public RadioBlockEntity(BlockPos pos, BlockState state) {
     super(ModBlockEntities.RADIO, pos, state);
   }
 
-  public boolean hasDisc() {
-    return !disc.isEmpty();
-  }
-
-  public ItemStack disc() {
-    return disc;
-  }
-
-  public void putDisc(ItemStack stack) {
-    disc = stack;
-    playedTicks = 0;
-    markDirty();
-  }
-
-  public ItemStack takeDisc() {
-    ItemStack taken = disc;
-    disc = ItemStack.EMPTY;
-    playedTicks = 0;
-    markDirty();
-    return taken;
-  }
-
-  public Optional<RegistryEntry<JukeboxSong>> song() {
-    return world == null
-        ? Optional.empty()
-        : JukeboxSong.getSongEntryFromStack(world.getRegistryManager(), disc);
-  }
-
-  public boolean songEnded() {
-    return song()
-        .map(entry -> RadioRun.songEnded(playedTicks, entry.value().getLengthInTicks()))
-        .orElse(false);
-  }
-
-  public void advance(DeviceStatus status) {
-    int next = RadioRun.playedAfter(playedTicks, status, ElectronicsDriver.BEAT_TICKS);
-    if (next != playedTicks) {
-      playedTicks = next;
-      markDirty();
+  public static void spillOldDisc(
+      World world, BlockPos pos, BlockState state, RadioBlockEntity radio) {
+    if (!radio.oldDisc.isEmpty()) {
+      ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), radio.oldDisc);
+      radio.oldDisc = ItemStack.EMPTY;
+      radio.markDirty();
     }
+  }
+
+  public boolean isOn() {
+    return on;
+  }
+
+  public int frequency() {
+    return frequency;
+  }
+
+  @Override
+  public int dial() {
+    return frequency;
+  }
+
+  @Override
+  public boolean hisses() {
+    return hissing;
+  }
+
+  public void setHissing(boolean next) {
+    if (hissing != next) {
+      hissing = next;
+      sync();
+    }
+  }
+
+  public void set(boolean nextOn, int nextFrequency, int nextVolume) {
+    int snapped = Frequency.snap(nextFrequency);
+    boolean changed = on != nextOn || frequency != snapped || volume() != nextVolume;
+    on = nextOn;
+    frequency = snapped;
+    setVolume(nextVolume);
+    if (changed) {
+      sync();
+    }
+  }
+
+  @Override
+  public int hearing(RadioSettings settings) {
+    return settings.radioHearing();
+  }
+
+  private void writeDial(NbtCompound nbt) {
+    nbt.putBoolean(ON, on);
+    nbt.putInt(FREQUENCY, frequency);
   }
 
   @Override
   protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
     super.writeNbt(nbt, registries);
-    if (hasDisc()) {
-      nbt.put(DISC, disc.encode(registries));
+    writeDial(nbt);
+    if (!oldDisc.isEmpty()) {
+      nbt.put(OLD_DISC, oldDisc.encode(registries));
     }
-    nbt.putInt(PLAYED_TICKS, playedTicks);
   }
 
   @Override
   protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
     super.readNbt(nbt, registries);
-    disc =
-        nbt.contains(DISC, NbtElement.COMPOUND_TYPE)
-            ? ItemStack.fromNbt(registries, nbt.getCompound(DISC)).orElse(ItemStack.EMPTY)
-            : ItemStack.EMPTY;
-    playedTicks = nbt.getInt(PLAYED_TICKS);
+    on = !nbt.contains(ON) || nbt.getBoolean(ON);
+    frequency = nbt.contains(FREQUENCY) ? Frequency.snap(nbt.getInt(FREQUENCY)) : Frequency.DEFAULT;
+    hissing = nbt.getBoolean(HISSING);
+    if (nbt.contains(OLD_DISC, NbtElement.COMPOUND_TYPE)) {
+      oldDisc = ItemStack.fromNbt(registries, nbt.getCompound(OLD_DISC)).orElse(ItemStack.EMPTY);
+    }
   }
 
   @Override
   public void removeFromCopiedStackNbt(NbtCompound nbt) {
     super.removeFromCopiedStackNbt(nbt);
-    nbt.remove(DISC);
-    nbt.remove(PLAYED_TICKS);
+    nbt.remove(ON);
+    nbt.remove(FREQUENCY);
+    nbt.remove(OLD_DISC);
+  }
+
+  @Override
+  public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
+    NbtCompound nbt = super.toInitialChunkDataNbt(registries);
+    writeDial(nbt);
+    nbt.putBoolean(HISSING, hissing);
+    return nbt;
   }
 }

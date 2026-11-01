@@ -29,6 +29,13 @@ public final class AnimatedDeviceRenderer<T extends BlockEntity> implements Bloc
   }
 
   @Override
+  public boolean rendersOutsideBoundingBox(T entity) {
+    DeviceAnimations.Animation animation =
+        DeviceAnimations.of(Registries.BLOCK.getId(entity.getCachedState().getBlock()));
+    return animation != null && animation.wide();
+  }
+
+  @Override
   public void render(
       T entity,
       float tickDelta,
@@ -49,15 +56,17 @@ public final class AnimatedDeviceRenderer<T extends BlockEntity> implements Bloc
     DeviceTurn turn = DeviceTurn.of(state);
     matrices.push();
     matrices.translate(CENTER, CENTER, CENTER);
-    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-turn.y()));
+    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-turn.y() - animation.yaw()));
     matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-turn.x()));
     matrices.translate(-CENTER, -CENTER, -CENTER);
     for (DeviceAnimations.Part part : animation.parts()) {
-      if (!part.drawnWhile(animating)) {
+      if (!part.drawnWhile(animating) || !part.shownIn(state)) {
         continue;
       }
       DeviceClip.Pose pose =
-          animating ? animation.clip().sample(part.bone(), seconds) : DeviceClip.Pose.REST;
+          animating && part.movesIn(state)
+              ? animation.clip().sample(part.bone(), seconds)
+              : DeviceClip.Pose.REST;
       matrices.push();
       apply(matrices, part.pivot(), pose);
       BakedModel model =

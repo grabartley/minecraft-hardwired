@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.device.AnimatedDevice;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -21,10 +23,19 @@ import net.minecraft.util.Identifier;
 
 public final class DeviceAnimations {
 
-  public record Part(String bone, Identifier model, float[] pivot, boolean glow) {
+  public record Part(
+      String bone, Identifier model, float[] pivot, boolean glow, String when, String movesWhen) {
 
     public boolean drawnWhile(boolean animating) {
       return animating || !glow;
+    }
+
+    public boolean shownIn(BlockState state) {
+      return when == null || AnimatedDevice.flagged(state, when);
+    }
+
+    public boolean movesIn(BlockState state) {
+      return movesWhen == null || AnimatedDevice.flagged(state, movesWhen);
     }
 
     public int light(int worldLight) {
@@ -32,7 +43,7 @@ public final class DeviceAnimations {
     }
   }
 
-  public record Animation(DeviceClip clip, List<Part> parts) {}
+  public record Animation(DeviceClip clip, List<Part> parts, int yaw, boolean wide) {}
 
   private static final String FOLDER = "animated";
   private static final String SUFFIX = ".json";
@@ -92,7 +103,9 @@ public final class DeviceAnimations {
     for (JsonElement element : root.getAsJsonArray("parts")) {
       parts.add(part(element.getAsJsonObject()));
     }
-    return new Animation(DeviceClip.parse(clipJson), List.copyOf(parts));
+    int yaw = root.has("yaw") ? root.get("yaw").getAsInt() : 0;
+    boolean wide = root.has("wide") && root.get("wide").getAsBoolean();
+    return new Animation(DeviceClip.parse(clipJson), List.copyOf(parts), yaw, wide);
   }
 
   static Part part(JsonObject part) {
@@ -103,6 +116,8 @@ public final class DeviceAnimations {
         new float[] {
           pivot.get(0).getAsFloat(), pivot.get(1).getAsFloat(), pivot.get(2).getAsFloat()
         },
-        part.has("glow") && part.get("glow").getAsBoolean());
+        part.has("glow") && part.get("glow").getAsBoolean(),
+        part.has("when") ? part.get("when").getAsString() : null,
+        part.has("moves_when") ? part.get("moves_when").getAsString() : null);
   }
 }

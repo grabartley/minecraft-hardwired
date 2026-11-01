@@ -32,7 +32,7 @@ public final class MountShapes {
     return face == BlockFace.CEILING ? turns + 2 : turns;
   }
 
-  private static double[] turn(double[] box, int quarterTurns) {
+  static double[] turn(double[] box, int quarterTurns) {
     double[] turned = box;
     for (int i = 0; i < Math.floorMod(quarterTurns, 4); i++) {
       turned =

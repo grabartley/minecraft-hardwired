@@ -9,11 +9,14 @@ import com.grahambartley.hardwired.device.IntercomActions;
 import com.grahambartley.hardwired.device.MainPanelActions;
 import com.grahambartley.hardwired.lift.LiftActions;
 import com.grahambartley.hardwired.network.ModNetworking;
+import com.grahambartley.hardwired.radio.DeskActions;
+import com.grahambartley.hardwired.radio.RadioActions;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.registry.ModEntities;
 import com.grahambartley.hardwired.registry.ModItems;
+import com.grahambartley.hardwired.registry.ModSounds;
 import com.grahambartley.hardwired.server.ServerConfigService;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireSealing;
@@ -41,6 +44,7 @@ public class Hardwired implements ModInitializer {
     ModBlockEntities.register();
     ModEntities.register();
     ModItems.register();
+    ModSounds.register();
     ModNetworking.register();
     ModCriteria.register();
     ServerLifecycleEvents.SERVER_STARTING.register(ServerConfigService::loadFromWorld);
@@ -61,6 +65,8 @@ public class Hardwired implements ModInitializer {
           ControllerActions.forget(handler.getPlayer());
           IntercomActions.forget(handler.getPlayer());
           LiftActions.forget(handler.getPlayer());
+          DeskActions.forget(handler.getPlayer());
+          RadioActions.forget(handler.getPlayer());
         });
     LOGGER.info("Hardwired initialised");
   }

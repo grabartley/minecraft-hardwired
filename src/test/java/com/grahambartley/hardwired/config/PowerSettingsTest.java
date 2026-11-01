@@ -10,9 +10,9 @@ class PowerSettingsTest {
   @ParameterizedTest(name = "{0} clamps to {1}")
   @CsvSource({"-1000000,low", "2000000,high"})
   void everyValueIsClamped(int value, String end) {
-    int[] v = new int[8];
+    int[] v = new int[9];
     java.util.Arrays.fill(v, value);
-    PowerSettings s = new PowerSettings(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7]);
+    PowerSettings s = new PowerSettings(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8]);
     boolean low = end.equals("low");
     assertEquals(
         low ? PowerSettings.CELL_CAPACITY_MIN : PowerSettings.CELL_CAPACITY_MAX, s.cellCapacity());
@@ -36,6 +36,9 @@ class PowerSettingsTest {
     assertEquals(
         low ? PowerSettings.INTERCOM_CHARGE_MIN : PowerSettings.INTERCOM_CHARGE_MAX,
         s.intercomChargePerLine());
+    assertEquals(
+        low ? PowerSettings.BROADCAST_CHARGE_MIN : PowerSettings.BROADCAST_CHARGE_MAX,
+        s.broadcastChargePerSecond());
   }
 
   @ParameterizedTest(name = "default {0}")
@@ -52,6 +55,7 @@ class PowerSettingsTest {
             PowerSettings.DEFAULTS.alarmChargePerSecond(),
             PowerSettings.DEFAULTS.radioChargePerSecond(),
             PowerSettings.DEFAULTS.speakerChargePerSecond(),
-            PowerSettings.DEFAULTS.intercomChargePerLine()));
+            PowerSettings.DEFAULTS.intercomChargePerLine(),
+            PowerSettings.DEFAULTS.broadcastChargePerSecond()));
   }
 }

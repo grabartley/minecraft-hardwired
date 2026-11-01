@@ -14,6 +14,10 @@ public final class ElectronicsRule {
     return hasCell ? DeviceStatus.NO_CHARGE : DeviceStatus.NO_CELL;
   }
 
+  public static boolean beatPaid(long paidAt, long now) {
+    return now - paidAt < ElectronicsDriver.BEAT_TICKS;
+  }
+
   public static DeviceStatus readiness(int cost, boolean hasCell, int available) {
     if (available >= cost) {
       return DeviceStatus.READY;

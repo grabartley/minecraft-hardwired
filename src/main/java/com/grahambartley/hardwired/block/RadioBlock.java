@@ -1,34 +1,30 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
-import com.grahambartley.hardwired.device.RadioRun;
+import com.grahambartley.hardwired.power.ChargeNetwork;
+import com.grahambartley.hardwired.radio.RadioTuner;
+import com.grahambartley.hardwired.radio.Reception;
+import com.grahambartley.hardwired.registry.ModBlockEntities;
 import com.grahambartley.hardwired.wire.WireEngine;
+import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.component.DataComponentTypes;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.stat.Stats;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
-import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public final class RadioBlock extends TableDeviceBlock {
 
   public static final BooleanProperty PLAYING = BooleanProperty.of("playing");
-
-  private static final double NOTE_HEIGHT = 1.0;
 
   public RadioBlock(Settings settings, double[] box) {
     super(settings, box);
@@ -45,44 +41,20 @@ public final class RadioBlock extends TableDeviceBlock {
   }
 
   @Override
-  protected ItemActionResult onUseWithItem(
-      ItemStack stack,
-      BlockState state,
-      World world,
-      BlockPos pos,
-      PlayerEntity player,
-      Hand hand,
-      BlockHitResult hit) {
-    if (!stack.contains(DataComponentTypes.JUKEBOX_PLAYABLE)) {
-      return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+  @SuppressWarnings("unchecked")
+  public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+      World world, BlockState state, BlockEntityType<T> type) {
+    if (world.isClient || type != ModBlockEntities.RADIO) {
+      return null;
     }
-    if (world.isClient) {
-      return ItemActionResult.SUCCESS;
-    }
-    if (!(world.getBlockEntity(pos) instanceof RadioBlockEntity radio) || radio.hasDisc()) {
-      return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-    }
-    radio.putDisc(stack.splitUnlessCreative(1, player));
-    player.incrementStat(Stats.PLAY_RECORD);
-    ElectronicsDriver.pulse((ServerWorld) world, pos);
-    ElectronicsDriver.tell(world, pos, player);
-    return ItemActionResult.CONSUME;
+    return (BlockEntityTicker<T>)
+        (BlockEntityTicker<RadioBlockEntity>) RadioBlockEntity::spillOldDisc;
   }
 
   @Override
   protected ActionResult onUse(
       BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-    boolean discInOffHand = player.getOffHandStack().contains(DataComponentTypes.JUKEBOX_PLAYABLE);
-    if (player instanceof ServerPlayerEntity serverPlayer
-        && world.getBlockEntity(pos) instanceof RadioBlockEntity radio) {
-      if (radio.hasDisc() && player.getMainHandStack().isEmpty()) {
-        player.setStackInHand(Hand.MAIN_HAND, radio.takeDisc());
-        ElectronicsDriver.pulse(serverPlayer.getServerWorld(), pos);
-      } else if (!discInOffHand) {
-        ElectronicsDriver.tell(world, pos, player);
-      }
-    }
-    return discInOffHand ? ActionResult.PASS : ActionResult.SUCCESS;
+    return DeviceActions.open(player, pos);
   }
 
   @Override
@@ -91,8 +63,7 @@ public final class RadioBlock extends TableDeviceBlock {
     if (!state.isOf(newState.getBlock())
         && world instanceof ServerWorld server
         && world.getBlockEntity(pos) instanceof RadioBlockEntity radio) {
-      ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), radio.takeDisc());
-      radio.setStatus(DeviceStatus.NO_DISC);
+      radio.setStatus(DeviceStatus.RADIO_OFF);
       wakeSpeakers(server, pos);
     }
     super.onStateReplaced(state, world, pos, newState, moved);
@@ -100,11 +71,12 @@ public final class RadioBlock extends TableDeviceBlock {
 
   @Override
   public DeviceStatus demand(ServerWorld world, BlockPos pos, BlockState state) {
-    if (!(world.getBlockEntity(pos) instanceof RadioBlockEntity radio)) {
-      return DeviceStatus.NO_DISC;
+    if (!(world.getBlockEntity(pos) instanceof RadioBlockEntity radio) || !radio.isOn()) {
+      return DeviceStatus.RADIO_OFF;
     }
-    int speakers = WireEngine.of(world).allOnNetwork(pos, SpeakerBlockEntity.class).size();
-    return RadioRun.demand(radio.hasDisc(), radio.songEnded(), speakers);
+    return RadioTuner.best(world, pos, radio.frequency()).isPresent()
+        ? DeviceStatus.RUNNING
+        : DeviceStatus.NO_STATION;
   }
 
   @Override
@@ -114,10 +86,20 @@ public final class RadioBlock extends TableDeviceBlock {
 
   @Override
   public void show(ServerWorld world, BlockPos pos, BlockState state, DeviceStatus status) {
-    if (world.getBlockEntity(pos) instanceof RadioBlockEntity radio) {
-      radio.advance(status);
-    }
     boolean playing = status == DeviceStatus.RUNNING;
+    if (world.getBlockEntity(pos) instanceof RadioBlockEntity radio) {
+      Optional<Reception> heard =
+          playing ? RadioTuner.best(world, pos, radio.frequency()) : Optional.empty();
+      heard.ifPresentOrElse(
+          reception ->
+              radio.hear(
+                  reception.station().desk(),
+                  reception.station().song(),
+                  reception.station().songStart(),
+                  reception.strength()),
+          radio::silence);
+      radio.setHissing(status == DeviceStatus.NO_STATION && hasCharge(world, pos));
+    }
     if (state.get(PLAYING) != playing) {
       ElectronicsDriver.show(world, pos, state, state.with(PLAYING, playing));
       wakeSpeakers(world, pos);
@@ -126,13 +108,18 @@ public final class RadioBlock extends TableDeviceBlock {
 
   @Override
   public void beat(ServerWorld world, BlockPos pos) {
-    Vec3d top = Vec3d.ofBottomCenter(pos).add(0, NOTE_HEIGHT, 0);
-    world.spawnParticles(ParticleTypes.NOTE, top.x, top.y, top.z, 0, 0, 0, 0, 1);
+    if (world.getBlockEntity(pos) instanceof RadioBlockEntity radio) {
+      radio.noteParticle(world);
+    }
   }
 
   @Override
   public boolean keepsChecking(DeviceStatus status) {
-    return status.wantsCharge() || status == DeviceStatus.NO_SPEAKER;
+    return status != DeviceStatus.RADIO_OFF;
+  }
+
+  private static boolean hasCharge(ServerWorld world, BlockPos pos) {
+    return ChargeNetwork.storesFor(world, pos).stream().anyMatch(store -> store.charge() > 0);
   }
 
   private static void wakeSpeakers(ServerWorld world, BlockPos pos) {

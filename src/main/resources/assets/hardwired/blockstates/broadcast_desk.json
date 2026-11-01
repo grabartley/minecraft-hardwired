@@ -1,0 +1,94 @@
+{
+  "variants": {
+    "facing=east,on_air=false,part=panel": {
+      "model": "hardwired:block/broadcast_desk_panel"
+    },
+    "facing=east,on_air=true,part=panel": {
+      "model": "hardwired:block/broadcast_desk_panel_on"
+    },
+    "facing=east,on_air=false,part=top": {
+      "model": "hardwired:block/broadcast_desk_top"
+    },
+    "facing=east,on_air=true,part=top": {
+      "model": "hardwired:block/broadcast_desk_top_on"
+    },
+    "facing=east,on_air=false,part=desk": {
+      "model": "hardwired:block/broadcast_desk_desk"
+    },
+    "facing=east,on_air=true,part=desk": {
+      "model": "hardwired:block/broadcast_desk_desk_on"
+    },
+    "facing=south,on_air=false,part=panel": {
+      "model": "hardwired:block/broadcast_desk_panel",
+      "y": 90
+    },
+    "facing=south,on_air=true,part=panel": {
+      "model": "hardwired:block/broadcast_desk_panel_on",
+      "y": 90
+    },
+    "facing=south,on_air=false,part=top": {
+      "model": "hardwired:block/broadcast_desk_top",
+      "y": 90
+    },
+    "facing=south,on_air=true,part=top": {
+      "model": "hardwired:block/broadcast_desk_top_on",
+      "y": 90
+    },
+    "facing=south,on_air=false,part=desk": {
+      "model": "hardwired:block/broadcast_desk_desk",
+      "y": 90
+    },
+    "facing=south,on_air=true,part=desk": {
+      "model": "hardwired:block/broadcast_desk_desk_on",
+      "y": 90
+    },
+    "facing=west,on_air=false,part=panel": {
+      "model": "hardwired:block/broadcast_desk_panel",
+      "y": 180
+    },
+    "facing=west,on_air=true,part=panel": {
+      "model": "hardwired:block/broadcast_desk_panel_on",
+      "y": 180
+    },
+    "facing=west,on_air=false,part=top": {
+      "model": "hardwired:block/broadcast_desk_top",
+      "y": 180
+    },
+    "facing=west,on_air=true,part=top": {
+      "model": "hardwired:block/broadcast_desk_top_on",
+      "y": 180
+    },
+    "facing=west,on_air=false,part=desk": {
+      "model": "hardwired:block/broadcast_desk_desk",
+      "y": 180
+    },
+    "facing=west,on_air=true,part=desk": {
+      "model": "hardwired:block/broadcast_desk_desk_on",
+      "y": 180
+    },
+    "facing=north,on_air=false,part=panel": {
+      "model": "hardwired:block/broadcast_desk_panel",
+      "y": 270
+    },
+    "facing=north,on_air=true,part=panel": {
+      "model": "hardwired:block/broadcast_desk_panel_on",
+      "y": 270
+    },
+    "facing=north,on_air=false,part=top": {
+      "model": "hardwired:block/broadcast_desk_top",
+      "y": 270
+    },
+    "facing=north,on_air=true,part=top": {
+      "model": "hardwired:block/broadcast_desk_top_on",
+      "y": 270
+    },
+    "facing=north,on_air=false,part=desk": {
+      "model": "hardwired:block/broadcast_desk_desk",
+      "y": 270
+    },
+    "facing=north,on_air=true,part=desk": {
+      "model": "hardwired:block/broadcast_desk_desk_on",
+      "y": 270
+    }
+  }
+}

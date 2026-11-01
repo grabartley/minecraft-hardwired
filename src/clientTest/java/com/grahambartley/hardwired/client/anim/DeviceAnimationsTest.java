@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.client.anim;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -39,6 +40,32 @@ class DeviceAnimationsTest {
   void aGlowPartIsDrawnOnlyWhileRunning(boolean glow, boolean animating, boolean drawn) {
     String extra = glow ? ",\"glow\":true" : "";
     assertEquals(drawn, DeviceAnimations.part(part(extra)).drawnWhile(animating));
+  }
+
+  @ParameterizedTest
+  @MethodSource("conditions")
+  void aPartReadsItsConditionFromData(String extra, String when) {
+    assertEquals(when, DeviceAnimations.part(part(extra)).when());
+  }
+
+  static Stream<Arguments> conditions() {
+    return Stream.of(Arguments.of("", null), Arguments.of(",\"when\":\"disc\"", "disc"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("motions")
+  void aPartReadsWhenItMovesFromData(String extra, String movesWhen) {
+    assertEquals(movesWhen, DeviceAnimations.part(part(extra)).movesWhen());
+  }
+
+  static Stream<Arguments> motions() {
+    return Stream.of(Arguments.of("", null), Arguments.of(",\"moves_when\":\"disc\"", "disc"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("parts")
+  void aPartWithNoMotionRuleAlwaysMoves(String extra, boolean glow) {
+    assertTrue(DeviceAnimations.part(part(extra)).movesIn(null));
   }
 
   @ParameterizedTest

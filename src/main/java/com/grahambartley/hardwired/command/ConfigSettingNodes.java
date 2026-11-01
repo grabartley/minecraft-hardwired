@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.command;
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.server.ServerConfigService;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -15,6 +16,8 @@ import net.minecraft.text.Text;
 
 final class ConfigSettingNodes {
 
+  private static final String ENABLED = "enabled";
+
   private ConfigSettingNodes() {}
 
   static LiteralArgumentBuilder<ServerCommandSource> intSetting(
@@ -26,6 +29,22 @@ final class ConfigSettingNodes {
       final IntFunction<String> display) {
     return CommandManager.literal(name)
         .then(intArgument(name, argument, min, max, update, display));
+  }
+
+  static LiteralArgumentBuilder<ServerCommandSource> boolSetting(
+      final String name, final BiFunction<HardwiredConfig, Boolean, HardwiredConfig> update) {
+    return CommandManager.literal(name)
+        .then(
+            CommandManager.argument(ENABLED, BoolArgumentType.bool())
+                .executes(
+                    ctx -> {
+                      final boolean value = BoolArgumentType.getBool(ctx, ENABLED);
+                      return applyUpdate(
+                          ctx,
+                          update.apply(Hardwired.SERVER_CONFIG, value),
+                          name,
+                          Boolean.toString(value));
+                    }));
   }
 
   static RequiredArgumentBuilder<ServerCommandSource, Integer> intArgument(

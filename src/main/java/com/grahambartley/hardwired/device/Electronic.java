@@ -14,6 +14,10 @@ public interface Electronic {
 
   default void beat(ServerWorld world, BlockPos pos) {}
 
+  default BlockPos wiredAt(ServerWorld world, BlockPos pos, BlockState state) {
+    return pos;
+  }
+
   default boolean keepsChecking(DeviceStatus status) {
     return status.wantsCharge();
   }

@@ -1,0 +1,64 @@
+{
+  "clip": "hardwired:clips/broadcast_desk.animation.json",
+  "yaw": 270,
+  "wide": true,
+  "parts": [
+    {
+      "bone": "turntable_platter",
+      "model": "hardwired:block/part/broadcast_desk_platter",
+      "pivot": [
+        -7.5,
+        7,
+        7.5
+      ],
+      "moves_when": "disc"
+    },
+    {
+      "bone": "disc",
+      "model": "hardwired:block/part/broadcast_desk_disc",
+      "pivot": [
+        -7.5,
+        7,
+        7.5
+      ],
+      "when": "disc"
+    },
+    {
+      "bone": "dial_pointer",
+      "model": "hardwired:block/part/broadcast_desk_pointer",
+      "pivot": [
+        8,
+        18,
+        10.45
+      ]
+    },
+    {
+      "bone": "meter_needle_top",
+      "model": "hardwired:block/part/broadcast_desk_needle_top",
+      "pivot": [
+        14,
+        17.5,
+        10.65
+      ]
+    },
+    {
+      "bone": "meter_needle_low",
+      "model": "hardwired:block/part/broadcast_desk_needle_low",
+      "pivot": [
+        2,
+        17.5,
+        10.65
+      ]
+    },
+    {
+      "bone": "desk_glow",
+      "model": "hardwired:block/part/broadcast_desk_glow",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "glow": true
+    }
+  ]
+}

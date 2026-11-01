@@ -23,7 +23,7 @@ import net.minecraft.util.math.BlockPos;
 
 public final class DeviceActions {
 
-  private static final double REACH_MARGIN = 1.0;
+  public static final double REACH_MARGIN = 1.0;
 
   private DeviceActions() {}
 

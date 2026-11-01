@@ -24,8 +24,6 @@ public final class StreetlightBlock extends AbstractLampBlock {
 
   public static final int HEAD = 3;
   public static final IntProperty PART = IntProperty.of("part", 0, HEAD);
-  private static final VoxelShape POST_SHAPE = Block.createCuboidShape(5, 0, 5, 11, 16, 11);
-  private static final VoxelShape HEAD_SHAPE = Block.createCuboidShape(3, 0, 3, 13, 16, 13);
 
   public StreetlightBlock(Settings settings) {
     super(settings);
@@ -133,6 +131,6 @@ public final class StreetlightBlock extends AbstractLampBlock {
   @Override
   protected VoxelShape getOutlineShape(
       BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-    return state.get(PART) == HEAD ? HEAD_SHAPE : POST_SHAPE;
+    return StreetlightShapes.shape(state.get(PART));
   }
 }

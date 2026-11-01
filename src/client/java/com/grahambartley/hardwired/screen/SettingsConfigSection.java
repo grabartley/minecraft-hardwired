@@ -6,6 +6,7 @@ import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
 import com.grahambartley.hardwired.config.PowerSettings;
+import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.config.WireSettings;
 
 final class SettingsConfigSection {
@@ -134,6 +135,15 @@ final class SettingsConfigSection {
             PowerSettings.INTERCOM_CHARGE_MAX,
             config.power().intercomChargePerLine(),
             value -> config = config.withPower(config.power().withIntercomChargePerLine(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "broadcastchargepersecond",
+            KEY + "broadcastchargepersecond.tooltip",
+            PowerSettings.BROADCAST_CHARGE_MIN,
+            PowerSettings.BROADCAST_CHARGE_MAX,
+            config.power().broadcastChargePerSecond(),
+            value ->
+                config = config.withPower(config.power().withBroadcastChargePerSecond(value))));
     list.addRow(rows.header(KEY + "lift"));
     list.addRow(
         rows.intSlider(
@@ -168,6 +178,76 @@ final class SettingsConfigSection {
             CircuitSettings.PARTS_PER_REDSTONE_MAX,
             config.circuit().partsPerRedstone(),
             value -> config = config.withCircuit(config.circuit().withPartsPerRedstone(value))));
+    list.addRow(rows.header(KEY + "radio"));
+    list.addRow(
+        rows.intSlider(
+            KEY + "towerminmasts",
+            KEY + "towerminmasts.tooltip",
+            RadioSettings.TOWER_MIN_MASTS_MIN,
+            RadioSettings.TOWER_MIN_MASTS_MAX,
+            config.radio().towerMinMasts(),
+            value -> config = config.withRadio(config.radio().withTowerMinMasts(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "towermaxmasts",
+            KEY + "towermaxmasts.tooltip",
+            RadioSettings.TOWER_MAX_MASTS_MIN,
+            RadioSettings.TOWER_MAX_MASTS_MAX,
+            config.radio().towerMaxMasts(),
+            value -> config = config.withRadio(config.radio().withTowerMaxMasts(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "towerbasereach",
+            KEY + "towerbasereach.tooltip",
+            RadioSettings.TOWER_BASE_REACH_MIN,
+            RadioSettings.TOWER_BASE_REACH_MAX,
+            config.radio().towerBaseReach(),
+            value -> config = config.withRadio(config.radio().withTowerBaseReach(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "towerreachpermast",
+            KEY + "towerreachpermast.tooltip",
+            RadioSettings.TOWER_REACH_PER_MAST_MIN,
+            RadioSettings.TOWER_REACH_PER_MAST_MAX,
+            config.radio().towerReachPerMast(),
+            value -> config = config.withRadio(config.radio().withTowerReachPerMast(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "radiohearing",
+            KEY + "radiohearing.tooltip",
+            RadioSettings.RADIO_HEARING_MIN,
+            RadioSettings.RADIO_HEARING_MAX,
+            config.radio().radioHearing(),
+            value -> config = config.withRadio(config.radio().withRadioHearing(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "speakerhearing",
+            KEY + "speakerhearing.tooltip",
+            RadioSettings.SPEAKER_HEARING_MIN,
+            RadioSettings.SPEAKER_HEARING_MAX,
+            config.radio().speakerHearing(),
+            value -> config = config.withRadio(config.radio().withSpeakerHearing(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "undergroundfreedepth",
+            KEY + "undergroundfreedepth.tooltip",
+            RadioSettings.UNDERGROUND_FREE_DEPTH_MIN,
+            RadioSettings.UNDERGROUND_FREE_DEPTH_MAX,
+            config.radio().undergroundFreeDepth(),
+            value -> config = config.withRadio(config.radio().withUndergroundFreeDepth(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "undergroundlossdepth",
+            KEY + "undergroundlossdepth.tooltip",
+            RadioSettings.UNDERGROUND_LOSS_DEPTH_MIN,
+            RadioSettings.UNDERGROUND_LOSS_DEPTH_MAX,
+            config.radio().undergroundLossDepth(),
+            value -> config = config.withRadio(config.radio().withUndergroundLossDepth(value))));
+    list.addRow(
+        rows.toggle(
+            KEY + "voicebroadcasts",
+            config.radio().voiceBroadcasts(),
+            value -> config = config.withRadio(config.radio().withVoiceBroadcasts(value))));
   }
 
   HardwiredConfig config() {

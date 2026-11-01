@@ -2,6 +2,7 @@ package com.grahambartley.hardwired.registry;
 
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.AnimatedDeviceBlockEntity;
+import com.grahambartley.hardwired.block.BroadcastDeskBlockEntity;
 import com.grahambartley.hardwired.block.CircuitBlockEntity;
 import com.grahambartley.hardwired.block.CircuitBoardBlockEntity;
 import com.grahambartley.hardwired.block.ControlPanelBlockEntity;
@@ -98,6 +99,13 @@ public final class ModBlockEntities {
           Registries.BLOCK_ENTITY_TYPE,
           Identifier.of(Hardwired.MOD_ID, "speaker"),
           BlockEntityType.Builder.create(SpeakerBlockEntity::new, ModBlocks.SPEAKER).build(null));
+
+  public static final BlockEntityType<BroadcastDeskBlockEntity> BROADCAST_DESK =
+      Registry.register(
+          Registries.BLOCK_ENTITY_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "broadcast_desk"),
+          BlockEntityType.Builder.create(BroadcastDeskBlockEntity::new, ModBlocks.BROADCAST_DESK)
+              .build(null));
 
   private ModBlockEntities() {}
 

@@ -1,0 +1,85 @@
+{
+  "textures": {
+    "polished_blackstone": "minecraft:block/polished_blackstone",
+    "particle": "minecraft:block/polished_blackstone"
+  },
+  "elements": [
+    {
+      "from": [
+        1.75,
+        17.5,
+        10.6
+      ],
+      "to": [
+        2.25,
+        19,
+        10.7
+      ],
+      "rotation": {
+        "angle": -45,
+        "axis": "z",
+        "origin": [
+          2,
+          17.5,
+          10.65
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            13.75,
+            13,
+            14.25,
+            14.5
+          ],
+          "texture": "#polished_blackstone"
+        },
+        "east": {
+          "uv": [
+            5.3,
+            13,
+            5.4,
+            14.5
+          ],
+          "texture": "#polished_blackstone"
+        },
+        "south": {
+          "uv": [
+            1.75,
+            13,
+            2.25,
+            14.5
+          ],
+          "texture": "#polished_blackstone"
+        },
+        "west": {
+          "uv": [
+            10.6,
+            13,
+            10.7,
+            14.5
+          ],
+          "texture": "#polished_blackstone"
+        },
+        "up": {
+          "uv": [
+            1.75,
+            10.6,
+            2.25,
+            10.7
+          ],
+          "texture": "#polished_blackstone"
+        },
+        "down": {
+          "uv": [
+            1.75,
+            10.6,
+            2.25,
+            10.7
+          ],
+          "texture": "#polished_blackstone"
+        }
+      }
+    }
+  ]
+}

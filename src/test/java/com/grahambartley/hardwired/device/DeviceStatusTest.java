@@ -27,10 +27,13 @@ class DeviceStatusTest {
     "WIRE_OFF,true,false",
     "NO_CELL,true,true",
     "NO_CHARGE,true,true",
-    "NO_DISC,true,false",
-    "NO_SPEAKER,true,false",
     "NO_RADIO,true,false",
-    "SONG_ENDED,true,false"
+    "RADIO_OFF,true,false",
+    "NO_STATION,true,false",
+    "NO_TOWER,true,false",
+    "TOWER_TOO_SHORT,true,false",
+    "TOWER_NO_ROD,true,false",
+    "TOWER_IN_USE,true,false"
   })
   void statusSaysWhetherAReasonShowsAndWhetherChargeIsWanted(
       DeviceStatus status, boolean stopped, boolean wantsCharge) {

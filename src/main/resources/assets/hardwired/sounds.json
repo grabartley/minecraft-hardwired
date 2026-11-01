@@ -1,0 +1,29 @@
+{
+  "radio.voice": {
+    "subtitle": "subtitles.hardwired.radio.voice",
+    "sounds": [{"name": "fabric-sound-api-v1:empty", "stream": true}]
+  },
+  "radio.hiss": {
+    "subtitle": "subtitles.hardwired.radio.hiss",
+    "sounds": ["hardwired:radio/hiss"]
+  },
+  "radio.crackle": {
+    "subtitle": "subtitles.hardwired.radio.crackle",
+    "sounds": [
+      "hardwired:radio/crackle_1",
+      "hardwired:radio/crackle_2",
+      "hardwired:radio/crackle_3",
+      "hardwired:radio/crackle_4",
+      "hardwired:radio/crackle_5",
+      "hardwired:radio/crackle_6"
+    ]
+  },
+  "radio.sweep": {
+    "subtitle": "subtitles.hardwired.radio.sweep",
+    "sounds": [
+      "hardwired:radio/sweep_1",
+      "hardwired:radio/sweep_2",
+      "hardwired:radio/sweep_3"
+    ]
+  }
+}
