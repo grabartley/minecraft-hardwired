@@ -33,6 +33,10 @@ public abstract class FuelledSourceBlockEntity extends SourceBlockEntity impleme
     this.capacity = capacity;
   }
 
+  public double exactCharge() {
+    return charge() + part;
+  }
+
   @Override
   public int charge() {
     return charge;
