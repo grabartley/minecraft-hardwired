@@ -10,7 +10,7 @@
       "translate": "advancement.hardwired.blown_fuse.description"
     },
     "frame": "task",
-    "hidden": false
+    "hidden": true
   },
   "criteria": {
     "done": {

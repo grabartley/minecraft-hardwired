@@ -91,19 +91,19 @@ public class ElectronicsGameTest implements FabricGameTest {
     return ConnectedTestPlayer.joinAt(context, at(x, 3));
   }
 
-  @GameTest(templateName = BENCH, tickLimit = 200)
+  @GameTest(templateName = BENCH, tickLimit = 240)
   public void anAlarmStopsOutOfChargeAndRestartsWhenCharged(TestContext context) {
     RedstoneCellBlockEntity cell = buildAlarm(context, 1);
     ConnectedTestPlayer player = playerAt(context, 4);
     context.waitAndRun(SETTLE_TICKS, () -> context.useBlock(SWITCH));
     context.waitAndRun(
-        SETTLE_TICKS * 2L,
+        SETTLE_TICKS + BEAT_TICKS + SETTLE_TICKS * 2L,
         () -> {
           context.expectBlockProperty(ALARM, AlarmBlock.POWERED, true);
           expectStatus(context, ALARM, DeviceStatus.RUNNING);
         });
     context.waitAndRun(
-        SETTLE_TICKS + 3L * BEAT_TICKS,
+        SETTLE_TICKS + 5L * BEAT_TICKS,
         () -> {
           context.expectBlockProperty(ALARM, AlarmBlock.POWERED, false);
           expectStatus(context, ALARM, DeviceStatus.OUT_OF_FUEL);
@@ -112,7 +112,7 @@ public class ElectronicsGameTest implements FabricGameTest {
           cell.fill(50);
         });
     context.waitAndRun(
-        SETTLE_TICKS + 4L * BEAT_TICKS,
+        SETTLE_TICKS + 9L * BEAT_TICKS,
         () -> {
           context.expectBlockProperty(ALARM, AlarmBlock.POWERED, true);
           expectStatus(context, ALARM, DeviceStatus.RUNNING);

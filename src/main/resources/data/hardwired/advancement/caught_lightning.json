@@ -20,7 +20,7 @@
       }
     }
   },
-  "parent": "hardwired:let_there_be_light",
+  "parent": "hardwired:juiced_up",
   "rewards": {
     "experience": 100
   }

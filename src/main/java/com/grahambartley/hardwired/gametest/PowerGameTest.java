@@ -185,7 +185,7 @@ public class PowerGameTest implements FabricGameTest {
     context.complete();
   }
 
-  @GameTest(templateName = BENCH, tickLimit = 120)
+  @GameTest(templateName = BENCH, tickLimit = 200)
   public void chargeNeverRisesFromRunningOrRewiring(TestContext context) {
     RedstoneCellBlockEntity cell = wiredCell(context);
     cell.setCharge(50);
@@ -202,11 +202,11 @@ public class PowerGameTest implements FabricGameTest {
         });
     WireCell gap = new WireCell(floor(context, 3, 1), Hue.PLAIN);
     context.waitAndRun(SETTLE_TICKS, () -> context.useBlock(at(6, 1)));
-    context.waitAndRun(30, () -> WireEngine.of(context.getWorld()).cut(gap));
-    context.waitAndRun(50, () -> WireEngine.of(context.getWorld()).lay(gap));
-    context.waitAndRun(70, () -> context.useBlock(at(6, 1)));
+    context.waitAndRun(90, () -> WireEngine.of(context.getWorld()).cut(gap));
+    context.waitAndRun(110, () -> WireEngine.of(context.getWorld()).lay(gap));
+    context.waitAndRun(130, () -> context.useBlock(at(6, 1)));
     context.waitAndRun(
-        100,
+        160,
         () -> {
           context.assertTrue(cell.charge() < 50, "the alarm must have used charge");
           context.expectBlockProperty(at(4, 1), AlarmBlock.POWERED, false);

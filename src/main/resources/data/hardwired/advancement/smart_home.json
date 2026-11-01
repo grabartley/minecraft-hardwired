@@ -62,7 +62,7 @@
       }
     }
   },
-  "parent": "hardwired:let_there_be_light",
+  "parent": "hardwired:hardwired",
   "requirements": [
     [
       "device_1"
