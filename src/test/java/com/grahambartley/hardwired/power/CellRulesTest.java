@@ -45,4 +45,20 @@ class CellRulesTest {
   void aRedstoneBlockIsWorthNineDust(int dust, boolean block, int worth) {
     assertEquals(worth, CellRules.worth(dust, block));
   }
+
+  @ParameterizedTest(name = "charge {0} of {1} at worth {2} with {3} held takes {4}")
+  @CsvSource({
+    "0,1000,10,64,64",
+    "0,1000,10,200,100",
+    "965,1000,10,64,3",
+    "991,1000,10,64,0",
+    "1000,1000,10,64,0",
+    "1200,1000,10,64,0",
+    "0,1000,90,64,11",
+    "950,1000,90,3,0",
+    "0,1000,0,64,0"
+  })
+  void aHeldStackGivesAsManyItemsAsFit(int charge, int capacity, int worth, int held, int taken) {
+    assertEquals(taken, CellRules.itemsThatFit(charge, capacity, worth, held));
+  }
 }

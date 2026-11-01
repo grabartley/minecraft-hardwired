@@ -171,8 +171,15 @@ public final class ControllerScreen extends Screen {
   @Override
   public void render(DrawContext context, int mouseX, int mouseY, float delta) {
     super.render(context, mouseX, mouseY, delta);
-    context.drawText(
-        textRenderer, title, left() + PADDING + 4, top() + 9, SlatePlate.TITLE_COLOR, false);
+    PanelText.flat(
+        context,
+        textRenderer,
+        title,
+        left() + PADDING + 4,
+        left() + WIDTH / 2,
+        top() + 9,
+        SlatePlate.TITLE_COLOR,
+        PanelText.Align.LEFT);
     drawReads(context);
     drawGrid(context);
     drawFooter(context);
@@ -181,22 +188,34 @@ public final class ControllerScreen extends Screen {
   private void drawReads(DrawContext context) {
     int x = left() + PADDING;
     int y = top() + 22;
-    drawHueRead(context, "screen.hardwired.controller.open", draft.open(), x, y);
-    drawHueRead(context, "screen.hardwired.controller.close", draft.close(), left() + WIDTH / 2, y);
-    context.drawText(
+    int middle = left() + WIDTH / 2;
+    int right = left() + WIDTH - PADDING;
+    drawHueRead(context, "screen.hardwired.controller.open", draft.open(), x, middle, y);
+    drawHueRead(context, "screen.hardwired.controller.close", draft.close(), middle, right, y);
+    PanelText.flat(
+        context,
         textRenderer,
         Text.translatable(
             "screen.hardwired.controller.auto_reverse", seconds(draft.autoReverseTicks())),
         x + 2 * SMALL_BUTTON + 6,
+        right - 2 * SMALL_BUTTON - 6,
         top() + 46,
         SlatePlate.TITLE_COLOR,
-        false);
+        PanelText.Align.LEFT);
   }
 
-  private void drawHueRead(DrawContext context, String key, Hue hue, int x, int y) {
+  private void drawHueRead(DrawContext context, String key, Hue hue, int x, int right, int y) {
     context.fill(x + 3, y + 3, x + SWATCH - 1, y + SWATCH - 1, SlatePlate.OPAQUE | hue.rgb());
     Text label = Text.translatable(key).append(": ").append(Text.translatable(hue.wireKey()));
-    context.drawText(textRenderer, label, x + SWATCH + 6, y + 4, SlatePlate.TITLE_COLOR, false);
+    PanelText.flat(
+        context,
+        textRenderer,
+        label,
+        x + SWATCH + 6,
+        right - 2,
+        y + 4,
+        SlatePlate.TITLE_COLOR,
+        PanelText.Align.LEFT);
   }
 
   private void drawGrid(DrawContext context) {
@@ -267,8 +286,15 @@ public final class ControllerScreen extends Screen {
                 selected + 1,
                 steps,
                 seconds(draft.steps().get(selected).waitTicks()));
-    context.drawText(
-        textRenderer, info, left() + PADDING, top() + HEIGHT - 37, SlatePlate.TITLE_COLOR, false);
+    PanelText.flat(
+        context,
+        textRenderer,
+        info,
+        left() + PADDING,
+        left() + WIDTH - PADDING,
+        top() + HEIGHT - 37,
+        SlatePlate.TITLE_COLOR,
+        PanelText.Align.LEFT);
     if (steps > TimelineGrid.VISIBLE_STEPS) {
       Text shown =
           Text.translatable(
@@ -276,13 +302,15 @@ public final class ControllerScreen extends Screen {
               firstStep + 1,
               Math.min(steps, firstStep + TimelineGrid.VISIBLE_STEPS),
               steps);
-      context.drawText(
+      PanelText.flat(
+          context,
           textRenderer,
           shown,
-          left() + WIDTH - PADDING - textRenderer.getWidth(shown),
+          left() + WIDTH / 2 + 4,
+          left() + WIDTH - PADDING,
           top() + 9,
           SlatePlate.MUTED_COLOR,
-          false);
+          PanelText.Align.RIGHT);
     }
   }
 

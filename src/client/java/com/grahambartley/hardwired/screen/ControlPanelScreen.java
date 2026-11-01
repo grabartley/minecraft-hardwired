@@ -109,16 +109,24 @@ public final class ControlPanelScreen extends Screen {
   @Override
   public void render(DrawContext context, int mouseX, int mouseY, float delta) {
     super.render(context, mouseX, mouseY, delta);
-    context.drawText(
-        textRenderer, title, left() + PADDING + 4, top() + 9, SlatePlate.TITLE_COLOR, false);
-    Text selected = Text.translatable(look.color().lampKey());
-    context.drawText(
+    PanelText.flat(
+        context,
         textRenderer,
-        selected,
-        left() + WIDTH - PADDING - textRenderer.getWidth(selected),
+        title,
+        left() + PADDING + 4,
+        left() + WIDTH / 2,
+        top() + 9,
+        SlatePlate.TITLE_COLOR,
+        PanelText.Align.LEFT);
+    PanelText.flat(
+        context,
+        textRenderer,
+        Text.translatable(look.color().lampKey()),
+        left() + WIDTH / 2 + 4,
+        left() + WIDTH - PADDING,
         top() + 8,
         SlatePlate.TITLE_COLOR,
-        false);
+        PanelText.Align.RIGHT);
     for (Hue hue : Hue.values()) {
       int x = left() + PADDING + hue.ordinal() % SWATCH_COLUMNS * (SWATCH + 6);
       int y = top() + 22 + hue.ordinal() / SWATCH_COLUMNS * (SWATCH + 2);

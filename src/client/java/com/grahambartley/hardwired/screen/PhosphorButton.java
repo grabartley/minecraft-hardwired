@@ -26,14 +26,14 @@ public final class PhosphorButton extends ButtonWidget {
     context.fill(getX(), getY(), right, bottom, ink);
     context.fill(getX() + 1, getY() + 1, right - 1, bottom - 1, PhosphorScreen.GLASS);
     TextRenderer font = MinecraftClient.getInstance().textRenderer;
-    Text label = getMessage();
-    String shown = font.trimToWidth(label.getString(), width - 2 * MARGIN);
-    context.drawText(
+    PanelText.flat(
+        context,
         font,
-        shown,
-        getX() + (width - font.getWidth(shown)) / 2,
+        getMessage(),
+        getX() + MARGIN,
+        right - MARGIN,
         getY() + (height - FONT_HEIGHT + 1) / 2,
         active ? PhosphorScreen.BRIGHT : PhosphorScreen.DIM,
-        false);
+        PanelText.Align.CENTER);
   }
 }

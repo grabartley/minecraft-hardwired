@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class CrackleClockTest {
 
   @ParameterizedTest(name = "strength {0} roll {1}")
-  @CsvSource({"1,0.5,240", "1,0,120", "1,1,360", "0,0.5,24", "0,0,12", "0,1,36", "0.5,0.5,132"})
+  @CsvSource({"1,0.5,600", "1,0,300", "1,1,900", "0,0.5,100", "0,0,50", "0,1,150", "0.5,0.5,350"})
   void aGapComesFromSignalAndRoll(double strength, double roll, int ticks) {
     assertEquals(ticks, CrackleClock.gapTicks(strength, roll));
   }
@@ -25,7 +25,7 @@ class CrackleClockTest {
   }
 
   @ParameterizedTest(name = "out of range strength {0}")
-  @CsvSource({"-1,24", "2,240"})
+  @CsvSource({"-1,100", "2,600"})
   void strengthIsClamped(double strength, int ticks) {
     assertEquals(ticks, CrackleClock.gapTicks(strength, 0.5));
   }

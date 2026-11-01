@@ -8,7 +8,7 @@ public final class ReceptionMix {
   private static final double VOICE_DIP = 0.3;
   private static final double EMPTY_DIAL_HISS = 0.25;
   private static final double WEAK_SIGNAL_HISS = 0.6;
-  private static final double FAINTEST_CRACKLE = 0.12;
+  private static final double FAINTEST_CRACKLE = 0.25;
   private static final double LOUDEST_CRACKLE = 0.35;
   private static final double SWEEP = 0.5;
 

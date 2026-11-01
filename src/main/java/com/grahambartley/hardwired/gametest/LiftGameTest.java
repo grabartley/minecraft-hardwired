@@ -4,6 +4,7 @@ import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
 import com.grahambartley.hardwired.block.LiftFloorBlock;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
+import com.grahambartley.hardwired.config.BurnRates;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.lift.LiftActions;
@@ -43,6 +44,7 @@ import net.minecraft.world.GameMode;
 
 public class LiftGameTest implements FabricGameTest {
 
+  private static final String BURN_BATCH = "lift_burn";
   private static final String BATCH = "lift";
   private static final int STRONG_CELL = 64;
 
@@ -244,7 +246,23 @@ public class LiftGameTest implements FabricGameTest {
     context.runAtTick(START_TICK + SIX_BLOCK_RIDE_TICKS, () -> finish(context, rider));
   }
 
-  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  @BeforeBatch(batchId = BURN_BATCH)
+  public void burnFast(ServerWorld world) {
+    savedConfig = Hardwired.SERVER_CONFIG;
+    Hardwired.SERVER_CONFIG =
+        savedConfig.withPower(
+            savedConfig
+                .power()
+                .withRatings(savedConfig.power().ratings().withCellRating(STRONG_CELL))
+                .withBurn(new BurnRates(6, 6, 6)));
+  }
+
+  @AfterBatch(batchId = BURN_BATCH)
+  public void restoreBurn(ServerWorld world) {
+    Hardwired.SERVER_CONFIG = savedConfig;
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BURN_BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void aCellBurnsOnlyWhileTheLiftMoves(TestContext context) {
     RedstoneCellBlockEntity cell = build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);

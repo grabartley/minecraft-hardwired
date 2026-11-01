@@ -183,21 +183,30 @@ public final class MainPanelScreen extends Screen {
   @Override
   public void render(DrawContext context, int mouseX, int mouseY, float delta) {
     super.render(context, mouseX, mouseY, delta);
-    context.drawText(
-        textRenderer, title, left() + PADDING + 4, top() + 9, SlatePlate.TITLE_COLOR, false);
+    PanelText.flat(
+        context,
+        textRenderer,
+        title,
+        left() + PADDING + 4,
+        left() + WIDTH - PADDING,
+        top() + 9,
+        SlatePlate.TITLE_COLOR,
+        PanelText.Align.LEFT);
     int first = PanelPages.firstRow(page);
     int last = PanelPages.lastRow(page, rows.size());
     for (int index = first; index < last; index++) {
       drawRow(context, rows.get(index), rowY(index - first));
     }
     if (rows.isEmpty()) {
-      context.drawText(
+      PanelText.flat(
+          context,
           textRenderer,
           Text.translatable("screen.hardwired.main_panel.empty"),
           left() + PADDING + 4,
+          left() + WIDTH - PADDING,
           rowY(0) + 4,
           SlatePlate.MUTED_COLOR,
-          false);
+          PanelText.Align.LEFT);
     }
     drawFooter(context);
   }
@@ -210,14 +219,18 @@ public final class MainPanelScreen extends Screen {
         left() + WIDTH - PADDING,
         y + ROW - 1,
         SlatePlate.SLATE_LIGHT);
-    context.drawText(
+    int nameRight = left() + STATE_X - 2;
+    PanelText.flat(
+        context,
         textRenderer,
         Text.translatable(row.kind().translationKey()),
         x,
+        nameRight,
         y + 2,
         SlatePlate.TITLE_COLOR,
-        false);
-    context.drawText(
+        PanelText.Align.LEFT);
+    PanelText.flat(
+        context,
         textRenderer,
         Text.translatable(
             "screen.hardwired.main_panel.position",
@@ -225,9 +238,10 @@ public final class MainPanelScreen extends Screen {
             row.pos().getY(),
             row.pos().getZ()),
         x,
+        nameRight,
         y + 12,
         SlatePlate.MUTED_COLOR,
-        false);
+        PanelText.Align.LEFT);
     drawState(context, row, left() + STATE_X, y);
     if (row.kind() != PanelKind.SWITCH) {
       BrassDial.draw(
@@ -257,17 +271,28 @@ public final class MainPanelScreen extends Screen {
     if (!row.on()) {
       context.fill(x + 1, y + 4, x + MARK - 1, y + 2 + MARK, SlatePlate.SLATE);
     }
-    context.drawText(
+    int stateRight = left() + DIAL_X - DIAL_RADIUS - 2;
+    PanelText.flat(
+        context,
         textRenderer,
         Text.translatable(
             row.on() ? "screen.hardwired.main_panel.on" : "screen.hardwired.main_panel.off"),
         x + MARK + 3,
+        stateRight,
         y + 2,
         SlatePlate.TITLE_COLOR,
-        false);
+        PanelText.Align.LEFT);
     Text note = stateNote(row);
     if (note != null) {
-      context.drawText(textRenderer, note, x, y + 12, SlatePlate.MUTED_COLOR, false);
+      PanelText.flat(
+          context,
+          textRenderer,
+          note,
+          x,
+          stateRight,
+          y + 12,
+          SlatePlate.MUTED_COLOR,
+          PanelText.Align.LEFT);
     }
   }
 
@@ -285,32 +310,39 @@ public final class MainPanelScreen extends Screen {
     int pages = PanelPages.pageCount(rows.size());
     int dialX = left() + PADDING + 2 * SMALL_BUTTON + 14;
     BrassDial.draw(context, dialX, y + 8, PAGE_DIAL_RADIUS, page, pages - 1);
-    context.drawText(
+    int pageX = dialX + PAGE_DIAL_RADIUS + 5;
+    int middle = left() + WIDTH / 2;
+    PanelText.flat(
+        context,
         textRenderer,
         Text.translatable("screen.hardwired.main_panel.page", page + 1, pages),
-        dialX + PAGE_DIAL_RADIUS + 5,
+        pageX,
+        middle,
         y + 4,
         SlatePlate.TITLE_COLOR,
-        false);
+        PanelText.Align.LEFT);
     int noteY = y - 11;
     if (unknownPoints > 0) {
-      context.drawText(
+      PanelText.flat(
+          context,
           textRenderer,
           Text.translatable("screen.hardwired.main_panel.unknown", unknownPoints),
           left() + PADDING + 4,
+          left() + WIDTH - PADDING,
           noteY,
           SlatePlate.MUTED_COLOR,
-          false);
+          PanelText.Align.LEFT);
     }
     if (omitted > 0) {
-      Text note = Text.translatable("screen.hardwired.main_panel.omitted", omitted);
-      context.drawText(
+      PanelText.flat(
+          context,
           textRenderer,
-          note,
-          left() + WIDTH - PADDING - textRenderer.getWidth(note),
+          Text.translatable("screen.hardwired.main_panel.omitted", omitted),
+          middle + 4,
+          left() + WIDTH - PADDING,
           y + 4,
           SlatePlate.MUTED_COLOR,
-          false);
+          PanelText.Align.RIGHT);
     }
   }
 

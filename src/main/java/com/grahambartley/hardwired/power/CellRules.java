@@ -19,6 +19,13 @@ public final class CellRules {
     return worth > 0 && charge + (long) worth <= capacity;
   }
 
+  public static int itemsThatFit(int charge, int capacity, int worth, int held) {
+    if (worth <= 0 || charge >= capacity) {
+      return 0;
+    }
+    return Math.min(held, (capacity - charge) / worth);
+  }
+
   public static int worth(int dustCharge, boolean redstoneBlock) {
     return redstoneBlock ? dustCharge * DUST_PER_REDSTONE_BLOCK : dustCharge;
   }

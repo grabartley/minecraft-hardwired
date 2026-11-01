@@ -1,0 +1,74 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_lightning_rod": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:lightning_rod"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_polished_blackstone": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:polished_blackstone"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_lever": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:lever"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_redstone_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:redstone_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "hardwired:master_switch"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_lightning_rod",
+      "has_the_recipe"
+    ],
+    [
+      "has_polished_blackstone",
+      "has_the_recipe"
+    ],
+    [
+      "has_lever",
+      "has_the_recipe"
+    ],
+    [
+      "has_redstone_block",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "hardwired:master_switch"
+    ]
+  }
+}

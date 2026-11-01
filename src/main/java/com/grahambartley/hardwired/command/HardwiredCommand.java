@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.command;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.BurnRates;
 import com.grahambartley.hardwired.config.CircuitSettings;
 import com.grahambartley.hardwired.config.DeviceSettings;
 import com.grahambartley.hardwired.config.HardwiredConfig;
@@ -122,12 +123,39 @@ public final class HardwiredCommand {
               config -> config.power().lightningCharge(),
               (config, value) -> config.withPower(config.power().withLightningCharge(value))),
           new IntOption(
-              "chargeperloadminute",
+              "cellchargeperloadminute",
               "charge",
-              PowerSettings.CHARGE_PER_LOAD_MINUTE_MIN,
-              PowerSettings.CHARGE_PER_LOAD_MINUTE_MAX,
-              config -> config.power().chargePerLoadMinute(),
-              (config, value) -> config.withPower(config.power().withChargePerLoadMinute(value))),
+              BurnRates.CHARGE_PER_LOAD_MINUTE_MIN,
+              BurnRates.CHARGE_PER_LOAD_MINUTE_MAX,
+              config -> config.power().burn().cellChargePerLoadMinute(),
+              (config, value) ->
+                  config.withPower(
+                      config
+                          .power()
+                          .withBurn(config.power().burn().withCellChargePerLoadMinute(value)))),
+          new IntOption(
+              "generatorchargeperloadminute",
+              "charge",
+              BurnRates.CHARGE_PER_LOAD_MINUTE_MIN,
+              BurnRates.CHARGE_PER_LOAD_MINUTE_MAX,
+              config -> config.power().burn().generatorChargePerLoadMinute(),
+              (config, value) ->
+                  config.withPower(
+                      config
+                          .power()
+                          .withBurn(
+                              config.power().burn().withGeneratorChargePerLoadMinute(value)))),
+          new IntOption(
+              "sparechargeperloadminute",
+              "charge",
+              BurnRates.CHARGE_PER_LOAD_MINUTE_MIN,
+              BurnRates.CHARGE_PER_LOAD_MINUTE_MAX,
+              config -> config.power().burn().spareChargePerLoadMinute(),
+              (config, value) ->
+                  config.withPower(
+                      config
+                          .power()
+                          .withBurn(config.power().burn().withSpareChargePerLoadMinute(value)))),
           new IntOption(
               "cellrating",
               "value",
