@@ -53,12 +53,12 @@ public abstract class FuelledSourceBlockEntity extends SourceBlockEntity impleme
   @Override
   public void burn(double amount) {
     part -= amount;
-    if (part < 0) {
-      int whole = -PowerWear.whole(part);
+    int whole = PowerWear.whole(-part);
+    if (whole > 0) {
       drain(whole);
       part += whole;
-      markDirty();
     }
+    markDirty();
   }
 
   @Override
