@@ -12,14 +12,20 @@ class PowerSoundLevelsTest {
   @CsvSource({
     "0,100,0",
     "24,100,0",
-    "76,100,0.5",
-    "128,100,1",
-    "500,100,1",
-    "76,50,0.25",
+    "76,100,0.05",
+    "128,100,0.1",
+    "500,100,0.1",
+    "76,50,0.025",
     "128,0,0"
   })
   void theHumRisesFromStartToFullThenFollowsTheSetting(int load, int setting, float volume) {
     assertEquals(volume, PowerSoundLevels.hum(load, 24, 128, setting), 1E-6F);
+  }
+
+  @ParameterizedTest(name = "workload {0}")
+  @CsvSource({"0", "7", "15"})
+  void aSourceStaysQuietBackgroundNoise(int workload) {
+    assertTrue(PowerSoundLevels.loopVolume(workload) <= 0.12F);
   }
 
   @ParameterizedTest(name = "workload {0} to {1}")

@@ -4,8 +4,9 @@ public final class PowerSoundLevels {
 
   private static final float LOWEST_PITCH = 0.7F;
   private static final float PITCH_RISE = 0.9F;
-  private static final float QUIETEST_LOOP = 0.25F;
-  private static final float LOOP_RISE = 0.55F;
+  private static final float QUIETEST_LOOP = 0.04F;
+  private static final float LOOP_RISE = 0.08F;
+  private static final float LOUDEST_HUM = 0.1F;
   private static final float PERCENT = 100F;
 
   private PowerSoundLevels() {}
@@ -15,7 +16,7 @@ public final class PowerSoundLevels {
       return 0F;
     }
     float level = Math.min(1F, (load - startLoad) / (float) (fullLoad - startLoad));
-    return level * settingPercent / PERCENT;
+    return LOUDEST_HUM * level * settingPercent / PERCENT;
   }
 
   public static float loopPitch(int workload) {

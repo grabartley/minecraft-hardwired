@@ -28,7 +28,7 @@ public final class PowerSounds {
   private static final int LOOP_REACH = 24;
   private static final int MOST_LOOPS = 8;
   private static final int SOLAR_TICK_GAP = 60;
-  private static final float SOLAR_TICK_VOLUME = 0.2F;
+  private static final float SOLAR_TICK_VOLUME = 0.05F;
 
   private static final Set<SourceBlockEntity> SOURCES = new HashSet<>();
   private static final Map<SourceBlockEntity, LoopSound> LOOPS = new HashMap<>();
