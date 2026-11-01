@@ -8,7 +8,12 @@ import org.junit.jupiter.params.provider.CsvSource;
 class SourceStateTest {
 
   @ParameterizedTest(name = "closed {0} fuelled {1}")
-  @CsvSource({"true,true,READY", "true,false,NO_FUEL", "false,true,SWITCHED_OFF", "false,false,SWITCHED_OFF"})
+  @CsvSource({
+    "true,true,READY",
+    "true,false,NO_FUEL",
+    "false,true,SWITCHED_OFF",
+    "false,false,SWITCHED_OFF"
+  })
   void aSourceNeedsItsSwitchThenItsFuel(boolean closed, boolean fuelled, SourceState state) {
     assertEquals(state, SourceState.of(closed, fuelled));
   }

@@ -6,7 +6,6 @@ import com.grahambartley.hardwired.block.RedstoneCellBlock;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
 import com.grahambartley.hardwired.block.SolarPanelBlock;
 import com.grahambartley.hardwired.config.HardwiredConfig;
-import com.grahambartley.hardwired.power.ChargeNetwork;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.wire.Hue;

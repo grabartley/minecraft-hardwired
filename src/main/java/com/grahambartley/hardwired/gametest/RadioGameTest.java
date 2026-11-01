@@ -11,7 +11,6 @@ import com.grahambartley.hardwired.block.SpeakerBlock;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.device.DeviceStatus;
-import com.grahambartley.hardwired.device.ElectronicsDriver;
 import com.grahambartley.hardwired.radio.DeskAction;
 import com.grahambartley.hardwired.radio.Frequency;
 import com.grahambartley.hardwired.radio.ReceptionMix;

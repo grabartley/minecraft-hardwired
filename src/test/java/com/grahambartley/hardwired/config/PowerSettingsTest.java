@@ -56,7 +56,8 @@ class PowerSettingsTest {
   void valuesAreClamped(int value, String end) {
     PowerSettings s = PowerSettings.DEFAULTS.withCellRating(value).withLiftLoad(value);
     boolean low = end.equals("low");
-    assertEquals(low ? PowerSettings.CELL_RATING_MIN : PowerSettings.CELL_RATING_MAX, s.cellRating());
+    assertEquals(
+        low ? PowerSettings.CELL_RATING_MIN : PowerSettings.CELL_RATING_MAX, s.cellRating());
     assertEquals(low ? PowerSettings.LIFT_LOAD_MIN : PowerSettings.LIFT_LOAD_MAX, s.liftLoad());
   }
 

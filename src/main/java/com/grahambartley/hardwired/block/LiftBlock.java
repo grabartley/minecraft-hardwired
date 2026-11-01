@@ -5,9 +5,9 @@ import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
 import com.grahambartley.hardwired.lift.LiftCarEntity;
 import com.grahambartley.hardwired.lift.LiftCharge;
-import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.lift.LiftPhase;
 import com.grahambartley.hardwired.lift.LiftShaft;
+import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.Optional;
 import net.minecraft.block.BlockState;
@@ -49,7 +49,10 @@ public final class LiftBlock extends TableDeviceBlock {
   @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
     boolean moving =
-        new LiftShaft(world, pos).car().filter(car -> car.run().phase() == LiftPhase.MOVING).isPresent();
+        new LiftShaft(world, pos)
+            .car()
+            .filter(car -> car.run().phase() == LiftPhase.MOVING)
+            .isPresent();
     return moving ? Hardwired.SERVER_CONFIG.power().liftLoad() : 0;
   }
 

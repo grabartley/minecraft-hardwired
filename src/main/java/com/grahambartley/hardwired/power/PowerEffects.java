@@ -32,7 +32,8 @@ final class PowerEffects {
     boolean triggered = false;
     for (Long2IntMap.Entry entry : sources.long2IntEntrySet()) {
       BlockPos pos = BlockPos.fromLong(entry.getLongKey());
-      if (!world.isChunkLoaded(pos) || !(world.getBlockEntity(pos) instanceof SourceBlockEntity source)) {
+      if (!world.isChunkLoaded(pos)
+          || !(world.getBlockEntity(pos) instanceof SourceBlockEntity source)) {
         continue;
       }
       boolean running =
@@ -63,8 +64,10 @@ final class PowerEffects {
     members.stream()
         .flatMap(network -> network.lastSources().keySet().longStream().boxed())
         .map(BlockPos::fromLong)
-        .filter(pos -> world.getBlockEntity(pos) instanceof SourceBlockEntity source
-            && source.kind() == SourceKind.SOLAR)
+        .filter(
+            pos ->
+                world.getBlockEntity(pos) instanceof SourceBlockEntity source
+                    && source.kind() == SourceKind.SOLAR)
         .findFirst()
         .ifPresent(pos -> ModCriteria.DEVICE.triggerNear(world, pos, ModCriteria.SOLAR_CHARGED));
   }

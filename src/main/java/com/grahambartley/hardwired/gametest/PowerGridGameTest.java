@@ -19,9 +19,9 @@ import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.WallMountedBlock;
+import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.block.enums.BlockFace;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.state.property.Properties;
@@ -80,8 +80,7 @@ public class PowerGridGameTest implements FabricGameTest {
   private static void loads(TestContext context, int count) {
     for (int z = 3; z < 3 + count; z++) {
       context.setBlockState(
-          at(5, z),
-          ModBlocks.ALARM.getDefaultState().with(WallMountedBlock.FACE, BlockFace.FLOOR));
+          at(5, z), ModBlocks.ALARM.getDefaultState().with(WallMountedBlock.FACE, BlockFace.FLOOR));
       WireEngine.of(context.getWorld()).lay(new WireCell(floor(context, 5, z), Hue.PLAIN));
     }
     if (count > 0) {
@@ -124,9 +123,7 @@ public class PowerGridGameTest implements FabricGameTest {
         () -> {
           context.expectBlockProperty(LAMP, AbstractLampBlock.LEVEL, 0);
           context.assertTrue(
-              WireEngine.of(context.getWorld())
-                      .power()
-                      .stopReason(context.getAbsolutePos(LAMP))
+              WireEngine.of(context.getWorld()).power().stopReason(context.getAbsolutePos(LAMP))
                   == DeviceStatus.OUT_OF_FUEL,
               "the reason must be fuel");
           context.complete();
@@ -143,9 +140,7 @@ public class PowerGridGameTest implements FabricGameTest {
         () -> {
           context.expectBlockProperty(LAMP, AbstractLampBlock.LEVEL, 0);
           context.assertTrue(
-              WireEngine.of(context.getWorld())
-                      .power()
-                      .stopReason(context.getAbsolutePos(LAMP))
+              WireEngine.of(context.getWorld()).power().stopReason(context.getAbsolutePos(LAMP))
                   == DeviceStatus.OVERLOADED,
               "17 load must overload one cell");
           cell(context, SECOND_CELL, 100);
@@ -214,7 +209,8 @@ public class PowerGridGameTest implements FabricGameTest {
   public void aVanillaPistonRunsOnlyWithPower(TestContext context) {
     BlockPos piston = at(5, 1);
     context.setBlockState(SWITCH, floorSwitch(true));
-    context.setBlockState(piston, Blocks.PISTON.getDefaultState().with(Properties.FACING, Direction.UP));
+    context.setBlockState(
+        piston, Blocks.PISTON.getDefaultState().with(Properties.FACING, Direction.UP));
     layRun(context, 1, 5, 1, Hue.PLAIN);
     context.waitAndRun(
         SETTLE,
@@ -245,9 +241,7 @@ public class PowerGridGameTest implements FabricGameTest {
         () -> {
           context.expectBlockProperty(LAMP, AbstractLampBlock.LEVEL, 0);
           context.assertTrue(
-              WireEngine.of(context.getWorld())
-                      .power()
-                      .stopReason(context.getAbsolutePos(LAMP))
+              WireEngine.of(context.getWorld()).power().stopReason(context.getAbsolutePos(LAMP))
                   == DeviceStatus.SOURCES_OFF,
               "the reason must be its switch");
           context.complete();
@@ -330,7 +324,8 @@ public class PowerGridGameTest implements FabricGameTest {
     BlockPos generator = at(3, 3);
     context.setBlockState(generator, ModBlocks.REDSTONE_GENERATOR);
     context.setBlockState(
-        generator.up(), Blocks.HOPPER.getDefaultState().with(Properties.HOPPER_FACING, Direction.DOWN));
+        generator.up(),
+        Blocks.HOPPER.getDefaultState().with(Properties.HOPPER_FACING, Direction.DOWN));
     HopperBlockEntity hopper = context.getBlockEntity(generator.up());
     hopper.setStack(0, new ItemStack(Items.REDSTONE, 2));
     hopper.setStack(1, new ItemStack(Items.COAL, 1));
@@ -338,7 +333,8 @@ public class PowerGridGameTest implements FabricGameTest {
         40,
         () -> {
           RedstoneGeneratorBlockEntity engine = context.getBlockEntity(generator);
-          context.assertTrue(engine.charge() == 20, "two dust must give 20, got " + engine.charge());
+          context.assertTrue(
+              engine.charge() == 20, "two dust must give 20, got " + engine.charge());
           context.assertTrue(hopper.getStack(0).isEmpty(), "dust must go in");
           context.assertTrue(hopper.getStack(1).isOf(Items.COAL), "coal must stay in the hopper");
           context.complete();

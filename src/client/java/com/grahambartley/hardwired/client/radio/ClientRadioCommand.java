@@ -38,6 +38,15 @@ public final class ClientRadioCommand {
                                                     ClientRadioSettings.NOISE_MAX))
                                             .executes(ClientRadioCommand::setNoise)))
                             .then(
+                                ClientCommandManager.literal("electrichum")
+                                    .then(
+                                        ClientCommandManager.argument(
+                                                VALUE,
+                                                IntegerArgumentType.integer(
+                                                    ClientRadioSettings.NOISE_MIN,
+                                                    ClientRadioSettings.NOISE_MAX))
+                                            .executes(ClientRadioCommand::setHum)))
+                            .then(
                                 ClientCommandManager.literal("hearvoicebroadcasts")
                                     .then(
                                         ClientCommandManager.argument(
@@ -61,6 +70,15 @@ public final class ClientRadioCommand {
         context,
         ClientSettingsStore.radio().withRadioNoisePercent(value),
         "radionoise",
+        Integer.toString(value));
+  }
+
+  private static int setHum(CommandContext<FabricClientCommandSource> context) {
+    int value = IntegerArgumentType.getInteger(context, VALUE);
+    return apply(
+        context,
+        ClientSettingsStore.radio().withElectricHumPercent(value),
+        "electrichum",
         Integer.toString(value));
   }
 

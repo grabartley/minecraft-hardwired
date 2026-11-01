@@ -43,6 +43,13 @@ final class ClientConfigSection {
             radio.radioNoisePercent(),
             value -> radio = radio.withRadioNoisePercent(value)));
     list.addRow(
+        rows.percentSlider(
+            KEY + "electrichum",
+            ClientRadioSettings.NOISE_MIN,
+            ClientRadioSettings.NOISE_MAX,
+            radio.electricHumPercent(),
+            value -> radio = radio.withElectricHumPercent(value)));
+    list.addRow(
         rows.toggle(
             KEY + "hearvoicebroadcasts",
             radio.hearVoiceBroadcasts(),

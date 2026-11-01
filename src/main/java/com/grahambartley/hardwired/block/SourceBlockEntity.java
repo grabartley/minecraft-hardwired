@@ -78,7 +78,8 @@ public class SourceBlockEntity extends BlockEntity implements DialDevice {
     WireEngine.of(world).power().changed(pos);
   }
 
-  public void showGrid(boolean nowRunning, int nextWorkload, int nextLoad, int nextSupply, GridState nextGrid) {
+  public void showGrid(
+      boolean nowRunning, int nextWorkload, int nextLoad, int nextSupply, GridState nextGrid) {
     boolean startedOrStopped = running != nowRunning;
     boolean changed =
         startedOrStopped

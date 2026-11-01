@@ -23,7 +23,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class ServerConfigPayloadsTest {
 
-  private static final int FIELDS = 27;
+  private static final int FIELDS = 18;
 
   private static List<Integer> fields(HardwiredConfig config) {
     return List.of(

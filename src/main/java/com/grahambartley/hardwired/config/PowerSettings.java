@@ -73,28 +73,7 @@ public record PowerSettings(
 
   public static final PowerSettings DEFAULTS =
       new PowerSettings(
-          1000,
-          4000,
-          10,
-          500,
-          3,
-          16,
-          64,
-          6,
-          24,
-          1,
-          2,
-          2,
-          2,
-          4,
-          4,
-          4,
-          8,
-          16,
-          32,
-          16,
-          24,
-          128);
+          1000, 4000, 10, 500, 3, 16, 64, 6, 24, 1, 2, 2, 2, 4, 4, 4, 8, 16, 32, 16, 24, 128);
 
   static final String KEY_CELL_CAPACITY = "cellCapacity";
   static final String KEY_GENERATOR_CAPACITY = "generatorCapacity";
@@ -121,16 +100,22 @@ public record PowerSettings(
 
   public PowerSettings {
     cellCapacity = ConfigBounds.clamp(cellCapacity, CELL_CAPACITY_MIN, CELL_CAPACITY_MAX);
-    generatorCapacity = ConfigBounds.clamp(generatorCapacity, GENERATOR_CAPACITY_MIN, GENERATOR_CAPACITY_MAX);
+    generatorCapacity =
+        ConfigBounds.clamp(generatorCapacity, GENERATOR_CAPACITY_MIN, GENERATOR_CAPACITY_MAX);
     dustCharge = ConfigBounds.clamp(dustCharge, DUST_CHARGE_MIN, DUST_CHARGE_MAX);
-    lightningCharge = ConfigBounds.clamp(lightningCharge, LIGHTNING_CHARGE_MIN, LIGHTNING_CHARGE_MAX);
-    chargePerLoadMinute = ConfigBounds.clamp(chargePerLoadMinute, CHARGE_PER_LOAD_MINUTE_MIN, CHARGE_PER_LOAD_MINUTE_MAX);
+    lightningCharge =
+        ConfigBounds.clamp(lightningCharge, LIGHTNING_CHARGE_MIN, LIGHTNING_CHARGE_MAX);
+    chargePerLoadMinute =
+        ConfigBounds.clamp(
+            chargePerLoadMinute, CHARGE_PER_LOAD_MINUTE_MIN, CHARGE_PER_LOAD_MINUTE_MAX);
     cellRating = ConfigBounds.clamp(cellRating, CELL_RATING_MIN, CELL_RATING_MAX);
-    generatorRating = ConfigBounds.clamp(generatorRating, GENERATOR_RATING_MIN, GENERATOR_RATING_MAX);
+    generatorRating =
+        ConfigBounds.clamp(generatorRating, GENERATOR_RATING_MIN, GENERATOR_RATING_MAX);
     solarRating = ConfigBounds.clamp(solarRating, SOLAR_RATING_MIN, SOLAR_RATING_MAX);
     dynamoRating = ConfigBounds.clamp(dynamoRating, DYNAMO_RATING_MIN, DYNAMO_RATING_MAX);
     lampLoad = ConfigBounds.clamp(lampLoad, LAMP_LOAD_MIN, LAMP_LOAD_MAX);
-    streetlightLoad = ConfigBounds.clamp(streetlightLoad, STREETLIGHT_LOAD_MIN, STREETLIGHT_LOAD_MAX);
+    streetlightLoad =
+        ConfigBounds.clamp(streetlightLoad, STREETLIGHT_LOAD_MIN, STREETLIGHT_LOAD_MAX);
     logicLoad = ConfigBounds.clamp(logicLoad, LOGIC_LOAD_MIN, LOGIC_LOAD_MAX);
     vanillaLoad = ConfigBounds.clamp(vanillaLoad, VANILLA_LOAD_MIN, VANILLA_LOAD_MAX);
     radioLoad = ConfigBounds.clamp(radioLoad, RADIO_LOAD_MIN, RADIO_LOAD_MAX);
@@ -718,28 +703,54 @@ public record PowerSettings(
 
   static PowerSettings fromJson(final ConfigJsonFields fields) {
     return new PowerSettings(
-        fields.readInt(KEY_CELL_CAPACITY, DEFAULTS.cellCapacity, CELL_CAPACITY_MIN, CELL_CAPACITY_MAX),
-        fields.readInt(KEY_GENERATOR_CAPACITY, DEFAULTS.generatorCapacity, GENERATOR_CAPACITY_MIN, GENERATOR_CAPACITY_MAX),
+        fields.readInt(
+            KEY_CELL_CAPACITY, DEFAULTS.cellCapacity, CELL_CAPACITY_MIN, CELL_CAPACITY_MAX),
+        fields.readInt(
+            KEY_GENERATOR_CAPACITY,
+            DEFAULTS.generatorCapacity,
+            GENERATOR_CAPACITY_MIN,
+            GENERATOR_CAPACITY_MAX),
         fields.readInt(KEY_DUST_CHARGE, DEFAULTS.dustCharge, DUST_CHARGE_MIN, DUST_CHARGE_MAX),
-        fields.readInt(KEY_LIGHTNING_CHARGE, DEFAULTS.lightningCharge, LIGHTNING_CHARGE_MIN, LIGHTNING_CHARGE_MAX),
-        fields.readInt(KEY_CHARGE_PER_LOAD_MINUTE, DEFAULTS.chargePerLoadMinute, CHARGE_PER_LOAD_MINUTE_MIN, CHARGE_PER_LOAD_MINUTE_MAX),
+        fields.readInt(
+            KEY_LIGHTNING_CHARGE,
+            DEFAULTS.lightningCharge,
+            LIGHTNING_CHARGE_MIN,
+            LIGHTNING_CHARGE_MAX),
+        fields.readInt(
+            KEY_CHARGE_PER_LOAD_MINUTE,
+            DEFAULTS.chargePerLoadMinute,
+            CHARGE_PER_LOAD_MINUTE_MIN,
+            CHARGE_PER_LOAD_MINUTE_MAX),
         fields.readInt(KEY_CELL_RATING, DEFAULTS.cellRating, CELL_RATING_MIN, CELL_RATING_MAX),
-        fields.readInt(KEY_GENERATOR_RATING, DEFAULTS.generatorRating, GENERATOR_RATING_MIN, GENERATOR_RATING_MAX),
+        fields.readInt(
+            KEY_GENERATOR_RATING,
+            DEFAULTS.generatorRating,
+            GENERATOR_RATING_MIN,
+            GENERATOR_RATING_MAX),
         fields.readInt(KEY_SOLAR_RATING, DEFAULTS.solarRating, SOLAR_RATING_MIN, SOLAR_RATING_MAX),
-        fields.readInt(KEY_DYNAMO_RATING, DEFAULTS.dynamoRating, DYNAMO_RATING_MIN, DYNAMO_RATING_MAX),
+        fields.readInt(
+            KEY_DYNAMO_RATING, DEFAULTS.dynamoRating, DYNAMO_RATING_MIN, DYNAMO_RATING_MAX),
         fields.readInt(KEY_LAMP_LOAD, DEFAULTS.lampLoad, LAMP_LOAD_MIN, LAMP_LOAD_MAX),
-        fields.readInt(KEY_STREETLIGHT_LOAD, DEFAULTS.streetlightLoad, STREETLIGHT_LOAD_MIN, STREETLIGHT_LOAD_MAX),
+        fields.readInt(
+            KEY_STREETLIGHT_LOAD,
+            DEFAULTS.streetlightLoad,
+            STREETLIGHT_LOAD_MIN,
+            STREETLIGHT_LOAD_MAX),
         fields.readInt(KEY_LOGIC_LOAD, DEFAULTS.logicLoad, LOGIC_LOAD_MIN, LOGIC_LOAD_MAX),
         fields.readInt(KEY_VANILLA_LOAD, DEFAULTS.vanillaLoad, VANILLA_LOAD_MIN, VANILLA_LOAD_MAX),
         fields.readInt(KEY_RADIO_LOAD, DEFAULTS.radioLoad, RADIO_LOAD_MIN, RADIO_LOAD_MAX),
         fields.readInt(KEY_SPEAKER_LOAD, DEFAULTS.speakerLoad, SPEAKER_LOAD_MIN, SPEAKER_LOAD_MAX),
-        fields.readInt(KEY_INTERCOM_LOAD, DEFAULTS.intercomLoad, INTERCOM_LOAD_MIN, INTERCOM_LOAD_MAX),
+        fields.readInt(
+            KEY_INTERCOM_LOAD, DEFAULTS.intercomLoad, INTERCOM_LOAD_MIN, INTERCOM_LOAD_MAX),
         fields.readInt(KEY_ALARM_LOAD, DEFAULTS.alarmLoad, ALARM_LOAD_MIN, ALARM_LOAD_MAX),
-        fields.readInt(KEY_BROADCAST_LOAD, DEFAULTS.broadcastLoad, BROADCAST_LOAD_MIN, BROADCAST_LOAD_MAX),
+        fields.readInt(
+            KEY_BROADCAST_LOAD, DEFAULTS.broadcastLoad, BROADCAST_LOAD_MIN, BROADCAST_LOAD_MAX),
         fields.readInt(KEY_LIFT_LOAD, DEFAULTS.liftLoad, LIFT_LOAD_MIN, LIFT_LOAD_MAX),
         fields.readInt(KEY_HUM_RANGE, DEFAULTS.humRange, HUM_RANGE_MIN, HUM_RANGE_MAX),
-        fields.readInt(KEY_HUM_START_LOAD, DEFAULTS.humStartLoad, HUM_START_LOAD_MIN, HUM_START_LOAD_MAX),
-        fields.readInt(KEY_HUM_FULL_LOAD, DEFAULTS.humFullLoad, HUM_FULL_LOAD_MIN, HUM_FULL_LOAD_MAX));
+        fields.readInt(
+            KEY_HUM_START_LOAD, DEFAULTS.humStartLoad, HUM_START_LOAD_MIN, HUM_START_LOAD_MAX),
+        fields.readInt(
+            KEY_HUM_FULL_LOAD, DEFAULTS.humFullLoad, HUM_FULL_LOAD_MIN, HUM_FULL_LOAD_MAX));
   }
 
   void writeJson(final JsonObject root) {

@@ -16,8 +16,7 @@ class BurnPlanTest {
     BurnPlan plan =
         BurnPlan.forSecond(
             List.of(
-                new BurnPlan.Source(SourceKind.SOLAR, 6),
-                new BurnPlan.Source(SourceKind.CELL, 16)),
+                new BurnPlan.Source(SourceKind.SOLAR, 6), new BurnPlan.Source(SourceKind.CELL, 16)),
             load,
             3);
     assertEquals(0D, plan.burnFor(0), CLOSE);

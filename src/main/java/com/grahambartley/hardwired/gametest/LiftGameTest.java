@@ -379,7 +379,8 @@ public class LiftGameTest implements FabricGameTest {
           context.assertTrue(
               car.run().phase() == LiftPhase.STOPPED, "stopped: " + car.run().phase());
           context.assertTrue(
-              car.run().stopReason() == DeviceStatus.OUT_OF_FUEL, "reason " + car.run().stopReason());
+              car.run().stopReason() == DeviceStatus.OUT_OF_FUEL,
+              "reason " + car.run().stopReason());
           context.assertTrue(rider.player().hasVehicle(), "still riding while stopped");
           ElectronicBlockEntity head = context.getBlockEntity(HEAD);
           context.assertTrue(head.status() == DeviceStatus.OUT_OF_FUEL, "head shows why");
@@ -414,9 +415,11 @@ public class LiftGameTest implements FabricGameTest {
           rider
               .player()
               .requestTeleport(
-                  context.getAbsolute(net.minecraft.util.math.Vec3d.ofBottomCenter(inCar(MIDDLE))).x,
+                  context.getAbsolute(net.minecraft.util.math.Vec3d.ofBottomCenter(inCar(MIDDLE)))
+                      .x,
                   rider.player().getY(),
-                  context.getAbsolute(net.minecraft.util.math.Vec3d.ofBottomCenter(inCar(MIDDLE))).z);
+                  context.getAbsolute(net.minecraft.util.math.Vec3d.ofBottomCenter(inCar(MIDDLE)))
+                      .z);
         });
     context.runAtTick(START_TICK + 164, () -> choose(context, rider, MIDDLE, HIGH));
     context.runAtTick(

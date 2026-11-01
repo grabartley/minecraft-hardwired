@@ -28,10 +28,7 @@ public final class WireHud {
     if (result == null || client.player == null || client.options.hudHidden) {
       return;
     }
-    String stateKey =
-        result.tripped()
-            ? "hud.hardwired.tripped"
-            : stateKey(result);
+    String stateKey = result.tripped() ? "hud.hardwired.tripped" : stateKey(result);
     Text heading =
         Text.translatable(
             "hud.hardwired.wire",

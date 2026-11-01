@@ -100,5 +100,4 @@ public final class IntercomActions {
         .forEach(intercoms::add);
     return intercoms;
   }
-
 }

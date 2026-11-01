@@ -62,7 +62,8 @@ public final class MasterSwitchBlock extends Block implements BlockEntityProvide
             .with(CLOSED, false));
   }
 
-  public static void setClosed(ServerWorld world, BlockPos lower, BlockState state, boolean closed) {
+  public static void setClosed(
+      ServerWorld world, BlockPos lower, BlockState state, boolean closed) {
     world.setBlockState(lower, state.with(CLOSED, closed), NOTIFY_ALL);
     BlockState upper = world.getBlockState(lower.up());
     if (upper.getBlock() instanceof MasterSwitchBlock) {
@@ -118,7 +119,8 @@ public final class MasterSwitchBlock extends Block implements BlockEntityProvide
       BlockPos pos,
       BlockPos neighborPos) {
     DoubleBlockHalf half = state.get(HALF);
-    boolean towardsTwin = direction == (half == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN);
+    boolean towardsTwin =
+        direction == (half == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN);
     if (towardsTwin && !neighbor.isOf(this)) {
       return Blocks.AIR.getDefaultState();
     }
@@ -163,7 +165,9 @@ public final class MasterSwitchBlock extends Block implements BlockEntityProvide
 
   @Override
   public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-    return state.get(HALF) == DoubleBlockHalf.LOWER ? new MasterSwitchBlockEntity(pos, state) : null;
+    return state.get(HALF) == DoubleBlockHalf.LOWER
+        ? new MasterSwitchBlockEntity(pos, state)
+        : null;
   }
 
   @Override

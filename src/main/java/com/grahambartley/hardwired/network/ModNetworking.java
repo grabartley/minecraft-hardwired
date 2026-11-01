@@ -50,6 +50,7 @@ public final class ModNetworking {
     PayloadTypeRegistry.playC2S().register(VoiceFramePayload.ID, VoiceFramePayload.CODEC);
     PayloadTypeRegistry.playS2C().register(VoiceFramePayload.ID, VoiceFramePayload.CODEC);
     PayloadTypeRegistry.playS2C().register(LiftViewPayload.ID, LiftViewPayload.CODEC);
+    PayloadTypeRegistry.playS2C().register(HumLevelPayload.ID, HumLevelPayload.CODEC);
     ServerPlayNetworking.registerGlobalReceiver(
         DeskActionPayload.ID, (payload, context) -> DeskActions.act(context.player(), payload));
     ServerPlayNetworking.registerGlobalReceiver(

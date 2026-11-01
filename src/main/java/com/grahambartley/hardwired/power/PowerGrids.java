@@ -208,7 +208,8 @@ public final class PowerGrids {
   }
 
   private SourceState sourceState(PowerSource source, BlockPos pos, BlockState state) {
-    boolean closed = !(world.getBlockEntity(pos) instanceof SourceBlockEntity entity) || entity.isClosed();
+    boolean closed =
+        !(world.getBlockEntity(pos) instanceof SourceBlockEntity entity) || entity.isClosed();
     return SourceState.of(closed, source.isFuelled(world, pos, state));
   }
 
@@ -221,7 +222,10 @@ public final class PowerGrids {
     boolean wasLive = false;
     GridState before = GridState.NO_SOURCE;
     for (WireNetwork network : members) {
-      network.lastLoads().long2IntEntrySet().fastForEach(e -> loads.mergeInt(e.getLongKey(), e.getIntValue(), Math::max));
+      network
+          .lastLoads()
+          .long2IntEntrySet()
+          .fastForEach(e -> loads.mergeInt(e.getLongKey(), e.getIntValue(), Math::max));
       ratings.putAll(network.lastRatings());
       sources.putAll(network.lastSources());
       masterOpen |= !network.masters().isEmpty();
@@ -243,8 +247,7 @@ public final class PowerGrids {
         supply += ratings.get(entry.getLongKey());
       }
     }
-    GridRule.Count count =
-        new GridRule.Count(load, supply, sources.size(), switchedOff, starting);
+    GridRule.Count count = new GridRule.Count(load, supply, sources.size(), switchedOff, starting);
     long now = world.getTime();
     GridState next = GridRule.next(count, now, darkUntil);
     GridState previous = wasLive ? GridState.LIVE : before;
@@ -269,7 +272,8 @@ public final class PowerGrids {
     PowerEffects.show(world, sources, starts, masterOpen, next, load, supply, fuse);
     if (previous != GridState.LIVE && next == GridState.LIVE && !startingMasters.isEmpty()) {
       PowerEffects.broughtUp(world, startingMasters, members);
-      startingMasters.removeIf((long pos) -> members.stream().anyMatch(n -> n.isTouching(BlockPos.fromLong(pos))));
+      startingMasters.removeIf(
+          (long pos) -> members.stream().anyMatch(n -> n.isTouching(BlockPos.fromLong(pos))));
     }
   }
 
@@ -290,7 +294,10 @@ public final class PowerGrids {
     Long2IntOpenHashMap loads = new Long2IntOpenHashMap();
     Long2IntOpenHashMap ratings = new Long2IntOpenHashMap();
     for (WireNetwork network : members) {
-      network.lastLoads().long2IntEntrySet().fastForEach(e -> loads.mergeInt(e.getLongKey(), e.getIntValue(), Math::max));
+      network
+          .lastLoads()
+          .long2IntEntrySet()
+          .fastForEach(e -> loads.mergeInt(e.getLongKey(), e.getIntValue(), Math::max));
       ratings.putAll(network.lastRatings());
     }
     List<SourceBlockEntity> running = new ArrayList<>();

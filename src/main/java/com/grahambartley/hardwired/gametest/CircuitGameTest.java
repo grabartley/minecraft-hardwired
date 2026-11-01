@@ -205,8 +205,7 @@ public class CircuitGameTest implements FabricGameTest {
         SETTLE_TICKS,
         () -> {
           context.assertTrue(
-              WireEngine.of(context.getWorld())
-                  .isOn(context.getAbsolutePos(at(4, 3)), Hue.RED),
+              WireEngine.of(context.getWorld()).isOn(context.getAbsolutePos(at(4, 3)), Hue.RED),
               "design east placed facing east must drive the south side");
           player.leave();
           context.complete();
@@ -298,8 +297,7 @@ public class CircuitGameTest implements FabricGameTest {
         SETTLE_TICKS,
         () -> {
           context.assertTrue(
-              WireEngine.of(context.getWorld())
-                  .isOn(context.getAbsolutePos(at(5, 0)), Hue.RED),
+              WireEngine.of(context.getWorld()).isOn(context.getAbsolutePos(at(5, 0)), Hue.RED),
               "the output side must hold the network on");
           player.leave();
           context.complete();
