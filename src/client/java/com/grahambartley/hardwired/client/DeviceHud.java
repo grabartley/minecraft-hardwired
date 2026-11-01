@@ -1,8 +1,7 @@
 package com.grahambartley.hardwired.client;
 
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
-import com.grahambartley.hardwired.block.MasterSwitchBlockEntity;
-import com.grahambartley.hardwired.block.SourceBlockEntity;
+import com.grahambartley.hardwired.device.StopRule;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.network.DeviceInspectResultPayload;
 import java.util.ArrayList;
@@ -58,11 +57,12 @@ public final class DeviceHud {
     if (reading == null) {
       return List.of();
     }
+    boolean totals = DeviceReadings.showsGridTotals(entity);
     List<Text> lines = new ArrayList<>();
-    if (reading.status().isStopped() && !reading.overloaded()) {
+    if (StopRule.showsStatus(reading.status(), reading.overloaded(), totals)) {
       lines.add(Text.translatable(reading.status().translationKey()));
     }
-    if (entity instanceof SourceBlockEntity || entity instanceof MasterSwitchBlockEntity) {
+    if (totals) {
       lines.add(
           Text.translatable(
               reading.overloaded() ? "hud.hardwired.overloaded" : "hud.hardwired.load",

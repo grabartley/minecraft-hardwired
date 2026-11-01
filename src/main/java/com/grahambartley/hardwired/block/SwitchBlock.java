@@ -26,11 +26,6 @@ import net.minecraft.world.World;
 
 public final class SwitchBlock extends MountedDeviceBlock implements PanelDevice {
 
-  @Override
-  public boolean isSwitch() {
-    return true;
-  }
-
   public static final IntProperty SCENE = IntProperty.of("scene", 0, Scene.MAX_SCENES);
 
   private final boolean latching;
@@ -39,6 +34,11 @@ public final class SwitchBlock extends MountedDeviceBlock implements PanelDevice
     super(settings, floorBox);
     this.latching = latching;
     setDefaultState(getDefaultState().with(SCENE, 0));
+  }
+
+  @Override
+  public boolean isSwitch() {
+    return true;
   }
 
   @Override

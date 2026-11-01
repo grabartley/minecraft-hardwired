@@ -24,6 +24,14 @@ public interface WireDevice {
     return true;
   }
 
+  default boolean needsWireOn() {
+    return false;
+  }
+
+  default boolean showsGridTotals() {
+    return false;
+  }
+
   default boolean isSwitch() {
     return false;
   }

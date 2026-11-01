@@ -8,17 +8,32 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 class StopRuleTest {
 
-  @ParameterizedTest(name = "powered {0} on {1}, grid says {2}")
+  @ParameterizedTest(name = "powered {0} on {1} needs wire {2}, grid says {3}")
   @CsvSource({
-    "true,true,RUNNING,RUNNING",
-    "true,false,RUNNING,WIRE_OFF",
-    "false,true,OVERLOADED,OVERLOADED",
-    "false,false,NO_SOURCE,NO_SOURCE",
-    "false,true,POWER_RETURNING,POWER_RETURNING"
+    "true,true,true,RUNNING,RUNNING",
+    "true,false,true,RUNNING,WIRE_OFF",
+    "true,false,false,RUNNING,RUNNING",
+    "false,true,true,OVERLOADED,OVERLOADED",
+    "false,false,false,NO_SOURCE,NO_SOURCE",
+    "false,true,true,POWER_RETURNING,POWER_RETURNING"
   })
   void aDeviceGivesTheGridsReasonOnlyWithoutPower(
-      boolean powered, boolean on, DeviceStatus grid, DeviceStatus status) {
-    assertEquals(status, StopRule.ofDevice(powered, on, grid));
+      boolean powered, boolean on, boolean needsWire, DeviceStatus grid, DeviceStatus status) {
+    assertEquals(status, StopRule.ofDevice(powered, on, needsWire, grid));
+  }
+
+  @ParameterizedTest(name = "{0} overloaded {1} totals {2}")
+  @CsvSource({
+    "OVERLOADED,true,false,true",
+    "OVERLOADED,true,true,false",
+    "SOURCES_OFF,false,true,true",
+    "NO_SOURCE,false,false,true",
+    "RUNNING,false,false,false",
+    "READY,false,true,false"
+  })
+  void theHudNeverHidesWhyADeviceStopped(
+      DeviceStatus status, boolean overloaded, boolean totals, boolean shown) {
+    assertEquals(shown, StopRule.showsStatus(status, overloaded, totals));
   }
 
   @ParameterizedTest(name = "{0} wired {1}, grid says {2}")

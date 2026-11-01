@@ -88,6 +88,11 @@ public abstract class AbstractLampBlock extends Block
     return settings.loads().lampLoad();
   }
 
+  @Override
+  public boolean needsWireOn() {
+    return true;
+  }
+
   public BlockPos lampPos(BlockPos pos, BlockState state) {
     return pos;
   }

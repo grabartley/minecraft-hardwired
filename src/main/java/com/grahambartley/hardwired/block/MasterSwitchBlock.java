@@ -157,6 +157,11 @@ public final class MasterSwitchBlock extends Block implements BlockEntityProvide
   }
 
   @Override
+  public boolean showsGridTotals() {
+    return true;
+  }
+
+  @Override
   protected ActionResult onUse(
       BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
     BlockPos lower = loadAnchor(pos, state);

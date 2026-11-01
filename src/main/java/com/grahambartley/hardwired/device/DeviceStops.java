@@ -29,10 +29,13 @@ public final class DeviceStops {
               source.sourceKind().burnsFuel());
       return StopRule.ofSource(own, !power.networksAt(pos).isEmpty(), gridReason);
     }
-    List<BlockPos> cells =
-        state.getBlock() instanceof WireDevice device ? device.cells(pos, state) : List.of(pos);
+    WireDevice device = state.getBlock() instanceof WireDevice wired ? wired : null;
+    List<BlockPos> cells = device != null ? device.cells(pos, state) : List.of(pos);
     return StopRule.ofDevice(
-        cells.stream().anyMatch(power::hasPower), cells.stream().anyMatch(power::isOn), gridReason);
+        cells.stream().anyMatch(power::hasPower),
+        cells.stream().anyMatch(power::isOn),
+        device != null && device.needsWireOn(),
+        gridReason);
   }
 
   public static boolean tell(ServerWorld world, BlockPos pos, PlayerEntity player) {

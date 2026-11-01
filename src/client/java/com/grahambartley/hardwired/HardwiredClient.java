@@ -9,6 +9,7 @@ import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.LampBlockEntity;
 import com.grahambartley.hardwired.block.RadioBlockEntity;
+import com.grahambartley.hardwired.client.ClientConfigCommand;
 import com.grahambartley.hardwired.client.DeviceHud;
 import com.grahambartley.hardwired.client.DeviceReadings;
 import com.grahambartley.hardwired.client.LiftCarRenderer;
@@ -21,7 +22,6 @@ import com.grahambartley.hardwired.client.anim.DeviceAnimations;
 import com.grahambartley.hardwired.client.power.PowerSounds;
 import com.grahambartley.hardwired.client.power.PowerTooltip;
 import com.grahambartley.hardwired.client.radio.BroadcastSounds;
-import com.grahambartley.hardwired.client.radio.ClientRadioCommand;
 import com.grahambartley.hardwired.client.radio.TalkKey;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
@@ -127,7 +127,7 @@ public class HardwiredClient implements ClientModInitializer {
     DeviceReadings.register();
     PowerTooltip.register();
     TalkKey.register();
-    ClientRadioCommand.register();
+    ClientConfigCommand.register();
     EntityRendererRegistry.register(ModEntities.LIFT_CAR, LiftCarRenderer::new);
   }
 

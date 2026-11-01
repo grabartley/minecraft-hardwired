@@ -1,6 +1,5 @@
 package com.grahambartley.hardwired.power;
 
-import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.block.SourceBlockEntity;
 import com.grahambartley.hardwired.device.WireDevice;
@@ -60,19 +59,17 @@ final class PowerEffects {
 
   static void stopped(ServerWorld world, WireEngine engine, Collection<WireNetwork> members) {
     for (WireNetwork network : members) {
-      if (network.isOn()) {
-        for (long touched : network.touchedPositions()) {
-          BlockPos pos = BlockPos.fromLong(touched);
-          if (engine.isLoaded(pos) && drawsLoad(world.getBlockState(pos))) {
-            ModCriteria.DEVICE.triggerNear(world, pos, ModCriteria.LIGHTS_OUT);
-          }
+      for (long touched : network.touchedPositions()) {
+        BlockPos pos = BlockPos.fromLong(touched);
+        if (engine.isLoaded(pos) && wantsToRun(world, pos)) {
+          ModCriteria.DEVICE.triggerNear(world, pos, ModCriteria.LIGHTS_OUT);
         }
       }
     }
   }
 
-  private static boolean drawsLoad(BlockState state) {
-    return state.getBlock() instanceof WireDevice device
-        && device.ratedLoad(Hardwired.SERVER_CONFIG.power()) > 0;
+  private static boolean wantsToRun(ServerWorld world, BlockPos pos) {
+    BlockState state = world.getBlockState(pos);
+    return state.getBlock() instanceof WireDevice device && device.load(world, pos, state) > 0;
   }
 }

@@ -1,11 +1,8 @@
 package com.grahambartley.hardwired.client;
 
-import com.grahambartley.hardwired.block.CircuitBlockEntity;
-import com.grahambartley.hardwired.block.ControllerBlockEntity;
-import com.grahambartley.hardwired.block.LampBlockEntity;
-import com.grahambartley.hardwired.block.MainPanelBlockEntity;
-import com.grahambartley.hardwired.block.MasterSwitchBlockEntity;
-import com.grahambartley.hardwired.block.SourceBlockEntity;
+import com.grahambartley.hardwired.block.ElectronicBlockEntity;
+import com.grahambartley.hardwired.config.SyncedServerConfig;
+import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.network.DeviceInspectPayload;
 import com.grahambartley.hardwired.network.DeviceInspectResultPayload;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -43,13 +40,16 @@ public final class DeviceReadings {
     }
   }
 
+  static boolean showsGridTotals(BlockEntity entity) {
+    return entity.getCachedState().getBlock() instanceof WireDevice device
+        && device.showsGridTotals();
+  }
+
   private static boolean reportsStops(BlockEntity entity) {
-    return entity instanceof SourceBlockEntity
-        || entity instanceof MasterSwitchBlockEntity
-        || entity instanceof LampBlockEntity
-        || entity instanceof ControllerBlockEntity
-        || entity instanceof CircuitBlockEntity
-        || entity instanceof MainPanelBlockEntity;
+    return entity != null
+        && entity.getCachedState().getBlock() instanceof WireDevice device
+        && !(entity instanceof ElectronicBlockEntity)
+        && (device.showsGridTotals() || device.ratedLoad(SyncedServerConfig.get().power()) > 0);
   }
 
   static DeviceInspectResultPayload at(BlockEntity entity) {
