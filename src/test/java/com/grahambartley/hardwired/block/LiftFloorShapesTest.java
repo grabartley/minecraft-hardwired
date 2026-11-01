@@ -48,14 +48,6 @@ class LiftFloorShapesTest {
   @EnumSource(
       value = Direction.class,
       names = {"NORTH", "EAST", "SOUTH", "WEST"})
-  void anOpenGateLeavesRoomToWalkThrough(Direction side) {
-    assertFalse(blocks(LiftFloorShapes.open(side), playerWalkingThrough(side)));
-  }
-
-  @ParameterizedTest(name = "{0}")
-  @EnumSource(
-      value = Direction.class,
-      names = {"NORTH", "EAST", "SOUTH", "WEST"})
   void aPlayerStandingInTheGateCellIsNotInsideAClosedGate(Direction side) {
     Box standing = new Box(0.2, 0, 0.2, 0.8, 1, 0.8);
     assertFalse(blocks(LiftFloorShapes.closed(side), standing));

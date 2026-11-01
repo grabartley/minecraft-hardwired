@@ -29,6 +29,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -42,12 +43,10 @@ public final class LiftFloorBlock extends Block implements BlockEntityProvider, 
   public static final BooleanProperty OPEN = Properties.OPEN;
 
   private static final Map<Direction, VoxelShape> CLOSED = new EnumMap<>(Direction.class);
-  private static final Map<Direction, VoxelShape> OPENED = new EnumMap<>(Direction.class);
 
   static {
     for (Direction side : Direction.Type.HORIZONTAL) {
       CLOSED.put(side, LiftFloorShapes.closed(side));
-      OPENED.put(side, LiftFloorShapes.open(side));
     }
   }
 
@@ -172,7 +171,7 @@ public final class LiftFloorBlock extends Block implements BlockEntityProvider, 
   @Override
   protected VoxelShape getCollisionShape(
       BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-    return (state.get(OPEN) ? OPENED : CLOSED).get(state.get(FACING));
+    return state.get(OPEN) ? VoxelShapes.empty() : CLOSED.get(state.get(FACING));
   }
 
   @Override

@@ -225,6 +225,14 @@ public class LiftGameTest implements FabricGameTest {
         () -> {
           expectInCar(context, rider, HIGH, "rider");
           context.assertTrue(isOpen(context, HIGH), "arrival gate open");
+          BlockPos open = context.getAbsolutePos(gate(HIGH));
+          context.assertTrue(
+              context
+                  .getWorld()
+                  .getBlockState(open)
+                  .getCollisionShape(context.getWorld(), open)
+                  .isEmpty(),
+              "an open gate leaves the whole way clear");
           context.assertFalse(isOpen(context, MIDDLE), "passed gate shut");
           context.assertTrue(rider.hasEarned(GOING_UP), "Going Up earned");
           finish(context, rider);
