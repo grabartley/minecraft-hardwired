@@ -15,8 +15,8 @@ final class PowerParticles {
   private static final float PIXEL = 1F / 16F;
   private static final double SMOKE_RATE = 0.1D;
   private static final double SPARK_RATE = 0.01D;
-  private static final float[] STACK = {8F, 16F, 8F};
-  private static final float[] ROTOR = {8F, 10F, 8F};
+  private static final float[] STACK = {7.5F, 16F, 10.5F};
+  private static final float[] ROTOR = {8F, 9.5F, 0.75F};
 
   private PowerParticles() {}
 

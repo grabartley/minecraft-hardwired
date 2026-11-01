@@ -178,6 +178,9 @@ public class HardwiredClient implements ClientModInitializer {
     BlockRenderLayerMap.INSTANCE.putBlocks(
         RenderLayer.getCutout(),
         ModBlocks.SOLAR_PANEL,
+        ModBlocks.REDSTONE_GENERATOR,
+        ModBlocks.LODESTONE_DYNAMO,
+        ModBlocks.MASTER_SWITCH,
         ModBlocks.ALARM,
         ModBlocks.RADIO,
         ModBlocks.SPEAKER,
