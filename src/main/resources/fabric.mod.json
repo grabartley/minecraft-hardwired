@@ -29,6 +29,7 @@
       "com.grahambartley.hardwired.gametest.WireEdgeGameTest",
       "com.grahambartley.hardwired.gametest.PowerGridGameTest",
       "com.grahambartley.hardwired.gametest.PowerStopGameTest",
+      "com.grahambartley.hardwired.gametest.AdvancementTriggerGameTest",
       "com.grahambartley.hardwired.gametest.DeviceGameTest",
       "com.grahambartley.hardwired.gametest.WireSealGameTest",
       "com.grahambartley.hardwired.gametest.ControllerGameTest",
