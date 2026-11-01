@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.gametest;
 
 import com.grahambartley.hardwired.block.AbstractLampBlock;
+import com.grahambartley.hardwired.block.FuelledSourceBlock;
 import com.grahambartley.hardwired.block.MasterSwitchBlock;
 import com.grahambartley.hardwired.block.MountedDeviceBlock;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
@@ -339,6 +340,26 @@ public class PowerGridGameTest implements FabricGameTest {
           context.assertTrue(hopper.getStack(1).isOf(Items.COAL), "coal must stay in the hopper");
           context.complete();
         });
+  }
+
+  @GameTest(templateName = BENCH)
+  public void aGeneratorShowsItsFillInFiveStages(TestContext context) {
+    BlockPos generator = at(3, 3);
+    context.setBlockState(generator, ModBlocks.REDSTONE_GENERATOR);
+    RedstoneGeneratorBlockEntity engine = context.getBlockEntity(generator);
+    int capacity = engine.capacity();
+    context.expectBlockProperty(generator, FuelledSourceBlock.LEVEL, 0);
+    engine.setCharge(1);
+    context.expectBlockProperty(generator, FuelledSourceBlock.LEVEL, 1);
+    engine.setCharge(capacity / 2);
+    context.expectBlockProperty(generator, FuelledSourceBlock.LEVEL, 2);
+    engine.setCharge(capacity / 2 + 1);
+    context.expectBlockProperty(generator, FuelledSourceBlock.LEVEL, 3);
+    engine.setCharge(capacity);
+    context.expectBlockProperty(generator, FuelledSourceBlock.LEVEL, 4);
+    engine.setCharge(0);
+    context.expectBlockProperty(generator, FuelledSourceBlock.LEVEL, 0);
+    context.complete();
   }
 
   @GameTest(templateName = BENCH)
