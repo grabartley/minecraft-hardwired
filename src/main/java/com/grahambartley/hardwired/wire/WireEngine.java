@@ -272,7 +272,6 @@ public final class WireEngine {
     if (active != network.isOn()) {
       network.setOn(active);
       pushNetwork(network);
-      power.changed(network);
     } else if (inputsChanged) {
       grid.markChanged(network);
     }

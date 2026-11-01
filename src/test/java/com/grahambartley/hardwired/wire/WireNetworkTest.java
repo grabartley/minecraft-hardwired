@@ -8,6 +8,7 @@ import java.util.List;
 import net.minecraft.util.math.BlockPos;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class WireNetworkTest {
@@ -29,13 +30,37 @@ class WireNetworkTest {
         new LongOpenHashSet(new long[] {at(5).asLong(), at(6).asLong()}), network.linkedCells());
   }
 
-  @Test
-  void droppingTheTouchDropsItsCells() {
+  @ParameterizedTest(name = "keep top touch {0}, keep other touch {1}")
+  @CsvSource({"true,true,3,2", "false,true,1,1", "true,false,2,1", "false,false,0,0"})
+  void factsLiveAndDieWithTheirLinks(boolean keepTop, boolean keepOther, int linked, int loads) {
+    long top = at(6).asLong();
+    long other = at(9).asLong();
     WireNetwork network = network();
-    network.link(at(6).asLong(), List.of(at(5), at(6)));
-    network.link(at(9).asLong(), List.of(at(9)));
-    network.links().remove(at(6).asLong());
-    assertEquals(new LongOpenHashSet(new long[] {at(9).asLong()}), network.linkedCells());
+    network.link(top, List.of(at(5), at(6)));
+    network.link(other, List.of(at(9)));
+    network.lastLoads().put(at(5).asLong(), 4);
+    network.lastLoads().put(other, 2);
+    network.lastRatings().put(other, 16);
+    network.lastSources().put(other, 1);
+    network.masters().add(top);
+    network.keepFacts(pos -> pos == top ? keepTop : keepOther);
+    assertEquals(linked, network.linkedCells().size());
+    assertEquals(loads, network.lastLoads().size());
+    assertEquals(keepOther ? 1 : 0, network.lastRatings().size());
+    assertEquals(keepOther ? 1 : 0, network.lastSources().size());
+    assertEquals(keepTop ? 1 : 0, network.masters().size());
+  }
+
+  @Test
+  void aLinkKeptForOneTouchHoldsACellSharedWithACutTouch() {
+    long lower = at(5).asLong();
+    long upper = at(6).asLong();
+    WireNetwork network = network();
+    network.link(lower, List.of(at(5), at(6)));
+    network.link(upper, List.of(at(5), at(6)));
+    network.lastLoads().put(lower, 2);
+    network.keepFacts(pos -> pos == upper);
+    assertEquals(2, network.lastLoads().get(lower));
   }
 
   @ParameterizedTest(name = "{0} links")
@@ -47,8 +72,11 @@ class WireNetworkTest {
     }
     WireNetwork restored = network();
     restored.unpackLinks(network.packedLinks());
-    assertEquals(network.linkedCells(), restored.linkedCells());
     assertEquals(network.links().keySet(), restored.links().keySet());
+    network
+        .links()
+        .forEach(
+            (touched, cells) -> assertArrayEquals(cells, restored.links().get((long) touched)));
   }
 
   @Test

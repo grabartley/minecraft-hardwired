@@ -409,6 +409,30 @@ public class PowerGridGameTest implements FabricGameTest {
         });
   }
 
+  @GameTest(templateName = BENCH, tickLimit = 60)
+  public void cuttingAWireRecountsBothHalves(TestContext context) {
+    WireEngine engine = WireEngine.of(context.getWorld());
+    lampRun(context);
+    cell(context, CELL, 100);
+    context.waitAndRun(
+        SETTLE,
+        () -> {
+          context.expectBlockProperty(LAMP, AbstractLampBlock.LEVEL, FULL);
+          engine.cut(new WireCell(floor(context, 4, 1), Hue.PLAIN));
+        });
+    context.waitAndRun(
+        SETTLE * 2L,
+        () -> {
+          WireNetwork near = engine.grid().networkOf(new WireCell(floor(context, 2, 1), Hue.PLAIN));
+          WireNetwork far = engine.grid().networkOf(new WireCell(floor(context, 5, 1), Hue.PLAIN));
+          context.expectBlockProperty(LAMP, AbstractLampBlock.LEVEL, 0);
+          context.assertTrue(near.gridSupply() == 16, "the cell side must keep its supply");
+          context.assertTrue(far.gridSupply() == 0, "the cut side must lose its supply");
+          context.assertFalse(far.gridState().givesPower(), "the cut side must go dark");
+          context.complete();
+        });
+  }
+
   @GameTest(templateName = BENCH)
   public void wireOnTheTopHalfOfAMasterSwitchJoinsItsGrid(TestContext context) {
     lampRun(context);

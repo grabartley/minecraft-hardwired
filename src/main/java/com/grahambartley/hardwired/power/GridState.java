@@ -22,6 +22,10 @@ public enum GridState {
     return stopReason;
   }
 
+  public GridState higherOf(GridState other) {
+    return ordinal() > other.ordinal() ? this : other;
+  }
+
   public boolean givesPower() {
     return this == LIVE;
   }

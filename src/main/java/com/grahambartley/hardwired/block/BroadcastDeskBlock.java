@@ -194,7 +194,9 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
 
   @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
-    return world.getBlockEntity(panelOf(pos, state)) instanceof BroadcastDeskBlockEntity desk
+    BlockPos panel = panelOf(pos, state);
+    return WireEngine.of(world).isLoaded(panel)
+            && world.getBlockEntity(panel) instanceof BroadcastDeskBlockEntity desk
             && desk.wantsAir()
         ? ratedLoad(Hardwired.SERVER_CONFIG.power())
         : 0;

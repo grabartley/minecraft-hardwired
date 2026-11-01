@@ -8,6 +8,17 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 class GridStateTest {
 
+  @ParameterizedTest(name = "{0} and {1} give {2}")
+  @CsvSource({
+    "NO_SOURCE,LIVE,LIVE",
+    "LIVE,NO_SOURCE,LIVE",
+    "OVERLOADED,OUT_OF_FUEL,OVERLOADED",
+    "RETURNING,RETURNING,RETURNING"
+  })
+  void theHigherStateWins(GridState first, GridState second, GridState higher) {
+    assertEquals(higher, first.higherOf(second));
+  }
+
   @ParameterizedTest(name = "{0}")
   @CsvSource({
     "NO_SOURCE,NO_SOURCE,false",

@@ -26,6 +26,20 @@ class WireGridNbtTest {
 
   @ParameterizedTest
   @EnumSource(Hue.class)
+  void everyLinkKeepsItsCellsThroughARoundTrip(Hue hue) {
+    WireGrid grid = new WireGrid();
+    WireNetwork network = grid.add(cell(0, hue));
+    BlockPos lower = new BlockPos(1, 60, 1);
+    network.link(lower.up().asLong(), List.of(lower, lower.up()));
+
+    WireNetwork restored = WireGridNbt.read(WireGridNbt.write(grid)).networkOf(cell(0, hue));
+
+    assertEquals(network.linkedCells(), restored.linkedCells());
+    assertEquals(network.links().keySet(), restored.links().keySet());
+  }
+
+  @ParameterizedTest
+  @EnumSource(Hue.class)
   void everyFieldSurvivesARoundTrip(Hue hue) {
     WireGrid grid = new WireGrid();
     WireNetwork red = grid.add(cell(0, hue));

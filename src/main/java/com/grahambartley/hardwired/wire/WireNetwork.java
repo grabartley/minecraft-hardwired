@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.LongPredicate;
 import net.minecraft.util.math.BlockPos;
 
 public final class WireNetwork {
@@ -109,6 +110,15 @@ public final class WireNetwork {
     links.put(touched, cells.stream().mapToLong(BlockPos::asLong).toArray());
   }
 
+  public void keepFacts(LongPredicate keepsLink) {
+    links.keySet().removeIf((long touched) -> !keepsLink.test(touched));
+    LongOpenHashSet kept = linkedCells();
+    lastLoads.keySet().retainAll(kept);
+    lastRatings.keySet().retainAll(kept);
+    lastSources.keySet().retainAll(kept);
+    masters.retainAll(kept);
+  }
+
   public LongOpenHashSet linkedCells() {
     LongOpenHashSet cells = new LongOpenHashSet();
     links.values().forEach(each -> cells.addAll(LongList.of(each)));
@@ -178,7 +188,7 @@ public final class WireNetwork {
     lastSources.putAll(other.lastSources);
     links.putAll(other.links);
     masters.addAll(other.masters);
-    gridState = gridState.ordinal() > other.gridState.ordinal() ? gridState : other.gridState;
+    gridState = gridState.higherOf(other.gridState);
     darkUntil = Math.max(darkUntil, other.darkUntil);
   }
 

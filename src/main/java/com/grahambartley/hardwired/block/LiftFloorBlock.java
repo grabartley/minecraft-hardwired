@@ -62,7 +62,7 @@ public final class LiftFloorBlock extends Block implements BlockEntityProvider, 
   }
 
   public static BlockPos lower(BlockPos pos, BlockState state) {
-    return state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
+    return WireDevice.twoTall(pos, state.get(HALF)).getFirst();
   }
 
   @Override
