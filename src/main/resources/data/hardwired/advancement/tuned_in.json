@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:radio"
+    },
+    "title": {
+      "translate": "advancement.hardwired.tuned_in.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.tuned_in.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "heard": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "tuned_in"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light"
+}

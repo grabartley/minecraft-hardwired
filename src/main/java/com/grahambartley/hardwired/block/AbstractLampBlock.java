@@ -17,14 +17,11 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -43,10 +40,9 @@ public abstract class AbstractLampBlock extends Block
 
   public static final IntProperty LEVEL = IntProperty.of("level", 0, 15);
   public static final BooleanProperty LIT = Properties.LIT;
-  public static final IntProperty AGE = IntProperty.of("age", 0, 3);
-  public static final BooleanProperty WAXED = BooleanProperty.of("waxed");
-  public static final int MAX_AGE = 3;
-  private static final float BASE_AGE_CHANCE = 64F / 1125F;
+  public static final IntProperty AGE = CopperCare.AGE;
+  public static final BooleanProperty WAXED = CopperCare.WAXED;
+  public static final int MAX_AGE = CopperCare.MAX_AGE;
 
   protected AbstractLampBlock(Settings settings) {
     super(settings);
@@ -165,13 +161,13 @@ public abstract class AbstractLampBlock extends Block
 
   @Override
   protected boolean hasRandomTicks(BlockState state) {
-    return state.get(AGE) < MAX_AGE && !state.get(WAXED);
+    return CopperCare.canAge(state);
   }
 
   @Override
   protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
     if (random.nextFloat()
-        < BASE_AGE_CHANCE * Hardwired.SERVER_CONFIG.lamp().ageRateMultiplierPercent() / 100F) {
+        < CopperCare.ageChance(Hardwired.SERVER_CONFIG.lamp().ageRateMultiplierPercent())) {
       int age = state.get(AGE) + 1;
       update(world, pos, state.with(AGE, age));
       if (age == MAX_AGE) {
@@ -192,14 +188,7 @@ public abstract class AbstractLampBlock extends Block
     if (stack.getItem() instanceof DyeItem dye) {
       return applyDye(stack, dye, world, lampPos(pos, state), player);
     }
-    if (stack.isOf(Items.HONEYCOMB) && !state.get(WAXED)) {
-      stack.decrementUnlessCreative(1, player);
-      return change(world, pos, state.with(WAXED, true), SoundEvents.ITEM_HONEYCOMB_WAX_ON);
-    }
-    if (stack.getItem() instanceof AxeItem) {
-      return scrape(stack, state, world, pos, player, hand);
-    }
-    return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    return CopperCare.use(stack, state, world, pos, player, hand, next -> update(world, pos, next));
   }
 
   private ItemActionResult applyDye(
@@ -214,32 +203,6 @@ public abstract class AbstractLampBlock extends Block
       stack.decrementUnlessCreative(1, player);
       ModCriteria.DEVICE.trigger((ServerPlayerEntity) player, DeviceCriterion.colorEvent(hue));
       world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS, 1F, 1F);
-    }
-    return ItemActionResult.SUCCESS;
-  }
-
-  private ItemActionResult scrape(
-      ItemStack stack,
-      BlockState state,
-      World world,
-      BlockPos pos,
-      PlayerEntity player,
-      Hand hand) {
-    if (state.get(WAXED)) {
-      stack.damage(1, player, PlayerEntity.getSlotForHand(hand));
-      return change(world, pos, state.with(WAXED, false), SoundEvents.ITEM_AXE_WAX_OFF);
-    }
-    if (state.get(AGE) > 0) {
-      stack.damage(1, player, PlayerEntity.getSlotForHand(hand));
-      return change(world, pos, state.with(AGE, state.get(AGE) - 1), SoundEvents.ITEM_AXE_SCRAPE);
-    }
-    return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-  }
-
-  private ItemActionResult change(World world, BlockPos pos, BlockState state, SoundEvent sound) {
-    if (!world.isClient) {
-      update(world, pos, state);
-      world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1F, 1F);
     }
     return ItemActionResult.SUCCESS;
   }

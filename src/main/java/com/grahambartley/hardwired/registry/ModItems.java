@@ -54,7 +54,9 @@ public final class ModItems {
           ModBlocks.RADIO,
           ModBlocks.SPEAKER,
           ModBlocks.INTERCOM,
-          ModBlocks.LIFT);
+          ModBlocks.LIFT,
+          ModBlocks.RADIO_MAST,
+          ModBlocks.BROADCAST_DESK);
 
   private ModItems() {}
 

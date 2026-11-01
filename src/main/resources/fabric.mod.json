@@ -34,7 +34,9 @@
       "com.grahambartley.hardwired.gametest.CircuitBoardGameTest",
       "com.grahambartley.hardwired.gametest.PowerGameTest",
       "com.grahambartley.hardwired.gametest.ElectronicsGameTest",
-      "com.grahambartley.hardwired.gametest.LiftGameTest"
+      "com.grahambartley.hardwired.gametest.LiftGameTest",
+      "com.grahambartley.hardwired.gametest.RadioGameTest",
+      "com.grahambartley.hardwired.gametest.BroadcastDeskGameTest"
     ],
     "modmenu": [
       "com.grahambartley.hardwired.HardwiredModMenu"

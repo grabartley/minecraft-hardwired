@@ -37,11 +37,12 @@ public final class ElectronicsDriver {
     }
     DeviceStatus before = entity.status();
     DeviceStatus demand = device.demand(world, pos, state);
+    BlockPos wired = device.wiredAt(world, pos, state);
     boolean paid =
         demand == DeviceStatus.RUNNING
-            && ChargeNetwork.tryDrain(world, pos, device.chargePerSecond());
+            && ChargeNetwork.tryDrain(world, wired, device.chargePerSecond());
     boolean unpaid = demand == DeviceStatus.RUNNING && !paid;
-    boolean hasCell = unpaid && !ChargeNetwork.storesFor(world, pos).isEmpty();
+    boolean hasCell = unpaid && !ChargeNetwork.storesFor(world, wired).isEmpty();
     DeviceStatus next = ElectronicsRule.next(demand, paid, hasCell);
     entity.setStatus(next);
     device.show(world, pos, state, next);
@@ -51,7 +52,7 @@ public final class ElectronicsDriver {
     if (device.keepsChecking(next)) {
       world.scheduleBlockTick(pos, state.getBlock(), BEAT_TICKS);
     }
-    if (ElectronicsRule.lightsOut(before, next, () -> networkStatuses(world, pos))) {
+    if (ElectronicsRule.lightsOut(before, next, () -> networkStatuses(world, wired))) {
       ModCriteria.DEVICE.triggerNear(world, pos, ModCriteria.LIGHTS_OUT);
     }
   }

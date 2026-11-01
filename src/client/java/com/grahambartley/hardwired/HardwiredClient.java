@@ -1,12 +1,14 @@
 package com.grahambartley.hardwired;
 
 import com.grahambartley.hardwired.block.AbstractLampBlock;
+import com.grahambartley.hardwired.block.BroadcastDeskBlockEntity;
 import com.grahambartley.hardwired.block.CircuitBoardBlockEntity;
 import com.grahambartley.hardwired.block.ControlPanelBlockEntity;
 import com.grahambartley.hardwired.block.ControllerBlockEntity;
 import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.LampBlockEntity;
+import com.grahambartley.hardwired.block.RadioBlockEntity;
 import com.grahambartley.hardwired.client.DeviceHud;
 import com.grahambartley.hardwired.client.LiftCarRenderer;
 import com.grahambartley.hardwired.client.WireDrag;
@@ -15,6 +17,7 @@ import com.grahambartley.hardwired.client.WireRenderer;
 import com.grahambartley.hardwired.client.WireViewStore;
 import com.grahambartley.hardwired.client.anim.AnimatedDeviceRenderer;
 import com.grahambartley.hardwired.client.anim.DeviceAnimations;
+import com.grahambartley.hardwired.client.radio.BroadcastSounds;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
 import com.grahambartley.hardwired.network.CircuitResultPayload;
@@ -30,6 +33,7 @@ import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.registry.ModEntities;
 import com.grahambartley.hardwired.registry.ModItems;
+import com.grahambartley.hardwired.screen.BroadcastDeskScreen;
 import com.grahambartley.hardwired.screen.CircuitBoardScreen;
 import com.grahambartley.hardwired.screen.ControlPanelScreen;
 import com.grahambartley.hardwired.screen.ControllerScreen;
@@ -37,6 +41,7 @@ import com.grahambartley.hardwired.screen.IntercomScreen;
 import com.grahambartley.hardwired.screen.JunctionScreen;
 import com.grahambartley.hardwired.screen.LiftScreen;
 import com.grahambartley.hardwired.screen.MainPanelScreen;
+import com.grahambartley.hardwired.screen.RadioScreen;
 import com.grahambartley.hardwired.wire.Hue;
 import java.util.List;
 import net.fabricmc.api.ClientModInitializer;
@@ -106,6 +111,7 @@ public class HardwiredClient implements ClientModInitializer {
     DeviceAnimations.register();
     ANIMATED_TYPES.forEach(HardwiredClient::registerAnimated);
     LiftCarRenderer.registerModel();
+    BroadcastSounds.register();
     EntityRendererRegistry.register(ModEntities.LIFT_CAR, LiftCarRenderer::new);
   }
 
@@ -121,6 +127,10 @@ public class HardwiredClient implements ClientModInitializer {
       client.setScreen(new ControllerScreen(pos, controller));
     } else if (client.world.getBlockEntity(pos) instanceof CircuitBoardBlockEntity board) {
       client.setScreen(new CircuitBoardScreen(pos, board));
+    } else if (client.world.getBlockEntity(pos) instanceof RadioBlockEntity radio) {
+      client.setScreen(new RadioScreen(pos, radio));
+    } else if (client.world.getBlockEntity(pos) instanceof BroadcastDeskBlockEntity desk) {
+      client.setScreen(new BroadcastDeskScreen(pos, desk));
     } else if (client.world.getBlockState(pos).getBlock() instanceof JunctionBlock) {
       client.setScreen(new JunctionScreen(pos, client.world.getBlockState(pos)));
     } else if (client.world.getBlockState(pos).getBlock() instanceof IntercomBlock) {

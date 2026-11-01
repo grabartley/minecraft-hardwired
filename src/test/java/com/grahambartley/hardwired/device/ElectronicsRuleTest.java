@@ -19,8 +19,8 @@ class ElectronicsRuleTest {
     "RUNNING,false,true,NO_CHARGE",
     "RUNNING,false,false,NO_CELL",
     "WIRE_OFF,false,true,WIRE_OFF",
-    "NO_DISC,false,false,NO_DISC",
-    "SONG_ENDED,false,true,SONG_ENDED"
+    "NO_TOWER,false,false,NO_TOWER",
+    "RADIO_OFF,false,true,RADIO_OFF"
   })
   void aRunningDeviceThatCannotPayStopsWithAReason(
       DeviceStatus demand, boolean paid, boolean hasCell, DeviceStatus next) {

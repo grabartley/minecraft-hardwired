@@ -35,7 +35,8 @@ class HardwiredConfigTest {
             new DeviceSettings(9, 40, 32),
             PowerSettings.DEFAULTS,
             LiftSettings.DEFAULTS,
-            CircuitSettings.DEFAULTS);
+            CircuitSettings.DEFAULTS,
+            new RadioSettings(6, 40, 100, 20, 30, 70, 10, 50));
     HardwiredConfig.save(file(), config);
     assertEquals(config, HardwiredConfig.load(file()));
   }

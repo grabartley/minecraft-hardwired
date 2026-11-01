@@ -10,7 +10,8 @@ public record PowerSettings(
     int alarmChargePerSecond,
     int radioChargePerSecond,
     int speakerChargePerSecond,
-    int intercomChargePerLine) {
+    int intercomChargePerLine,
+    int broadcastChargePerSecond) {
 
   public static final int CELL_CAPACITY_MIN = 100;
   public static final int CELL_CAPACITY_MAX = 100000;
@@ -28,8 +29,10 @@ public record PowerSettings(
   public static final int SPEAKER_CHARGE_MAX = 100;
   public static final int INTERCOM_CHARGE_MIN = 0;
   public static final int INTERCOM_CHARGE_MAX = 100;
+  public static final int BROADCAST_CHARGE_MIN = 0;
+  public static final int BROADCAST_CHARGE_MAX = 100;
 
-  public static final PowerSettings DEFAULTS = new PowerSettings(1000, 10, 6, 500, 1, 1, 1, 1);
+  public static final PowerSettings DEFAULTS = new PowerSettings(1000, 10, 6, 500, 1, 1, 1, 1, 3);
 
   static final String KEY_CELL_CAPACITY = "cellCapacity";
   static final String KEY_DUST_CHARGE = "dustCharge";
@@ -39,6 +42,7 @@ public record PowerSettings(
   static final String KEY_RADIO_CHARGE = "radioChargePerSecond";
   static final String KEY_SPEAKER_CHARGE = "speakerChargePerSecond";
   static final String KEY_INTERCOM_CHARGE = "intercomChargePerLine";
+  static final String KEY_BROADCAST_CHARGE = "broadcastChargePerSecond";
 
   public PowerSettings {
     cellCapacity = ConfigBounds.clamp(cellCapacity, CELL_CAPACITY_MIN, CELL_CAPACITY_MAX);
@@ -55,6 +59,8 @@ public record PowerSettings(
         ConfigBounds.clamp(speakerChargePerSecond, SPEAKER_CHARGE_MIN, SPEAKER_CHARGE_MAX);
     intercomChargePerLine =
         ConfigBounds.clamp(intercomChargePerLine, INTERCOM_CHARGE_MIN, INTERCOM_CHARGE_MAX);
+    broadcastChargePerSecond =
+        ConfigBounds.clamp(broadcastChargePerSecond, BROADCAST_CHARGE_MIN, BROADCAST_CHARGE_MAX);
   }
 
   public PowerSettings withCellCapacity(final int value) {
@@ -66,7 +72,8 @@ public record PowerSettings(
         alarmChargePerSecond,
         radioChargePerSecond,
         speakerChargePerSecond,
-        intercomChargePerLine);
+        intercomChargePerLine,
+        broadcastChargePerSecond);
   }
 
   public PowerSettings withDustCharge(final int value) {
@@ -78,7 +85,8 @@ public record PowerSettings(
         alarmChargePerSecond,
         radioChargePerSecond,
         speakerChargePerSecond,
-        intercomChargePerLine);
+        intercomChargePerLine,
+        broadcastChargePerSecond);
   }
 
   public PowerSettings withSolarChargePerMinute(final int value) {
@@ -90,7 +98,8 @@ public record PowerSettings(
         alarmChargePerSecond,
         radioChargePerSecond,
         speakerChargePerSecond,
-        intercomChargePerLine);
+        intercomChargePerLine,
+        broadcastChargePerSecond);
   }
 
   public PowerSettings withLightningCharge(final int value) {
@@ -102,7 +111,8 @@ public record PowerSettings(
         alarmChargePerSecond,
         radioChargePerSecond,
         speakerChargePerSecond,
-        intercomChargePerLine);
+        intercomChargePerLine,
+        broadcastChargePerSecond);
   }
 
   public PowerSettings withAlarmChargePerSecond(final int value) {
@@ -114,7 +124,8 @@ public record PowerSettings(
         value,
         radioChargePerSecond,
         speakerChargePerSecond,
-        intercomChargePerLine);
+        intercomChargePerLine,
+        broadcastChargePerSecond);
   }
 
   public PowerSettings withRadioChargePerSecond(final int value) {
@@ -126,7 +137,8 @@ public record PowerSettings(
         alarmChargePerSecond,
         value,
         speakerChargePerSecond,
-        intercomChargePerLine);
+        intercomChargePerLine,
+        broadcastChargePerSecond);
   }
 
   public PowerSettings withSpeakerChargePerSecond(final int value) {
@@ -138,7 +150,8 @@ public record PowerSettings(
         alarmChargePerSecond,
         radioChargePerSecond,
         value,
-        intercomChargePerLine);
+        intercomChargePerLine,
+        broadcastChargePerSecond);
   }
 
   public PowerSettings withIntercomChargePerLine(final int value) {
@@ -150,6 +163,20 @@ public record PowerSettings(
         alarmChargePerSecond,
         radioChargePerSecond,
         speakerChargePerSecond,
+        value,
+        broadcastChargePerSecond);
+  }
+
+  public PowerSettings withBroadcastChargePerSecond(final int value) {
+    return new PowerSettings(
+        cellCapacity,
+        dustCharge,
+        solarChargePerMinute,
+        lightningCharge,
+        alarmChargePerSecond,
+        radioChargePerSecond,
+        speakerChargePerSecond,
+        intercomChargePerLine,
         value);
   }
 
@@ -178,7 +205,12 @@ public record PowerSettings(
             KEY_INTERCOM_CHARGE,
             DEFAULTS.intercomChargePerLine,
             INTERCOM_CHARGE_MIN,
-            INTERCOM_CHARGE_MAX));
+            INTERCOM_CHARGE_MAX),
+        fields.readInt(
+            KEY_BROADCAST_CHARGE,
+            DEFAULTS.broadcastChargePerSecond,
+            BROADCAST_CHARGE_MIN,
+            BROADCAST_CHARGE_MAX));
   }
 
   void writeJson(final JsonObject root) {
@@ -190,5 +222,6 @@ public record PowerSettings(
     root.addProperty(KEY_RADIO_CHARGE, radioChargePerSecond);
     root.addProperty(KEY_SPEAKER_CHARGE, speakerChargePerSecond);
     root.addProperty(KEY_INTERCOM_CHARGE, intercomChargePerLine);
+    root.addProperty(KEY_BROADCAST_CHARGE, broadcastChargePerSecond);
   }
 }

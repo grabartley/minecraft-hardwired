@@ -35,8 +35,12 @@ public class ElectronicBlockEntity extends BlockEntity {
       return;
     }
     status = next;
+    sync();
+  }
+
+  protected void sync() {
     markDirty();
-    if (world != null) {
+    if (world != null && !world.isClient) {
       world.updateListeners(pos, getCachedState(), getCachedState(), 0);
     }
   }

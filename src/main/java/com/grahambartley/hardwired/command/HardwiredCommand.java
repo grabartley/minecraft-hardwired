@@ -7,6 +7,7 @@ import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
 import com.grahambartley.hardwired.config.PowerSettings;
+import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.config.WireSettings;
 import com.grahambartley.hardwired.server.ServerConfigService;
 import com.grahambartley.hardwired.wire.WireOverrides;
@@ -135,6 +136,14 @@ public final class HardwiredCommand {
               config -> config.power().intercomChargePerLine(),
               (config, value) -> config.withPower(config.power().withIntercomChargePerLine(value))),
           new IntOption(
+              "broadcastchargepersecond",
+              "charge",
+              PowerSettings.BROADCAST_CHARGE_MIN,
+              PowerSettings.BROADCAST_CHARGE_MAX,
+              config -> config.power().broadcastChargePerSecond(),
+              (config, value) ->
+                  config.withPower(config.power().withBroadcastChargePerSecond(value))),
+          new IntOption(
               "liftticksperblock",
               "ticks",
               LiftSettings.TICKS_PER_BLOCK_MIN,
@@ -161,7 +170,63 @@ public final class HardwiredCommand {
               CircuitSettings.PARTS_PER_REDSTONE_MIN,
               CircuitSettings.PARTS_PER_REDSTONE_MAX,
               config -> config.circuit().partsPerRedstone(),
-              (config, value) -> config.withCircuit(config.circuit().withPartsPerRedstone(value))));
+              (config, value) -> config.withCircuit(config.circuit().withPartsPerRedstone(value))),
+          new IntOption(
+              "towerminmasts",
+              "masts",
+              RadioSettings.TOWER_MIN_MASTS_MIN,
+              RadioSettings.TOWER_MIN_MASTS_MAX,
+              config -> config.radio().towerMinMasts(),
+              (config, value) -> config.withRadio(config.radio().withTowerMinMasts(value))),
+          new IntOption(
+              "towermaxmasts",
+              "masts",
+              RadioSettings.TOWER_MAX_MASTS_MIN,
+              RadioSettings.TOWER_MAX_MASTS_MAX,
+              config -> config.radio().towerMaxMasts(),
+              (config, value) -> config.withRadio(config.radio().withTowerMaxMasts(value))),
+          new IntOption(
+              "towerbasereach",
+              "blocks",
+              RadioSettings.TOWER_BASE_REACH_MIN,
+              RadioSettings.TOWER_BASE_REACH_MAX,
+              config -> config.radio().towerBaseReach(),
+              (config, value) -> config.withRadio(config.radio().withTowerBaseReach(value))),
+          new IntOption(
+              "towerreachpermast",
+              "blocks",
+              RadioSettings.TOWER_REACH_PER_MAST_MIN,
+              RadioSettings.TOWER_REACH_PER_MAST_MAX,
+              config -> config.radio().towerReachPerMast(),
+              (config, value) -> config.withRadio(config.radio().withTowerReachPerMast(value))),
+          new IntOption(
+              "radiohearing",
+              "blocks",
+              RadioSettings.RADIO_HEARING_MIN,
+              RadioSettings.RADIO_HEARING_MAX,
+              config -> config.radio().radioHearing(),
+              (config, value) -> config.withRadio(config.radio().withRadioHearing(value))),
+          new IntOption(
+              "speakerhearing",
+              "blocks",
+              RadioSettings.SPEAKER_HEARING_MIN,
+              RadioSettings.SPEAKER_HEARING_MAX,
+              config -> config.radio().speakerHearing(),
+              (config, value) -> config.withRadio(config.radio().withSpeakerHearing(value))),
+          new IntOption(
+              "undergroundfreedepth",
+              "blocks",
+              RadioSettings.UNDERGROUND_FREE_DEPTH_MIN,
+              RadioSettings.UNDERGROUND_FREE_DEPTH_MAX,
+              config -> config.radio().undergroundFreeDepth(),
+              (config, value) -> config.withRadio(config.radio().withUndergroundFreeDepth(value))),
+          new IntOption(
+              "undergroundlossdepth",
+              "blocks",
+              RadioSettings.UNDERGROUND_LOSS_DEPTH_MIN,
+              RadioSettings.UNDERGROUND_LOSS_DEPTH_MAX,
+              config -> config.radio().undergroundLossDepth(),
+              (config, value) -> config.withRadio(config.radio().withUndergroundLossDepth(value))));
 
   private HardwiredCommand() {}
 

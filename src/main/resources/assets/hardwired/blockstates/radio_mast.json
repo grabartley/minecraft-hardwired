@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "tier=0": {
+      "model": "hardwired:block/radio_mast_0"
+    },
+    "tier=1": {
+      "model": "hardwired:block/radio_mast_1"
+    },
+    "tier=2": {
+      "model": "hardwired:block/radio_mast_2"
+    },
+    "tier=3": {
+      "model": "hardwired:block/radio_mast_3"
+    },
+    "tier=4": {
+      "model": "hardwired:block/radio_mast_4"
+    }
+  }
+}

@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.registry;
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.AbstractLampBlock;
 import com.grahambartley.hardwired.block.AlarmBlock;
+import com.grahambartley.hardwired.block.BroadcastDeskBlock;
 import com.grahambartley.hardwired.block.CircuitBlock;
 import com.grahambartley.hardwired.block.CircuitBoardBlock;
 import com.grahambartley.hardwired.block.ControlPanelBlock;
@@ -16,6 +17,7 @@ import com.grahambartley.hardwired.block.LiftFloorBlock;
 import com.grahambartley.hardwired.block.MainPanelBlock;
 import com.grahambartley.hardwired.block.MountedLampBlock;
 import com.grahambartley.hardwired.block.RadioBlock;
+import com.grahambartley.hardwired.block.RadioMastBlock;
 import com.grahambartley.hardwired.block.RedstoneCellBlock;
 import com.grahambartley.hardwired.block.SensorBlock;
 import com.grahambartley.hardwired.block.SolarPanelBlock;
@@ -51,6 +53,7 @@ public final class ModBlocks {
   private static final double[] SPEAKER_BOX = {3, 0, 3, 13, 13, 13};
   private static final double[] INTERCOM_BOX = {5, 0, 5, 11, 12, 11};
   private static final int RADIO_GLOW = 7;
+  private static final int DESK_GLOW = 7;
 
   public static final Block COPPER_LAMP =
       register(
@@ -160,6 +163,23 @@ public final class ModBlocks {
                   .pistonBehavior(PistonBehavior.BLOCK)));
   public static final Block LIFT_FLOOR =
       register("lift_floor", new LiftFloorBlock(deviceSettings()));
+
+  public static final Block RADIO_MAST =
+      register(
+          "radio_mast",
+          new RadioMastBlock(
+              AbstractBlock.Settings.copy(Blocks.COPPER_BLOCK)
+                  .nonOpaque()
+                  .pistonBehavior(PistonBehavior.BLOCK)));
+  public static final Block BROADCAST_DESK =
+      register(
+          "broadcast_desk",
+          new BroadcastDeskBlock(
+              deviceSettings()
+                  .mapColor(MapColor.DEEPSLATE_GRAY)
+                  .sounds(BlockSoundGroup.POLISHED_DEEPSLATE)
+                  .pistonBehavior(PistonBehavior.BLOCK)
+                  .luminance(state -> state.get(BroadcastDeskBlock.ON_AIR) ? DESK_GLOW : 0)));
 
   private ModBlocks() {}
 

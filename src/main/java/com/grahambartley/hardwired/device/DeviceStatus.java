@@ -6,10 +6,13 @@ public enum DeviceStatus {
   WIRE_OFF("wire_off"),
   NO_CELL("no_cell"),
   NO_CHARGE("no_charge"),
-  NO_DISC("no_disc"),
-  NO_SPEAKER("no_speaker"),
   NO_RADIO("no_radio"),
-  SONG_ENDED("song_ended"),
+  RADIO_OFF("radio_off"),
+  NO_STATION("no_station"),
+  NO_TOWER("no_tower"),
+  TOWER_TOO_SHORT("tower_too_short"),
+  TOWER_NO_ROD("tower_no_rod"),
+  TOWER_IN_USE("tower_in_use"),
   SHAFT_BLOCKED("shaft_blocked"),
   NO_LIFT("no_lift");
 

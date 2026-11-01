@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:broadcast_desk"
+    },
+    "title": {
+      "translate": "advancement.hardwired.on_the_air.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.on_the_air.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "heard": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "on_the_air"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light"
+}
