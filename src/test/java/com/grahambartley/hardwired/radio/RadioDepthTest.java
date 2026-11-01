@@ -2,15 +2,17 @@ package com.grahambartley.hardwired.radio;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Set;
+import java.util.Map;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 class RadioDepthTest {
 
-  @ParameterizedTest(name = "top {0}, radio {1}, top solid {2}")
-  @CsvSource({"64,10,63,54", "64,10,40,31", "64,63,-1,0", "64,10,-1,0", "64,70,-1,0"})
-  void depthCountsFromTheTopSolidBlock(int top, int radio, int solid, int depth) {
-    assertEquals(depth, RadioDepth.below(top, radio, Set.of(solid)::contains));
+  private static final Map<Integer, Double> ROOF = Map.of(63, 1D, 40, 8D, 20, 0.5D);
+
+  @ParameterizedTest(name = "top {0}, radio {1}")
+  @CsvSource({"64,10,9.5", "64,30,9", "64,50,1", "64,63,0", "64,70,0"})
+  void onlyLayersAboveTheRadioCountAndAirCountsNothing(int top, int radio, double depth) {
+    assertEquals(depth, RadioDepth.above(top, radio, y -> ROOF.getOrDefault(y, 0D)), 1E-9);
   }
 }

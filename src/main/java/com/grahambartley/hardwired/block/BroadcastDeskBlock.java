@@ -52,6 +52,7 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
   public static final EnumProperty<DeskPart> PART = EnumProperty.of("part", DeskPart.class);
   public static final BooleanProperty ON_AIR = BooleanProperty.of("on_air");
   public static final BooleanProperty DISC = BooleanProperty.of("disc");
+  public static final BooleanProperty SPINNING = BooleanProperty.of("spinning");
 
   public BroadcastDeskBlock(Settings settings) {
     super(settings);
@@ -61,7 +62,8 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
             .with(FACING, Direction.NORTH)
             .with(PART, DeskPart.DESK)
             .with(ON_AIR, false)
-            .with(DISC, false));
+            .with(DISC, false)
+            .with(SPINNING, false));
   }
 
   public static BlockPos panelOf(BlockPos pos, BlockState state) {
@@ -75,7 +77,7 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
 
   @Override
   protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-    builder.add(FACING, PART, ON_AIR, DISC);
+    builder.add(FACING, PART, ON_AIR, DISC, SPINNING);
   }
 
   @Override
@@ -254,7 +256,13 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
       BlockState state = world.getBlockState(cell);
       if (state.getBlock() instanceof BroadcastDeskBlock) {
         ElectronicsDriver.show(
-            world, cell, state, state.with(ON_AIR, onAir).with(DISC, desk.hasDisc()));
+            world,
+            cell,
+            state,
+            state
+                .with(ON_AIR, onAir)
+                .with(DISC, desk.hasDisc())
+                .with(SPINNING, onAir && desk.songPlaying()));
       }
     }
   }

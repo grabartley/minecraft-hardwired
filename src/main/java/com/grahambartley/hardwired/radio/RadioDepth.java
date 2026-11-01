@@ -1,17 +1,16 @@
 package com.grahambartley.hardwired.radio;
 
-import java.util.function.IntPredicate;
+import java.util.function.IntToDoubleFunction;
 
 public final class RadioDepth {
 
   private RadioDepth() {}
 
-  public static int below(int topY, int radioY, IntPredicate solidAt) {
+  public static double above(int topY, int radioY, IntToDoubleFunction layerAt) {
+    double layers = 0;
     for (int y = topY - 1; y > radioY; y--) {
-      if (solidAt.test(y)) {
-        return y + 1 - radioY;
-      }
+      layers += layerAt.applyAsDouble(y);
     }
-    return 0;
+    return layers;
   }
 }

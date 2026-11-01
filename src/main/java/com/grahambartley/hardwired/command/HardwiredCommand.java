@@ -378,14 +378,14 @@ public final class HardwiredCommand {
               (config, value) -> config.withRadio(config.radio().withSpeakerHearing(value))),
           new IntOption(
               "undergroundfreedepth",
-              "blocks",
+              "layers",
               RadioSettings.UNDERGROUND_FREE_DEPTH_MIN,
               RadioSettings.UNDERGROUND_FREE_DEPTH_MAX,
               config -> config.radio().undergroundFreeDepth(),
               (config, value) -> config.withRadio(config.radio().withUndergroundFreeDepth(value))),
           new IntOption(
               "undergroundlossdepth",
-              "blocks",
+              "layers",
               RadioSettings.UNDERGROUND_LOSS_DEPTH_MIN,
               RadioSettings.UNDERGROUND_LOSS_DEPTH_MAX,
               config -> config.radio().undergroundLossDepth(),

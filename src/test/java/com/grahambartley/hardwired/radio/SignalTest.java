@@ -18,8 +18,14 @@ class SignalTest {
 
   @ParameterizedTest(name = "depth {0} gives {1}")
   @CsvSource({"-3,1", "0,1", "8,1", "28,0.5", "48,0", "90,0"})
-  void depthCostsNothingUntilTheFreeDepthThenFallsToNothing(int depth, double expected) {
+  void depthCostsNothingUntilTheFreeDepthThenFallsToNothing(double depth, double expected) {
     assertEquals(expected, Signal.byDepth(depth, 8, 40), EPSILON);
+  }
+
+  @ParameterizedTest(name = "default settings at {0} layers give {1}")
+  @CsvSource({"15,1", "20,1", "70,0.5", "120,0", "200,0"})
+  void buildingsAreFreeAndDeepRockFades(double depth, double expected) {
+    assertEquals(expected, Signal.strength(0, 100, depth, 0, RadioSettings.DEFAULTS), EPSILON);
   }
 
   @ParameterizedTest(name = "{0} steps off gives {1}")
@@ -33,12 +39,12 @@ class SignalTest {
     "0,100,1,0,1",
     "50,100,1,0,0.5",
     "50,100,1,1,0.25",
-    "50,100,28,0,0.25",
-    "0,100,48,0,0",
+    "50,100,70,0,0.25",
+    "0,100,120,0,0",
     "0,100,1,2,0"
   })
   void strengthMultipliesAllThreeCuts(
-      double distance, int reach, int depth, int steps, double expected) {
+      double distance, int reach, double depth, int steps, double expected) {
     assertEquals(
         expected, Signal.strength(distance, reach, depth, steps, RadioSettings.DEFAULTS), EPSILON);
   }
