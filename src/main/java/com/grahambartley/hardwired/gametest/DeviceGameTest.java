@@ -97,7 +97,7 @@ public class DeviceGameTest implements FabricGameTest {
     context.setBlockState(
         at(1, 1), floor(ModBlocks.WALL_SWITCH).with(MountedDeviceBlock.POWERED, true));
     context.setBlockState(at(3, 1), floor(ModBlocks.CONTROL_PANEL));
-    context.setBlockState(at(5, 1), ModBlocks.COPPER_LAMP);
+    context.setBlockState(at(5, 1), ModBlocks.LIGHT_STRIP);
     run(context, 1, 5, 1, Hue.PLAIN);
     context.waitAndRun(
         SETTLE_TICKS,
@@ -123,7 +123,7 @@ public class DeviceGameTest implements FabricGameTest {
     BlockPos switchPos = at(1, 1);
     context.setBlockState(switchPos, floor(ModBlocks.WALL_SWITCH).with(SwitchBlock.SCENE, 1));
     context.setBlockState(at(3, 1), floor(ModBlocks.CONTROL_PANEL));
-    context.setBlockState(at(5, 1), ModBlocks.COPPER_LAMP);
+    context.setBlockState(at(5, 1), ModBlocks.LIGHT_STRIP);
     run(context, 1, 5, 1, Hue.PLAIN);
     ControlPanelBlockEntity panel = context.getBlockEntity(at(3, 1));
     panel.saveScene(0, "Dinner", new LampLook(Hue.BLUE, 6));
@@ -191,6 +191,8 @@ public class DeviceGameTest implements FabricGameTest {
     context.setBlockState(
         base.up(), ModBlocks.STREETLIGHT.getDefaultState().with(StreetlightBlock.PART, 1));
     context.setBlockState(
+        base.up(2), ModBlocks.STREETLIGHT.getDefaultState().with(StreetlightBlock.PART, 2));
+    context.setBlockState(
         base.up(StreetlightBlock.HEAD),
         ModBlocks.STREETLIGHT.getDefaultState().with(StreetlightBlock.PART, StreetlightBlock.HEAD));
   }
@@ -244,7 +246,7 @@ public class DeviceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void honeycombWaxesALampAndAnAxeScrapesIt(TestContext context) {
-    context.setBlockState(at(3, 3), ModBlocks.COPPER_LAMP);
+    context.setBlockState(at(3, 3), ModBlocks.LIGHT_STRIP);
     ServerPlayerEntity player = playerAt(context, at(2, 3));
     useItem(context, player, Items.HONEYCOMB, at(3, 3));
     context.expectBlockProperty(at(3, 3), AbstractLampBlock.WAXED, true);

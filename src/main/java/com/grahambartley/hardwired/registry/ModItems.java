@@ -32,7 +32,6 @@ public final class ModItems {
 
   private static final List<Block> BLOCK_ITEMS =
       List.of(
-          ModBlocks.COPPER_LAMP,
           ModBlocks.COPPER_CEILING_LAMP,
           ModBlocks.COPPER_WALL_LAMP,
           ModBlocks.LIGHT_STRIP,

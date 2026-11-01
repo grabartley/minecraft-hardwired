@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "id": "hardwired:copper_lamp"
+      "id": "hardwired:copper_ceiling_lamp"
     },
     "title": {
       "translate": "advancement.hardwired.vintage.title"

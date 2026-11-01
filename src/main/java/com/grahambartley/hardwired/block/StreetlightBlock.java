@@ -22,10 +22,10 @@ import net.minecraft.world.WorldAccess;
 
 public final class StreetlightBlock extends AbstractLampBlock {
 
-  public static final int HEAD = 2;
+  public static final int HEAD = 3;
   public static final IntProperty PART = IntProperty.of("part", 0, HEAD);
   private static final VoxelShape POST_SHAPE = Block.createCuboidShape(5, 0, 5, 11, 16, 11);
-  private static final VoxelShape HEAD_SHAPE = Block.createCuboidShape(5, 0, 5, 11, 12, 11);
+  private static final VoxelShape HEAD_SHAPE = Block.createCuboidShape(3, 0, 3, 13, 16, 13);
 
   public StreetlightBlock(Settings settings) {
     super(settings);
@@ -59,7 +59,7 @@ public final class StreetlightBlock extends AbstractLampBlock {
   @Override
   protected List<BlockPos> parts(BlockPos pos, BlockState state) {
     BlockPos base = lampPos(pos, state);
-    return List.of(base, base.up(), base.up(HEAD));
+    return List.of(base, base.up(), base.up(2), base.up(HEAD));
   }
 
   @Override
@@ -89,6 +89,7 @@ public final class StreetlightBlock extends AbstractLampBlock {
     boolean fits =
         pos.getY() + HEAD < world.getTopY()
             && world.getBlockState(pos.up()).canReplace(context)
+            && world.getBlockState(pos.up(2)).canReplace(context)
             && world.getBlockState(pos.up(HEAD)).canReplace(context);
     return fits ? getDefaultState() : null;
   }

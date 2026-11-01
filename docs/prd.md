@@ -227,12 +227,13 @@ This is the first wow moment. A player wires lamps to a switch, then changes all
 
 | ID | Requirement |
 |---|---|
-| LIGHT-1 | A Copper Lamp comes in block, ceiling and wall forms, made from copper, redstone and a torch, so the first lamp needs no trip to the Nether |
-| LIGHT-2 | A Light Strip is a rail of small bulbs along a wall, floor or ceiling, and a Streetlight stands on a post |
+| LIGHT-1 | A Copper Lamp comes in ceiling and wall forms, made from copper, redstone and a torch, so the first lamp needs no trip to the Nether |
+| LIGHT-2 | A Light Strip is a rail of small bulbs along a wall, floor or ceiling, and a Streetlight is a four block tall 1920s street lamp on a fluted post |
 | LIGHT-3 | A lamp starts as warm white and can show that or any of the 16 dye colours. Using a dye on a lamp sets its colour |
 | LIGHT-4 | Brightness runs from the vanilla light level 0 to 15 |
 | LIGHT-5 | Exposed lamps age like copper over time, and honeycomb stops it. Age changes the look, not the light |
 | LIGHT-6 | A lamp on a network with no panel turns on at full brightness in the last colour it was given, by a dye or a panel |
+| LIGHT-8 | Lamps are Art Deco fittings: stepped copper mounts, fan and sunburst shapes and frosted glass. They stay simple and blocky, and every lamp's item shows its real model |
 | LIGHT-7 | A Streetlight with a Dusk Sensor on its network turns on at dusk and off at dawn |
 
 **Not supported:** coloured light cast on other blocks (Section 2).
@@ -548,7 +549,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 
 | ID | Requirement |
 |---|---|
-| LOOK-1 | Block and item textures are 16x16, in vanilla's palette and shading |
+| LOOK-1 | Block and item textures are 16x16, in vanilla's palette and shading. Lamp glass may use 32x32 and lamp models half-pixel detail, because fine Art Deco patterns are lost at 16x16 |
 | LOOK-2 | Models are simple and blocky, sitting comfortably beside vanilla blocks |
 | LOOK-3 | Copper and redstone are the main materials, in vanilla's colours |
 | LOOK-4 | Tile and icon art for the advancement tab follows the same rules |
