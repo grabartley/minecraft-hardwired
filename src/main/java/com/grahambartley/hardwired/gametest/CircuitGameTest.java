@@ -213,6 +213,28 @@ public class CircuitGameTest implements FabricGameTest {
   }
 
   @GameTest(templateName = BENCH, tickLimit = 80)
+  public void anUnusedSideLinksNoGridThroughTheBlock(TestContext context) {
+    ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, STANDING);
+    buildSwitchAndInput(context);
+    place(context, player, INVERTER, YAW_NORTH, CIRCUIT);
+    context.setBlockState(at(4, 3), ModBlocks.LODESTONE_DYNAMO);
+    for (int z = 2; z <= 3; z++) {
+      lay(context, 4, z, Hue.RED);
+    }
+    context.waitAndRun(
+        3L * SETTLE_TICKS,
+        () -> {
+          WireEngine engine = WireEngine.of(context.getWorld());
+          context.assertTrue(
+              engine.grid().networksTouching(context.getAbsolutePos(at(2, 1))).stream()
+                  .allMatch(network -> network.gridSupply() == 0),
+              "a source on an unused side must not feed a used port's wire");
+          player.leave();
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 80)
   public void wireOnAnUnusedSideNeitherFeedsNorIsDriven(TestContext context) {
     TestPower.keepFed(context);
     ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, STANDING);

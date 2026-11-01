@@ -164,8 +164,9 @@ public final class PowerGrids {
   private List<WireNetwork> neighbours(WireNetwork network) {
     List<WireNetwork> found = new ArrayList<>();
     for (long link : network.linkedCells()) {
+      BlockPos cell = BlockPos.fromLong(link);
       for (WireNetwork other : grid.networksTouching(link)) {
-        if (network.sharesPowerWith(other)) {
+        if (network.sharesPowerWith(other) && connects(other, cell, loadedState(cell))) {
           found.add(other);
         }
       }
