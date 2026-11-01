@@ -8,7 +8,7 @@
       "from": [
         5,
         5,
-        0
+        0.5
       ],
       "to": [
         11,
@@ -23,8 +23,7 @@
             6,
             6
           ],
-          "texture": "#parts",
-          "cullface": "north"
+          "texture": "#parts"
         }
       }
     },
