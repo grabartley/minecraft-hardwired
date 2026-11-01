@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.power;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.grahambartley.hardwired.config.BurnRates;
+import com.grahambartley.hardwired.config.PowerSettings;
 import java.util.List;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -10,6 +11,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 class BurnPlanTest {
 
   private static final double CLOSE = 1E-9;
+  private static final double SECONDS_PER_MINUTE = 60;
+  private static final int MINUTES_PER_DAY = 20;
+  private static final int STACK = 64;
   private static final BurnRates RATES = new BurnRates(3, 1, 3);
 
   @ParameterizedTest(name = "load {0}")
@@ -47,5 +51,27 @@ class BurnPlanTest {
         BurnPlan.forSecond(
             List.of(new BurnPlan.Source(SourceKind.DYNAMO, 6)), 0, new BurnRates(9, 9, spareRate));
     assertEquals(earned, plan.earned(), CLOSE);
+  }
+
+  private static double burnPerMinute(SourceKind kind, int load) {
+    PowerSettings power = PowerSettings.DEFAULTS;
+    return BurnPlan.forSecond(
+                List.of(new BurnPlan.Source(kind, kind.rating(power))), load, power.burn())
+            .burnFor(0)
+        * SECONDS_PER_MINUTE;
+  }
+
+  @ParameterizedTest(name = "a stack of dust runs {1} load on a {0} for a game day")
+  @CsvSource({"CELL,16", "GENERATOR,32"})
+  void aStackOfDustRunsAHouseForADay(SourceKind kind, int load) {
+    double minutes = STACK * PowerSettings.DEFAULTS.dustCharge() / burnPerMinute(kind, load);
+    assertEquals(1D, minutes / MINUTES_PER_DAY, 0.05);
+  }
+
+  @ParameterizedTest(name = "a full {0} at its rating lasts {1} game days")
+  @CsvSource({"CELL,1000,1.5", "GENERATOR,4000,3"})
+  void aFullSourceAtItsRatingLasts(SourceKind kind, int capacity, double days) {
+    double burn = burnPerMinute(kind, kind.rating(PowerSettings.DEFAULTS));
+    assertEquals(days, capacity / burn / MINUTES_PER_DAY, 0.15);
   }
 }

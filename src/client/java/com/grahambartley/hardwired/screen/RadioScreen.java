@@ -18,6 +18,7 @@ public final class RadioScreen extends Screen {
   private static final int WIDTH = 220;
   private static final int HEIGHT = 170;
   private static final int PADDING = 12;
+  private static final int LABEL_REACH = 43;
   private static final int TITLE_Y = 10;
   private static final int DIAL_Y = 48;
   private static final int DIAL_RADIUS = 20;
@@ -138,15 +139,15 @@ public final class RadioScreen extends Screen {
     fit(
         context,
         Text.translatable("screen.hardwired.radio.tuning"),
-        PADDING,
-        WIDTH / 2,
+        WIDTH / 4 - LABEL_REACH,
+        WIDTH / 4 + LABEL_REACH,
         LABEL_Y,
         SlatePlate.MUTED_COLOR);
     fit(
         context,
         Text.translatable("screen.hardwired.radio.signal"),
-        WIDTH / 2,
-        WIDTH - PADDING,
+        3 * WIDTH / 4 - LABEL_REACH,
+        3 * WIDTH / 4 + LABEL_REACH,
         LABEL_Y,
         SlatePlate.MUTED_COLOR);
     fit(

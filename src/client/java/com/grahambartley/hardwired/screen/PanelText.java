@@ -13,7 +13,6 @@ final class PanelText {
     RIGHT
   }
 
-  private static final int FONT_HEIGHT = 9;
   private static final int SHADOW_ROOM = 1;
   private static final double MILLIS_PER_PIXEL = 30D;
   private static final double SHORTEST_SWEEP_MILLIS = 3000D;
@@ -60,7 +59,7 @@ final class PanelText {
       context.drawText(font, text, startX(left, right, textWidth, align), y, color, shadow);
       return;
     }
-    context.enableScissor(left, y - SHADOW_ROOM, right, y + FONT_HEIGHT + SHADOW_ROOM);
+    context.enableScissor(left, y - SHADOW_ROOM, right, y + font.fontHeight + SHADOW_ROOM);
     int x = left - scrollOffset(overflow, Util.getMeasuringTimeMs());
     context.drawText(font, text, x, y, color, shadow);
     context.disableScissor();
@@ -73,7 +72,7 @@ final class PanelText {
   static int startX(int left, int right, int textWidth, Align align) {
     return switch (align) {
       case LEFT -> left;
-      case CENTER -> left + (right - left - textWidth) / 2;
+      case CENTER -> left + (right - left) / 2 - textWidth / 2;
       case RIGHT -> right - textWidth;
     };
   }

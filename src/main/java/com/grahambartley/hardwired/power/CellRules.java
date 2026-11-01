@@ -16,7 +16,7 @@ public final class CellRules {
   }
 
   public static boolean takes(int charge, int capacity, int worth) {
-    return worth > 0 && charge + (long) worth <= capacity;
+    return itemsThatFit(charge, capacity, worth, 1) > 0;
   }
 
   public static int itemsThatFit(int charge, int capacity, int worth, int held) {

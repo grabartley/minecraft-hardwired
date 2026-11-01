@@ -8,6 +8,7 @@ import com.grahambartley.hardwired.radio.RadioTone;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import javax.sound.sampled.AudioFormat;
 import net.minecraft.client.sound.AudioStream;
 import org.junit.jupiter.api.Test;
@@ -77,8 +78,8 @@ class RadioToneStreamTest {
   @CsvSource({"1,false", "64,false", "199,false", "64,true"})
   void splittingAStreamIntoChunksChangesNothing(int split, boolean bigEndian) throws IOException {
     short[] whole = wave(200);
-    short[] head = java.util.Arrays.copyOfRange(whole, 0, split);
-    short[] tail = java.util.Arrays.copyOfRange(whole, split, whole.length);
+    short[] head = Arrays.copyOfRange(whole, 0, split);
+    short[] tail = Arrays.copyOfRange(whole, split, whole.length);
     RadioToneStream stream =
         new RadioToneStream(
             new Feed(format(1, bigEndian), pcm(bigEndian, head), pcm(bigEndian, tail)));
@@ -104,8 +105,8 @@ class RadioToneStreamTest {
         new RadioToneStream(
             new Feed(
                 format(2, false),
-                pcm(false, java.util.Arrays.copyOfRange(mixed, 0, 101)),
-                pcm(false, java.util.Arrays.copyOfRange(mixed, 101, 202))));
+                pcm(false, Arrays.copyOfRange(mixed, 0, 101)),
+                pcm(false, Arrays.copyOfRange(mixed, 101, 202))));
     short[] first = read(stream.read(0), false);
     short[] second = read(stream.read(0), false);
     assertEquals(0, first[1]);

@@ -6,6 +6,7 @@ import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.radio.CrackleClock;
+import com.grahambartley.hardwired.radio.CrackleSchedule;
 import com.grahambartley.hardwired.radio.Frequency;
 import com.grahambartley.hardwired.radio.ReceptionMix;
 import com.grahambartley.hardwired.radio.StreamPicker;
@@ -23,6 +24,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 
 final class StaticSounds {
 
@@ -30,7 +32,7 @@ final class StaticSounds {
   private static final double FAINTEST_HISS = 0.01;
 
   private static final Map<SoundingBlockEntity, NoiseSoundInstance> HISSES = new HashMap<>();
-  private static final Map<BlockPos, Long> NEXT_CRACKLE = new HashMap<>();
+  private static final CrackleSchedule<BlockPos> CRACKLES = new CrackleSchedule<>();
   private static final Map<SoundingBlockEntity, Integer> DIALS = new HashMap<>();
   private static final Map<SoundingBlockEntity, Long> LAST_SWEEP = new HashMap<>();
 
@@ -60,9 +62,15 @@ final class StaticSounds {
     }
     hissing.forEach(device -> keepHissing(client, device));
     long now = client.world.getTime();
-    Map<BlockPos, List<SoundingBlockEntity>> stations = byStation(heard);
-    NEXT_CRACKLE.keySet().retainAll(stations.keySet());
-    stations.forEach((station, tuned) -> crackleWhenDue(client, station, tuned, now));
+    Map<BlockPos, List<SoundingBlockEntity>> stations =
+        CrackleSchedule.byStation(
+            heard, SoundingBlockEntity::station, device -> device.status() == DeviceStatus.RUNNING);
+    Random random = client.world.getRandom();
+    for (BlockPos station :
+        CRACKLES.due(stations, SoundingBlockEntity::strength, now, random::nextDouble)) {
+      long seed = random.nextLong();
+      stations.get(station).forEach(device -> crackle(client, device, seed));
+    }
     watchDials(client, devices, new HashSet<>(heard), now);
   }
 
@@ -75,7 +83,7 @@ final class StaticSounds {
               client.getSoundManager().stop(hiss);
             });
     HISSES.clear();
-    NEXT_CRACKLE.clear();
+    CRACKLES.clear();
     DIALS.clear();
     LAST_SWEEP.clear();
   }
@@ -112,40 +120,21 @@ final class StaticSounds {
       return;
     }
     NoiseSoundInstance hiss =
-        noise(client, device, ModSounds.RADIO_HISS, true, () -> hissLoudness(device));
+        noise(
+            device,
+            ModSounds.RADIO_HISS,
+            client.world.getRandom().nextLong(),
+            true,
+            () -> hissLoudness(device));
     HISSES.put(device, hiss);
     client.getSoundManager().play(hiss);
   }
 
-  private static Map<BlockPos, List<SoundingBlockEntity>> byStation(
-      List<SoundingBlockEntity> heard) {
-    Map<BlockPos, List<SoundingBlockEntity>> stations = new HashMap<>();
-    for (SoundingBlockEntity device : heard) {
-      if (device.status() == DeviceStatus.RUNNING && device.station() != null) {
-        stations.computeIfAbsent(device.station(), station -> new ArrayList<>()).add(device);
-      }
-    }
-    return stations;
-  }
-
-  private static void crackleWhenDue(
-      MinecraftClient client, BlockPos station, List<SoundingBlockEntity> tuned, long now) {
-    Long due = NEXT_CRACKLE.get(station);
-    if (due != null && now >= due) {
-      tuned.forEach(device -> crackle(client, device));
-    }
-    if (due == null || now >= due) {
-      double strongest = tuned.stream().mapToDouble(SoundingBlockEntity::strength).max().orElse(0);
-      NEXT_CRACKLE.put(
-          station, now + CrackleClock.gapTicks(strongest, client.world.getRandom().nextDouble()));
-    }
-  }
-
-  private static void crackle(MinecraftClient client, SoundingBlockEntity device) {
+  private static void crackle(MinecraftClient client, SoundingBlockEntity device, long seed) {
     double loudness = ReceptionMix.crackle(device.volume(), noise(), device.strength());
     client
         .getSoundManager()
-        .play(noise(client, device, ModSounds.RADIO_CRACKLE, false, () -> loudness));
+        .play(noise(device, ModSounds.RADIO_CRACKLE, seed, false, () -> loudness));
   }
 
   private static void watchDials(
@@ -167,22 +156,28 @@ final class StaticSounds {
         double loudness = ReceptionMix.sweep(device.volume(), noise());
         client
             .getSoundManager()
-            .play(noise(client, device, ModSounds.RADIO_SWEEP, false, () -> loudness));
+            .play(
+                noise(
+                    device,
+                    ModSounds.RADIO_SWEEP,
+                    client.world.getRandom().nextLong(),
+                    false,
+                    () -> loudness));
       }
     }
   }
 
   private static NoiseSoundInstance noise(
-      MinecraftClient client,
       SoundingBlockEntity device,
       SoundEvent event,
+      long seed,
       boolean looping,
       DoubleSupplier loudness) {
     return new NoiseSoundInstance(
         event,
         device.getPos(),
         device.hearing(SyncedServerConfig.get().radio()),
-        client.world.getRandom().nextLong(),
+        seed,
         looping,
         loudness);
   }

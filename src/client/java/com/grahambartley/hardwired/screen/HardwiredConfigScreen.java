@@ -84,8 +84,15 @@ public final class HardwiredConfigScreen extends Screen {
   public void render(
       final DrawContext context, final int mouseX, final int mouseY, final float delta) {
     super.render(context, mouseX, mouseY, delta);
-    context.drawCenteredTextWithShadow(
-        this.textRenderer, this.title, this.width / 2, ConfigScreenLayout.TITLE_Y, 0xFFFFFF);
+    PanelText.shadowed(
+        context,
+        this.textRenderer,
+        this.title,
+        BANNER_INSET,
+        this.width - BANNER_INSET,
+        ConfigScreenLayout.TITLE_Y,
+        0xFFFFFF,
+        PanelText.Align.CENTER);
     final EditAccess access = resolveAccess();
     if (access != EditAccess.EDITABLE) {
       PanelText.shadowed(

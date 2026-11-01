@@ -19,6 +19,7 @@ class PanelTextTest {
   @CsvSource({
     "10,110,40,LEFT,10",
     "10,110,40,CENTER,40",
+    "10,110,41,CENTER,40",
     "10,110,40,RIGHT,70",
     "10,110,100,CENTER,10",
     "10,110,100,RIGHT,10"
