@@ -407,7 +407,7 @@ The mod has its own tab, with a background of copper and redstone traces and a w
 
 | ID | Advancement | Earned by |
 |---|---|---|
-| ADV-1 | Live Wire | Crafting Copper Wire |
+| ADV-1 | Hardwired | First having Copper Wire: the root of the tab, which appears at that moment |
 | ADV-2 | Let There Be Light | Turning on a wired lamp from a switch |
 | ADV-3 | Mood Lighting | Changing a lamp's colour from a panel |
 | ADV-4 | Street Smart | A Streetlight turning on at dusk |
@@ -425,18 +425,17 @@ The mod has its own tab, with a background of copper and redstone traces and a w
 | ADV-16 | Short Circuit | Cutting a wire that is on |
 | ADV-17 | Vintage | A lamp reaching full age |
 | ADV-18 | Lights Out | Being near the last running device on a network as it stops for lack of power |
-| ADV-19 | Hardwired | First having Copper Wire: the root of the tab, earned silently, so the tab appears at that moment |
 | ADV-26 | Tuned In | Tuning a Radio to a live station |
 | ADV-27 | On The Air | Broadcasting a disc through a tower |
 | ADV-28 | Live Mic | Speaking on a broadcast that a Radio is receiving |
 | ADV-29 | Power's On | Bringing a dark grid back by closing a Master Switch |
-| ADV-30 | Blown Fuse | Being near a grid as it overloads |
+| ADV-19 | Blown Fuse | Being near a grid as it overloads |
 
 | ID | Requirement |
 |---|---|
-| ADV-20 | Hardwired, Live Wire, Let There Be Light and Mood Lighting are not hidden and chain in that order. Their descriptions tell the player what to do next, including wiring a Redstone Cell to a first lamp |
-| ADV-21 | Lighting (ADV-4 to ADV-6), Mechanisms (ADV-7 to ADV-9), Circuits (ADV-10 to ADV-12), Power (ADV-13 to ADV-15) and Broadcast (ADV-26 to ADV-28) each branch from Live Wire, in any order. Power's On sits under Charged Up |
-| ADV-22 | Short Circuit (under Live Wire), Vintage (under Let There Be Light), and Lights Out and Blown Fuse (under Charged Up) stay hidden until earned |
+| ADV-20 | Hardwired, Let There Be Light and Mood Lighting are not hidden and chain in that order. Their descriptions tell the player what to do next, including wiring a Redstone Cell to a first lamp |
+| ADV-21 | Lighting (ADV-4 to ADV-6), Mechanisms (ADV-7 to ADV-9), Circuits (ADV-10 to ADV-12), Power (ADV-13 to ADV-15) and Broadcast (ADV-26 to ADV-28) each branch from Hardwired, in any order. Power's On sits under Charged Up |
+| ADV-22 | Short Circuit (under Hardwired), Vintage (under Let There Be Light), and Lights Out and Blown Fuse (under Charged Up) stay hidden until earned |
 | ADV-23 | Let There Be Light, Mood Lighting, Full Spectrum, Share The Love and Live Mic are goals. Smart Home and Caught Lightning are challenges. Goals give 50 experience and challenges give 100 |
 | ADV-24 | An advancement earned in steps shows its progress |
 | ADV-25 | Icons use the mod's own items where one fits |

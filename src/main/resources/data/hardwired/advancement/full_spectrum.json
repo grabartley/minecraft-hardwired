@@ -110,7 +110,7 @@
       }
     }
   },
-  "parent": "hardwired:live_wire",
+  "parent": "hardwired:hardwired",
   "requirements": [
     [
       "white"

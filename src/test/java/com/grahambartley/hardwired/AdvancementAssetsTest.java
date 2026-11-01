@@ -26,10 +26,10 @@ class AdvancementAssetsTest {
         .getAsJsonObject();
   }
 
-  @ParameterizedTest(name = "the root keeps {0} off")
+  @ParameterizedTest(name = "the root does not turn {0} off")
   @ValueSource(strings = {"show_toast", "announce_to_chat"})
-  void theRootIsSilent(String flag) throws IOException {
-    assertFalse(read("hardwired").getAsJsonObject("display").get(flag).getAsBoolean());
+  void theRootAnnouncesTheFirstWire(String flag) throws IOException {
+    assertFalse(read("hardwired").getAsJsonObject("display").has(flag));
   }
 
   @Test
@@ -48,23 +48,23 @@ class AdvancementAssetsTest {
 
   @ParameterizedTest(name = "{0} hangs from {1}")
   @CsvSource({
-    "live_wire,hardwired",
-    "let_there_be_light,live_wire",
+    "let_there_be_light,hardwired",
     "mood_lighting,let_there_be_light",
     "vintage,let_there_be_light",
-    "street_smart,live_wire",
-    "scene_stealer,live_wire",
-    "full_spectrum,live_wire",
-    "now_you_see_me,live_wire",
-    "going_up,live_wire",
-    "smart_home,live_wire",
-    "logic_gate,live_wire",
-    "charged_up,live_wire",
-    "sun_power,live_wire",
-    "caught_lightning,live_wire",
-    "tuned_in,live_wire",
-    "on_the_air,live_wire",
-    "live_mic,live_wire",
+    "street_smart,hardwired",
+    "scene_stealer,hardwired",
+    "full_spectrum,hardwired",
+    "now_you_see_me,hardwired",
+    "going_up,hardwired",
+    "smart_home,hardwired",
+    "logic_gate,hardwired",
+    "charged_up,hardwired",
+    "sun_power,hardwired",
+    "caught_lightning,hardwired",
+    "tuned_in,hardwired",
+    "on_the_air,hardwired",
+    "live_mic,hardwired",
+    "short_circuit,hardwired",
     "powers_on,charged_up"
   })
   void everyBranchHangsWhereThePrdSays(String name, String parent) throws IOException {

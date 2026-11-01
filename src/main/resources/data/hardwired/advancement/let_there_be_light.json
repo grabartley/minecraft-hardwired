@@ -20,7 +20,7 @@
       }
     }
   },
-  "parent": "hardwired:live_wire",
+  "parent": "hardwired:hardwired",
   "rewards": {
     "experience": 50
   }

@@ -62,7 +62,7 @@
       }
     }
   },
-  "parent": "hardwired:live_wire",
+  "parent": "hardwired:hardwired",
   "requirements": [
     [
       "device_1"
