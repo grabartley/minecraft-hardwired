@@ -53,4 +53,23 @@ class VanillaPowerTest {
     assertEquals(
         expected, VanillaPower.readsFrom(new BlockPos(x, 64, z), new ChunkPos(chunkX, chunkZ)));
   }
+
+  @ParameterizedTest
+  @CsvSource({
+    "8, 8, 0, 0, true",
+    "8, 8, 1, 0, false",
+    "13, 8, 0, 0, true",
+    "13, 8, 1, 0, false",
+    "14, 8, 1, 0, true",
+    "15, 8, 1, 0, true",
+    "1, 8, -1, 0, true",
+    "2, 8, -1, 0, false",
+    "8, 15, 0, 1, true",
+    "15, 15, 1, 1, true",
+  })
+  void aChunkLoadRepeatsAPushThatItsMissingNeighbourHeldBack(
+      int x, int z, int chunkX, int chunkZ, boolean expected) {
+    assertEquals(
+        expected, VanillaPower.updatesInto(new BlockPos(x, 64, z), new ChunkPos(chunkX, chunkZ)));
+  }
 }

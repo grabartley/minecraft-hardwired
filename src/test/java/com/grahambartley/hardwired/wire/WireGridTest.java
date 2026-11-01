@@ -18,6 +18,7 @@ import net.minecraft.util.math.Direction;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -31,6 +32,33 @@ class WireGridTest {
     WireGrid grid = new WireGrid();
     IntStream.range(0, length).forEach(x -> grid.add(floor(x, Hue.PLAIN)));
     return grid;
+  }
+
+  @ParameterizedTest(name = "chunk {0} radius {1}: {2} networks")
+  @CsvSource({
+    "0, 0, 1",
+    "1, 1, 1",
+    "2, 1, 0",
+    "3, 3, 1",
+    "4, 3, 0",
+    "100, 3, 1",
+    "103, 3, 1",
+    "104, 3, 0"
+  })
+  void onlyNetworksWithWireInTheSquareAreNear(int chunkX, int radius, int expected) {
+    WireGrid grid = new WireGrid();
+    grid.add(floor(0, Hue.PLAIN));
+    grid.add(floor(100 * 16, Hue.RED));
+    assertEquals(expected, grid.networksNear(new ChunkPos(chunkX, 0), radius).size());
+  }
+
+  @ParameterizedTest(name = "owner {0}: size {1}")
+  @CsvSource({"true, 1", "false, 3"})
+  void joiningCountsOnlyNetworksTheCellWouldReallyMerge(boolean sealed, int expected) {
+    WireGrid grid = line(2);
+    UUID owner = sealed ? new UUID(1, 1) : null;
+    WireCell next = new WireCell(floor(2, Hue.PLAIN).face(), Hue.PLAIN, owner);
+    assertEquals(expected, grid.sizeAfterJoining(next));
   }
 
   @Test

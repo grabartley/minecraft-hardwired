@@ -131,7 +131,7 @@ public final class WireDrag {
       WireViewStore.wiredFaceAt(hit.getBlockPos(), hit.getSide())
           .ifPresent(
               face ->
-                  WireViewStore.cellAt(face)
+                  WireLanes.nearest(WireViewStore.cellsOn(face), hit.getPos())
                       .ifPresent(
                           cell ->
                               ClientPlayNetworking.send(

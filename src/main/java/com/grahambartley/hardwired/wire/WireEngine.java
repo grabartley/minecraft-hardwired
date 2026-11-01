@@ -22,6 +22,8 @@ import net.minecraft.util.math.Direction;
 
 public final class WireEngine {
 
+  private static final int NEAR_CHUNK_RADIUS = (VanillaPower.READ_REACH >> 4) + 2;
+
   private final ServerWorld world;
   private final WireState state;
   private final WireGrid grid;
@@ -178,37 +180,18 @@ public final class WireEngine {
   }
 
   public void onChunkLoaded(ChunkPos chunk) {
-    if (!hasWireNear(chunk)) {
-      return;
-    }
-    for (WireNetwork network : grid.networks()) {
+    for (WireNetwork network : grid.networksNear(chunk, NEAR_CHUNK_RADIUS)) {
       if (network.touches().stream()
           .anyMatch(touch -> VanillaPower.readsFrom(touch.pos(), chunk))) {
         grid.markDirty(network);
       }
       for (TouchPoint touch : network.touches()) {
-        if (isIn(touch, chunk)) {
+        if (VanillaPower.updatesInto(touch.pos(), chunk)) {
           pendingPushes.add(touch.pos().asLong());
           power.changed(network);
         }
       }
     }
-  }
-
-  private boolean hasWireNear(ChunkPos chunk) {
-    int radius = (VanillaPower.READ_REACH >> 4) + 2;
-    for (int x = chunk.x - radius; x <= chunk.x + radius; x++) {
-      for (int z = chunk.z - radius; z <= chunk.z + radius; z++) {
-        if (!grid.cellsInChunk(ChunkPos.toLong(x, z)).isEmpty()) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private static boolean isIn(TouchPoint touch, ChunkPos chunk) {
-    return ChunkPos.toLong(touch.pos()) == chunk.toLong();
   }
 
   public void tick() {
@@ -257,7 +240,7 @@ public final class WireEngine {
     dropItem(cell);
   }
 
-  private void dropItem(WireCell cell) {
+  public void dropItem(WireCell cell) {
     Block.dropStack(world, cell.face().pos(), new ItemStack(ModItems.wire(cell.color())));
   }
 
@@ -341,7 +324,7 @@ public final class WireEngine {
   }
 
   private void push(BlockPos pos) {
-    if (!isLoaded(pos)) {
+    if (!VanillaPower.isUpdatable(world, pos)) {
       return;
     }
     BlockState blockState = world.getBlockState(pos);

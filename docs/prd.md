@@ -207,8 +207,8 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 | ID | Requirement |
 |---|---|
 | VIEW-1 | Wire draws nothing until a player is holding wire. It then shows within range, through blocks, on every face, as a line as thin as tripwire |
-| VIEW-2 | Each network shows its colour and its state with a shape as well as a colour: solid when live, dashed when off, and dotted when on without power |
-| VIEW-3 | Looking at a wire shows its colour, lists what is driving it, and shows its grid's load and supply (POWER-15) |
+| VIEW-2 | Each network shows its colour and its state with a shape as well as a colour: solid when live, dashed when off, and dotted when on without power. Colours sharing a face sit side by side |
+| VIEW-3 | Looking at a wire, the one nearest the crosshair on a shared face, shows its colour, lists what is driving it, and shows its grid's load and supply (POWER-15) |
 | VIEW-4 | Inputs and outputs are marked, so a player can trace why something is on or off |
 | VIEW-5 | A broken connection is marked on the wire where it ends, and a tripped network is marked as tripped |
 | VIEW-6 | The server sends a player wiring only while they are holding wire, within range, and never sends sealed wire to anyone but its owner or an operator using PERM-6 |
@@ -575,11 +575,11 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | ID | Requirement |
 |---|---|
 | PERF-1 | A network with no changing input costs nothing per tick |
-| PERF-2 | A network has a size limit, set by the server. Wire beyond it is refused with a message |
+| PERF-2 | A network has a size limit, set by the server. Wire beyond it is refused with a message. Wire a piston would carry past the limit drops as items |
 | PERF-3 | A network change updates only blocks touching that network |
 | PERF-4 | Wire adds no render cost for a player who is not holding it |
 | PERF-5 | Chunk load adds no noticeable cost for chunks with no wire |
-| PERF-6 | Finding a network's parts never loads a chunk |
+| PERF-6 | Finding a network's parts, or updating them, never loads a chunk |
 | PERF-7 | A Radio looks for stations once a second, not every tick. A voice is sent only to players within hearing of a Radio or Speaker playing it, and uses about 64 kbit/s for each of them |
 | PERF-8 | A grid adds up its load and supply only when something on it changes, and burns or earns charge once a second. Sending the hum level costs nothing for a player with no running devices in range |
 

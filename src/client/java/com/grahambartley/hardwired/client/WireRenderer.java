@@ -68,8 +68,9 @@ public final class WireRenderer {
   private static void drawAll(
       VertexConsumer consumer, Matrix4f matrix, int alpha, boolean bothSides) {
     for (WireChunkPayload chunk : WireViewStore.chunks()) {
-      for (CellView cell : chunk.cells()) {
-        drawCell(consumer, matrix, cell, alpha, bothSides);
+      double[] lanes = WireLanes.offsets(chunk.cells());
+      for (int index = 0; index < lanes.length; index++) {
+        drawCell(consumer, matrix, chunk.cells().get(index), lanes[index], alpha, bothSides);
       }
       if (ClientSettingsStore.get().showMarkers()) {
         for (MarkView mark : chunk.marks()) {
@@ -80,11 +81,16 @@ public final class WireRenderer {
   }
 
   private static void drawCell(
-      VertexConsumer consumer, Matrix4f matrix, CellView view, int alpha, boolean bothSides) {
+      VertexConsumer consumer,
+      Matrix4f matrix,
+      CellView view,
+      double lane,
+      int alpha,
+      boolean bothSides) {
     WireFace face = new WireFace(BlockPos.fromLong(view.pos()), Direction.byId(view.side()));
     boolean on = (view.flags() & WireChunkPayload.ON) != 0;
     int argb = alpha | Hue.byIndex(view.color()).rgb();
-    Vec3d center = faceCenter(face);
+    Vec3d center = faceCenter(face).add(WireLanes.shift(face.side(), lane));
     Direction reference = WireTopology.edges(face.side()).get(0);
     quad(
         consumer, matrix, center, face.side(), reference, on ? NODE_ON : NODE_OFF, argb, bothSides);
