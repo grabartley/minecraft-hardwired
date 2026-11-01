@@ -13,6 +13,7 @@ import com.grahambartley.hardwired.wire.WireGrid;
 import com.grahambartley.hardwired.wire.WireNetwork;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -53,9 +54,11 @@ public final class PowerGrids {
   }
 
   public Set<WireNetwork> networksAt(BlockPos pos) {
-    BlockState state = world.getBlockState(pos);
+    BlockState state = engine.isLoaded(pos) ? world.getBlockState(pos) : null;
     List<BlockPos> cells =
-        state.getBlock() instanceof WireDevice device ? device.cells(pos, state) : List.of(pos);
+        state != null && state.getBlock() instanceof WireDevice device
+            ? device.cells(pos, state)
+            : List.of(pos);
     Set<WireNetwork> found = new LinkedHashSet<>();
     for (BlockPos cell : cells) {
       found.addAll(grid.networksTouching(cell));
@@ -134,7 +137,7 @@ public final class PowerGrids {
 
   private List<WireNetwork> neighbours(WireNetwork network) {
     List<WireNetwork> found = new ArrayList<>();
-    for (long link : network.links()) {
+    for (long link : network.linkedCells()) {
       for (WireNetwork other : grid.networksTouching(link)) {
         if (network.sharesPowerWith(other)) {
           found.add(other);
@@ -159,16 +162,18 @@ public final class PowerGrids {
     Long2IntOpenHashMap loads = network.lastLoads();
     Long2IntOpenHashMap ratings = network.lastRatings();
     Long2IntOpenHashMap sources = network.lastSources();
-    keepUnloaded(network, loads);
-    keepUnloaded(network, ratings);
-    keepUnloaded(network, sources);
-    network.links().removeIf((long pos) -> engine.isLoaded(BlockPos.fromLong(pos)));
     network
-        .masters()
+        .links()
+        .keySet()
         .removeIf(
             (long pos) ->
                 engine.isLoaded(BlockPos.fromLong(pos))
                     || !network.touchedPositions().contains(pos));
+    LongOpenHashSet kept = network.linkedCells();
+    loads.keySet().retainAll(kept);
+    ratings.keySet().retainAll(kept);
+    sources.keySet().retainAll(kept);
+    network.masters().retainAll(kept);
     PowerSettings settings = Hardwired.SERVER_CONFIG.power();
     for (long key : network.touchedPositions()) {
       BlockPos pos = BlockPos.fromLong(key);
@@ -177,9 +182,9 @@ public final class PowerGrids {
       }
       BlockState state = world.getBlockState(pos);
       if (state.getBlock() instanceof WireDevice device) {
-        List<BlockPos> cells = device.cells(pos, state);
-        cells.forEach(cell -> network.links().add(cell.asLong()));
-        GridTally.addLoad(loads, cells.getFirst().asLong(), device.load(world, pos, state));
+        network.link(key, device.cells(pos, state));
+        GridTally.addLoad(
+            loads, device.loadAnchor(pos, state).asLong(), device.load(world, pos, state));
         if (state.getBlock() instanceof PowerSource source) {
           ratings.put(key, source.sourceKind().rating(settings));
           sources.put(key, sourceState(source, pos, state).ordinal());
@@ -189,21 +194,12 @@ public final class PowerGrids {
         }
       } else if (VanillaPower.isComponent(state)) {
         List<BlockPos> cells = VanillaPower.cells(pos, state);
-        cells.forEach(cell -> network.links().add(cell.asLong()));
+        network.link(key, cells);
         if (network.isOn()) {
           GridTally.addLoad(loads, cells.getFirst().asLong(), settings.loads().vanillaLoad());
         }
       }
     }
-  }
-
-  private void keepUnloaded(WireNetwork network, Long2IntOpenHashMap facts) {
-    facts
-        .keySet()
-        .removeIf(
-            (long pos) ->
-                engine.isLoaded(BlockPos.fromLong(pos))
-                    || !network.touchedPositions().contains(pos));
   }
 
   private SourceState sourceState(PowerSource source, BlockPos pos, BlockState state) {
@@ -213,8 +209,7 @@ public final class PowerGrids {
   }
 
   private void settle(Set<WireNetwork> members) {
-    Long2IntOpenHashMap sources =
-        GridTally.union(members.stream().map(WireNetwork::lastSources).toList());
+    Long2IntOpenHashMap sources = GridTally.sourcesOf(members);
     boolean masterOpen = false;
     long darkUntil = 0;
     boolean wasLive = false;
@@ -227,8 +222,8 @@ public final class PowerGrids {
     }
     GridRule.Count count =
         GridTally.count(
-            GridTally.loads(members.stream().map(WireNetwork::lastLoads).toList()),
-            GridTally.union(members.stream().map(WireNetwork::lastRatings).toList()),
+            GridTally.loadsOf(members),
+            GridTally.ratingsOf(members),
             sources,
             starts.keySet(),
             masterOpen);
@@ -260,7 +255,7 @@ public final class PowerGrids {
           .keySet()
           .removeIf(
               (long pos) -> {
-                boolean inGrid = members.stream().anyMatch(n -> n.links().contains(pos));
+                boolean inGrid = members.stream().anyMatch(n -> n.linkedCells().contains(pos));
                 if (inGrid) {
                   PowerEffects.broughtUp(world, BlockPos.fromLong(pos));
                 }
@@ -270,7 +265,7 @@ public final class PowerGrids {
   }
 
   private void showOnMasters(WireNetwork network, int workload, boolean live) {
-    for (long link : network.links()) {
+    for (long link : network.linkedCells()) {
       BlockPos pos = BlockPos.fromLong(link);
       BlockState state = engine.isLoaded(pos) ? world.getBlockState(pos) : null;
       if (state != null && state.getBlock() instanceof MasterSwitchBlock master) {

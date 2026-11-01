@@ -4,11 +4,17 @@ import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.wire.Hue;
 import java.util.List;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public interface WireDevice {
+
+  static List<BlockPos> twoTall(BlockPos pos, DoubleBlockHalf half) {
+    BlockPos lower = half == DoubleBlockHalf.UPPER ? pos.down() : pos;
+    return List.of(lower, lower.up());
+  }
 
   default boolean isDriving(ServerWorld world, BlockPos pos, BlockState state, Hue color) {
     return false;

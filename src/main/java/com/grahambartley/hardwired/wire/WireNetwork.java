@@ -2,10 +2,15 @@ package com.grahambartley.hardwired.wire;
 
 import com.grahambartley.hardwired.power.GridState;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -23,7 +28,7 @@ public final class WireNetwork {
   private final Long2IntOpenHashMap lastLoads = new Long2IntOpenHashMap();
   private final Long2IntOpenHashMap lastRatings = new Long2IntOpenHashMap();
   private final Long2IntOpenHashMap lastSources = new Long2IntOpenHashMap();
-  private final LongOpenHashSet links = new LongOpenHashSet();
+  private final Long2ObjectOpenHashMap<long[]> links = new Long2ObjectOpenHashMap<>();
   private final LongOpenHashSet masters = new LongOpenHashSet();
   private GridState gridState = GridState.NO_SOURCE;
   private long darkUntil;
@@ -96,8 +101,38 @@ public final class WireNetwork {
     return lastSources;
   }
 
-  public LongOpenHashSet links() {
+  public Long2ObjectOpenHashMap<long[]> links() {
     return links;
+  }
+
+  public void link(long touched, List<BlockPos> cells) {
+    links.put(touched, cells.stream().mapToLong(BlockPos::asLong).toArray());
+  }
+
+  public LongOpenHashSet linkedCells() {
+    LongOpenHashSet cells = new LongOpenHashSet();
+    links.values().forEach(each -> cells.addAll(LongList.of(each)));
+    return cells;
+  }
+
+  public long[] packedLinks() {
+    LongArrayList packed = new LongArrayList();
+    links.forEach(
+        (touched, cells) -> {
+          packed.add((long) touched);
+          packed.add(cells.length);
+          packed.addElements(packed.size(), cells);
+        });
+    return packed.toLongArray();
+  }
+
+  public void unpackLinks(long[] packed) {
+    int at = 0;
+    while (at + 1 < packed.length) {
+      int count = (int) packed[at + 1];
+      links.put(packed[at], Arrays.copyOfRange(packed, at + 2, at + 2 + count));
+      at += 2 + count;
+    }
   }
 
   public LongOpenHashSet masters() {
@@ -141,7 +176,7 @@ public final class WireNetwork {
     lastLoads.putAll(other.lastLoads);
     lastRatings.putAll(other.lastRatings);
     lastSources.putAll(other.lastSources);
-    links.addAll(other.links);
+    links.putAll(other.links);
     masters.addAll(other.masters);
     gridState = gridState.ordinal() > other.gridState.ordinal() ? gridState : other.gridState;
     darkUntil = Math.max(darkUntil, other.darkUntil);

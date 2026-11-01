@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.power;
 import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.block.SourceBlockEntity;
 import com.grahambartley.hardwired.registry.ModSounds;
+import com.grahambartley.hardwired.wire.WireEngine;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -27,7 +28,7 @@ final class PowerEffects {
     boolean triggered = false;
     for (Long2IntMap.Entry entry : sources.long2IntEntrySet()) {
       BlockPos pos = BlockPos.fromLong(entry.getLongKey());
-      if (!world.isChunkLoaded(pos)
+      if (!WireEngine.of(world).isLoaded(pos)
           || !(world.getBlockEntity(pos) instanceof SourceBlockEntity source)) {
         continue;
       }

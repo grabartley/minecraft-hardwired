@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.wire;
 
+import com.grahambartley.hardwired.device.WireDevice;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
@@ -9,7 +10,6 @@ import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RedstoneWireBlock;
-import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -55,12 +55,9 @@ public final class VanillaPower {
   }
 
   public static List<BlockPos> cells(BlockPos pos, BlockState state) {
-    if (!state.contains(Properties.DOUBLE_BLOCK_HALF)) {
-      return List.of(pos);
-    }
-    return state.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER
-        ? List.of(pos.down(), pos)
-        : List.of(pos, pos.up());
+    return state.contains(Properties.DOUBLE_BLOCK_HALF)
+        ? WireDevice.twoTall(pos, state.get(Properties.DOUBLE_BLOCK_HALF))
+        : List.of(pos);
   }
 
   public static boolean suppliesWire(ServerWorld world, TouchPoint touch) {

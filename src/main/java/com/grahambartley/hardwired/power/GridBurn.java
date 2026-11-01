@@ -17,8 +17,7 @@ final class GridBurn {
   private GridBurn() {}
 
   static void beat(ServerWorld world, WireEngine engine, Set<WireNetwork> members) {
-    Long2IntOpenHashMap ratings =
-        GridTally.union(members.stream().map(WireNetwork::lastRatings).toList());
+    Long2IntOpenHashMap ratings = GridTally.ratingsOf(members);
     List<SourceBlockEntity> loaded = new ArrayList<>();
     List<SourceBlockEntity> running = new ArrayList<>();
     List<BurnPlan.Source> plan = new ArrayList<>();
@@ -32,8 +31,7 @@ final class GridBurn {
         }
       }
     }
-    int load =
-        GridTally.total(GridTally.loads(members.stream().map(WireNetwork::lastLoads).toList()));
+    int load = GridTally.total(GridTally.loadsOf(members));
     BurnPlan burn =
         BurnPlan.forSecond(plan, load, Hardwired.SERVER_CONFIG.power().chargePerLoadMinute());
     for (int i = 0; i < running.size(); i++) {

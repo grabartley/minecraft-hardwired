@@ -64,7 +64,7 @@ public final class MasterSwitchBlockEntity extends BlockEntity implements DialDe
     boolean closing = !state.get(MasterSwitchBlock.CLOSED);
     thrownAt = server.getTime();
     MasterSwitchBlock.setClosed(server, pos, state, closing);
-    syncThrow();
+    sync();
     server.playSound(
         null,
         pos,
@@ -100,16 +100,13 @@ public final class MasterSwitchBlockEntity extends BlockEntity implements DialDe
   public void showGrid(int nextWorkload) {
     if (workload != nextWorkload) {
       workload = nextWorkload;
-      markDirty();
-      if (world != null && !world.isClient) {
-        world.updateListeners(pos, getCachedState(), getCachedState(), 0);
-      }
+      sync();
     }
   }
 
-  private void syncThrow() {
+  private void sync() {
     markDirty();
-    if (world != null) {
+    if (world != null && !world.isClient) {
       world.updateListeners(pos, getCachedState(), getCachedState(), 0);
     }
   }

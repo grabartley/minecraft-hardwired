@@ -215,6 +215,7 @@ public final class WireEngine {
     dropUnsupportedWire();
     for (WireNetwork network : grid.drainDirty()) {
       evaluate(network);
+      power.changed(network);
     }
     power.tick();
     long[] touchChanges = grid.drainTouchChanges();

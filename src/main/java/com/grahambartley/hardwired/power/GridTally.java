@@ -1,8 +1,10 @@
 package com.grahambartley.hardwired.power;
 
+import com.grahambartley.hardwired.wire.WireNetwork;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import java.util.Collection;
 import java.util.List;
 
 public final class GridTally {
@@ -25,6 +27,18 @@ public final class GridTally {
     Long2IntOpenHashMap merged = new Long2IntOpenHashMap();
     each.forEach(merged::putAll);
     return merged;
+  }
+
+  public static Long2IntOpenHashMap loadsOf(Collection<WireNetwork> members) {
+    return loads(members.stream().map(WireNetwork::lastLoads).toList());
+  }
+
+  public static Long2IntOpenHashMap ratingsOf(Collection<WireNetwork> members) {
+    return union(members.stream().map(WireNetwork::lastRatings).toList());
+  }
+
+  public static Long2IntOpenHashMap sourcesOf(Collection<WireNetwork> members) {
+    return union(members.stream().map(WireNetwork::lastSources).toList());
   }
 
   public static int total(Long2IntOpenHashMap loads) {

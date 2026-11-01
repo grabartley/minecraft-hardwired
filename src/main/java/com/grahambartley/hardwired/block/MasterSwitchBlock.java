@@ -171,9 +171,7 @@ public final class MasterSwitchBlock extends Block implements BlockEntityProvide
 
   @Override
   public List<BlockPos> cells(BlockPos pos, BlockState state) {
-    return state.get(HALF) == DoubleBlockHalf.UPPER
-        ? List.of(pos.down(), pos)
-        : List.of(pos, pos.up());
+    return WireDevice.twoTall(pos, state.get(HALF));
   }
 
   @Override

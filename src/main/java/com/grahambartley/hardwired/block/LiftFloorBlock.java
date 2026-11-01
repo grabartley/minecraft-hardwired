@@ -67,8 +67,7 @@ public final class LiftFloorBlock extends Block implements BlockEntityProvider, 
 
   @Override
   public List<BlockPos> cells(BlockPos pos, BlockState state) {
-    BlockPos lower = lower(pos, state);
-    return List.of(lower, lower.up());
+    return WireDevice.twoTall(pos, state.get(HALF));
   }
 
   public static BlockPos column(BlockPos pos, BlockState state) {

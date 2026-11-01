@@ -80,7 +80,7 @@ public final class WireGridNbt {
     writeFacts(nbt, LAST_LOADS, network.lastLoads());
     writeFacts(nbt, LAST_RATINGS, network.lastRatings());
     writeFacts(nbt, LAST_SOURCES, network.lastSources());
-    nbt.putLongArray(LINKS, network.links().toLongArray());
+    nbt.putLongArray(LINKS, network.packedLinks());
     nbt.putLongArray(MASTERS, network.masters().toLongArray());
     if (network.look() != null) {
       nbt.putString(LOOK_COLOR, network.look().color().asString());
@@ -135,9 +135,7 @@ public final class WireGridNbt {
     readFacts(nbt, LAST_LOADS, network.lastLoads());
     readFacts(nbt, LAST_RATINGS, network.lastRatings());
     readFacts(nbt, LAST_SOURCES, network.lastSources());
-    for (long pos : nbt.getLongArray(LINKS)) {
-      network.links().add(pos);
-    }
+    network.unpackLinks(nbt.getLongArray(LINKS));
     for (long pos : nbt.getLongArray(MASTERS)) {
       network.masters().add(pos);
     }

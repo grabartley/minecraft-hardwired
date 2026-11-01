@@ -208,10 +208,7 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
   @Override
   public BlockPos wiredAt(ServerWorld world, BlockPos pos, BlockState state) {
     WireEngine engine = WireEngine.of(world);
-    return DeskLayout.cells(state.get(FACING), pos).stream()
-        .filter(engine::isWired)
-        .findFirst()
-        .orElse(pos);
+    return cells(pos, state).stream().filter(engine::isWired).findFirst().orElse(pos);
   }
 
   @Override
