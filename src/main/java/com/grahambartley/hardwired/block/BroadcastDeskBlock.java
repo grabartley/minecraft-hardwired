@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.device.AnimatedDevice;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.Electronic;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
@@ -40,18 +41,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public final class BroadcastDeskBlock extends HorizontalFacingBlock
-    implements BlockEntityProvider, WireDevice, Electronic {
+    implements BlockEntityProvider, WireDevice, AnimatedDevice, Electronic {
 
   public static final EnumProperty<DeskPart> PART = EnumProperty.of("part", DeskPart.class);
   public static final BooleanProperty ON_AIR = BooleanProperty.of("on_air");
   public static final BooleanProperty DISC = BooleanProperty.of("disc");
-
-  private static final VoxelShape LOW = Block.createCuboidShape(0, 0, 0, 16, 12, 16);
 
   public BroadcastDeskBlock(Settings settings) {
     super(settings);
@@ -126,7 +124,12 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
   @Override
   protected VoxelShape getOutlineShape(
       BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-    return state.get(PART) == DeskPart.PANEL ? VoxelShapes.fullCube() : LOW;
+    return DeskShapes.shape(state.get(PART), state.get(FACING));
+  }
+
+  @Override
+  public boolean isAnimating(BlockState state) {
+    return state.get(ON_AIR);
   }
 
   @Override

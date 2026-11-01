@@ -1,0 +1,9 @@
+{
+  "parent": "hardwired:block/base/radio_mast_0_seat",
+  "textures": {
+    "copper_block": "minecraft:block/weathered_copper",
+    "cut_copper": "minecraft:block/weathered_cut_copper",
+    "mast_lattice": "hardwired:block/mast_lattice_weathered",
+    "particle": "minecraft:block/weathered_copper"
+  }
+}

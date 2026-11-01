@@ -1,0 +1,9 @@
+{
+  "parent": "hardwired:block/base/radio_mast_4",
+  "textures": {
+    "copper_block": "minecraft:block/exposed_copper",
+    "cut_copper": "minecraft:block/exposed_cut_copper",
+    "mast_lattice": "hardwired:block/mast_lattice_exposed",
+    "particle": "minecraft:block/exposed_copper"
+  }
+}

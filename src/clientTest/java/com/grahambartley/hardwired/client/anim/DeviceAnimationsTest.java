@@ -42,6 +42,16 @@ class DeviceAnimationsTest {
   }
 
   @ParameterizedTest
+  @MethodSource("conditions")
+  void aPartReadsItsConditionFromData(String extra, String when) {
+    assertEquals(when, DeviceAnimations.part(part(extra)).when());
+  }
+
+  static Stream<Arguments> conditions() {
+    return Stream.of(Arguments.of("", null), Arguments.of(",\"when\":\"disc\"", "disc"));
+  }
+
+  @ParameterizedTest
   @MethodSource("parts")
   void aGlowPartIgnoresWorldLight(String extra, boolean glow) {
     int expected = glow ? LightmapTextureManager.MAX_LIGHT_COORDINATE : WORLD_LIGHT;

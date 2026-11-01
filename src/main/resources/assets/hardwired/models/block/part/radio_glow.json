@@ -1,32 +1,10 @@
 {
   "textures": {
-    "lit": "hardwired:block/radio_dial_lit",
-    "particle": "hardwired:block/radio_dial_lit"
+    "dial_lit": "hardwired:block/radio_dial_lit",
+    "radio_tuner_lit": "hardwired:block/radio_tuner_lit",
+    "particle": "hardwired:block/radio_tuner_lit"
   },
   "elements": [
-    {
-      "from": [
-        6,
-        3,
-        2.45
-      ],
-      "to": [
-        10,
-        6,
-        2.45
-      ],
-      "faces": {
-        "north": {
-          "uv": [
-            6,
-            10,
-            10,
-            13
-          ],
-          "texture": "#lit"
-        }
-      }
-    },
     {
       "from": [
         7,
@@ -46,7 +24,84 @@
             9,
             12
           ],
-          "texture": "#lit"
+          "texture": "#dial_lit"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            5
+          ],
+          "texture": "#dial_lit"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            2,
+            5
+          ],
+          "texture": "#dial_lit"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0,
+            5
+          ],
+          "texture": "#dial_lit"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            2,
+            0
+          ],
+          "texture": "#dial_lit"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            2,
+            0
+          ],
+          "texture": "#dial_lit"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        3,
+        2.45
+      ],
+      "to": [
+        11,
+        6,
+        2.45
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            5,
+            9,
+            11,
+            12
+          ],
+          "texture": "#radio_tuner_lit"
+        },
+        "south": {
+          "uv": [
+            5,
+            9,
+            11,
+            12
+          ],
+          "texture": "#radio_tuner_lit"
         }
       }
     }

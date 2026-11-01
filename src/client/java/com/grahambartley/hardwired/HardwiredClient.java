@@ -78,7 +78,8 @@ public class HardwiredClient implements ClientModInitializer {
           ModBlockEntities.CONTROLLER,
           ModBlockEntities.ELECTRONIC,
           ModBlockEntities.RADIO,
-          ModBlockEntities.SPEAKER);
+          ModBlockEntities.SPEAKER,
+          ModBlockEntities.BROADCAST_DESK);
 
   @Override
   public void onInitializeClient() {
@@ -173,7 +174,9 @@ public class HardwiredClient implements ClientModInitializer {
         ModBlocks.SPEAKER,
         ModBlocks.INTERCOM,
         ModBlocks.LIFT,
-        ModBlocks.LIFT_FLOOR);
+        ModBlocks.LIFT_FLOOR,
+        ModBlocks.RADIO_MAST);
+    BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.BROADCAST_DESK, RenderLayer.getTranslucent());
     ColorProviderRegistry.BLOCK.register(
         (state, world, pos, tintIndex) -> {
           if (world == null
