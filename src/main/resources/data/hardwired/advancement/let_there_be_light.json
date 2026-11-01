@@ -20,7 +20,7 @@
       }
     }
   },
-  "parent": "hardwired:hardwired",
+  "parent": "hardwired:juiced_up",
   "rewards": {
     "experience": 50
   }

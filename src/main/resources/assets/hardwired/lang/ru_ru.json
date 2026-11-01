@@ -119,6 +119,8 @@
   "command.hardwired.update.failed": "Не удалось сохранить настройки",
   "advancement.hardwired.hardwired.title": "Hardwired",
   "advancement.hardwired.hardwired.description": "Создайте медный провод",
+  "advancement.hardwired.juiced_up.title": "Под напряжением",
+  "advancement.hardwired.juiced_up.description": "Создайте источник питания",
   "advancement.hardwired.let_there_be_light.title": "Да будет свет",
   "advancement.hardwired.let_there_be_light.description": "Подключите медную лампу к настенному выключателю и щёлкните им",
   "advancement.hardwired.mood_lighting.title": "Настроение",

@@ -119,6 +119,8 @@
   "command.hardwired.update.failed": "Einstellungen konnten nicht gespeichert werden",
   "advancement.hardwired.hardwired.title": "Hardwired",
   "advancement.hardwired.hardwired.description": "Stelle Kupferdraht her",
+  "advancement.hardwired.juiced_up.title": "Unter Strom",
+  "advancement.hardwired.juiced_up.description": "Stelle eine Stromquelle her",
   "advancement.hardwired.let_there_be_light.title": "Es werde Licht",
   "advancement.hardwired.let_there_be_light.description": "Verdrahte eine Kupferlampe mit einem Wandschalter und betätige ihn",
   "advancement.hardwired.mood_lighting.title": "Stimmungslicht",

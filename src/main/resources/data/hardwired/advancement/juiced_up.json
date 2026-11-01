@@ -1,0 +1,33 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:redstone_cell"
+    },
+    "title": {
+      "translate": "advancement.hardwired.juiced_up.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.juiced_up.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "source": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "hardwired:redstone_cell",
+              "hardwired:redstone_generator",
+              "hardwired:solar_panel",
+              "hardwired:lodestone_dynamo"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "parent": "hardwired:hardwired"
+}

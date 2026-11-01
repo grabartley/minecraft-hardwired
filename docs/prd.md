@@ -430,11 +430,12 @@ The mod has its own tab, with a background of copper and redstone traces and a w
 | ADV-27 | On The Air | Broadcasting a disc through a tower |
 | ADV-28 | Live Mic | Speaking on a broadcast that a Radio is receiving |
 | ADV-29 | Power's On | Bringing a dark grid back by closing a Master Switch |
+| ADV-30 | Juiced Up | First having a Redstone Cell, Redstone Generator, Solar Panel or Lodestone Dynamo |
 
 | ID | Requirement |
 |---|---|
-| ADV-20 | Hardwired, Let There Be Light and Mood Lighting are not hidden and chain in that order. Their descriptions tell the player what to do next, including wiring a Redstone Cell to a first lamp |
-| ADV-21 | Lighting (ADV-4 to ADV-6), Mechanisms (ADV-7 to ADV-9), Circuits (ADV-10 to ADV-12), Power (ADV-13 to ADV-15) and Broadcast (ADV-26 to ADV-28) each branch from Hardwired, in any order. Power's On sits under Charged Up |
+| ADV-20 | Hardwired, Juiced Up, Let There Be Light and Mood Lighting are not hidden and chain in that order. Their descriptions tell the player what to do next, including wiring a Redstone Cell to a first lamp |
+| ADV-21 | Lighting (ADV-4 to ADV-6), Mechanisms (ADV-7 to ADV-9), Circuits (ADV-10 to ADV-12) and Broadcast (ADV-26 to ADV-28) each branch from Hardwired, in any order. Power (ADV-13 to ADV-15) branches from Juiced Up, and Power's On sits under Charged Up |
 | ADV-22 | Short Circuit (under Hardwired), Vintage (under Let There Be Light), and Lights Out and Blown Fuse (under Charged Up) stay hidden until earned |
 | ADV-23 | Let There Be Light, Mood Lighting, Full Spectrum, Share The Love and Live Mic are goals. Smart Home and Caught Lightning are challenges. Goals give 50 experience and challenges give 100 |
 | ADV-24 | An advancement earned in steps shows its progress |

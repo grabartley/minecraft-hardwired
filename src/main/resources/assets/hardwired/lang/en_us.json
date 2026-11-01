@@ -119,6 +119,8 @@
   "command.hardwired.update.failed": "Could not save the settings",
   "advancement.hardwired.hardwired.title": "Hardwired",
   "advancement.hardwired.hardwired.description": "Craft Copper Wire",
+  "advancement.hardwired.juiced_up.title": "Juiced Up",
+  "advancement.hardwired.juiced_up.description": "Craft a power source",
   "advancement.hardwired.let_there_be_light.title": "Let There Be Light",
   "advancement.hardwired.let_there_be_light.description": "Wire a Copper Lamp to a Wall Switch and flip it",
   "advancement.hardwired.mood_lighting.title": "Mood Lighting",

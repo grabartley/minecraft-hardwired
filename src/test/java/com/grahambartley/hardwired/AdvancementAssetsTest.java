@@ -48,7 +48,8 @@ class AdvancementAssetsTest {
 
   @ParameterizedTest(name = "{0} hangs from {1}")
   @CsvSource({
-    "let_there_be_light,hardwired",
+    "juiced_up,hardwired",
+    "let_there_be_light,juiced_up",
     "mood_lighting,let_there_be_light",
     "vintage,let_there_be_light",
     "street_smart,hardwired",
@@ -58,9 +59,9 @@ class AdvancementAssetsTest {
     "going_up,hardwired",
     "smart_home,hardwired",
     "logic_gate,hardwired",
-    "charged_up,hardwired",
-    "sun_power,hardwired",
-    "caught_lightning,hardwired",
+    "charged_up,juiced_up",
+    "sun_power,juiced_up",
+    "caught_lightning,juiced_up",
     "tuned_in,hardwired",
     "on_the_air,hardwired",
     "live_mic,hardwired",
