@@ -66,7 +66,7 @@ class ServerConfigPayloadsTest {
                 new PowerSettings(1000, 5, 6, 7000, 8, 10, 11, 12, 16),
                 new LiftSettings(13, 14),
                 new CircuitSettings(200, 15),
-                new RadioSettings(17, 18, 19, 20, 21, 22, 23, 24))),
+                new RadioSettings(17, 18, 19, 20, 21, 22, 23, 24, false))),
         Arguments.of(
             new HardwiredConfig(
                 new WireSettings(96, 65536),
@@ -75,7 +75,7 @@ class ServerConfigPayloadsTest {
                 new PowerSettings(100000, 999, 600, 99999, 100, 99, 98, 97, 94),
                 new LiftSettings(40, 95),
                 new CircuitSettings(256, 64),
-                new RadioSettings(63, 127, 4096, 512, 126, 255, 254, 253))));
+                new RadioSettings(63, 127, 4096, 512, 126, 255, 254, 253, true))));
   }
 
   @ParameterizedTest(name = "{0}")

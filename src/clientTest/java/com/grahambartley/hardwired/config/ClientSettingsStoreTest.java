@@ -20,8 +20,10 @@ class ClientSettingsStoreTest {
   void settingsRoundTrip(int through, int surface, boolean markers) {
     Path file = dir.resolve("settings.json");
     ClientWireSettings settings = new ClientWireSettings(through, surface, markers);
-    ClientSettingsStore.write(file, settings);
+    ClientRadioSettings radio = new ClientRadioSettings("Desk Mic", !markers, through);
+    ClientSettingsStore.write(file, settings, radio);
     assertEquals(settings, ClientSettingsStore.read(file));
+    assertEquals(radio, ClientSettingsStore.readRadio(file));
   }
 
   @ParameterizedTest(name = "broken file: {0}")

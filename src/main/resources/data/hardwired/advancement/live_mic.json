@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:broadcast_desk"
+    },
+    "title": {
+      "translate": "advancement.hardwired.live_mic.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.live_mic.description"
+    },
+    "frame": "goal",
+    "hidden": false
+  },
+  "criteria": {
+    "heard": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "live_mic"
+      }
+    }
+  },
+  "parent": "hardwired:let_there_be_light",
+  "rewards": {
+    "experience": 50
+  }
+}

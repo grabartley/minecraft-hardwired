@@ -24,6 +24,7 @@ public final class ModCriteria {
   public static final String LIFT_RIDDEN = "lift_ridden";
   public static final String TUNED_IN = "tuned_in";
   public static final String ON_THE_AIR = "on_the_air";
+  public static final String LIVE_MIC = "live_mic";
   public static final DeviceCriterion DEVICE =
       Criteria.register(Hardwired.MOD_ID + ":device", new DeviceCriterion());
 

@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.block;
 import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.radio.ReceptionMix;
 import com.grahambartley.hardwired.radio.SongClock;
+import com.grahambartley.hardwired.radio.StationRegistry;
 import java.util.Objects;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
@@ -21,18 +22,31 @@ public abstract class SoundingBlockEntity extends ElectronicBlockEntity {
   private static final String SONG_START = "song_start";
   private static final String STRENGTH = "strength";
   private static final String VOLUME = "volume";
+  private static final String STATION = "station";
   private static final double NOTE_HEIGHT = 1.0;
 
   @Nullable private Identifier song;
   private long songStart = SongClock.STOPPED;
   private float strength;
   private int volume = ReceptionMix.MAX_VOLUME;
+  @Nullable private BlockPos station;
 
   protected SoundingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
     super(type, pos, state);
   }
 
   public abstract int hearing(RadioSettings settings);
+
+  public abstract int dial();
+
+  public boolean hisses() {
+    return false;
+  }
+
+  @Nullable
+  public BlockPos station() {
+    return station;
+  }
 
   @Nullable
   public Identifier song() {
@@ -63,9 +77,20 @@ public abstract class SoundingBlockEntity extends ElectronicBlockEntity {
     }
   }
 
-  public void hear(@Nullable Identifier nextSong, long nextStart, double nextStrength) {
+  public void hear(
+      @Nullable BlockPos nextStation,
+      @Nullable Identifier nextSong,
+      long nextStart,
+      double nextStrength) {
     float rounded = (float) nextStrength;
-    if (!Objects.equals(song, nextSong) || songStart != nextStart || strength != rounded) {
+    if (!Objects.equals(station, nextStation)
+        || !Objects.equals(song, nextSong)
+        || songStart != nextStart
+        || strength != rounded) {
+      if (world instanceof ServerWorld server) {
+        StationRegistry.of(server).audience().retune(this, station, nextStation);
+      }
+      station = nextStation;
       song = nextSong;
       songStart = nextStart;
       strength = rounded;
@@ -74,7 +99,15 @@ public abstract class SoundingBlockEntity extends ElectronicBlockEntity {
   }
 
   public void silence() {
-    hear(null, SongClock.STOPPED, 0);
+    hear(null, null, SongClock.STOPPED, 0);
+  }
+
+  @Override
+  public void markRemoved() {
+    super.markRemoved();
+    if (world instanceof ServerWorld server) {
+      StationRegistry.of(server).audience().retune(this, station, null);
+    }
   }
 
   public void noteParticle(ServerWorld server) {
@@ -105,6 +138,7 @@ public abstract class SoundingBlockEntity extends ElectronicBlockEntity {
     song = nbt.contains(SONG) ? Identifier.tryParse(nbt.getString(SONG)) : null;
     songStart = nbt.contains(SONG_START) ? nbt.getLong(SONG_START) : SongClock.STOPPED;
     strength = nbt.getFloat(STRENGTH);
+    station = nbt.contains(STATION) ? BlockPos.fromLong(nbt.getLong(STATION)) : null;
     volume = nbt.contains(VOLUME) ? nbt.getInt(VOLUME) : ReceptionMix.MAX_VOLUME;
   }
 
@@ -121,6 +155,9 @@ public abstract class SoundingBlockEntity extends ElectronicBlockEntity {
   public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
     NbtCompound nbt = super.toInitialChunkDataNbt(registries);
     writeSound(nbt);
+    if (station != null) {
+      nbt.putLong(STATION, station.asLong());
+    }
     return nbt;
   }
 }

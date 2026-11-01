@@ -243,6 +243,11 @@ final class SettingsConfigSection {
             RadioSettings.UNDERGROUND_LOSS_DEPTH_MAX,
             config.radio().undergroundLossDepth(),
             value -> config = config.withRadio(config.radio().withUndergroundLossDepth(value))));
+    list.addRow(
+        rows.toggle(
+            KEY + "voicebroadcasts",
+            config.radio().voiceBroadcasts(),
+            value -> config = config.withRadio(config.radio().withVoiceBroadcasts(value))));
   }
 
   HardwiredConfig config() {

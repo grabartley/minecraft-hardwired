@@ -4,6 +4,7 @@ import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
+import com.grahambartley.hardwired.power.ChargeNetwork;
 import com.grahambartley.hardwired.radio.RadioTuner;
 import com.grahambartley.hardwired.radio.Reception;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
@@ -78,7 +79,10 @@ public final class RadioBlock extends TableDeviceBlock {
       return DeviceStatus.NO_STATION;
     }
     radio.hear(
-        heard.get().station().song(), heard.get().station().songStart(), heard.get().strength());
+        heard.get().station().desk(),
+        heard.get().station().song(),
+        heard.get().station().songStart(),
+        heard.get().strength());
     return DeviceStatus.RUNNING;
   }
 
@@ -90,8 +94,11 @@ public final class RadioBlock extends TableDeviceBlock {
   @Override
   public void show(ServerWorld world, BlockPos pos, BlockState state, DeviceStatus status) {
     boolean playing = status == DeviceStatus.RUNNING;
-    if (!playing && world.getBlockEntity(pos) instanceof RadioBlockEntity radio) {
-      radio.silence();
+    if (world.getBlockEntity(pos) instanceof RadioBlockEntity radio) {
+      if (!playing) {
+        radio.silence();
+      }
+      radio.setHissing(status == DeviceStatus.NO_STATION && hasCharge(world, pos));
     }
     if (state.get(PLAYING) != playing) {
       ElectronicsDriver.show(world, pos, state, state.with(PLAYING, playing));
@@ -109,6 +116,10 @@ public final class RadioBlock extends TableDeviceBlock {
   @Override
   public boolean keepsChecking(DeviceStatus status) {
     return status != DeviceStatus.RADIO_OFF;
+  }
+
+  private static boolean hasCharge(ServerWorld world, BlockPos pos) {
+    return ChargeNetwork.storesFor(world, pos).stream().anyMatch(store -> store.charge() > 0);
   }
 
   private static void wakeSpeakers(ServerWorld world, BlockPos pos) {

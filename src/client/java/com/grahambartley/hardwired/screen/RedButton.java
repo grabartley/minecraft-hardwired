@@ -5,11 +5,12 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
-final class RedButton extends ButtonWidget {
+class RedButton extends ButtonWidget {
 
   private static final int LIT = 0xFFD81E1E;
   private static final int DARK = 0xFF5C1212;
   private static final int WHITE = 0xFFFFFFFF;
+  private static final int GREY = 0xFF9A9A9A;
   private static final int BORDER = 1;
 
   private boolean lit;
@@ -34,6 +35,6 @@ final class RedButton extends ButtonWidget {
         getMessage(),
         getX() + getWidth() / 2,
         getY() + (getHeight() - 8) / 2,
-        WHITE);
+        active ? WHITE : GREY);
   }
 }

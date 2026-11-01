@@ -14,6 +14,7 @@ import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.registry.ModEntities;
 import com.grahambartley.hardwired.registry.ModItems;
+import com.grahambartley.hardwired.registry.ModSounds;
 import com.grahambartley.hardwired.server.ServerConfigService;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireSealing;
@@ -41,6 +42,7 @@ public class Hardwired implements ModInitializer {
     ModBlockEntities.register();
     ModEntities.register();
     ModItems.register();
+    ModSounds.register();
     ModNetworking.register();
     ModCriteria.register();
     ServerLifecycleEvents.SERVER_STARTING.register(ServerConfigService::loadFromWorld);

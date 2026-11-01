@@ -5,7 +5,9 @@ public enum DeskAction {
   TOGGLE_AIR,
   PLAY,
   STOP,
-  EJECT;
+  EJECT,
+  TAKE_MIC,
+  RELEASE_MIC;
 
   public static DeskAction byIndex(int index) {
     return values()[Math.floorMod(index, values().length)];

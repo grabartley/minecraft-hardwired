@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.device.DeviceStatus;
+import com.grahambartley.hardwired.radio.DeskMic;
 import com.grahambartley.hardwired.radio.DeskRun;
 import com.grahambartley.hardwired.radio.Frequency;
 import com.grahambartley.hardwired.radio.SongClock;
@@ -9,6 +10,7 @@ import com.grahambartley.hardwired.radio.StationRegistry;
 import com.grahambartley.hardwired.radio.TowerFinder;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
 import java.util.Optional;
+import java.util.UUID;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.jukebox.JukeboxSong;
 import net.minecraft.item.ItemStack;
@@ -30,6 +32,7 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
   private static final String SONG_START = "song_start";
   private static final String ON_AIR_SINCE = "on_air_since";
   private static final String LAST_LIVE = "last_live";
+  private static final String SPEAKER = "speaker";
 
   private int frequency = Frequency.DEFAULT;
   private ItemStack disc = ItemStack.EMPTY;
@@ -39,6 +42,7 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
   private long onAirSince = DeskRun.NOT_ON_AIR;
   private long lastLive = DeskRun.NOT_ON_AIR;
   private TowerFinder.Found tower;
+  private final DeskMic mic = new DeskMic();
 
   public BroadcastDeskBlockEntity(BlockPos pos, BlockState state) {
     super(ModBlockEntities.BROADCAST_DESK, pos, state);
@@ -61,6 +65,7 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
     wantsAir = wanted;
     if (!wanted) {
       stopSong();
+      mic.clear();
     }
     sync();
   }
@@ -109,6 +114,28 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
   public void stopSong() {
     songWanted = false;
     songStart = SongClock.STOPPED;
+    sync();
+  }
+
+  public DeskMic mic() {
+    return mic;
+  }
+
+  public void takeMic(UUID player, long nowMillis) {
+    UUID before = mic.speaker();
+    if (mic.take(player, nowMillis) && !player.equals(before)) {
+      sync();
+    }
+  }
+
+  public void releaseMic(UUID player) {
+    if (mic.release(player)) {
+      sync();
+    }
+  }
+
+  public void clearMic() {
+    mic.clear();
     sync();
   }
 
@@ -190,6 +217,7 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
     wantsAir = nbt.getBoolean(WANTS_AIR);
     songWanted = nbt.getBoolean(SONG_WANTED);
     songStart = nbt.contains(SONG_START) ? nbt.getLong(SONG_START) : SongClock.STOPPED;
+    mic.show(nbt.containsUuid(SPEAKER) ? nbt.getUuid(SPEAKER) : null);
     onAirSince = nbt.contains(ON_AIR_SINCE) ? nbt.getLong(ON_AIR_SINCE) : DeskRun.NOT_ON_AIR;
     lastLive = nbt.contains(LAST_LIVE) ? nbt.getLong(LAST_LIVE) : DeskRun.NOT_ON_AIR;
   }
@@ -210,6 +238,9 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
   public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
     NbtCompound nbt = super.toInitialChunkDataNbt(registries);
     writeDesk(nbt, registries);
+    if (mic.speaker() != null) {
+      nbt.putUuid(SPEAKER, mic.speaker());
+    }
     return nbt;
   }
 }

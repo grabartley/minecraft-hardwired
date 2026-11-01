@@ -10,6 +10,7 @@ import com.grahambartley.hardwired.network.ServerConfigPayloads.EditServerConfig
 import com.grahambartley.hardwired.network.ServerConfigPayloads.SyncServerConfigS2CPayload;
 import com.grahambartley.hardwired.network.handler.ServerConfigNetworkHandler;
 import com.grahambartley.hardwired.radio.DeskActions;
+import com.grahambartley.hardwired.radio.DeskVoice;
 import com.grahambartley.hardwired.radio.RadioActions;
 import com.grahambartley.hardwired.wire.WireInspector;
 import com.grahambartley.hardwired.wire.WireLaying;
@@ -46,9 +47,13 @@ public final class ModNetworking {
     PayloadTypeRegistry.playC2S().register(LiftChoosePayload.ID, LiftChoosePayload.CODEC);
     PayloadTypeRegistry.playC2S().register(DeskActionPayload.ID, DeskActionPayload.CODEC);
     PayloadTypeRegistry.playC2S().register(RadioSetPayload.ID, RadioSetPayload.CODEC);
+    PayloadTypeRegistry.playC2S().register(VoiceFramePayload.ID, VoiceFramePayload.CODEC);
+    PayloadTypeRegistry.playS2C().register(VoiceFramePayload.ID, VoiceFramePayload.CODEC);
     PayloadTypeRegistry.playS2C().register(LiftViewPayload.ID, LiftViewPayload.CODEC);
     ServerPlayNetworking.registerGlobalReceiver(
         DeskActionPayload.ID, (payload, context) -> DeskActions.act(context.player(), payload));
+    ServerPlayNetworking.registerGlobalReceiver(
+        VoiceFramePayload.ID, (payload, context) -> DeskVoice.frame(context.player(), payload));
     ServerPlayNetworking.registerGlobalReceiver(
         RadioSetPayload.ID, (payload, context) -> RadioActions.set(context.player(), payload));
     ServerPlayNetworking.registerGlobalReceiver(

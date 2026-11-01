@@ -2,15 +2,18 @@ package com.grahambartley.hardwired.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.google.gson.JsonObject;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class RadioSettingsTest {
 
   @ParameterizedTest(name = "{0} clamps to {1}")
   @CsvSource({"-1000000,low", "2000000,high"})
   void everyValueIsClamped(int value, String end) {
-    RadioSettings s = new RadioSettings(value, value, value, value, value, value, value, value);
+    RadioSettings s =
+        new RadioSettings(value, value, value, value, value, value, value, value, true);
     boolean low = end.equals("low");
     assertEquals(
         low ? RadioSettings.TOWER_MIN_MASTS_MIN : RadioSettings.TOWER_MIN_MASTS_MAX,
@@ -50,5 +53,17 @@ class RadioSettingsTest {
     assertEquals(value, d.withUndergroundFreeDepth(value).undergroundFreeDepth());
     assertEquals(value, d.withUndergroundLossDepth(value).undergroundLossDepth());
     assertEquals(d.towerBaseReach(), d.withTowerMinMasts(value).towerBaseReach());
+  }
+
+  @ParameterizedTest(name = "voice broadcasts {0}")
+  @ValueSource(booleans = {true, false})
+  void voiceBroadcastsSurviveEveryWither(boolean voice) {
+    RadioSettings d = RadioSettings.DEFAULTS.withVoiceBroadcasts(voice);
+    assertEquals(voice, d.withUndergroundLossDepth(9).voiceBroadcasts());
+    assertEquals(voice, d.withUndergroundFreeDepth(9).voiceBroadcasts());
+    assertEquals(voice, d.withTowerMinMasts(9).voiceBroadcasts());
+    JsonObject root = new JsonObject();
+    d.writeJson(root);
+    assertEquals(voice, RadioSettings.fromJson(new ConfigJsonFields(root)).voiceBroadcasts());
   }
 }

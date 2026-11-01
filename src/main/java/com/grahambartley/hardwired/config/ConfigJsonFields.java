@@ -26,6 +26,18 @@ final class ConfigJsonFields {
     return value;
   }
 
+  boolean readBoolean(final String key, final boolean fallback) {
+    if (!root.has(key)) {
+      return fallback;
+    }
+    final JsonElement element = root.get(key);
+    if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isBoolean()) {
+      return element.getAsBoolean();
+    }
+    warnInvalid(key, element, "true or false", fallback);
+    return fallback;
+  }
+
   private double readNumber(final String key, final double fallback) {
     if (!root.has(key)) {
       return fallback;

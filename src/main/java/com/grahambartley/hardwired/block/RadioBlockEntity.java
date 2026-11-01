@@ -17,10 +17,12 @@ public final class RadioBlockEntity extends SoundingBlockEntity {
   private static final String ON = "on";
   private static final String FREQUENCY = "frequency";
   private static final String OLD_DISC = "disc";
+  private static final String HISSING = "hissing";
 
   private boolean on = true;
   private int frequency = Frequency.DEFAULT;
   private ItemStack oldDisc = ItemStack.EMPTY;
+  private boolean hissing;
 
   public RadioBlockEntity(BlockPos pos, BlockState state) {
     super(ModBlockEntities.RADIO, pos, state);
@@ -41,6 +43,23 @@ public final class RadioBlockEntity extends SoundingBlockEntity {
 
   public int frequency() {
     return frequency;
+  }
+
+  @Override
+  public int dial() {
+    return frequency;
+  }
+
+  @Override
+  public boolean hisses() {
+    return hissing;
+  }
+
+  public void setHissing(boolean next) {
+    if (hissing != next) {
+      hissing = next;
+      sync();
+    }
   }
 
   public void set(boolean nextOn, int nextFrequency, int nextVolume) {
@@ -74,6 +93,7 @@ public final class RadioBlockEntity extends SoundingBlockEntity {
     super.readNbt(nbt, registries);
     on = !nbt.contains(ON) || nbt.getBoolean(ON);
     frequency = nbt.contains(FREQUENCY) ? Frequency.snap(nbt.getInt(FREQUENCY)) : Frequency.DEFAULT;
+    hissing = nbt.getBoolean(HISSING);
     if (nbt.contains(OLD_DISC, NbtElement.COMPOUND_TYPE)) {
       oldDisc = ItemStack.fromNbt(registries, nbt.getCompound(OLD_DISC)).orElse(ItemStack.EMPTY);
     }
@@ -91,6 +111,7 @@ public final class RadioBlockEntity extends SoundingBlockEntity {
   public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
     NbtCompound nbt = super.toInitialChunkDataNbt(registries);
     writeDial(nbt);
+    nbt.putBoolean(HISSING, hissing);
     return nbt;
   }
 }

@@ -69,6 +69,8 @@ public final class DeskActions {
         desk.publish(world);
         BroadcastDeskBlock.showOnEveryCell(world, panel, desk);
       }
+      case TAKE_MIC -> DeskVoice.take(player, desk);
+      case RELEASE_MIC -> DeskVoice.release(player, desk);
     }
   }
 

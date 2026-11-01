@@ -51,6 +51,7 @@ public final class ServerConfigPayloads {
     buf.writeVarInt(radio.speakerHearing());
     buf.writeVarInt(radio.undergroundFreeDepth());
     buf.writeVarInt(radio.undergroundLossDepth());
+    buf.writeBoolean(radio.voiceBroadcasts());
   }
 
   private static HardwiredConfig read(RegistryByteBuf buf) {
@@ -78,7 +79,8 @@ public final class ServerConfigPayloads {
             buf.readVarInt(),
             buf.readVarInt(),
             buf.readVarInt(),
-            buf.readVarInt()));
+            buf.readVarInt(),
+            buf.readBoolean()));
   }
 
   public record SyncServerConfigS2CPayload(HardwiredConfig config) implements CustomPayload {

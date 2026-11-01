@@ -67,7 +67,7 @@ public final class HardwiredConfigScreen extends Screen {
   }
 
   private void saveAndClose() {
-    ClientSettingsStore.update(this.clientSettings.settings());
+    ClientSettingsStore.update(this.clientSettings.settings(), this.clientSettings.radioSettings());
     if (resolveAccess() == EditAccess.EDITABLE) {
       ClientPlayNetworking.send(new EditServerConfigC2SPayload(this.settings.config()));
     }

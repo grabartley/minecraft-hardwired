@@ -7,6 +7,7 @@ import com.grahambartley.hardwired.device.ElectronicsDriver;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.radio.DeskActions;
 import com.grahambartley.hardwired.radio.DeskRun;
+import com.grahambartley.hardwired.radio.DeskVoice;
 import com.grahambartley.hardwired.radio.StationRegistry;
 import com.grahambartley.hardwired.radio.TowerFinder;
 import com.grahambartley.hardwired.wire.WireEngine;
@@ -200,6 +201,7 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
     if (world.getBlockEntity(pos) instanceof BroadcastDeskBlockEntity desk) {
       desk.afterBeat(status, world.getTime());
       desk.publish(world);
+      DeskVoice.beat(world, desk);
       showOnEveryCell(world, pos, desk);
     }
   }

@@ -10,7 +10,8 @@ public record RadioSettings(
     int radioHearing,
     int speakerHearing,
     int undergroundFreeDepth,
-    int undergroundLossDepth) {
+    int undergroundLossDepth,
+    boolean voiceBroadcasts) {
 
   public static final int TOWER_MIN_MASTS_MIN = 1;
   public static final int TOWER_MIN_MASTS_MAX = 64;
@@ -29,7 +30,8 @@ public record RadioSettings(
   public static final int UNDERGROUND_LOSS_DEPTH_MIN = 1;
   public static final int UNDERGROUND_LOSS_DEPTH_MAX = 256;
 
-  public static final RadioSettings DEFAULTS = new RadioSettings(5, 32, 64, 32, 24, 64, 8, 40);
+  public static final RadioSettings DEFAULTS =
+      new RadioSettings(5, 32, 64, 32, 24, 64, 8, 40, true);
 
   static final String KEY_TOWER_MIN_MASTS = "towerMinMasts";
   static final String KEY_TOWER_MAX_MASTS = "towerMaxMasts";
@@ -39,6 +41,7 @@ public record RadioSettings(
   static final String KEY_SPEAKER_HEARING = "speakerHearing";
   static final String KEY_UNDERGROUND_FREE_DEPTH = "undergroundFreeDepth";
   static final String KEY_UNDERGROUND_LOSS_DEPTH = "undergroundLossDepth";
+  static final String KEY_VOICE_BROADCASTS = "voiceBroadcasts";
 
   public RadioSettings {
     towerMinMasts = ConfigBounds.clamp(towerMinMasts, TOWER_MIN_MASTS_MIN, TOWER_MIN_MASTS_MAX);
@@ -65,7 +68,8 @@ public record RadioSettings(
         radioHearing,
         speakerHearing,
         undergroundFreeDepth,
-        undergroundLossDepth);
+        undergroundLossDepth,
+        voiceBroadcasts);
   }
 
   public RadioSettings withTowerMaxMasts(final int value) {
@@ -77,7 +81,8 @@ public record RadioSettings(
         radioHearing,
         speakerHearing,
         undergroundFreeDepth,
-        undergroundLossDepth);
+        undergroundLossDepth,
+        voiceBroadcasts);
   }
 
   public RadioSettings withTowerBaseReach(final int value) {
@@ -89,7 +94,8 @@ public record RadioSettings(
         radioHearing,
         speakerHearing,
         undergroundFreeDepth,
-        undergroundLossDepth);
+        undergroundLossDepth,
+        voiceBroadcasts);
   }
 
   public RadioSettings withTowerReachPerMast(final int value) {
@@ -101,7 +107,8 @@ public record RadioSettings(
         radioHearing,
         speakerHearing,
         undergroundFreeDepth,
-        undergroundLossDepth);
+        undergroundLossDepth,
+        voiceBroadcasts);
   }
 
   public RadioSettings withRadioHearing(final int value) {
@@ -113,7 +120,8 @@ public record RadioSettings(
         value,
         speakerHearing,
         undergroundFreeDepth,
-        undergroundLossDepth);
+        undergroundLossDepth,
+        voiceBroadcasts);
   }
 
   public RadioSettings withSpeakerHearing(final int value) {
@@ -125,7 +133,8 @@ public record RadioSettings(
         radioHearing,
         value,
         undergroundFreeDepth,
-        undergroundLossDepth);
+        undergroundLossDepth,
+        voiceBroadcasts);
   }
 
   public RadioSettings withUndergroundFreeDepth(final int value) {
@@ -137,7 +146,8 @@ public record RadioSettings(
         radioHearing,
         speakerHearing,
         value,
-        undergroundLossDepth);
+        undergroundLossDepth,
+        voiceBroadcasts);
   }
 
   public RadioSettings withUndergroundLossDepth(final int value) {
@@ -149,6 +159,20 @@ public record RadioSettings(
         radioHearing,
         speakerHearing,
         undergroundFreeDepth,
+        value,
+        voiceBroadcasts);
+  }
+
+  public RadioSettings withVoiceBroadcasts(final boolean value) {
+    return new RadioSettings(
+        towerMinMasts,
+        towerMaxMasts,
+        towerBaseReach,
+        towerReachPerMast,
+        radioHearing,
+        speakerHearing,
+        undergroundFreeDepth,
+        undergroundLossDepth,
         value);
   }
 
@@ -181,7 +205,8 @@ public record RadioSettings(
             KEY_UNDERGROUND_LOSS_DEPTH,
             DEFAULTS.undergroundLossDepth,
             UNDERGROUND_LOSS_DEPTH_MIN,
-            UNDERGROUND_LOSS_DEPTH_MAX));
+            UNDERGROUND_LOSS_DEPTH_MAX),
+        fields.readBoolean(KEY_VOICE_BROADCASTS, DEFAULTS.voiceBroadcasts));
   }
 
   void writeJson(final JsonObject root) {
@@ -193,5 +218,6 @@ public record RadioSettings(
     root.addProperty(KEY_SPEAKER_HEARING, speakerHearing);
     root.addProperty(KEY_UNDERGROUND_FREE_DEPTH, undergroundFreeDepth);
     root.addProperty(KEY_UNDERGROUND_LOSS_DEPTH, undergroundLossDepth);
+    root.addProperty(KEY_VOICE_BROADCASTS, voiceBroadcasts);
   }
 }

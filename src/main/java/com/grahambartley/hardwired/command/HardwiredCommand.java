@@ -32,6 +32,18 @@ public final class HardwiredCommand {
       Function<HardwiredConfig, Integer> read,
       BiFunction<HardwiredConfig, Integer, HardwiredConfig> write) {}
 
+  private record BoolOption(
+      String name,
+      Function<HardwiredConfig, Boolean> read,
+      BiFunction<HardwiredConfig, Boolean, HardwiredConfig> write) {}
+
+  private static final List<BoolOption> SWITCHES =
+      List.of(
+          new BoolOption(
+              "voicebroadcasts",
+              config -> config.radio().voiceBroadcasts(),
+              (config, value) -> config.withRadio(config.radio().withVoiceBroadcasts(value))));
+
   private static final List<IntOption> OPTIONS =
       List.of(
           new IntOption(
@@ -243,6 +255,9 @@ public final class HardwiredCommand {
               option.write(),
               Integer::toString));
     }
+    for (final BoolOption option : SWITCHES) {
+      config.then(ConfigSettingNodes.boolSetting(option.name(), option.write()));
+    }
     dispatcher.register(
         CommandManager.literal("hardwired")
             .executes(HardwiredCommand::help)
@@ -283,6 +298,11 @@ public final class HardwiredCommand {
                       "command.hardwired.help.setting", option.name(), option.min(), option.max()),
               false);
     }
+    for (final BoolOption option : SWITCHES) {
+      ctx.getSource()
+          .sendFeedback(
+              () -> Text.translatable("command.hardwired.help.switch", option.name()), false);
+    }
     if (isOp(ctx.getSource())) {
       ctx.getSource()
           .sendFeedback(() -> Text.translatable("command.hardwired.help.override"), false);
@@ -299,6 +319,16 @@ public final class HardwiredCommand {
                       "command.hardwired.status.setting",
                       option.name(),
                       option.read().apply(Hardwired.SERVER_CONFIG)),
+              false);
+    }
+    for (final BoolOption option : SWITCHES) {
+      ctx.getSource()
+          .sendFeedback(
+              () ->
+                  Text.translatable(
+                      "command.hardwired.status.setting",
+                      option.name(),
+                      option.read().apply(Hardwired.SERVER_CONFIG).toString()),
               false);
     }
     return 1;

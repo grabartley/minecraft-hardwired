@@ -4,9 +4,11 @@ import com.grahambartley.hardwired.block.SoundingBlockEntity;
 import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
 import com.grahambartley.hardwired.device.DeviceStatus;
+import com.grahambartley.hardwired.network.VoiceFramePayload;
 import com.grahambartley.hardwired.radio.ReceptionMix;
 import com.grahambartley.hardwired.radio.SongClock;
 import com.grahambartley.hardwired.radio.StreamPicker;
+import com.grahambartley.hardwired.radio.StreamShare;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,6 +21,7 @@ import java.util.Set;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientBlockEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.block.jukebox.JukeboxSong;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
@@ -61,6 +64,8 @@ public final class BroadcastSounds {
           }
         });
     ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> forgetAll(client));
+    ClientPlayNetworking.registerGlobalReceiver(
+        VoiceFramePayload.ID, (payload, context) -> VoiceFeed.receive(payload));
     ClientTickEvents.END_CLIENT_TICK.register(BroadcastSounds::tick);
   }
 
@@ -68,38 +73,50 @@ public final class BroadcastSounds {
     PLAYING.values().forEach(playing -> client.getSoundManager().stop(playing.sound()));
     PLAYING.clear();
     DEVICES.clear();
+    VoiceSounds.forgetAll(client);
+    StaticSounds.forgetAll(client);
+    VoiceFeed.clear();
   }
 
   private static void tick(MinecraftClient client) {
     if (client.world == null || client.isPaused()) {
       return;
     }
-    List<SoundingBlockEntity> heard = heardFrom(client);
+    Vec3d listener = client.gameRenderer.getCamera().getPos();
+    boolean audible = client.options.getSoundVolume(SoundCategory.RECORDS) > 0;
+    StreamShare.Granted<SoundingBlockEntity> granted =
+        StreamShare.share(wantsOf(heardFrom(client, listener)), StreamPicker.MOST_STREAMS);
     Iterator<Map.Entry<SoundingBlockEntity, Playing>> playing = PLAYING.entrySet().iterator();
     while (playing.hasNext()) {
       Map.Entry<SoundingBlockEntity, Playing> entry = playing.next();
-      if (!heard.contains(entry.getKey()) || !entry.getValue().plays(entry.getKey())) {
+      if (!granted.songs().contains(entry.getKey()) || !entry.getValue().plays(entry.getKey())) {
         entry.getValue().sound().silence();
         client.getSoundManager().stop(entry.getValue().sound());
         playing.remove();
       }
     }
-    boolean audible = client.options.getSoundVolume(SoundCategory.RECORDS) > 0;
-    for (SoundingBlockEntity device : heard) {
-      if (audible) {
-        keepPlaying(client, device);
-      }
+    VoiceSounds.update(client, audible ? granted.voices() : Set.of());
+    if (audible) {
+      granted.songs().forEach(device -> keepPlaying(client, device));
     }
+    StaticSounds.tick(client, DEVICES, listener, audible);
   }
 
-  private static List<SoundingBlockEntity> heardFrom(MinecraftClient client) {
+  private static List<StreamShare.Wants<SoundingBlockEntity>> wantsOf(
+      List<SoundingBlockEntity> nearestFirst) {
+    return nearestFirst.stream()
+        .map(
+            device ->
+                new StreamShare.Wants<>(
+                    device, VoiceFeed.onAir(device.station()), device.sounding()))
+        .toList();
+  }
+
+  private static List<SoundingBlockEntity> heardFrom(MinecraftClient client, Vec3d listener) {
     RadioSettings settings = SyncedServerConfig.get().radio();
-    Vec3d listener = client.gameRenderer.getCamera().getPos();
     List<StreamPicker.Candidate<SoundingBlockEntity>> candidates = new ArrayList<>();
     for (SoundingBlockEntity device : DEVICES) {
-      if (device.getWorld() == client.world
-          && device.sounding()
-          && device.status() == DeviceStatus.RUNNING) {
+      if (device.getWorld() == client.world && device.status() == DeviceStatus.RUNNING) {
         candidates.add(
             new StreamPicker.Candidate<>(
                 device,
@@ -140,7 +157,10 @@ public final class BroadcastSounds {
         device.hearing(SyncedServerConfig.get().radio()),
         device.songStart(),
         () -> startMillis + (System.nanoTime() - startNanos) / NANOS_PER_MILLI,
-        () -> ReceptionMix.stationLoudness(device.volume(), device.strength()));
+        () ->
+            ReceptionMix.dippedForVoice(
+                ReceptionMix.stationLoudness(device.volume(), device.strength()),
+                VoiceFeed.onAir(device.station())));
   }
 
   private static Optional<JukeboxSong> songOf(ClientWorld world, Identifier id) {

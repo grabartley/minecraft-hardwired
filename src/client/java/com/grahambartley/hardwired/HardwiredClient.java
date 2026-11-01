@@ -18,6 +18,8 @@ import com.grahambartley.hardwired.client.WireViewStore;
 import com.grahambartley.hardwired.client.anim.AnimatedDeviceRenderer;
 import com.grahambartley.hardwired.client.anim.DeviceAnimations;
 import com.grahambartley.hardwired.client.radio.BroadcastSounds;
+import com.grahambartley.hardwired.client.radio.ClientRadioCommand;
+import com.grahambartley.hardwired.client.radio.TalkKey;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
 import com.grahambartley.hardwired.network.CircuitResultPayload;
@@ -112,6 +114,8 @@ public class HardwiredClient implements ClientModInitializer {
     ANIMATED_TYPES.forEach(HardwiredClient::registerAnimated);
     LiftCarRenderer.registerModel();
     BroadcastSounds.register();
+    TalkKey.register();
+    ClientRadioCommand.register();
     EntityRendererRegistry.register(ModEntities.LIFT_CAR, LiftCarRenderer::new);
   }
 

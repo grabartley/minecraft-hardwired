@@ -1,6 +1,8 @@
 package com.grahambartley.hardwired.screen;
 
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -70,6 +72,26 @@ final class ConfigRows {
       final String labelKey, final boolean initial, final Consumer<Boolean> sink) {
     return withTooltip(
         CyclingButtonWidget.onOffBuilder(initial)
+            .build(
+                0,
+                0,
+                WIDGET_WIDTH,
+                WIDGET_HEIGHT,
+                Text.translatable(labelKey),
+                (button, value) -> sink.accept(value)),
+        Text.translatable(labelKey + ".tooltip"));
+  }
+
+  ClickableWidget choice(
+      final String labelKey,
+      final List<String> values,
+      final String initial,
+      final Function<String, Text> labels,
+      final Consumer<String> sink) {
+    return withTooltip(
+        CyclingButtonWidget.builder(labels)
+            .values(values)
+            .initially(initial)
             .build(
                 0,
                 0,

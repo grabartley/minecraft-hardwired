@@ -8,23 +8,15 @@ import java.util.function.DoubleSupplier;
 import java.util.function.LongSupplier;
 import net.minecraft.client.sound.AudioStream;
 import net.minecraft.client.sound.BufferedAudioStream;
-import net.minecraft.client.sound.MovingSoundInstance;
-import net.minecraft.client.sound.Sound;
 import net.minecraft.client.sound.SoundLoader;
-import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.sound.WeightedSoundSet;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
 
-public final class BroadcastSoundInstance extends MovingSoundInstance {
+public final class BroadcastSoundInstance extends DeviceSoundInstance {
 
   private final LongSupplier songMillis;
-  private final DoubleSupplier loudness;
-  private final int hearing;
 
   public BroadcastSoundInstance(
       SoundEvent song,
@@ -33,48 +25,8 @@ public final class BroadcastSoundInstance extends MovingSoundInstance {
       long seed,
       LongSupplier songMillis,
       DoubleSupplier loudness) {
-    super(song, SoundCategory.RECORDS, Random.create(seed));
+    super(song, pos, hearing, seed, true, loudness);
     this.songMillis = songMillis;
-    this.loudness = loudness;
-    this.hearing = hearing;
-    this.x = pos.getX() + 0.5;
-    this.y = pos.getY() + 0.5;
-    this.z = pos.getZ() + 0.5;
-    this.volume = (float) loudness.getAsDouble();
-  }
-
-  @Override
-  public void tick() {
-    volume = (float) loudness.getAsDouble();
-  }
-
-  public void silence() {
-    setDone();
-  }
-
-  @Override
-  public WeightedSoundSet getSoundSet(SoundManager manager) {
-    WeightedSoundSet set = super.getSoundSet(manager);
-    if (sound != null
-        && sound != SoundManager.MISSING_SOUND
-        && sound != SoundManager.INTENTIONALLY_EMPTY_SOUND) {
-      sound =
-          new Sound(
-              sound.getIdentifier(),
-              sound.getVolume(),
-              sound.getPitch(),
-              sound.getWeight(),
-              Sound.RegistrationType.FILE,
-              true,
-              false,
-              hearing);
-    }
-    return set;
-  }
-
-  @Override
-  public boolean shouldAlwaysPlay() {
-    return true;
   }
 
   @Override
