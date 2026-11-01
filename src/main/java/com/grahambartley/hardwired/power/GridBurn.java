@@ -32,8 +32,7 @@ final class GridBurn {
       }
     }
     int load = GridTally.total(GridTally.loadsOf(members));
-    BurnPlan burn =
-        BurnPlan.forSecond(plan, load, Hardwired.SERVER_CONFIG.power().chargePerLoadMinute());
+    BurnPlan burn = BurnPlan.forSecond(plan, load, Hardwired.SERVER_CONFIG.power().burn());
     for (int i = 0; i < running.size(); i++) {
       if (running.get(i) instanceof ChargeStore store) {
         store.burn(burn.burnFor(i));

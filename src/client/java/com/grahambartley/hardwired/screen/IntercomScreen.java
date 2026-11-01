@@ -13,6 +13,7 @@ import org.lwjgl.glfw.GLFW;
 
 public final class IntercomScreen extends Screen {
 
+  private static final int TITLE_INSET = 8;
   private static final int WIDTH = 280;
   private static final int HEIGHT = 84;
   private static final int PADDING = 12;
@@ -79,8 +80,15 @@ public final class IntercomScreen extends Screen {
   @Override
   public void render(DrawContext context, int mouseX, int mouseY, float delta) {
     super.render(context, mouseX, mouseY, delta);
-    context.drawCenteredTextWithShadow(
-        textRenderer, title, width / 2, top() + TITLE_Y, SlatePlate.TITLE_COLOR);
+    PanelText.shadowed(
+        context,
+        textRenderer,
+        title,
+        left() + TITLE_INSET,
+        left() + WIDTH - TITLE_INSET,
+        top() + TITLE_Y,
+        SlatePlate.TITLE_COLOR,
+        PanelText.Align.CENTER);
   }
 
   @Override

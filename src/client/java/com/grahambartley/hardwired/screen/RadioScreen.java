@@ -18,6 +18,7 @@ public final class RadioScreen extends Screen {
   private static final int WIDTH = 220;
   private static final int HEIGHT = 170;
   private static final int PADDING = 12;
+  private static final int LABEL_REACH = 43;
   private static final int TITLE_Y = 10;
   private static final int DIAL_Y = 48;
   private static final int DIAL_RADIUS = 20;
@@ -125,8 +126,7 @@ public final class RadioScreen extends Screen {
     int tuningX = width / 2 - WIDTH / 4;
     int signalX = width / 2 + WIDTH / 4;
     int dialY = top() + DIAL_Y;
-    context.drawCenteredTextWithShadow(
-        textRenderer, title, width / 2, top() + TITLE_Y, SlatePlate.TITLE_COLOR);
+    fit(context, title, PADDING, WIDTH - PADDING, TITLE_Y, SlatePlate.TITLE_COLOR);
     BrassDial.draw(
         context,
         tuningX,
@@ -136,30 +136,48 @@ public final class RadioScreen extends Screen {
         Frequency.stepsAcross());
     int needle = radio.status() == DeviceStatus.RUNNING ? Signal.needle(radio.strength()) : 0;
     BrassDial.draw(context, signalX, dialY, DIAL_RADIUS, needle, Signal.NEEDLE_STEPS);
-    context.drawCenteredTextWithShadow(
-        textRenderer,
+    fit(
+        context,
         Text.translatable("screen.hardwired.radio.tuning"),
-        tuningX,
-        top() + LABEL_Y,
+        WIDTH / 4 - LABEL_REACH,
+        WIDTH / 4 + LABEL_REACH,
+        LABEL_Y,
         SlatePlate.MUTED_COLOR);
-    context.drawCenteredTextWithShadow(
-        textRenderer,
+    fit(
+        context,
         Text.translatable("screen.hardwired.radio.signal"),
-        signalX,
-        top() + LABEL_Y,
+        3 * WIDTH / 4 - LABEL_REACH,
+        3 * WIDTH / 4 + LABEL_REACH,
+        LABEL_Y,
         SlatePlate.MUTED_COLOR);
-    context.drawCenteredTextWithShadow(
-        textRenderer,
+    fit(
+        context,
         Text.translatable("screen.hardwired.radio.kilohertz", frequency),
-        width / 2,
-        top() + READOUT_Y,
+        PADDING,
+        WIDTH - PADDING,
+        READOUT_Y,
         SlatePlate.TITLE_COLOR);
-    context.drawTextWithShadow(
+    PanelText.shadowed(
+        context,
         textRenderer,
         Text.translatable(radio.status().translationKey()),
         left() + STATUS_X,
+        left() + WIDTH - PADDING,
         top() + STATUS_Y,
-        SlatePlate.MUTED_COLOR);
+        SlatePlate.MUTED_COLOR,
+        PanelText.Align.LEFT);
+  }
+
+  private void fit(DrawContext context, Text text, int from, int to, int y, int color) {
+    PanelText.shadowed(
+        context,
+        textRenderer,
+        text,
+        left() + from,
+        left() + to,
+        top() + y,
+        color,
+        PanelText.Align.CENTER);
   }
 
   @Override

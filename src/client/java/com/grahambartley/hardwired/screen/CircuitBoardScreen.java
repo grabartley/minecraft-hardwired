@@ -371,13 +371,16 @@ public final class CircuitBoardScreen extends Screen {
   }
 
   private void drawHeader(DrawContext context, CircuitLayout layout, Design design) {
-    context.drawText(
+    int middle = layout.left() + CircuitLayout.WIDTH / 2;
+    PanelText.flat(
+        context,
         textRenderer,
         title,
         layout.left() + TEXT_INSET,
+        middle,
         layout.top() + 6,
         PhosphorScreen.INK,
-        false);
+        PanelText.Align.LEFT);
     CircuitSettings settings = settings();
     Text info =
         Text.translatable(
@@ -385,13 +388,15 @@ public final class CircuitBoardScreen extends Screen {
             design.parts().size(),
             settings.maxParts(),
             Cost.redstone(design.parts().size(), settings.partsPerRedstone()));
-    context.drawText(
+    PanelText.flat(
+        context,
         textRenderer,
         info,
-        layout.left() + CircuitLayout.WIDTH - TEXT_INSET - textRenderer.getWidth(info),
+        middle + 4,
+        layout.left() + CircuitLayout.WIDTH - TEXT_INSET,
         layout.top() + 6,
         PhosphorScreen.INK,
-        false);
+        PanelText.Align.RIGHT);
   }
 
   private void drawDrag(
@@ -436,16 +441,15 @@ public final class CircuitBoardScreen extends Screen {
           rect.x() + 1,
           rect.y() + 1,
           chosen ? PhosphorScreen.GLASS : PhosphorScreen.BRIGHT);
-      String name =
-          textRenderer.trimToWidth(
-              partName(types[row]).getString(), rect.width() - PartGlyph.SIZE - 3);
-      context.drawText(
+      PanelText.flat(
+          context,
           textRenderer,
-          name,
+          partName(types[row]),
           rect.x() + PartGlyph.SIZE + 3,
+          rect.x() + rect.width(),
           rect.y() + 1,
           chosen ? PhosphorScreen.GLASS : PhosphorScreen.BRIGHT,
-          false);
+          PanelText.Align.LEFT);
     }
   }
 
@@ -458,14 +462,15 @@ public final class CircuitBoardScreen extends Screen {
         .filter(part -> part.type().hasSetting())
         .ifPresent(
             part -> {
-              Text value = settingText(part);
-              context.drawText(
+              PanelText.flat(
+                  context,
                   textRenderer,
-                  value,
-                  layout.columnX() + (layout.columnWidth() - textRenderer.getWidth(value)) / 2,
+                  settingText(part),
+                  layout.columnX(),
+                  layout.columnX() + layout.columnWidth(),
                   layout.settingY() + 2,
                   PhosphorScreen.INK,
-                  false);
+                  PanelText.Align.CENTER);
             });
   }
 
@@ -482,13 +487,15 @@ public final class CircuitBoardScreen extends Screen {
     Optional<Refusal> problem = problem();
     Text status = problem.<Text>map(refusal -> Text.translatable(refusal.key())).orElse(message);
     boolean warning = problem.isPresent() || messageIsWarning;
-    context.drawText(
+    PanelText.flat(
+        context,
         textRenderer,
         status,
         layout.left() + TEXT_INSET,
+        layout.left() + CircuitLayout.WIDTH - TEXT_INSET,
         layout.statusY(),
         warning ? 0xFFA23B00 : PhosphorScreen.INK,
-        false);
+        PanelText.Align.LEFT);
   }
 
   private void drawTooltip(

@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.network;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.BurnRates;
 import com.grahambartley.hardwired.config.CircuitSettings;
 import com.grahambartley.hardwired.config.DeviceSettings;
 import com.grahambartley.hardwired.config.HardwiredConfig;
@@ -36,7 +37,9 @@ public final class ServerConfigPayloads {
     buf.writeVarInt(power.generatorCapacity());
     buf.writeVarInt(power.dustCharge());
     buf.writeVarInt(power.lightningCharge());
-    buf.writeVarInt(power.chargePerLoadMinute());
+    buf.writeVarInt(power.burn().cellChargePerLoadMinute());
+    buf.writeVarInt(power.burn().generatorChargePerLoadMinute());
+    buf.writeVarInt(power.burn().spareChargePerLoadMinute());
     buf.writeVarInt(power.ratings().cellRating());
     buf.writeVarInt(power.ratings().generatorRating());
     buf.writeVarInt(power.ratings().solarRating());
@@ -79,7 +82,7 @@ public final class ServerConfigPayloads {
             buf.readVarInt(),
             buf.readVarInt(),
             buf.readVarInt(),
-            buf.readVarInt(),
+            new BurnRates(buf.readVarInt(), buf.readVarInt(), buf.readVarInt()),
             new PowerRatings(
                 buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt()),
             new PowerLoads(

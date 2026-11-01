@@ -5,6 +5,7 @@ import com.grahambartley.hardwired.block.AlarmBlock;
 import com.grahambartley.hardwired.block.RedstoneCellBlock;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
 import com.grahambartley.hardwired.block.SolarPanelBlock;
+import com.grahambartley.hardwired.config.BurnRates;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
@@ -85,6 +86,21 @@ public class PowerGameTest implements FabricGameTest {
 
   private static ConnectedTestPlayer playerBeside(TestContext context, int x) {
     return ConnectedTestPlayer.joinAt(context, at(x, 3));
+  }
+
+  @GameTest(templateName = BENCH)
+  public void aHeldStackFillsAsManyAsFitAndKeepsTheRest(TestContext context) {
+    RedstoneCellBlockEntity cell = cell(context);
+    int dustCharge = Hardwired.SERVER_CONFIG.power().dustCharge();
+    cell.setCharge(cell.capacity() - 3 * dustCharge - 1);
+    int before = cell.charge();
+    ConnectedTestPlayer player = playerBeside(context, 0);
+    player.hold(new ItemStack(Items.REDSTONE, 5), ItemStack.EMPTY);
+    player.useOn(new WireFace(context.getAbsolutePos(CELL), Direction.UP));
+    context.assertTrue(count(player) == 2, "only three dust fit, " + count(player) + " left");
+    context.assertTrue(cell.charge() == before + 3 * dustCharge, "wrong charge " + cell.charge());
+    player.leave();
+    context.complete();
   }
 
   private static int count(ConnectedTestPlayer player) {
@@ -264,7 +280,8 @@ public class PowerGameTest implements FabricGameTest {
     world.setTimeOfDay(time);
     savedConfig = Hardwired.SERVER_CONFIG;
     Hardwired.SERVER_CONFIG =
-        savedConfig.withPower(savedConfig.power().withChargePerLoadMinute(FAST_SOLAR));
+        savedConfig.withPower(
+            savedConfig.power().withBurn(new BurnRates(FAST_SOLAR, FAST_SOLAR, FAST_SOLAR)));
   }
 
   @AfterBatch(batchId = DAY_BATCH)

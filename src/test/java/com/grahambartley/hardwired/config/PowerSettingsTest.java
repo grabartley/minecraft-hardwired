@@ -22,11 +22,7 @@ class PowerSettingsTest {
             (ToIntFunction<PowerSettings>) PowerSettings::generatorCapacity),
         Arguments.of("dustCharge", 10, (ToIntFunction<PowerSettings>) PowerSettings::dustCharge),
         Arguments.of(
-            "lightningCharge", 500, (ToIntFunction<PowerSettings>) PowerSettings::lightningCharge),
-        Arguments.of(
-            "chargePerLoadMinute",
-            3,
-            (ToIntFunction<PowerSettings>) PowerSettings::chargePerLoadMinute));
+            "lightningCharge", 500, (ToIntFunction<PowerSettings>) PowerSettings::lightningCharge));
   }
 
   @ParameterizedTest(name = "{0} defaults to {1}")
@@ -48,7 +44,8 @@ class PowerSettingsTest {
         PowerSettings.DEFAULTS
             .withLoads(PowerLoads.DEFAULTS.withLampLoad(lampLoad))
             .withRatings(PowerRatings.DEFAULTS.withCellRating(cellRating))
-            .withHum(HumSettings.DEFAULTS.withHumRange(humRange));
+            .withHum(HumSettings.DEFAULTS.withHumRange(humRange))
+            .withBurn(BurnRates.DEFAULTS.withSpareChargePerLoadMinute(humRange));
     JsonObject root = new JsonObject();
     settings.writeJson(root);
     assertEquals(lampLoad, root.get("lampLoad").getAsInt());

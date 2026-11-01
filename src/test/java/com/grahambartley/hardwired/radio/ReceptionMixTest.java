@@ -33,7 +33,7 @@ class ReceptionMixTest {
   }
 
   @ParameterizedTest(name = "strength {0}")
-  @CsvSource({"1,0.12", "0,0.35"})
+  @CsvSource({"1,0.25", "0,0.35"})
   void crackleIsLouderOnAWeakSignal(double strength, double expected) {
     assertEquals(expected, ReceptionMix.crackle(100, 100, strength), 1e-9);
   }

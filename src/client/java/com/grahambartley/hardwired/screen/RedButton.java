@@ -12,6 +12,7 @@ class RedButton extends ButtonWidget {
   private static final int WHITE = 0xFFFFFFFF;
   private static final int GREY = 0xFF9A9A9A;
   private static final int BORDER = 1;
+  private static final int TEXT_INSET = 3;
 
   private boolean lit;
 
@@ -30,11 +31,14 @@ class RedButton extends ButtonWidget {
     context.fill(getX(), getY(), right, bottom, SlatePlate.BRASS);
     context.fill(
         getX() + BORDER, getY() + BORDER, right - BORDER, bottom - BORDER, lit ? LIT : DARK);
-    context.drawCenteredTextWithShadow(
+    PanelText.shadowed(
+        context,
         MinecraftClient.getInstance().textRenderer,
         getMessage(),
-        getX() + getWidth() / 2,
+        getX() + TEXT_INSET,
+        right - TEXT_INSET,
         getY() + (getHeight() - 8) / 2,
-        active ? WHITE : GREY);
+        active ? WHITE : GREY,
+        PanelText.Align.CENTER);
   }
 }

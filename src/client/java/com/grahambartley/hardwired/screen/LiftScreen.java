@@ -14,6 +14,7 @@ import net.minecraft.text.Text;
 
 public final class LiftScreen extends Screen {
 
+  private static final int TITLE_INSET = 8;
   private static final int WIDTH = 150;
   private static final int PADDING = 14;
   private static final int TITLE_Y = 12;
@@ -114,8 +115,15 @@ public final class LiftScreen extends Screen {
   @Override
   public void render(DrawContext context, int mouseX, int mouseY, float delta) {
     super.render(context, mouseX, mouseY, delta);
-    context.drawCenteredTextWithShadow(
-        textRenderer, title, width / 2, top() + TITLE_Y, SlatePlate.TITLE_COLOR);
+    PanelText.shadowed(
+        context,
+        textRenderer,
+        title,
+        left() + TITLE_INSET,
+        left() + WIDTH - TITLE_INSET,
+        top() + TITLE_Y,
+        SlatePlate.TITLE_COLOR,
+        PanelText.Align.CENTER);
   }
 
   @Override

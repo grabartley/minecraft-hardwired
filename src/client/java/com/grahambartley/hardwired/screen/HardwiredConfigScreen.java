@@ -18,6 +18,7 @@ public final class HardwiredConfigScreen extends Screen {
   private static final int ROW_HEIGHT = 24;
   private static final int DONE_CANCEL_WIDTH = 97;
   private static final int DONE_CANCEL_GAP = 6;
+  private static final int BANNER_INSET = 8;
   private static final int BANNER_COLOR = 0xFFAA00;
   private static final int HINT_COLOR = 0xBBBBBB;
 
@@ -83,22 +84,35 @@ public final class HardwiredConfigScreen extends Screen {
   public void render(
       final DrawContext context, final int mouseX, final int mouseY, final float delta) {
     super.render(context, mouseX, mouseY, delta);
-    context.drawCenteredTextWithShadow(
-        this.textRenderer, this.title, this.width / 2, ConfigScreenLayout.TITLE_Y, 0xFFFFFF);
+    PanelText.shadowed(
+        context,
+        this.textRenderer,
+        this.title,
+        BANNER_INSET,
+        this.width - BANNER_INSET,
+        ConfigScreenLayout.TITLE_Y,
+        0xFFFFFF,
+        PanelText.Align.CENTER);
     final EditAccess access = resolveAccess();
     if (access != EditAccess.EDITABLE) {
-      context.drawCenteredTextWithShadow(
+      PanelText.shadowed(
+          context,
           this.textRenderer,
           Text.translatable(access.bannerKey()),
-          this.width / 2,
+          BANNER_INSET,
+          this.width - BANNER_INSET,
           ConfigScreenLayout.BANNER_Y,
-          BANNER_COLOR);
-      context.drawCenteredTextWithShadow(
+          BANNER_COLOR,
+          PanelText.Align.CENTER);
+      PanelText.shadowed(
+          context,
           this.textRenderer,
           Text.translatable(access.hintKey()),
-          this.width / 2,
+          BANNER_INSET,
+          this.width - BANNER_INSET,
           ConfigScreenLayout.BANNER_Y + ConfigScreenLayout.BANNER_LINE_HEIGHT,
-          HINT_COLOR);
+          HINT_COLOR,
+          PanelText.Align.CENTER);
     }
   }
 

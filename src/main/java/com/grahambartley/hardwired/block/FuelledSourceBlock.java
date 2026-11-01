@@ -70,8 +70,10 @@ public abstract class FuelledSourceBlock extends SourceBlock {
     }
     if (world.getBlockEntity(pos) instanceof FuelledSourceBlockEntity source && !world.isClient) {
       int worth = CellRules.worth(Hardwired.SERVER_CONFIG.power().dustCharge(), redstoneBlock);
-      if (CellRules.takes(source.charge(), source.capacity(), worth)) {
-        fill(source, stack, world, pos, player, worth);
+      int items =
+          CellRules.itemsThatFit(source.charge(), source.capacity(), worth, stack.getCount());
+      if (items > 0) {
+        fill(source, stack, world, pos, player, items, worth * items);
       } else {
         player.sendMessage(Text.translatable("device.hardwired.cell.no_room"), true);
       }
@@ -85,9 +87,10 @@ public abstract class FuelledSourceBlock extends SourceBlock {
       World world,
       BlockPos pos,
       PlayerEntity player,
-      int worth) {
-    stack.decrementUnlessCreative(1, player);
-    source.fill(worth);
+      int items,
+      int charge) {
+    stack.decrementUnlessCreative(items, player);
+    source.fill(charge);
     world.playSound(
         null,
         pos,

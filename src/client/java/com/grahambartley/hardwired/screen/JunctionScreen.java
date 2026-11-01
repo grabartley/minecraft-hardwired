@@ -70,8 +70,15 @@ public final class JunctionScreen extends Screen {
   public void render(
       net.minecraft.client.gui.DrawContext context, int mouseX, int mouseY, float delta) {
     super.render(context, mouseX, mouseY, delta);
-    context.drawCenteredTextWithShadow(
-        textRenderer, title, width / 2, height / 2 - BUTTON_HEIGHT - 16, 0xFFFFFFFF);
+    PanelText.shadowed(
+        context,
+        textRenderer,
+        title,
+        0,
+        width,
+        height / 2 - BUTTON_HEIGHT - 16,
+        0xFFFFFFFF,
+        PanelText.Align.CENTER);
   }
 
   @Override

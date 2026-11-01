@@ -16,7 +16,14 @@ public final class CellRules {
   }
 
   public static boolean takes(int charge, int capacity, int worth) {
-    return worth > 0 && charge + (long) worth <= capacity;
+    return itemsThatFit(charge, capacity, worth, 1) > 0;
+  }
+
+  public static int itemsThatFit(int charge, int capacity, int worth, int held) {
+    if (worth <= 0 || charge >= capacity) {
+      return 0;
+    }
+    return Math.min(held, (capacity - charge) / worth);
   }
 
   public static int worth(int dustCharge, boolean redstoneBlock) {

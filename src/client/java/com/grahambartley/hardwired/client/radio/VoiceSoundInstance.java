@@ -22,6 +22,6 @@ final class VoiceSoundInstance extends DeviceSoundInstance {
   @Override
   public CompletableFuture<AudioStream> getAudioStream(
       SoundLoader loader, Identifier id, boolean repeatInstantly) {
-    return CompletableFuture.completedFuture(new VoiceStream(jitter));
+    return CompletableFuture.completedFuture(new RadioToneStream(new VoiceStream(jitter)));
   }
 }

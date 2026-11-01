@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.screen;
 
+import com.grahambartley.hardwired.config.BurnRates;
 import com.grahambartley.hardwired.config.CircuitSettings;
 import com.grahambartley.hardwired.config.DeviceSettings;
 import com.grahambartley.hardwired.config.HardwiredConfig;
@@ -108,12 +109,44 @@ final class SettingsConfigSection {
             value -> config = config.withPower(config.power().withLightningCharge(value))));
     list.addRow(
         rows.intSlider(
-            KEY + "chargeperloadminute",
-            KEY + "chargeperloadminute.tooltip",
-            PowerSettings.CHARGE_PER_LOAD_MINUTE_MIN,
-            PowerSettings.CHARGE_PER_LOAD_MINUTE_MAX,
-            config.power().chargePerLoadMinute(),
-            value -> config = config.withPower(config.power().withChargePerLoadMinute(value))));
+            KEY + "cellchargeperloadminute",
+            KEY + "cellchargeperloadminute.tooltip",
+            BurnRates.CHARGE_PER_LOAD_MINUTE_MIN,
+            BurnRates.CHARGE_PER_LOAD_MINUTE_MAX,
+            config.power().burn().cellChargePerLoadMinute(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withBurn(config.power().burn().withCellChargePerLoadMinute(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "generatorchargeperloadminute",
+            KEY + "generatorchargeperloadminute.tooltip",
+            BurnRates.CHARGE_PER_LOAD_MINUTE_MIN,
+            BurnRates.CHARGE_PER_LOAD_MINUTE_MAX,
+            config.power().burn().generatorChargePerLoadMinute(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withBurn(
+                                config.power().burn().withGeneratorChargePerLoadMinute(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "sparechargeperloadminute",
+            KEY + "sparechargeperloadminute.tooltip",
+            BurnRates.CHARGE_PER_LOAD_MINUTE_MIN,
+            BurnRates.CHARGE_PER_LOAD_MINUTE_MAX,
+            config.power().burn().spareChargePerLoadMinute(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withBurn(config.power().burn().withSpareChargePerLoadMinute(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "cellrating",

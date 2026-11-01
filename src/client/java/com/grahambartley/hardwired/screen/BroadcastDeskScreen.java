@@ -174,8 +174,7 @@ public final class BroadcastDeskScreen extends Screen {
   @Override
   public void render(DrawContext context, int mouseX, int mouseY, float delta) {
     super.render(context, mouseX, mouseY, delta);
-    context.drawCenteredTextWithShadow(
-        textRenderer, title, width / 2, top() + TITLE_Y, SlatePlate.TITLE_COLOR);
+    centered(context, title, TITLE_Y, SlatePlate.TITLE_COLOR);
     BrassDial.draw(
         context,
         width / 2,
@@ -183,31 +182,40 @@ public final class BroadcastDeskScreen extends Screen {
         DIAL_RADIUS,
         (frequency - Frequency.MIN) / Frequency.STEP,
         Frequency.stepsAcross());
-    context.drawCenteredTextWithShadow(
-        textRenderer,
+    centered(
+        context,
         Text.translatable("screen.hardwired.radio.kilohertz", frequency),
-        width / 2,
-        top() + READOUT_Y,
+        READOUT_Y,
         SlatePlate.TITLE_COLOR);
     micLine()
         .ifPresent(
             line ->
-                context.drawCenteredTextWithShadow(
-                    textRenderer,
+                centered(
+                    context,
                     line,
-                    width / 2,
-                    top() + MIC_Y,
+                    MIC_Y,
                     talk.micOpen() ? MIC_OPEN_COLOR : SlatePlate.MUTED_COLOR));
     Text disc =
         desk.hasDisc()
             ? desk.song().map(song -> song.value().description()).orElse(desk.disc().getName())
             : Text.translatable("screen.hardwired.desk.no_disc");
-    context.drawCenteredTextWithShadow(
-        textRenderer,
+    centered(
+        context,
         Text.translatable(desk.status().translationKey()).append(" | ").append(disc),
-        width / 2,
-        top() + STATUS_Y,
+        STATUS_Y,
         SlatePlate.MUTED_COLOR);
+  }
+
+  private void centered(DrawContext context, Text text, int y, int color) {
+    PanelText.shadowed(
+        context,
+        textRenderer,
+        text,
+        left() + PADDING,
+        left() + WIDTH - PADDING,
+        top() + y,
+        color,
+        PanelText.Align.CENTER);
   }
 
   private Optional<Text> micLine() {

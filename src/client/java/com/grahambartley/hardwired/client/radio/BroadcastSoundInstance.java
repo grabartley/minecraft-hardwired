@@ -32,6 +32,7 @@ public final class BroadcastSoundInstance extends DeviceSoundInstance {
         .loadStreamed(id, false)
         .thenApplyAsync(
             stream -> SongSeek.seek(stream, songMillis, this::isDone),
-            Util.getDownloadWorkerExecutor());
+            Util.getDownloadWorkerExecutor())
+        .thenApply(RadioToneStream::new);
   }
 }

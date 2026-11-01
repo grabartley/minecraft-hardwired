@@ -21,8 +21,15 @@ final class ConfigSectionHeader extends ClickableWidget {
   @Override
   protected void renderWidget(
       final DrawContext context, final int mouseX, final int mouseY, final float delta) {
-    context.drawCenteredTextWithShadow(
-        textRenderer, this.getMessage(), this.getX() + this.getWidth() / 2, this.getY() + 2, COLOR);
+    PanelText.shadowed(
+        context,
+        textRenderer,
+        this.getMessage(),
+        this.getX(),
+        this.getX() + this.getWidth(),
+        this.getY() + 2,
+        COLOR,
+        PanelText.Align.CENTER);
   }
 
   @Override

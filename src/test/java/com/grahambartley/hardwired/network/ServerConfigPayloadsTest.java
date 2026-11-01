@@ -2,6 +2,7 @@ package com.grahambartley.hardwired.network;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.grahambartley.hardwired.config.BurnRates;
 import com.grahambartley.hardwired.config.CircuitSettings;
 import com.grahambartley.hardwired.config.DeviceSettings;
 import com.grahambartley.hardwired.config.HardwiredConfig;
@@ -70,7 +71,7 @@ class ServerConfigPayloadsTest {
                 new DeviceSettings(16, 200, 128),
                 PowerSettings.DEFAULTS
                     .withHum(HumSettings.DEFAULTS.withHumFullLoad(900))
-                    .withChargePerLoadMinute(9),
+                    .withBurn(new BurnRates(9, 8, 7)),
                 new LiftSettings(40),
                 new CircuitSettings(256, 64),
                 new RadioSettings(63, 127, 4096, 512, 126, 255, 254, 253, true))));
