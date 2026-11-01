@@ -4,6 +4,8 @@
     "2": "minecraft:block/gold_block",
     "3": "minecraft:block/polished_blackstone",
     "7": "hardwired:block/control_panel",
-    "particle": "minecraft:block/polished_blackstone"
+    "particle": "minecraft:block/polished_blackstone",
+    "0": "minecraft:block/copper_block",
+    "4": "minecraft:block/calcite"
   }
 }
