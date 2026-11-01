@@ -136,6 +136,7 @@ public class ControllerGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = TICK_LIMIT)
   public void aTwoPistonDoorOpensAndClosesFromOneSwitch(TestContext context) {
+    TestPower.keepFed(context);
     buildDoor(context, DOOR);
     List<String> moves = watchPistons(context);
     context.waitAndRun(
@@ -161,6 +162,7 @@ public class ControllerGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = TICK_LIMIT)
   public void anInterruptInTheFirstStepFinishesItThenUndoesIt(TestContext context) {
+    TestPower.keepFed(context);
     ControllerBlockEntity controller = buildDoor(context, DOOR);
     List<String> moves = watchPistons(context);
     context.waitAndRun(
@@ -193,6 +195,7 @@ public class ControllerGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = TICK_LIMIT)
   public void anInterruptInTheLastStepRetractsBothPistonsInOrder(TestContext context) {
+    TestPower.keepFed(context);
     buildDoor(context, DOOR);
     List<String> moves = watchPistons(context);
     context.waitAndRun(
@@ -216,6 +219,7 @@ public class ControllerGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = TICK_LIMIT)
   public void anOpenColourAndACloseColourRunEachWay(TestContext context) {
+    TestPower.keepFed(context);
     ControllerProgram split =
         new ControllerProgram(
             new ControllerWiring(Hue.PLAIN, Hue.PURPLE, DOOR_WIRING.outputs()),
@@ -251,6 +255,7 @@ public class ControllerGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = TICK_LIMIT)
   public void aTimelineReversesByItself(TestContext context) {
+    TestPower.keepFed(context);
     ControllerProgram timed =
         new ControllerProgram(
             DOOR_WIRING, new Timeline(List.of(new TimelineStep(0b01, SETTLE_TICKS)), LONG_WAIT));

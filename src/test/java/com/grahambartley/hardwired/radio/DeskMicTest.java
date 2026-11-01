@@ -17,7 +17,12 @@ class DeskMicTest {
   private static final UUID SECOND = new UUID(0, 2);
 
   @ParameterizedTest(name = "{0} voice {1}")
-  @CsvSource({"RUNNING,true,true", "RUNNING,false,false", "READY,true,false", "NO_CELL,true,false"})
+  @CsvSource({
+    "RUNNING,true,true",
+    "RUNNING,false,false",
+    "READY,true,false",
+    "NO_SOURCE,true,false"
+  })
   void aDeskIsLiveOnlyOnAirWithVoiceAllowed(DeviceStatus status, boolean voice, boolean live) {
     assertEquals(live, DeskMic.mayBeLive(status, voice));
   }

@@ -1,0 +1,117 @@
+{
+  "clip": "hardwired:clips/master_switch.animation.json",
+  "wide": true,
+  "parts": [
+    {
+      "bone": "lever",
+      "model": "hardwired:block/part/master_switch_lever",
+      "pivot": [
+        8,
+        22,
+        10.5
+      ],
+      "dial": {
+        "value": "throw",
+        "axis": "x",
+        "from": 100,
+        "to": 0
+      }
+    },
+    {
+      "bone": "blades",
+      "model": "hardwired:block/part/master_switch_blades",
+      "pivot": [
+        8,
+        20,
+        13.5
+      ],
+      "dial": {
+        "value": "throw",
+        "axis": "x",
+        "from": 30,
+        "to": 0
+      }
+    },
+    {
+      "bone": "needle_1",
+      "model": "hardwired:block/part/master_switch_needle_1",
+      "pivot": [
+        12.5,
+        27.25,
+        14.1
+      ],
+      "dial": {
+        "value": "load",
+        "axis": "z",
+        "from": -60,
+        "to": 60
+      }
+    },
+    {
+      "bone": "needle_2",
+      "model": "hardwired:block/part/master_switch_needle_2",
+      "pivot": [
+        8,
+        27.25,
+        14.1
+      ],
+      "dial": {
+        "value": "load",
+        "axis": "z",
+        "from": -60,
+        "to": 60
+      }
+    },
+    {
+      "bone": "needle_3",
+      "model": "hardwired:block/part/master_switch_needle_3",
+      "pivot": [
+        3.5,
+        27.25,
+        14.1
+      ],
+      "dial": {
+        "value": "load",
+        "axis": "z",
+        "from": -60,
+        "to": 60
+      }
+    },
+    {
+      "bone": "lamp_dark",
+      "model": "hardwired:block/part/master_switch_lamp_dark",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "glow": true,
+      "always": true,
+      "when": "!live"
+    },
+    {
+      "bone": "lamp_live",
+      "model": "hardwired:block/part/master_switch_lamp_live",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "glow": true,
+      "always": true,
+      "when": "live"
+    },
+    {
+      "bone": "box_glow",
+      "model": "hardwired:block/part/master_switch_box_glow",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "glow": true,
+      "always": true,
+      "when": "live"
+    }
+  ]
+}

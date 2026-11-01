@@ -13,6 +13,17 @@ public final class ModSounds {
   public static final SoundEvent RADIO_CRACKLE = register("radio.crackle");
   public static final SoundEvent RADIO_SWEEP = register("radio.sweep");
 
+  public static final SoundEvent SOURCE_UP = register("power.source_up");
+  public static final SoundEvent SOURCE_DOWN = register("power.source_down");
+  public static final SoundEvent FUSE_POP = register("power.fuse_pop");
+  public static final SoundEvent MASTER_PULL = register("power.master_pull");
+  public static final SoundEvent MASTER_OPEN = register("power.master_open");
+  public static final SoundEvent GENERATOR_LOOP = register("power.generator_loop");
+  public static final SoundEvent CELL_LOOP = register("power.cell_loop");
+  public static final SoundEvent DYNAMO_LOOP = register("power.dynamo_loop");
+  public static final SoundEvent SOLAR_TICK = register("power.solar_tick");
+  public static final SoundEvent ELECTRIC_HUM = register("power.electric_hum");
+
   private ModSounds() {}
 
   public static void register() {}

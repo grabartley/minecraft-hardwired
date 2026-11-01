@@ -4,9 +4,7 @@ import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
 import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.network.IntercomSayPayload;
-import com.grahambartley.hardwired.power.ChargeLedger;
-import com.grahambartley.hardwired.power.ChargeNetwork;
-import com.grahambartley.hardwired.power.ChargeStore;
+import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +28,8 @@ public final class IntercomActions {
   }
 
   public static DeviceStatus readiness(ServerWorld world, BlockPos pos) {
-    List<ChargeStore> stores = ChargeNetwork.storesFor(world, pos);
-    return ElectronicsRule.readiness(cost(), !stores.isEmpty(), ChargeLedger.available(stores));
+    PowerGrids power = WireEngine.of(world).power();
+    return power.hasPower(pos) ? DeviceStatus.READY : power.stopReason(pos);
   }
 
   public static void open(ServerPlayerEntity player, BlockPos pos) {
@@ -64,7 +62,7 @@ public final class IntercomActions {
       player.sendMessage(Text.translatable("device.hardwired.too_fast"), true);
       return;
     }
-    if (!ChargeNetwork.tryDrain(world, pos, cost())) {
+    if (readiness(world, pos).isStopped()) {
       ElectronicsDriver.pulse(world, pos);
       ElectronicsDriver.tell(world, pos, player);
       return;
@@ -101,9 +99,5 @@ public final class IntercomActions {
         .filter(other -> world.getBlockState(other).getBlock() instanceof IntercomBlock)
         .forEach(intercoms::add);
     return intercoms;
-  }
-
-  private static int cost() {
-    return Hardwired.SERVER_CONFIG.power().intercomChargePerLine();
   }
 }

@@ -51,10 +51,10 @@ class LiftRunTest {
   void aStopSurvivesASaveWithItsReasonAndClearsCalls() {
     LiftRun run = new LiftRun();
     run.queue().add(9);
-    run.stop(DeviceStatus.NO_CHARGE, 2);
+    run.stop(DeviceStatus.OUT_OF_FUEL, 2);
     LiftRun loaded = reload(run);
     assertEquals(LiftPhase.STOPPED, loaded.phase());
-    assertEquals(DeviceStatus.NO_CHARGE, loaded.stopReason());
+    assertEquals(DeviceStatus.OUT_OF_FUEL, loaded.stopReason());
     assertTrue(loaded.queue().isEmpty());
     assertTrue(loaded.pausing());
     assertTrue(loaded.pausing());

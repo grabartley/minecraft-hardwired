@@ -10,6 +10,7 @@ import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.LampBlockEntity;
 import com.grahambartley.hardwired.block.RadioBlockEntity;
 import com.grahambartley.hardwired.client.DeviceHud;
+import com.grahambartley.hardwired.client.DeviceReadings;
 import com.grahambartley.hardwired.client.LiftCarRenderer;
 import com.grahambartley.hardwired.client.WireDrag;
 import com.grahambartley.hardwired.client.WireHud;
@@ -17,6 +18,8 @@ import com.grahambartley.hardwired.client.WireRenderer;
 import com.grahambartley.hardwired.client.WireViewStore;
 import com.grahambartley.hardwired.client.anim.AnimatedDeviceRenderer;
 import com.grahambartley.hardwired.client.anim.DeviceAnimations;
+import com.grahambartley.hardwired.client.power.PowerSounds;
+import com.grahambartley.hardwired.client.power.PowerTooltip;
 import com.grahambartley.hardwired.client.radio.BroadcastSounds;
 import com.grahambartley.hardwired.client.radio.ClientRadioCommand;
 import com.grahambartley.hardwired.client.radio.TalkKey;
@@ -75,6 +78,11 @@ public class HardwiredClient implements ClientModInitializer {
   private static final List<BlockEntityType<? extends BlockEntity>> ANIMATED_TYPES =
       List.of(
           ModBlockEntities.ANIMATED_DEVICE,
+          ModBlockEntities.REDSTONE_CELL,
+          ModBlockEntities.REDSTONE_GENERATOR,
+          ModBlockEntities.SOLAR_PANEL,
+          ModBlockEntities.LODESTONE_DYNAMO,
+          ModBlockEntities.MASTER_SWITCH,
           ModBlockEntities.CONTROLLER,
           ModBlockEntities.ELECTRONIC,
           ModBlockEntities.RADIO,
@@ -115,6 +123,9 @@ public class HardwiredClient implements ClientModInitializer {
     ANIMATED_TYPES.forEach(HardwiredClient::registerAnimated);
     LiftCarRenderer.registerModel();
     BroadcastSounds.register();
+    PowerSounds.register();
+    DeviceReadings.register();
+    PowerTooltip.register();
     TalkKey.register();
     ClientRadioCommand.register();
     EntityRendererRegistry.register(ModEntities.LIFT_CAR, LiftCarRenderer::new);
@@ -169,6 +180,9 @@ public class HardwiredClient implements ClientModInitializer {
     BlockRenderLayerMap.INSTANCE.putBlocks(
         RenderLayer.getCutout(),
         ModBlocks.SOLAR_PANEL,
+        ModBlocks.REDSTONE_GENERATOR,
+        ModBlocks.LODESTONE_DYNAMO,
+        ModBlocks.MASTER_SWITCH,
         ModBlocks.ALARM,
         ModBlocks.RADIO,
         ModBlocks.SPEAKER,

@@ -153,6 +153,7 @@ public final class WireView {
         }
       }
       int flags = network.isOn() ? WireChunkPayload.ON : 0;
+      flags |= network.gridState().givesPower() ? WireChunkPayload.POWERED : 0;
       flags |= network.isTripped() ? WireChunkPayload.TRIPPED : 0;
       flags |= arms.size() <= 1 && !endsConnected ? WireChunkPayload.LOOSE_END : 0;
       flags |= cell.isSealed() ? WireChunkPayload.SEALED : 0;

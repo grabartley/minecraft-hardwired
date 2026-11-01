@@ -19,4 +19,12 @@ public interface ChargeStore {
     setCharge(charge() - taken);
     return taken;
   }
+
+  default boolean acceptsEarnings() {
+    return false;
+  }
+
+  default void burn(double amount) {}
+
+  default void earn(double amount) {}
 }

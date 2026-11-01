@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.block;
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.advancement.DeviceCriterion;
 import com.grahambartley.hardwired.advancement.ModCriteria;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.PanelAction;
 import com.grahambartley.hardwired.device.PanelDevice;
 import com.grahambartley.hardwired.device.PanelKind;
@@ -73,12 +74,20 @@ public abstract class AbstractLampBlock extends Block
     return state.get(LEVEL);
   }
 
-  public BlockPos lampPos(BlockPos pos, BlockState state) {
-    return pos;
+  public int load(ServerWorld world, BlockPos pos, BlockState state) {
+    WireEngine engine = WireEngine.of(world);
+    return cells(pos, state).stream().anyMatch(engine::isOn)
+        ? ratedLoad(Hardwired.SERVER_CONFIG.power())
+        : 0;
   }
 
-  protected List<BlockPos> parts(BlockPos pos, BlockState state) {
-    return List.of(pos);
+  @Override
+  public int ratedLoad(PowerSettings settings) {
+    return settings.loads().lampLoad();
+  }
+
+  public BlockPos lampPos(BlockPos pos, BlockState state) {
+    return pos;
   }
 
   protected void update(World world, BlockPos pos, BlockState state) {
@@ -97,14 +106,14 @@ public abstract class AbstractLampBlock extends Block
       return;
     }
     WireEngine engine = WireEngine.of(world);
-    List<BlockPos> parts = parts(pos, state);
+    List<BlockPos> parts = cells(pos, state);
     BlockPos lookPart =
         parts.stream().filter(part -> engine.lookAt(part) != null).findFirst().orElse(pos);
     LampLook look = lamp.lookOver(engine.lookAt(lookPart), engine.lookStampAt(lookPart));
     Hue color = look == null ? lamp.color() : look.color();
     int brightness = look == null ? LampLook.MAX_BRIGHTNESS : look.brightness();
     boolean changed = lamp.setLook(color, brightness);
-    int level = parts.stream().anyMatch(engine::isPowered) ? brightness : 0;
+    int level = parts.stream().anyMatch(engine::isLive) ? brightness : 0;
     if (state.get(LEVEL) != level) {
       update(world, pos, state.with(LEVEL, level).with(LIT, level > 0));
       changed = true;

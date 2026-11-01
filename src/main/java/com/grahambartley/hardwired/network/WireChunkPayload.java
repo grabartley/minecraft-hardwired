@@ -17,6 +17,7 @@ public record WireChunkPayload(long chunk, List<CellView> cells, List<MarkView> 
   public static final int TRIPPED = 2;
   public static final int LOOSE_END = 4;
   public static final int SEALED = 8;
+  public static final int POWERED = 16;
 
   public record CellView(long pos, int side, int color, int flags, int arms) {
 

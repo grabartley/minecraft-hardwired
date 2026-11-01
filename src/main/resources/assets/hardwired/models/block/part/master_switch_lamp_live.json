@@ -1,0 +1,77 @@
+{
+  "format_version": "1.9.0",
+  "textures": {
+    "particle": "minecraft:block/polished_deepslate",
+    "sheet": "hardwired:block/master_switch"
+  },
+  "elements": [
+    {
+      "from": [
+        2.7,
+        23.45,
+        13.7
+      ],
+      "to": [
+        4.3,
+        25.05,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            4,
+            7.5,
+            5.5
+          ],
+          "texture": "#sheet"
+        },
+        "east": {
+          "uv": [
+            6,
+            4,
+            7.5,
+            5.5
+          ],
+          "texture": "#sheet"
+        },
+        "south": {
+          "uv": [
+            6,
+            4,
+            7.5,
+            5.5
+          ],
+          "texture": "#sheet"
+        },
+        "west": {
+          "uv": [
+            6,
+            4,
+            7.5,
+            5.5
+          ],
+          "texture": "#sheet"
+        },
+        "up": {
+          "uv": [
+            6,
+            4,
+            7.5,
+            5.5
+          ],
+          "texture": "#sheet"
+        },
+        "down": {
+          "uv": [
+            6,
+            4,
+            7.5,
+            5.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    }
+  ]
+}

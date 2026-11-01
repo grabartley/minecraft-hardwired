@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
 import com.grahambartley.hardwired.wire.WireEngine;
@@ -32,12 +33,23 @@ public final class SpeakerBlock extends TableDeviceBlock {
 
   @Override
   public DeviceStatus demand(ServerWorld world, BlockPos pos, BlockState state) {
-    return receivingRadio(world, pos).isPresent() ? DeviceStatus.RUNNING : DeviceStatus.NO_RADIO;
+    return WireEngine.of(world).allOnNetwork(pos, RadioBlockEntity.class).stream()
+            .anyMatch(radio -> radio.status().wantsPower())
+        ? DeviceStatus.RUNNING
+        : DeviceStatus.NO_RADIO;
   }
 
   @Override
-  public int chargePerSecond() {
-    return Hardwired.SERVER_CONFIG.power().speakerChargePerSecond();
+  public int ratedLoad(PowerSettings settings) {
+    return settings.loads().speakerLoad();
+  }
+
+  @Override
+  public int load(ServerWorld world, BlockPos pos, BlockState state) {
+    return WireEngine.of(world).allOnNetwork(pos, RadioBlockEntity.class).stream()
+            .anyMatch(RadioBlockEntity::isOn)
+        ? ratedLoad(Hardwired.SERVER_CONFIG.power())
+        : 0;
   }
 
   @Override

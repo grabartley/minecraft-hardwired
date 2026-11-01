@@ -8,8 +8,6 @@ public interface Electronic {
 
   DeviceStatus demand(ServerWorld world, BlockPos pos, BlockState state);
 
-  int chargePerSecond();
-
   void show(ServerWorld world, BlockPos pos, BlockState state, DeviceStatus status);
 
   default void beat(ServerWorld world, BlockPos pos) {}
@@ -19,6 +17,6 @@ public interface Electronic {
   }
 
   default boolean keepsChecking(DeviceStatus status) {
-    return status.wantsCharge();
+    return status.wantsPower();
   }
 }

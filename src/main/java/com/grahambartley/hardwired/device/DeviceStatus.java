@@ -4,8 +4,11 @@ public enum DeviceStatus {
   RUNNING("running"),
   READY("ready"),
   WIRE_OFF("wire_off"),
-  NO_CELL("no_cell"),
-  NO_CHARGE("no_charge"),
+  NO_SOURCE("no_source"),
+  SOURCES_OFF("sources_off"),
+  OUT_OF_FUEL("out_of_fuel"),
+  OVERLOADED("overloaded"),
+  POWER_RETURNING("power_returning"),
   NO_RADIO("no_radio"),
   RADIO_OFF("radio_off"),
   NO_STATION("no_station"),
@@ -34,8 +37,16 @@ public enum DeviceStatus {
     return this != RUNNING && this != READY;
   }
 
-  public boolean wantsCharge() {
-    return this == RUNNING || this == NO_CELL || this == NO_CHARGE;
+  public boolean wantsPower() {
+    return this == RUNNING || isPowerStop();
+  }
+
+  public boolean isPowerStop() {
+    return this == NO_SOURCE
+        || this == SOURCES_OFF
+        || this == OUT_OF_FUEL
+        || this == OVERLOADED
+        || this == POWER_RETURNING;
   }
 
   public static DeviceStatus byId(String id, DeviceStatus fallback) {

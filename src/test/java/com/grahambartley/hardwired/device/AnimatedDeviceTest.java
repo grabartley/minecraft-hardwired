@@ -25,4 +25,11 @@ class AnimatedDeviceTest {
     BlockState state = Blocks.REDSTONE_LAMP.getDefaultState().with(RedstoneLampBlock.LIT, lit);
     assertEquals(flagged, AnimatedDevice.flagged(state, property));
   }
+
+  @ParameterizedTest
+  @CsvSource({"lit,true,true", "lit,false,false", "!lit,true,false", "!lit,false,true"})
+  void aLeadingBangShowsAPartWhileThePropertyIsFalse(String rule, boolean lit, boolean shown) {
+    BlockState state = Blocks.REDSTONE_LAMP.getDefaultState().with(RedstoneLampBlock.LIT, lit);
+    assertEquals(shown, AnimatedDevice.shownWhen(state, rule));
+  }
 }

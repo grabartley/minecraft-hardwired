@@ -10,9 +10,13 @@ import com.grahambartley.hardwired.block.ControllerBlockEntity;
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
 import com.grahambartley.hardwired.block.LampBlockEntity;
 import com.grahambartley.hardwired.block.MainPanelBlockEntity;
+import com.grahambartley.hardwired.block.MasterSwitchBlockEntity;
 import com.grahambartley.hardwired.block.RadioBlockEntity;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
+import com.grahambartley.hardwired.block.RedstoneGeneratorBlockEntity;
+import com.grahambartley.hardwired.block.SourceBlockEntity;
 import com.grahambartley.hardwired.block.SpeakerBlockEntity;
+import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -69,6 +73,27 @@ public final class ModBlockEntities {
           BlockEntityType.Builder.create(CircuitBlockEntity::new, ModBlocks.CIRCUIT_BLOCK)
               .build(null));
 
+  public static final BlockEntityType<RedstoneGeneratorBlockEntity> REDSTONE_GENERATOR =
+      Registry.register(
+          Registries.BLOCK_ENTITY_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "redstone_generator"),
+          BlockEntityType.Builder.create(
+                  RedstoneGeneratorBlockEntity::new, ModBlocks.REDSTONE_GENERATOR)
+              .build(null));
+
+  public static final BlockEntityType<SourceBlockEntity> SOLAR_PANEL =
+      sourceType("solar_panel", ModBlocks.SOLAR_PANEL);
+
+  public static final BlockEntityType<SourceBlockEntity> LODESTONE_DYNAMO =
+      sourceType("lodestone_dynamo", ModBlocks.LODESTONE_DYNAMO);
+
+  public static final BlockEntityType<MasterSwitchBlockEntity> MASTER_SWITCH =
+      Registry.register(
+          Registries.BLOCK_ENTITY_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "master_switch"),
+          BlockEntityType.Builder.create(MasterSwitchBlockEntity::new, ModBlocks.MASTER_SWITCH)
+              .build(null));
+
   public static final BlockEntityType<RedstoneCellBlockEntity> REDSTONE_CELL =
       Registry.register(
           Registries.BLOCK_ENTITY_TYPE,
@@ -108,6 +133,19 @@ public final class ModBlockEntities {
               .build(null));
 
   private ModBlockEntities() {}
+
+  @SuppressWarnings("unchecked")
+  private static BlockEntityType<SourceBlockEntity> sourceType(String name, Block block) {
+    BlockEntityType<SourceBlockEntity>[] type = new BlockEntityType[1];
+    type[0] =
+        Registry.register(
+            Registries.BLOCK_ENTITY_TYPE,
+            Identifier.of(Hardwired.MOD_ID, name),
+            BlockEntityType.Builder.<SourceBlockEntity>create(
+                    (pos, state) -> new SourceBlockEntity(type[0], pos, state), block)
+                .build(null));
+    return type[0];
+  }
 
   public static void register() {}
 }

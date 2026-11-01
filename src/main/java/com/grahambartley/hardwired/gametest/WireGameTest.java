@@ -77,6 +77,7 @@ public class WireGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void aSwitchLightsALampAcrossWire(TestContext context) {
+    TestPower.keepFed(context);
     context.setBlockState(standing(1, 1), floorSwitch(false));
     context.setBlockState(standing(6, 1), ModBlocks.LIGHT_STRIP);
     layRun(context, 1, 6, 1, Hue.PLAIN);
@@ -109,6 +110,7 @@ public class WireGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void wirePowersAVanillaLampFully(TestContext context) {
+    TestPower.keepFed(context);
     context.setBlockState(standing(1, 1), floorSwitch(true));
     context.setBlockState(standing(5, 1), Blocks.REDSTONE_LAMP);
     layRun(context, 1, 5, 1, Hue.PLAIN);
@@ -122,6 +124,7 @@ public class WireGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void vanillaPowerTurnsANetworkOn(TestContext context) {
+    TestPower.keepFed(context);
     context.setBlockState(standing(1, 1), Blocks.REDSTONE_BLOCK);
     context.setBlockState(standing(5, 1), ModBlocks.LIGHT_STRIP);
     layRun(context, 1, 5, 1, Hue.PLAIN);
@@ -156,6 +159,7 @@ public class WireGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void aPoweredNetworkDoesNotQuasiPowerAPiston(TestContext context) {
+    TestPower.keepFed(context);
     context.setBlockState(standing(4, 1), Blocks.PISTON);
     WireEngine engine = engine(context);
     for (int x = 4; x <= 6; x++) {
@@ -169,7 +173,7 @@ public class WireGameTest implements FabricGameTest {
         SETTLE_TICKS,
         () -> {
           context.assertTrue(
-              engine.isPowered(context.getAbsolutePos(standing(4, 1).up())),
+              engine.isLive(context.getAbsolutePos(standing(4, 1).up())),
               "the block above the piston must be powered");
           context.expectBlockProperty(standing(4, 1), Properties.EXTENDED, false);
           context.complete();
@@ -255,6 +259,7 @@ public class WireGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void extendingALiveNetworkLightsTheNewLamp(TestContext context) {
+    TestPower.keepFed(context);
     context.setBlockState(standing(1, 1), floorSwitch(true));
     context.setBlockState(standing(6, 1), ModBlocks.LIGHT_STRIP);
     layRun(context, 1, 3, 1, Hue.PLAIN);
@@ -273,6 +278,7 @@ public class WireGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void cuttingALiveWireTurnsItsOutputOff(TestContext context) {
+    TestPower.keepFed(context);
     context.setBlockState(standing(1, 1), floorSwitch(true));
     context.setBlockState(standing(5, 1), Blocks.REDSTONE_LAMP);
     layRun(context, 1, 5, 1, Hue.PLAIN);
@@ -294,6 +300,7 @@ public class WireGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void cuttingTheInputOffARunTurnsItOff(TestContext context) {
+    TestPower.keepFed(context);
     context.setBlockState(standing(1, 1), floorSwitch(true));
     context.setBlockState(standing(5, 1), ModBlocks.LIGHT_STRIP);
     layRun(context, 1, 5, 1, Hue.PLAIN);
@@ -365,6 +372,7 @@ public class WireGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void aPanelSetsEveryLampOnItsNetwork(TestContext context) {
+    TestPower.keepFed(context);
     context.setBlockState(standing(1, 1), floorSwitch(true));
     context.setBlockState(standing(4, 1), ModBlocks.LIGHT_STRIP);
     context.setBlockState(standing(6, 1), ModBlocks.LIGHT_STRIP);
@@ -393,6 +401,7 @@ public class WireGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void aJunctionNotInvertsItsInput(TestContext context) {
+    TestPower.keepFed(context);
     context.setBlockState(standing(1, 1), floorSwitch(false));
     context.setBlockState(
         standing(3, 1),

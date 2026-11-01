@@ -1,0 +1,351 @@
+{
+  "format_version": "1.9.0",
+  "textures": {
+    "black": "minecraft:block/polished_blackstone",
+    "gold": "minecraft:block/gold_block",
+    "iron": "minecraft:block/iron_block",
+    "particle": "minecraft:block/polished_deepslate"
+  },
+  "elements": [
+    {
+      "from": [
+        2.25,
+        6.75,
+        7.25
+      ],
+      "to": [
+        3,
+        8.75,
+        11.75
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13,
+            7.25,
+            13.75,
+            9.25
+          ],
+          "texture": "#black"
+        },
+        "east": {
+          "uv": [
+            4.25,
+            7.25,
+            8.75,
+            9.25
+          ],
+          "texture": "#black"
+        },
+        "south": {
+          "uv": [
+            2.25,
+            7.25,
+            3,
+            9.25
+          ],
+          "texture": "#black"
+        },
+        "west": {
+          "uv": [
+            7.25,
+            7.25,
+            11.75,
+            9.25
+          ],
+          "texture": "#black"
+        },
+        "up": {
+          "uv": [
+            2.25,
+            7.25,
+            3,
+            11.75
+          ],
+          "texture": "#black"
+        },
+        "down": {
+          "uv": [
+            2.25,
+            7.25,
+            3,
+            11.75
+          ],
+          "texture": "#black"
+        }
+      }
+    },
+    {
+      "from": [
+        2.25,
+        5.5,
+        8.5
+      ],
+      "to": [
+        3,
+        10,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13,
+            6,
+            13.75,
+            10.5
+          ],
+          "texture": "#black"
+        },
+        "east": {
+          "uv": [
+            5.5,
+            6,
+            7.5,
+            10.5
+          ],
+          "texture": "#black"
+        },
+        "south": {
+          "uv": [
+            2.25,
+            6,
+            3,
+            10.5
+          ],
+          "texture": "#black"
+        },
+        "west": {
+          "uv": [
+            8.5,
+            6,
+            10.5,
+            10.5
+          ],
+          "texture": "#black"
+        },
+        "up": {
+          "uv": [
+            2.25,
+            8.5,
+            3,
+            10.5
+          ],
+          "texture": "#black"
+        },
+        "down": {
+          "uv": [
+            2.25,
+            8.5,
+            3,
+            10.5
+          ],
+          "texture": "#black"
+        }
+      }
+    },
+    {
+      "from": [
+        2.25,
+        6,
+        7.75
+      ],
+      "to": [
+        3,
+        9.5,
+        11.25
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13,
+            6.5,
+            13.75,
+            10
+          ],
+          "texture": "#black"
+        },
+        "east": {
+          "uv": [
+            4.75,
+            6.5,
+            8.25,
+            10
+          ],
+          "texture": "#black"
+        },
+        "south": {
+          "uv": [
+            2.25,
+            6.5,
+            3,
+            10
+          ],
+          "texture": "#black"
+        },
+        "west": {
+          "uv": [
+            7.75,
+            6.5,
+            11.25,
+            10
+          ],
+          "texture": "#black"
+        },
+        "up": {
+          "uv": [
+            2.25,
+            7.75,
+            3,
+            11.25
+          ],
+          "texture": "#black"
+        },
+        "down": {
+          "uv": [
+            2.25,
+            7.75,
+            3,
+            11.25
+          ],
+          "texture": "#black"
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        9.125,
+        9.125
+      ],
+      "to": [
+        2.25,
+        9.875,
+        9.875
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13.75,
+            6.125,
+            15,
+            6.875
+          ],
+          "texture": "#iron"
+        },
+        "east": {
+          "uv": [
+            6.125,
+            6.125,
+            6.875,
+            6.875
+          ],
+          "texture": "#iron"
+        },
+        "south": {
+          "uv": [
+            1,
+            6.125,
+            2.25,
+            6.875
+          ],
+          "texture": "#iron"
+        },
+        "west": {
+          "uv": [
+            9.125,
+            6.125,
+            9.875,
+            6.875
+          ],
+          "texture": "#iron"
+        },
+        "up": {
+          "uv": [
+            1,
+            9.125,
+            2.25,
+            9.875
+          ],
+          "texture": "#iron"
+        },
+        "down": {
+          "uv": [
+            1,
+            9.125,
+            2.25,
+            9.875
+          ],
+          "texture": "#iron"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        8.75,
+        8.75
+      ],
+      "to": [
+        2.25,
+        10.25,
+        10.25
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            13.75,
+            5.75,
+            14,
+            7.25
+          ],
+          "texture": "#gold"
+        },
+        "east": {
+          "uv": [
+            5.75,
+            5.75,
+            7.25,
+            7.25
+          ],
+          "texture": "#gold"
+        },
+        "south": {
+          "uv": [
+            2,
+            5.75,
+            2.25,
+            7.25
+          ],
+          "texture": "#gold"
+        },
+        "west": {
+          "uv": [
+            8.75,
+            5.75,
+            10.25,
+            7.25
+          ],
+          "texture": "#gold"
+        },
+        "up": {
+          "uv": [
+            2,
+            8.75,
+            2.25,
+            10.25
+          ],
+          "texture": "#gold"
+        },
+        "down": {
+          "uv": [
+            2,
+            8.75,
+            2.25,
+            10.25
+          ],
+          "texture": "#gold"
+        }
+      }
+    }
+  ]
+}

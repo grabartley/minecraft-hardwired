@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:redstone_cell"
+    },
+    "title": {
+      "translate": "advancement.hardwired.blown_fuse.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.blown_fuse.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "blown_fuse"
+      }
+    }
+  },
+  "parent": "hardwired:charged_up"
+}

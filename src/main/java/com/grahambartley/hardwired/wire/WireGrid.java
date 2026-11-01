@@ -63,9 +63,27 @@ public final class WireGrid {
     return !byTouch.isEmpty();
   }
 
-  public boolean isPowered(long pos) {
+  public boolean isLive(long pos) {
+    for (WireNetwork network : networksTouching(pos)) {
+      if (network.isLive()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean isOn(long pos) {
     for (WireNetwork network : networksTouching(pos)) {
       if (network.isOn()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean hasPower(long pos) {
+    for (WireNetwork network : networksTouching(pos)) {
+      if (network.gridState().givesPower()) {
         return true;
       }
     }
@@ -239,6 +257,7 @@ public final class WireGrid {
     fresh.setLook(network.look());
     fresh.stampLook(network.lookStamp());
     fresh.rememberedInputs().addAll(network.rememberedInputs());
+    fresh.inheritPower(network);
     for (WireCell cell : part) {
       move(cell, network, fresh);
     }
@@ -268,6 +287,7 @@ public final class WireGrid {
       target.stampLook(other.lookStamp());
     }
     target.rememberedInputs().addAll(other.rememberedInputs());
+    target.inheritPower(other);
     networks.remove(other);
     dirty.remove(other);
   }

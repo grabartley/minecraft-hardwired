@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.advancement.ModCriteria;
+import com.grahambartley.hardwired.config.PowerSettings;
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -50,12 +51,17 @@ public final class StreetlightBlock extends AbstractLampBlock {
   }
 
   @Override
+  public int ratedLoad(PowerSettings settings) {
+    return settings.loads().streetlightLoad();
+  }
+
+  @Override
   public BlockPos lampPos(BlockPos pos, BlockState state) {
     return pos.down(state.get(PART));
   }
 
   @Override
-  protected List<BlockPos> parts(BlockPos pos, BlockState state) {
+  public List<BlockPos> cells(BlockPos pos, BlockState state) {
     BlockPos base = lampPos(pos, state);
     return List.of(base, base.up(), base.up(2), base.up(HEAD));
   }

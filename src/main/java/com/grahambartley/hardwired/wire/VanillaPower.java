@@ -1,14 +1,17 @@
 package com.grahambartley.hardwired.wire;
 
+import com.grahambartley.hardwired.device.WireDevice;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
@@ -36,7 +39,7 @@ public final class VanillaPower {
     if (quasiGuarded != null && !quasiGuarded.equals(receiver)) {
       return false;
     }
-    return grid.isPowered(receiver.asLong());
+    return grid.isLive(receiver.asLong());
   }
 
   public static void guardQuasiConnectivity(BlockPos pos) {
@@ -45,6 +48,16 @@ public final class VanillaPower {
 
   public static void clearQuasiGuard() {
     quasiGuarded = null;
+  }
+
+  public static boolean isComponent(BlockState state) {
+    return state.isIn(WireRules.OUTPUTS);
+  }
+
+  public static List<BlockPos> cells(BlockPos pos, BlockState state) {
+    return state.contains(Properties.DOUBLE_BLOCK_HALF)
+        ? WireDevice.twoTall(pos, state.get(Properties.DOUBLE_BLOCK_HALF))
+        : List.of(pos);
   }
 
   public static boolean suppliesWire(ServerWorld world, TouchPoint touch) {

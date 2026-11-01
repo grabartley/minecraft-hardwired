@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hardwired:block/lodestone_dynamo_base"
+    },
+    "facing=east": {
+      "model": "hardwired:block/lodestone_dynamo_base",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hardwired:block/lodestone_dynamo_base",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hardwired:block/lodestone_dynamo_base",
+      "y": 270
+    }
+  }
+}

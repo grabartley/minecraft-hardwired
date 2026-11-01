@@ -1,19 +1,79 @@
 {
   "variants": {
-    "level=0": {
+    "facing=north,level=0": {
       "model": "hardwired:block/redstone_cell_0"
     },
-    "level=1": {
+    "facing=north,level=1": {
       "model": "hardwired:block/redstone_cell_1"
     },
-    "level=2": {
+    "facing=north,level=2": {
       "model": "hardwired:block/redstone_cell_2"
     },
-    "level=3": {
+    "facing=north,level=3": {
       "model": "hardwired:block/redstone_cell_3"
     },
-    "level=4": {
+    "facing=north,level=4": {
       "model": "hardwired:block/redstone_cell_4"
+    },
+    "facing=east,level=0": {
+      "model": "hardwired:block/redstone_cell_0",
+      "y": 90
+    },
+    "facing=east,level=1": {
+      "model": "hardwired:block/redstone_cell_1",
+      "y": 90
+    },
+    "facing=east,level=2": {
+      "model": "hardwired:block/redstone_cell_2",
+      "y": 90
+    },
+    "facing=east,level=3": {
+      "model": "hardwired:block/redstone_cell_3",
+      "y": 90
+    },
+    "facing=east,level=4": {
+      "model": "hardwired:block/redstone_cell_4",
+      "y": 90
+    },
+    "facing=south,level=0": {
+      "model": "hardwired:block/redstone_cell_0",
+      "y": 180
+    },
+    "facing=south,level=1": {
+      "model": "hardwired:block/redstone_cell_1",
+      "y": 180
+    },
+    "facing=south,level=2": {
+      "model": "hardwired:block/redstone_cell_2",
+      "y": 180
+    },
+    "facing=south,level=3": {
+      "model": "hardwired:block/redstone_cell_3",
+      "y": 180
+    },
+    "facing=south,level=4": {
+      "model": "hardwired:block/redstone_cell_4",
+      "y": 180
+    },
+    "facing=west,level=0": {
+      "model": "hardwired:block/redstone_cell_0",
+      "y": 270
+    },
+    "facing=west,level=1": {
+      "model": "hardwired:block/redstone_cell_1",
+      "y": 270
+    },
+    "facing=west,level=2": {
+      "model": "hardwired:block/redstone_cell_2",
+      "y": 270
+    },
+    "facing=west,level=3": {
+      "model": "hardwired:block/redstone_cell_3",
+      "y": 270
+    },
+    "facing=west,level=4": {
+      "model": "hardwired:block/redstone_cell_4",
+      "y": 270
     }
   }
 }

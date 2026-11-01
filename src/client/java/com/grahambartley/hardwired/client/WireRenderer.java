@@ -89,7 +89,7 @@ public final class WireRenderer {
     quad(
         consumer, matrix, center, face.side(), reference, on ? NODE_ON : NODE_OFF, argb, bothSides);
     for (Direction arm : WireTopology.edges(face.side())) {
-      if (view.hasArm(arm)) {
+      if (view.hasArm(arm) && (!on || (view.flags() & WireChunkPayload.POWERED) != 0)) {
         quad(consumer, matrix, center, face.side(), arm, on ? ARM_ON : ARM_OFF, argb, bothSides);
       }
     }

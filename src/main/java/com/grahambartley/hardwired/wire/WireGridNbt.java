@@ -1,5 +1,7 @@
 package com.grahambartley.hardwired.wire;
 
+import com.grahambartley.hardwired.power.GridState;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.nbt.NbtCompound;
@@ -22,6 +24,14 @@ public final class WireGridNbt {
   private static final String REMEMBERED = "remembered";
   private static final String POSITIONS = "positions";
   private static final String SIDES = "sides";
+  private static final String GRID_STATE = "grid_state";
+  private static final String DARK_UNTIL = "dark_until";
+  private static final String LAST_LOADS = "last_loads";
+  private static final String LAST_RATINGS = "last_ratings";
+  private static final String LAST_SOURCES = "last_sources";
+  private static final String LINKS = "links";
+  private static final String MASTERS = "masters";
+  private static final String VALUES = "_values";
 
   private WireGridNbt() {}
 
@@ -65,12 +75,37 @@ public final class WireGridNbt {
       nbt.putUuid(OWNER, network.owner());
     }
     nbt.putLongArray(REMEMBERED, network.rememberedInputs().toLongArray());
+    nbt.putByte(GRID_STATE, (byte) network.gridState().ordinal());
+    nbt.putLong(DARK_UNTIL, network.darkUntil());
+    writeFacts(nbt, LAST_LOADS, network.lastLoads());
+    writeFacts(nbt, LAST_RATINGS, network.lastRatings());
+    writeFacts(nbt, LAST_SOURCES, network.lastSources());
+    nbt.putLongArray(LINKS, network.packedLinks());
+    nbt.putLongArray(MASTERS, network.masters().toLongArray());
     if (network.look() != null) {
       nbt.putString(LOOK_COLOR, network.look().color().asString());
       nbt.putByte(LOOK_BRIGHTNESS, (byte) network.look().brightness());
       nbt.putLong(LOOK_STAMP, network.lookStamp());
     }
     return nbt;
+  }
+
+  private static void writeFacts(NbtCompound nbt, String key, Long2IntOpenHashMap facts) {
+    long[] positions = facts.keySet().toLongArray();
+    int[] values = new int[positions.length];
+    for (int i = 0; i < positions.length; i++) {
+      values[i] = facts.get(positions[i]);
+    }
+    nbt.putLongArray(key, positions);
+    nbt.putIntArray(key + VALUES, values);
+  }
+
+  private static void readFacts(NbtCompound nbt, String key, Long2IntOpenHashMap facts) {
+    long[] positions = nbt.getLongArray(key);
+    int[] values = nbt.getIntArray(key + VALUES);
+    for (int i = 0; i < Math.min(positions.length, values.length); i++) {
+      facts.put(positions[i], values[i]);
+    }
   }
 
   private static void readNetwork(WireGrid grid, NbtCompound nbt) {
@@ -94,6 +129,15 @@ public final class WireGridNbt {
     network.setTripped(nbt.getBoolean(TRIPPED));
     for (long pos : nbt.getLongArray(REMEMBERED)) {
       network.rememberedInputs().add(pos);
+    }
+    network.setGridState(GridState.byIndex(nbt.getByte(GRID_STATE)));
+    network.setDarkUntil(nbt.getLong(DARK_UNTIL));
+    readFacts(nbt, LAST_LOADS, network.lastLoads());
+    readFacts(nbt, LAST_RATINGS, network.lastRatings());
+    readFacts(nbt, LAST_SOURCES, network.lastSources());
+    network.unpackLinks(nbt.getLongArray(LINKS));
+    for (long pos : nbt.getLongArray(MASTERS)) {
+      network.masters().add(pos);
     }
     if (nbt.contains(LOOK_COLOR)) {
       network.setLook(

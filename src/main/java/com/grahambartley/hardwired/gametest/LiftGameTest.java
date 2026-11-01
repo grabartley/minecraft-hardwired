@@ -4,6 +4,7 @@ import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
 import com.grahambartley.hardwired.block.LiftFloorBlock;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
+import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.lift.LiftActions;
 import com.grahambartley.hardwired.lift.LiftCarEntity;
@@ -29,6 +30,8 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.test.AfterBatch;
+import net.minecraft.test.BeforeBatch;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.Identifier;
@@ -39,6 +42,26 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 
 public class LiftGameTest implements FabricGameTest {
+
+  private static final String BATCH = "lift";
+  private static final int STRONG_CELL = 64;
+
+  private static HardwiredConfig savedConfig;
+
+  @BeforeBatch(batchId = BATCH)
+  public void strongCells(ServerWorld world) {
+    savedConfig = Hardwired.SERVER_CONFIG;
+    Hardwired.SERVER_CONFIG =
+        savedConfig.withPower(
+            savedConfig
+                .power()
+                .withRatings(savedConfig.power().ratings().withCellRating(STRONG_CELL)));
+  }
+
+  @AfterBatch(batchId = BATCH)
+  public void plainCells(ServerWorld world) {
+    Hardwired.SERVER_CONFIG = savedConfig;
+  }
 
   private static final String SHAFT = "hardwired:shaft";
   private static final int FLOOR_Y = -1;
@@ -161,7 +184,7 @@ public class LiftGameTest implements FabricGameTest {
     useGate(context, rider, level);
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void aRideEndsAtTheChosenFloorFacingOut(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);
@@ -194,7 +217,7 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void theRiderStaysInTheCarWholeRide(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);
@@ -221,11 +244,11 @@ public class LiftGameTest implements FabricGameTest {
     context.runAtTick(START_TICK + SIX_BLOCK_RIDE_TICKS, () -> finish(context, rider));
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
-  public void aCellPaysPerBlockMovedAndOnlyWhileMoving(TestContext context) {
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void aCellBurnsOnlyWhileTheLiftMoves(TestContext context) {
     RedstoneCellBlockEntity cell = build(context, FULL_CHARGE);
-    int perBlock = Hardwired.SERVER_CONFIG.lift().chargePerBlock();
     ConnectedTestPlayer rider = riderFrom(context, LOW);
+    int[] afterRide = new int[1];
     context.runAtTick(
         START_TICK,
         () -> {
@@ -233,24 +256,20 @@ public class LiftGameTest implements FabricGameTest {
           choose(context, rider, LOW, MIDDLE);
         });
     context.runAtTick(
-        START_TICK + 8,
-        () ->
-            context.assertTrue(
-                cell.charge() > FULL_CHARGE - 3 * perBlock,
-                "paid for the whole trip up front: " + cell.charge()));
-    context.runAtTick(
         START_TICK + SIX_BLOCK_RIDE_TICKS,
-        () ->
-            context.assertEquals(FULL_CHARGE - 3 * perBlock, cell.charge(), "three blocks moved"));
+        () -> {
+          afterRide[0] = cell.charge();
+          context.assertTrue(afterRide[0] < FULL_CHARGE, "a ride burns charge: " + afterRide[0]);
+        });
     context.runAtTick(
         START_TICK + 2 * SIX_BLOCK_RIDE_TICKS,
         () -> {
-          context.assertEquals(FULL_CHARGE - 3 * perBlock, cell.charge(), "a waiting lift is free");
+          context.assertEquals(afterRide[0], cell.charge(), "a waiting lift is free");
           finish(context, rider);
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void aClosedGateOpensForNothingButTheCar(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);
@@ -287,7 +306,7 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void callsFromOtherFloorsQueueWhileRiding(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, MIDDLE);
@@ -316,7 +335,7 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void twoRidersBothArriveSafely(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer first = riderFrom(context, LOW);
@@ -345,10 +364,9 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void runningDryStopsThenLowersToTheFloorBelow(TestContext context) {
-    int perBlock = Hardwired.SERVER_CONFIG.lift().chargePerBlock();
-    RedstoneCellBlockEntity cell = build(context, 4 * perBlock);
+    RedstoneCellBlockEntity cell = build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);
     context.runAtTick(
         START_TICK,
@@ -356,21 +374,22 @@ public class LiftGameTest implements FabricGameTest {
           openAt(context, rider, LOW);
           choose(context, rider, LOW, HIGH);
         });
+    context.runAtTick(START_TICK + 24, () -> cell.setCharge(0));
     context.runAtTick(
-        START_TICK + 36,
+        START_TICK + 30,
         () -> {
           LiftCarEntity car = car(context);
           context.assertTrue(
               car.run().phase() == LiftPhase.STOPPED, "stopped: " + car.run().phase());
           context.assertTrue(
-              car.run().stopReason() == DeviceStatus.NO_CHARGE, "reason " + car.run().stopReason());
-          context.assertEquals(0, cell.charge(), "every block paid for");
+              car.run().stopReason() == DeviceStatus.OUT_OF_FUEL,
+              "reason " + car.run().stopReason());
           context.assertTrue(rider.player().hasVehicle(), "still riding while stopped");
           ElectronicBlockEntity head = context.getBlockEntity(HEAD);
-          context.assertTrue(head.status() == DeviceStatus.NO_CHARGE, "head shows why");
+          context.assertTrue(head.status() == DeviceStatus.OUT_OF_FUEL, "head shows why");
         });
     context.runAtTick(
-        START_TICK + 150,
+        START_TICK + 160,
         () -> {
           expectAtGate(context, rider, MIDDLE, "rider");
           context.assertTrue(isOpen(context, MIDDLE), "gate opened at the floor below");
@@ -380,10 +399,9 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void chargingAgainAnswersTheNextCall(TestContext context) {
-    int perBlock = Hardwired.SERVER_CONFIG.lift().chargePerBlock();
-    RedstoneCellBlockEntity cell = build(context, perBlock);
+    RedstoneCellBlockEntity cell = build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);
     context.runAtTick(
         START_TICK,
@@ -391,32 +409,35 @@ public class LiftGameTest implements FabricGameTest {
           openAt(context, rider, LOW);
           choose(context, rider, LOW, HIGH);
         });
+    context.runAtTick(START_TICK + 24, () -> cell.setCharge(0));
     context.runAtTick(
-        START_TICK + 140,
+        START_TICK + 160,
         () -> {
-          expectAtGate(context, rider, LOW, "rider");
+          expectAtGate(context, rider, MIDDLE, "rider");
           cell.setCharge(FULL_CHARGE);
           rider
               .player()
               .requestTeleport(
-                  context.getAbsolute(net.minecraft.util.math.Vec3d.ofBottomCenter(inCar(LOW))).x,
+                  context.getAbsolute(net.minecraft.util.math.Vec3d.ofBottomCenter(inCar(MIDDLE)))
+                      .x,
                   rider.player().getY(),
-                  context.getAbsolute(net.minecraft.util.math.Vec3d.ofBottomCenter(inCar(LOW))).z);
-          choose(context, rider, LOW, MIDDLE);
+                  context.getAbsolute(net.minecraft.util.math.Vec3d.ofBottomCenter(inCar(MIDDLE)))
+                      .z);
         });
+    context.runAtTick(START_TICK + 164, () -> choose(context, rider, MIDDLE, HIGH));
     context.runAtTick(
-        START_TICK + 140 + SIX_BLOCK_RIDE_TICKS,
+        START_TICK + 164 + SIX_BLOCK_RIDE_TICKS,
         () -> {
-          expectAtGate(context, rider, MIDDLE, "rider");
+          expectAtGate(context, rider, HIGH, "rider");
           finish(context, rider);
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void withNoFloorBelowRidersGetSlowFalling(TestContext context) {
-    int perBlock = Hardwired.SERVER_CONFIG.lift().chargePerBlock();
-    build(context, 2 * perBlock);
+    RedstoneCellBlockEntity cell = build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, MIDDLE);
+    context.runAtTick(START_TICK + 8, () -> cell.setCharge(0));
     context.runAtTick(
         START_TICK,
         () -> {
@@ -440,7 +461,7 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void aBlockInTheShaftSendsTheCarBackToTheLastSafeFloor(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);
@@ -460,7 +481,7 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void aBlockedShaftRefusesTheRideBeforeItStarts(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);
@@ -482,7 +503,7 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void breakingTheLiftMidRideLeavesRidersSafeAndDropsOneItem(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);
@@ -514,7 +535,7 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void aRiderWhoLeavesIsPlacedSafelyAndTheCarCarriesOn(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer leaver = ConnectedTestPlayer.joinAt(context, inCar(LOW));
@@ -542,7 +563,7 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void aSavedCarResumesItsTripAfterAChunkReload(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);
@@ -577,7 +598,7 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void aChoiceFromOutOfReachOrASpectatorIsIgnored(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);
@@ -600,7 +621,7 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void floorsComeBackOnlyForThisShaftInHeightOrder(TestContext context) {
     build(context, FULL_CHARGE);
     context.setBlockState(new BlockPos(COLUMN_X + 1, LOW, COLUMN_Z), Blocks.STONE);
@@ -611,7 +632,7 @@ public class LiftGameTest implements FabricGameTest {
     context.complete();
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void aCarIsGroundForAPlayerStandingOnIt(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, MIDDLE);
@@ -624,7 +645,7 @@ public class LiftGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = SHAFT, tickLimit = RIDE_TICK_LIMIT)
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void breakingAGateDropsOneItem(TestContext context) {
     build(context, FULL_CHARGE);
     context.getWorld().breakBlock(context.getAbsolutePos(gate(MIDDLE).up()), true);

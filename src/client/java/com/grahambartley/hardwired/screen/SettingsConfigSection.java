@@ -3,8 +3,11 @@ package com.grahambartley.hardwired.screen;
 import com.grahambartley.hardwired.config.CircuitSettings;
 import com.grahambartley.hardwired.config.DeviceSettings;
 import com.grahambartley.hardwired.config.HardwiredConfig;
+import com.grahambartley.hardwired.config.HumSettings;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.PowerLoads;
+import com.grahambartley.hardwired.config.PowerRatings;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.config.WireSettings;
@@ -81,20 +84,20 @@ final class SettingsConfigSection {
             value -> config = config.withPower(config.power().withCellCapacity(value))));
     list.addRow(
         rows.intSlider(
+            KEY + "generatorcapacity",
+            KEY + "generatorcapacity.tooltip",
+            PowerSettings.GENERATOR_CAPACITY_MIN,
+            PowerSettings.GENERATOR_CAPACITY_MAX,
+            config.power().generatorCapacity(),
+            value -> config = config.withPower(config.power().withGeneratorCapacity(value))));
+    list.addRow(
+        rows.intSlider(
             KEY + "cellchargeperdust",
             KEY + "cellchargeperdust.tooltip",
             PowerSettings.DUST_CHARGE_MIN,
             PowerSettings.DUST_CHARGE_MAX,
             config.power().dustCharge(),
             value -> config = config.withPower(config.power().withDustCharge(value))));
-    list.addRow(
-        rows.intSlider(
-            KEY + "solarchargeperminute",
-            KEY + "solarchargeperminute.tooltip",
-            PowerSettings.SOLAR_CHARGE_MIN,
-            PowerSettings.SOLAR_CHARGE_MAX,
-            config.power().solarChargePerMinute(),
-            value -> config = config.withPower(config.power().withSolarChargePerMinute(value))));
     list.addRow(
         rows.intSlider(
             KEY + "lightningcharge",
@@ -105,45 +108,211 @@ final class SettingsConfigSection {
             value -> config = config.withPower(config.power().withLightningCharge(value))));
     list.addRow(
         rows.intSlider(
-            KEY + "alarmchargepersecond",
-            KEY + "alarmchargepersecond.tooltip",
-            PowerSettings.ALARM_CHARGE_MIN,
-            PowerSettings.ALARM_CHARGE_MAX,
-            config.power().alarmChargePerSecond(),
-            value -> config = config.withPower(config.power().withAlarmChargePerSecond(value))));
+            KEY + "chargeperloadminute",
+            KEY + "chargeperloadminute.tooltip",
+            PowerSettings.CHARGE_PER_LOAD_MINUTE_MIN,
+            PowerSettings.CHARGE_PER_LOAD_MINUTE_MAX,
+            config.power().chargePerLoadMinute(),
+            value -> config = config.withPower(config.power().withChargePerLoadMinute(value))));
     list.addRow(
         rows.intSlider(
-            KEY + "radiochargepersecond",
-            KEY + "radiochargepersecond.tooltip",
-            PowerSettings.RADIO_CHARGE_MIN,
-            PowerSettings.RADIO_CHARGE_MAX,
-            config.power().radioChargePerSecond(),
-            value -> config = config.withPower(config.power().withRadioChargePerSecond(value))));
-    list.addRow(
-        rows.intSlider(
-            KEY + "speakerchargepersecond",
-            KEY + "speakerchargepersecond.tooltip",
-            PowerSettings.SPEAKER_CHARGE_MIN,
-            PowerSettings.SPEAKER_CHARGE_MAX,
-            config.power().speakerChargePerSecond(),
-            value -> config = config.withPower(config.power().withSpeakerChargePerSecond(value))));
-    list.addRow(
-        rows.intSlider(
-            KEY + "intercomchargeperline",
-            KEY + "intercomchargeperline.tooltip",
-            PowerSettings.INTERCOM_CHARGE_MIN,
-            PowerSettings.INTERCOM_CHARGE_MAX,
-            config.power().intercomChargePerLine(),
-            value -> config = config.withPower(config.power().withIntercomChargePerLine(value))));
-    list.addRow(
-        rows.intSlider(
-            KEY + "broadcastchargepersecond",
-            KEY + "broadcastchargepersecond.tooltip",
-            PowerSettings.BROADCAST_CHARGE_MIN,
-            PowerSettings.BROADCAST_CHARGE_MAX,
-            config.power().broadcastChargePerSecond(),
+            KEY + "cellrating",
+            KEY + "cellrating.tooltip",
+            PowerRatings.CELL_RATING_MIN,
+            PowerRatings.CELL_RATING_MAX,
+            config.power().ratings().cellRating(),
             value ->
-                config = config.withPower(config.power().withBroadcastChargePerSecond(value))));
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withRatings(config.power().ratings().withCellRating(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "generatorrating",
+            KEY + "generatorrating.tooltip",
+            PowerRatings.GENERATOR_RATING_MIN,
+            PowerRatings.GENERATOR_RATING_MAX,
+            config.power().ratings().generatorRating(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withRatings(config.power().ratings().withGeneratorRating(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "solarrating",
+            KEY + "solarrating.tooltip",
+            PowerRatings.SOLAR_RATING_MIN,
+            PowerRatings.SOLAR_RATING_MAX,
+            config.power().ratings().solarRating(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withRatings(config.power().ratings().withSolarRating(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "dynamorating",
+            KEY + "dynamorating.tooltip",
+            PowerRatings.DYNAMO_RATING_MIN,
+            PowerRatings.DYNAMO_RATING_MAX,
+            config.power().ratings().dynamoRating(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withRatings(config.power().ratings().withDynamoRating(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "lampload",
+            KEY + "lampload.tooltip",
+            PowerLoads.LAMP_LOAD_MIN,
+            PowerLoads.LAMP_LOAD_MAX,
+            config.power().loads().lampLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withLampLoad(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "streetlightload",
+            KEY + "streetlightload.tooltip",
+            PowerLoads.STREETLIGHT_LOAD_MIN,
+            PowerLoads.STREETLIGHT_LOAD_MAX,
+            config.power().loads().streetlightLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withLoads(config.power().loads().withStreetlightLoad(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "logicload",
+            KEY + "logicload.tooltip",
+            PowerLoads.LOGIC_LOAD_MIN,
+            PowerLoads.LOGIC_LOAD_MAX,
+            config.power().loads().logicLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withLogicLoad(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "vanillaload",
+            KEY + "vanillaload.tooltip",
+            PowerLoads.VANILLA_LOAD_MIN,
+            PowerLoads.VANILLA_LOAD_MAX,
+            config.power().loads().vanillaLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withVanillaLoad(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "radioload",
+            KEY + "radioload.tooltip",
+            PowerLoads.RADIO_LOAD_MIN,
+            PowerLoads.RADIO_LOAD_MAX,
+            config.power().loads().radioLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withRadioLoad(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "speakerload",
+            KEY + "speakerload.tooltip",
+            PowerLoads.SPEAKER_LOAD_MIN,
+            PowerLoads.SPEAKER_LOAD_MAX,
+            config.power().loads().speakerLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withSpeakerLoad(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "intercomload",
+            KEY + "intercomload.tooltip",
+            PowerLoads.INTERCOM_LOAD_MIN,
+            PowerLoads.INTERCOM_LOAD_MAX,
+            config.power().loads().intercomLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withIntercomLoad(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "alarmload",
+            KEY + "alarmload.tooltip",
+            PowerLoads.ALARM_LOAD_MIN,
+            PowerLoads.ALARM_LOAD_MAX,
+            config.power().loads().alarmLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withAlarmLoad(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "broadcastload",
+            KEY + "broadcastload.tooltip",
+            PowerLoads.BROADCAST_LOAD_MIN,
+            PowerLoads.BROADCAST_LOAD_MAX,
+            config.power().loads().broadcastLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withLoads(config.power().loads().withBroadcastLoad(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "liftload",
+            KEY + "liftload.tooltip",
+            PowerLoads.LIFT_LOAD_MIN,
+            PowerLoads.LIFT_LOAD_MAX,
+            config.power().loads().liftLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withLiftLoad(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "humrange",
+            KEY + "humrange.tooltip",
+            HumSettings.HUM_RANGE_MIN,
+            HumSettings.HUM_RANGE_MAX,
+            config.power().hum().humRange(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withHum(config.power().hum().withHumRange(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "humstartload",
+            KEY + "humstartload.tooltip",
+            HumSettings.HUM_START_LOAD_MIN,
+            HumSettings.HUM_START_LOAD_MAX,
+            config.power().hum().humStartLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withHum(config.power().hum().withHumStartLoad(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "humfullload",
+            KEY + "humfullload.tooltip",
+            HumSettings.HUM_FULL_LOAD_MIN,
+            HumSettings.HUM_FULL_LOAD_MAX,
+            config.power().hum().humFullLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withHum(config.power().hum().withHumFullLoad(value)))));
     list.addRow(rows.header(KEY + "lift"));
     list.addRow(
         rows.intSlider(
@@ -153,14 +322,6 @@ final class SettingsConfigSection {
             LiftSettings.TICKS_PER_BLOCK_MAX,
             config.lift().ticksPerBlock(),
             value -> config = config.withLift(config.lift().withTicksPerBlock(value))));
-    list.addRow(
-        rows.intSlider(
-            KEY + "liftchargeperblock",
-            KEY + "liftchargeperblock.tooltip",
-            LiftSettings.CHARGE_PER_BLOCK_MIN,
-            LiftSettings.CHARGE_PER_BLOCK_MAX,
-            config.lift().chargePerBlock(),
-            value -> config = config.withLift(config.lift().withChargePerBlock(value))));
     list.addRow(rows.header(KEY + "circuit"));
     list.addRow(
         rows.intSlider(

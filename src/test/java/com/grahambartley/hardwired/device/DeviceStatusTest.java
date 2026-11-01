@@ -25,8 +25,8 @@ class DeviceStatusTest {
     "RUNNING,false,true",
     "READY,false,false",
     "WIRE_OFF,true,false",
-    "NO_CELL,true,true",
-    "NO_CHARGE,true,true",
+    "NO_SOURCE,true,true",
+    "OUT_OF_FUEL,true,true",
     "NO_RADIO,true,false",
     "RADIO_OFF,true,false",
     "NO_STATION,true,false",
@@ -36,8 +36,8 @@ class DeviceStatusTest {
     "TOWER_IN_USE,true,false"
   })
   void statusSaysWhetherAReasonShowsAndWhetherChargeIsWanted(
-      DeviceStatus status, boolean stopped, boolean wantsCharge) {
+      DeviceStatus status, boolean stopped, boolean wantsPower) {
     assertEquals(stopped, status.isStopped());
-    assertEquals(wantsCharge, status.wantsCharge());
+    assertEquals(wantsPower, status.wantsPower());
   }
 }

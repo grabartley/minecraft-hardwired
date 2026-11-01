@@ -1,0 +1,72 @@
+{
+  "clip": "hardwired:clips/redstone_generator.animation.json",
+  "parts": [
+    {
+      "bone": "piston",
+      "model": "hardwired:block/part/redstone_generator_piston",
+      "pivot": [
+        1.5,
+        9.5,
+        9.5
+      ]
+    },
+    {
+      "bone": "flywheel",
+      "model": "hardwired:block/part/redstone_generator_flywheel",
+      "pivot": [
+        13.75,
+        7.75,
+        9.5
+      ]
+    },
+    {
+      "bone": "crank",
+      "model": "hardwired:block/part/redstone_generator_crank",
+      "pivot": [
+        2.25,
+        7.75,
+        9.5
+      ]
+    },
+    {
+      "bone": "needle",
+      "model": "hardwired:block/part/redstone_generator_needle",
+      "pivot": [
+        10.25,
+        14,
+        5.2
+      ],
+      "dial": {
+        "value": "load",
+        "axis": "z",
+        "from": -60,
+        "to": 60
+      }
+    },
+    {
+      "bone": "switch_blade",
+      "model": "hardwired:block/part/redstone_generator_switch_blade",
+      "pivot": [
+        4.75,
+        3.125,
+        3.625
+      ],
+      "dial": {
+        "value": "switch",
+        "axis": "x",
+        "from": -70,
+        "to": 0
+      }
+    },
+    {
+      "bone": "glow",
+      "model": "hardwired:block/part/redstone_generator_glow",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "glow": true
+    }
+  ]
+}

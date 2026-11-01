@@ -35,6 +35,12 @@ public final class WireInspector {
     ServerPlayNetworking.send(
         player,
         new WireInspectResultPayload(
-            color.ordinal(), network.isOn(), network.isTripped(), drivers));
+            color.ordinal(),
+            network.isOn(),
+            network.gridState().givesPower(),
+            network.isTripped(),
+            network.gridLoad(),
+            network.gridSupply(),
+            drivers));
   }
 }

@@ -9,6 +9,7 @@ import com.grahambartley.hardwired.device.IntercomActions;
 import com.grahambartley.hardwired.device.MainPanelActions;
 import com.grahambartley.hardwired.lift.LiftActions;
 import com.grahambartley.hardwired.network.ModNetworking;
+import com.grahambartley.hardwired.power.HumView;
 import com.grahambartley.hardwired.radio.DeskActions;
 import com.grahambartley.hardwired.radio.RadioActions;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
@@ -55,11 +56,13 @@ public class Hardwired implements ModInitializer {
     UseBlockCallback.EVENT.register(WireSealing::use);
     ServerTickEvents.END_WORLD_TICK.register(world -> WireEngine.of(world).tick());
     ServerTickEvents.END_SERVER_TICK.register(WireView::tick);
+    ServerTickEvents.END_SERVER_TICK.register(HumView::tick);
     ServerChunkEvents.CHUNK_LOAD.register(
         (world, chunk) -> WireEngine.of(world).onChunkLoaded(chunk.getPos()));
     ServerPlayConnectionEvents.DISCONNECT.register(
         (handler, server) -> {
           WireView.forget(handler.getPlayer());
+          HumView.forget(handler.getPlayer());
           CircuitActions.forget(handler.getPlayer());
           MainPanelActions.forget(handler.getPlayer());
           ControllerActions.forget(handler.getPlayer());

@@ -1,12 +1,20 @@
 package com.grahambartley.hardwired.device;
 
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.wire.Hue;
+import java.util.List;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public interface WireDevice {
+
+  static List<BlockPos> twoTall(BlockPos pos, DoubleBlockHalf half) {
+    BlockPos lower = half == DoubleBlockHalf.UPPER ? pos.down() : pos;
+    return List.of(lower, lower.up());
+  }
 
   default boolean isDriving(ServerWorld world, BlockPos pos, BlockState state, Hue color) {
     return false;
@@ -26,4 +34,20 @@ public interface WireDevice {
   }
 
   default void onWireChange(ServerWorld world, BlockPos pos, BlockState state) {}
+
+  default int load(ServerWorld world, BlockPos pos, BlockState state) {
+    return 0;
+  }
+
+  default int ratedLoad(PowerSettings settings) {
+    return 0;
+  }
+
+  default List<BlockPos> cells(BlockPos pos, BlockState state) {
+    return List.of(pos);
+  }
+
+  default BlockPos loadAnchor(BlockPos pos, BlockState state) {
+    return cells(pos, state).getFirst();
+  }
 }

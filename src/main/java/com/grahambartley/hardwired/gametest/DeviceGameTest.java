@@ -94,6 +94,7 @@ public class DeviceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void removingTheOnlyPanelReturnsLampsToFullBrightness(TestContext context) {
+    TestPower.keepFed(context);
     context.setBlockState(
         at(1, 1), floor(ModBlocks.WALL_SWITCH).with(MountedDeviceBlock.POWERED, true));
     context.setBlockState(at(3, 1), floor(ModBlocks.CONTROL_PANEL));
@@ -120,6 +121,7 @@ public class DeviceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void aSwitchRecallsItsScene(TestContext context) {
+    TestPower.keepFed(context);
     BlockPos switchPos = at(1, 1);
     context.setBlockState(switchPos, floor(ModBlocks.WALL_SWITCH).with(SwitchBlock.SCENE, 1));
     context.setBlockState(at(3, 1), floor(ModBlocks.CONTROL_PANEL));
@@ -199,6 +201,7 @@ public class DeviceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void wireOnAStreetlightPostLightsItsHead(TestContext context) {
+    TestPower.keepFed(context);
     BlockPos base = at(4, 2);
     placeStreetlight(context, base);
     context.setBlockState(at(2, 2).up(), Blocks.STONE);

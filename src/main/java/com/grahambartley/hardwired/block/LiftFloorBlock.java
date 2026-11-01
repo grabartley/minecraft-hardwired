@@ -4,6 +4,7 @@ import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.lift.LiftActions;
 import com.mojang.serialization.MapCodec;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -61,7 +62,12 @@ public final class LiftFloorBlock extends Block implements BlockEntityProvider, 
   }
 
   public static BlockPos lower(BlockPos pos, BlockState state) {
-    return state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
+    return WireDevice.twoTall(pos, state.get(HALF)).getFirst();
+  }
+
+  @Override
+  public List<BlockPos> cells(BlockPos pos, BlockState state) {
+    return WireDevice.twoTall(pos, state.get(HALF));
   }
 
   public static BlockPos column(BlockPos pos, BlockState state) {

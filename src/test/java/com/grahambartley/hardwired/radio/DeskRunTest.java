@@ -31,7 +31,7 @@ class DeskRunTest {
     "false,-1,RUNNING,1000,980,-1",
     "true,900,RUNNING,1000,980,900",
     "true,-1,RUNNING,1000,980,1000",
-    "true,900,NO_CHARGE,1000,980,-1",
+    "true,900,OUT_OF_FUEL,1000,980,-1",
     "true,900,RUNNING,5000,980,5000"
   })
   void aSongCarriesOnOnlyWhileTheStationStaysLive(

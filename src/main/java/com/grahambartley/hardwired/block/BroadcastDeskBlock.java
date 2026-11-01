@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.AnimatedDevice;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.Electronic;
@@ -13,6 +14,7 @@ import com.grahambartley.hardwired.radio.StationRegistry;
 import com.grahambartley.hardwired.radio.TowerFinder;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.mojang.serialization.MapCodec;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -186,17 +188,29 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
   }
 
   @Override
-  public int chargePerSecond() {
-    return Hardwired.SERVER_CONFIG.power().broadcastChargePerSecond();
+  public int ratedLoad(PowerSettings settings) {
+    return settings.loads().broadcastLoad();
+  }
+
+  @Override
+  public int load(ServerWorld world, BlockPos pos, BlockState state) {
+    BlockPos panel = panelOf(pos, state);
+    return WireEngine.of(world).isLoaded(panel)
+            && world.getBlockEntity(panel) instanceof BroadcastDeskBlockEntity desk
+            && desk.wantsAir()
+        ? ratedLoad(Hardwired.SERVER_CONFIG.power())
+        : 0;
+  }
+
+  @Override
+  public List<BlockPos> cells(BlockPos pos, BlockState state) {
+    return DeskLayout.cells(state.get(FACING), panelOf(pos, state));
   }
 
   @Override
   public BlockPos wiredAt(ServerWorld world, BlockPos pos, BlockState state) {
     WireEngine engine = WireEngine.of(world);
-    return DeskLayout.cells(state.get(FACING), pos).stream()
-        .filter(engine::isWired)
-        .findFirst()
-        .orElse(pos);
+    return cells(pos, state).stream().filter(engine::isWired).findFirst().orElse(pos);
   }
 
   @Override

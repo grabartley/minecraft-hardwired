@@ -61,6 +61,9 @@ public final class CircuitBlockEntity extends BlockEntity {
   }
 
   public boolean step(ServerWorld world) {
+    if (!WireEngine.of(world).power().hasPower(pos)) {
+      return true;
+    }
     int outputsBefore = evaluator.outputs();
     evaluator.step(readInputs(world));
     if (!evaluator.isSettled() || evaluator.outputs() != outputsBefore) {
@@ -77,7 +80,7 @@ public final class CircuitBlockEntity extends BlockEntity {
     int inputs = 0;
     for (Side side : Side.values()) {
       if (design.mode(side) == PortMode.INPUT
-          && engine.isPoweredFrom(pos, CircuitSides.direction(side.turned(turns)))) {
+          && engine.isOnFrom(pos, CircuitSides.direction(side.turned(turns)))) {
         inputs |= side.bit();
       }
     }

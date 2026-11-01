@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "GCG",
+    "CLC",
+    "CRI"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "C": {
+      "item": "minecraft:copper_block"
+    },
+    "L": {
+      "item": "minecraft:lodestone"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    }
+  },
+  "result": {
+    "id": "hardwired:lodestone_dynamo",
+    "count": 1
+  }
+}

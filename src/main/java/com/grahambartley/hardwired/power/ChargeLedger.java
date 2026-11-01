@@ -6,22 +6,6 @@ public final class ChargeLedger {
 
   private ChargeLedger() {}
 
-  public static int available(List<? extends ChargeStore> stores) {
-    long total = stores.stream().mapToLong(ChargeStore::charge).sum();
-    return (int) Math.min(total, Integer.MAX_VALUE);
-  }
-
-  public static boolean tryDrain(List<? extends ChargeStore> stores, int amount) {
-    if (available(stores) < amount) {
-      return false;
-    }
-    int remaining = amount;
-    for (ChargeStore store : stores) {
-      remaining -= store.drain(remaining);
-    }
-    return remaining == 0;
-  }
-
   public static int fill(List<? extends ChargeStore> stores, int amount) {
     int remaining = Math.max(amount, 0);
     for (ChargeStore store : stores) {

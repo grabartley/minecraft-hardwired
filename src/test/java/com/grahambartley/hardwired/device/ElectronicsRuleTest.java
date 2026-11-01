@@ -12,37 +12,29 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class ElectronicsRuleTest {
 
-  @ParameterizedTest(name = "{0} paid {1} cell {2}")
+  @ParameterizedTest(name = "{0} powered {1}")
   @CsvSource({
-    "RUNNING,true,true,RUNNING",
-    "RUNNING,true,false,RUNNING",
-    "RUNNING,false,true,NO_CHARGE",
-    "RUNNING,false,false,NO_CELL",
-    "WIRE_OFF,false,true,WIRE_OFF",
-    "NO_TOWER,false,false,NO_TOWER",
-    "RADIO_OFF,false,true,RADIO_OFF"
+    "RUNNING,true,OVERLOADED,RUNNING",
+    "RUNNING,false,OVERLOADED,OVERLOADED",
+    "RUNNING,false,NO_SOURCE,NO_SOURCE",
+    "WIRE_OFF,false,NO_SOURCE,WIRE_OFF",
+    "NO_TOWER,false,SOURCES_OFF,NO_TOWER",
+    "RADIO_OFF,true,OUT_OF_FUEL,RADIO_OFF"
   })
-  void aRunningDeviceThatCannotPayStopsWithAReason(
-      DeviceStatus demand, boolean paid, boolean hasCell, DeviceStatus next) {
-    assertEquals(next, ElectronicsRule.next(demand, paid, hasCell));
+  void aRunningDeviceWithNoPowerStopsWithItsGridsReason(
+      DeviceStatus demand, boolean powered, DeviceStatus reason, DeviceStatus next) {
+    assertEquals(next, ElectronicsRule.next(demand, powered, reason));
   }
 
-  @ParameterizedTest(name = "paid at {0}, now {1}")
-  @CsvSource({"100,100,true", "100,119,true", "100,120,false", "100,500,false", "-20,0,false"})
-  void aSecondIsPaidOnceAndCoversItsBeat(long paidAt, long now, boolean covered) {
-    assertEquals(covered, ElectronicsRule.beatPaid(paidAt, now));
-  }
-
-  @ParameterizedTest(name = "cost {0} cell {1} available {2}")
-  @CsvSource({"1,true,1,READY", "1,true,0,NO_CHARGE", "1,false,0,NO_CELL", "0,false,0,READY"})
-  void anIntercomIsReadyWhenItCanPayForALine(
-      int cost, boolean hasCell, int available, DeviceStatus status) {
-    assertEquals(status, ElectronicsRule.readiness(cost, hasCell, available));
+  @ParameterizedTest(name = "beat at {0}, now {1}")
+  @CsvSource({"100,100,false", "100,119,false", "100,120,true", "100,500,true", "-20,0,true"})
+  void aBeatFallsOnceASecond(long beatAt, long now, boolean due) {
+    assertEquals(due, ElectronicsRule.beatDue(beatAt, now));
   }
 
   private static Stream<Arguments> lightsOutCases() {
     DeviceStatus run = DeviceStatus.RUNNING;
-    DeviceStatus out = DeviceStatus.NO_CHARGE;
+    DeviceStatus out = DeviceStatus.OUT_OF_FUEL;
     return Stream.of(
         Arguments.of(run, out, List.of(out), true),
         Arguments.of(run, out, List.of(out, out, DeviceStatus.READY), true),
@@ -50,7 +42,7 @@ class ElectronicsRuleTest {
         Arguments.of(run, out, List.of(out, run), false),
         Arguments.of(out, out, List.of(out), false),
         Arguments.of(run, DeviceStatus.WIRE_OFF, List.of(DeviceStatus.WIRE_OFF), false),
-        Arguments.of(run, DeviceStatus.NO_CELL, List.of(DeviceStatus.NO_CELL), false));
+        Arguments.of(run, DeviceStatus.NO_SOURCE, List.of(DeviceStatus.NO_SOURCE), true));
   }
 
   @ParameterizedTest(name = "{0} to {1} with {2}")
@@ -62,11 +54,12 @@ class ElectronicsRuleTest {
 
   @ParameterizedTest(name = "{0} to {1} reads the network: {2}")
   @CsvSource({
-    "RUNNING,NO_CHARGE,true",
+    "RUNNING,OUT_OF_FUEL,true",
     "RUNNING,RUNNING,false",
-    "RUNNING,NO_CELL,false",
-    "NO_CHARGE,NO_CHARGE,false",
-    "READY,NO_CHARGE,false"
+    "RUNNING,NO_SOURCE,true",
+    "RUNNING,WIRE_OFF,false",
+    "OUT_OF_FUEL,OUT_OF_FUEL,false",
+    "READY,OUT_OF_FUEL,false"
   })
   void theNetworkIsOnlyReadWhenADeviceHasJustRunDry(
       DeviceStatus before, DeviceStatus after, boolean read) {

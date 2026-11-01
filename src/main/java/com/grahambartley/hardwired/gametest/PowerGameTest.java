@@ -6,7 +6,6 @@ import com.grahambartley.hardwired.block.RedstoneCellBlock;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
 import com.grahambartley.hardwired.block.SolarPanelBlock;
 import com.grahambartley.hardwired.config.HardwiredConfig;
-import com.grahambartley.hardwired.power.ChargeNetwork;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.wire.Hue;
@@ -186,25 +185,6 @@ public class PowerGameTest implements FabricGameTest {
     context.complete();
   }
 
-  @GameTest(templateName = BENCH)
-  public void tryDrainFollowsARealWireNetwork(TestContext context) {
-    RedstoneCellBlockEntity cell = wiredCell(context);
-    cell.setCharge(100);
-    ServerWorld world = context.getWorld();
-    BlockPos farEnd = context.getAbsolutePos(FAR_END);
-    context.assertTrue(ChargeNetwork.tryDrain(world, farEnd, 30), "the far end must reach it");
-    context.assertTrue(cell.charge() == 70, "the drain must come off the cell");
-    context.assertFalse(ChargeNetwork.tryDrain(world, farEnd, 71), "too much must be refused");
-    context.assertTrue(cell.charge() == 70, "a refused drain takes nothing");
-    context.assertFalse(
-        ChargeNetwork.tryDrain(world, context.getAbsolutePos(at(6, 6)), 1),
-        "a place off the wire must not reach it");
-    WireEngine.of(world).cut(new WireCell(floor(context, 3, 1), Hue.PLAIN));
-    context.assertFalse(ChargeNetwork.tryDrain(world, farEnd, 1), "a cut must part them");
-    context.assertTrue(cell.charge() == 70, "nothing must drain past the cut");
-    context.complete();
-  }
-
   @GameTest(templateName = BENCH, tickLimit = 120)
   public void chargeNeverRisesFromRunningOrRewiring(TestContext context) {
     RedstoneCellBlockEntity cell = wiredCell(context);
@@ -284,7 +264,7 @@ public class PowerGameTest implements FabricGameTest {
     world.setTimeOfDay(time);
     savedConfig = Hardwired.SERVER_CONFIG;
     Hardwired.SERVER_CONFIG =
-        savedConfig.withPower(savedConfig.power().withSolarChargePerMinute(FAST_SOLAR));
+        savedConfig.withPower(savedConfig.power().withChargePerLoadMinute(FAST_SOLAR));
   }
 
   @AfterBatch(batchId = DAY_BATCH)

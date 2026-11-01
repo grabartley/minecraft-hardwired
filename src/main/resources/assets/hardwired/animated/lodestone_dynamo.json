@@ -1,0 +1,44 @@
+{
+  "clip": "hardwired:clips/lodestone_dynamo.animation.json",
+  "parts": [
+    {
+      "bone": "rotor",
+      "model": "hardwired:block/part/lodestone_dynamo_rotor",
+      "pivot": [
+        8,
+        9.5,
+        8
+      ]
+    },
+    {
+      "bone": "needle",
+      "model": "hardwired:block/part/lodestone_dynamo_needle",
+      "pivot": [
+        11,
+        2.75,
+        3.7
+      ],
+      "dial": {
+        "value": "load",
+        "axis": "z",
+        "from": -60,
+        "to": 60
+      }
+    },
+    {
+      "bone": "switch_blade",
+      "model": "hardwired:block/part/lodestone_dynamo_switch_blade",
+      "pivot": [
+        4.75,
+        1.375,
+        3.625
+      ],
+      "dial": {
+        "value": "switch",
+        "axis": "x",
+        "from": -70,
+        "to": 0
+      }
+    }
+  ]
+}

@@ -61,6 +61,7 @@ public class VoiceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 80)
   public void twoPlayersPressingTalkGiveOneSpeaker(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer first = goOnAir(context);
     ConnectedTestPlayer second = playerAt(context, 4);
     context.waitAndRun(
@@ -86,6 +87,7 @@ public class VoiceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 80)
   public void aSealedDeskGivesItsMicOnlyToTheOwner(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer owner = goOnAir(context);
     ConnectedTestPlayer stranger = playerAt(context, 4);
     WireEngine engine = WireEngine.of(context.getWorld());
@@ -122,6 +124,7 @@ public class VoiceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, batchId = VOICE_OFF_BATCH, tickLimit = 80)
   public void theServerSettingTurnsTheMicOff(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = goOnAir(context);
     context.waitAndRun(
         ON_AIR_TICKS,
@@ -136,6 +139,7 @@ public class VoiceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 80)
   public void aFrameThatFailsAnyRuleEarnsNothing(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer speaker = goOnAir(context);
     ConnectedTestPlayer stranger = playerAt(context, 4);
     context.waitAndRun(
@@ -157,6 +161,7 @@ public class VoiceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 100)
   public void speakingToAReceivingRadioEarnsLiveMic(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = goOnAir(context);
     context.waitAndRun(
         ON_AIR_TICKS + 2L * BEAT,
@@ -175,6 +180,7 @@ public class VoiceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 100)
   public void aSpeakerFollowsItsRadiosStationAndDial(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = goOnAir(context);
     context.waitAndRun(
         ON_AIR_TICKS + 2L * BEAT,
@@ -209,6 +215,7 @@ public class VoiceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 100)
   public void aVoiceGoesOnlyToPlayersInHearing(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer near = goOnAir(context);
     ConnectedTestPlayer far = playerAt(context, 4);
     BlockPos panel = context.getAbsolutePos(PANEL);
@@ -228,6 +235,7 @@ public class VoiceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 100)
   public void aSpeakerIsNotSentTheirOwnVoice(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer speaker = goOnAir(context);
     ConnectedTestPlayer listener = playerAt(context, 4);
     context.waitAndRun(
@@ -247,6 +255,7 @@ public class VoiceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 100)
   public void breakingARadioTakesItOutOfTheAudience(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = goOnAir(context);
     context.waitAndRun(
         ON_AIR_TICKS + 2L * BEAT,
@@ -267,6 +276,7 @@ public class VoiceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 120)
   public void goingOffTheAirFreesTheMic(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = goOnAir(context);
     context.waitAndRun(
         ON_AIR_TICKS,

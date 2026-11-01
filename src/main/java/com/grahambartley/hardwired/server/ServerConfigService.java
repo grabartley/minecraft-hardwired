@@ -4,6 +4,7 @@ import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.config.ConfigPaths;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.SyncServerConfigS2CPayload;
+import com.grahambartley.hardwired.wire.WireEngine;
 import java.nio.file.Path;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
@@ -51,6 +52,7 @@ public final class ServerConfigService {
       return false;
     }
     Hardwired.SERVER_CONFIG = updated;
+    server.getWorlds().forEach(world -> WireEngine.of(world).power().recountAll());
     broadcast(server, updated);
     return true;
   }

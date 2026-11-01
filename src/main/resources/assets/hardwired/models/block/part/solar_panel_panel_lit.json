@@ -1,0 +1,32 @@
+{
+  "format_version": "1.9.0",
+  "textures": {
+    "particle": "hardwired:block/solar_panel_top_lit",
+    "sheet": "hardwired:block/solar_panel_top_lit"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        8.3,
+        6
+      ],
+      "to": [
+        14,
+        8.3,
+        14
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            1.5,
+            1.5,
+            13.5,
+            9.5
+          ],
+          "texture": "#sheet"
+        }
+      }
+    }
+  ]
+}

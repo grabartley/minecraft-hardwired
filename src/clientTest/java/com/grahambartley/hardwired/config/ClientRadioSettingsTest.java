@@ -12,13 +12,13 @@ class ClientRadioSettingsTest {
   @ParameterizedTest(name = "noise {0} clamps to {1}")
   @CsvSource({"-5,0", "50,50", "500,100"})
   void noiseIsClamped(int noise, int expected) {
-    assertEquals(expected, new ClientRadioSettings("", true, noise).radioNoisePercent());
+    assertEquals(expected, new ClientRadioSettings("", true, noise, noise).radioNoisePercent());
   }
 
   @ParameterizedTest(name = "mic {0} hear {1} noise {2}")
   @CsvSource({"USB Mic,true,50", "'',false,0", "Built-in Microphone,false,100"})
   void settingsSurviveJson(String mic, boolean hear, int noise) {
-    ClientRadioSettings settings = new ClientRadioSettings(mic, hear, noise);
+    ClientRadioSettings settings = new ClientRadioSettings(mic, hear, noise, noise);
     JsonObject root = new JsonObject();
     settings.writeJson(root);
     assertEquals(settings, ClientRadioSettings.fromJson(root));
