@@ -2,6 +2,7 @@
   "textures": {
     "blackstone": "minecraft:block/polished_blackstone",
     "fold": "hardwired:block/lift_gate_fold",
+    "gold": "minecraft:block/gold_block",
     "head_open": "hardwired:block/lift_floor_head_open",
     "particle": "minecraft:block/gold_block"
   },
@@ -21,36 +22,36 @@
         "north": {
           "uv": [
             15,
-            4,
+            5,
             16,
-            15
+            16
           ],
           "texture": "#blackstone"
         },
         "east": {
           "uv": [
             13,
-            4,
+            5,
             16,
-            15
+            16
           ],
           "texture": "#blackstone"
         },
         "south": {
           "uv": [
             0,
-            4,
+            5,
             1,
-            15
+            16
           ],
           "texture": "#blackstone"
         },
         "west": {
           "uv": [
             0,
-            4,
+            5,
             3,
-            15
+            16
           ],
           "texture": "#blackstone"
         },
@@ -66,9 +67,9 @@
         "down": {
           "uv": [
             0,
-            13,
+            0,
             1,
-            16
+            3
           ],
           "texture": "#blackstone"
         }
@@ -89,36 +90,36 @@
         "north": {
           "uv": [
             0,
-            4,
+            5,
             1,
-            15
+            16
           ],
           "texture": "#blackstone"
         },
         "east": {
           "uv": [
             13,
-            4,
+            5,
             16,
-            15
+            16
           ],
           "texture": "#blackstone"
         },
         "south": {
           "uv": [
             15,
-            4,
+            5,
             16,
-            15
+            16
           ],
           "texture": "#blackstone"
         },
         "west": {
           "uv": [
             0,
-            4,
+            5,
             3,
-            15
+            16
           ],
           "texture": "#blackstone"
         },
@@ -134,9 +135,9 @@
         "down": {
           "uv": [
             15,
-            13,
+            0,
             16,
-            16
+            3
           ],
           "texture": "#blackstone"
         }
@@ -146,6 +147,74 @@
       "from": [
         0,
         11,
+        0
+      ],
+      "to": [
+        16,
+        11.5,
+        3
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4.5,
+            16,
+            5
+          ],
+          "texture": "#gold"
+        },
+        "east": {
+          "uv": [
+            13,
+            4.5,
+            16,
+            5
+          ],
+          "texture": "#gold"
+        },
+        "south": {
+          "uv": [
+            0,
+            4.5,
+            16,
+            5
+          ],
+          "texture": "#gold"
+        },
+        "west": {
+          "uv": [
+            0,
+            4.5,
+            3,
+            5
+          ],
+          "texture": "#gold"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            3
+          ],
+          "texture": "#gold"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            3
+          ],
+          "texture": "#gold"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        11.5,
         0.1
       ],
       "to": [
@@ -159,7 +228,7 @@
             0,
             0,
             16,
-            5
+            4.5
           ],
           "texture": "#blackstone"
         },
@@ -168,7 +237,7 @@
             13.1,
             0,
             15.9,
-            5
+            4.5
           ],
           "texture": "#blackstone"
         },
@@ -177,7 +246,7 @@
             0,
             0,
             16,
-            5
+            4.5
           ],
           "texture": "#blackstone"
         },
@@ -186,7 +255,7 @@
             0.1,
             0,
             2.9,
-            5
+            4.5
           ],
           "texture": "#blackstone"
         },
@@ -202,9 +271,9 @@
         "down": {
           "uv": [
             0,
-            13.1,
+            0.1,
             16,
-            15.9
+            2.9
           ],
           "texture": "#blackstone"
         }
@@ -213,7 +282,7 @@
     {
       "from": [
         0,
-        11,
+        11.5,
         3
       ],
       "to": [
@@ -222,21 +291,12 @@
         3
       ],
       "faces": {
-        "north": {
-          "uv": [
-            0,
-            0,
-            16,
-            5
-          ],
-          "texture": "#head_open"
-        },
         "south": {
           "uv": [
             0,
             0,
             16,
-            5
+            4.5
           ],
           "texture": "#head_open"
         }
@@ -245,7 +305,7 @@
     {
       "from": [
         0,
-        11,
+        11.5,
         0
       ],
       "to": [
@@ -259,16 +319,7 @@
             0,
             0,
             16,
-            5
-          ],
-          "texture": "#head_open"
-        },
-        "south": {
-          "uv": [
-            0,
-            0,
-            16,
-            5
+            4.5
           ],
           "texture": "#head_open"
         }
@@ -278,65 +329,65 @@
       "from": [
         1,
         0,
-        0
+        0.5
       ],
       "to": [
         2,
         11,
-        3
+        2.5
       ],
       "faces": {
         "north": {
           "uv": [
             14,
-            4,
+            5,
             15,
-            15
+            16
           ],
           "texture": "#fold"
         },
         "east": {
           "uv": [
-            13,
-            4,
-            16,
-            15
+            13.5,
+            5,
+            15.5,
+            16
           ],
           "texture": "#fold"
         },
         "south": {
           "uv": [
             1,
-            4,
+            5,
             2,
-            15
+            16
           ],
           "texture": "#fold"
         },
         "west": {
           "uv": [
-            0,
-            4,
-            3,
-            15
+            0.5,
+            5,
+            2.5,
+            16
           ],
           "texture": "#fold"
         },
         "up": {
           "uv": [
             1,
-            0,
+            0.5,
             2,
-            3
+            2.5
           ],
           "texture": "#fold"
         },
         "down": {
           "uv": [
             1,
-            13,
+            0.5,
             2,
-            16
+            2.5
           ],
           "texture": "#fold"
         }
@@ -346,65 +397,65 @@
       "from": [
         14,
         0,
-        0
+        0.5
       ],
       "to": [
         15,
         11,
-        3
+        2.5
       ],
       "faces": {
         "north": {
           "uv": [
             1,
-            4,
+            5,
             2,
-            15
+            16
           ],
           "texture": "#fold"
         },
         "east": {
           "uv": [
-            13,
-            4,
-            16,
-            15
+            13.5,
+            5,
+            15.5,
+            16
           ],
           "texture": "#fold"
         },
         "south": {
           "uv": [
             14,
-            4,
+            5,
             15,
-            15
+            16
           ],
           "texture": "#fold"
         },
         "west": {
           "uv": [
-            0,
-            4,
-            3,
-            15
+            0.5,
+            5,
+            2.5,
+            16
           ],
           "texture": "#fold"
         },
         "up": {
           "uv": [
             14,
-            0,
+            0.5,
             15,
-            3
+            2.5
           ],
           "texture": "#fold"
         },
         "down": {
           "uv": [
             14,
-            13,
+            0.5,
             15,
-            16
+            2.5
           ],
           "texture": "#fold"
         }
