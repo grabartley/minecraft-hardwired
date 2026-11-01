@@ -5,6 +5,7 @@ import com.grahambartley.hardwired.circuit.Design;
 import com.grahambartley.hardwired.circuit.Evaluator;
 import com.grahambartley.hardwired.circuit.Side;
 import com.grahambartley.hardwired.config.PowerSettings;
+import com.grahambartley.hardwired.device.DeviceStops;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.wire.Hue;
@@ -16,6 +17,7 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -24,7 +26,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -108,12 +112,26 @@ public final class CircuitBlock extends Block implements BlockEntityProvider, Wi
 
   @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
-    return WireEngine.of(world).isOn(pos) ? ratedLoad(Hardwired.SERVER_CONFIG.power()) : 0;
+    return WireEngine.of(world).power().isOn(pos) ? ratedLoad(Hardwired.SERVER_CONFIG.power()) : 0;
   }
 
   @Override
   public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
     return new CircuitBlockEntity(pos, state);
+  }
+
+  @Override
+  public boolean hasPorts() {
+    return true;
+  }
+
+  @Override
+  protected ActionResult onUse(
+      BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    if (world instanceof ServerWorld server) {
+      DeviceStops.tell(server, pos, player);
+    }
+    return ActionResult.PASS;
   }
 
   @Override

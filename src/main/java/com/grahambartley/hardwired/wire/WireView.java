@@ -6,8 +6,6 @@ import com.grahambartley.hardwired.network.WireChunkPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload.CellView;
 import com.grahambartley.hardwired.network.WireChunkPayload.MarkView;
 import com.grahambartley.hardwired.network.WireViewClearPayload;
-import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -20,7 +18,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.ChunkPos;
 
 public final class WireView {
 
@@ -35,11 +32,7 @@ public final class WireView {
   private static final Comparator<MarkView> MARK_ORDER =
       Comparator.comparingLong(MarkView::pos).thenComparing(MarkView::input);
 
-  private record Viewer(
-      ServerWorld world,
-      WireViewer access,
-      Long2IntOpenHashMap sent,
-      Long2ObjectOpenHashMap<WireChunkPayload> shown) {}
+  private record Viewer(ServerWorld world, WireViewer access, WireViewTracker tracker) {}
 
   private WireView() {}
 
@@ -72,12 +65,7 @@ public final class WireView {
       if (viewer != null) {
         ServerPlayNetworking.send(player, WireViewClearPayload.INSTANCE);
       }
-      viewer =
-          new Viewer(
-              player.getServerWorld(),
-              access,
-              new Long2IntOpenHashMap(),
-              new Long2ObjectOpenHashMap<>());
+      viewer = new Viewer(player.getServerWorld(), access, new WireViewTracker());
       VIEWERS.put(player.getUuid(), viewer);
     }
     sendChanges(player, viewer);
@@ -85,47 +73,14 @@ public final class WireView {
 
   private static void sendChanges(ServerPlayerEntity player, Viewer viewer) {
     WireEngine engine = WireEngine.of(viewer.world);
-    int radius = (Hardwired.SERVER_CONFIG.wire().viewRangeBlocks() >> 4) + 1;
-    ChunkPos center = player.getChunkPos();
-    for (int x = center.x - radius; x <= center.x + radius; x++) {
-      for (int z = center.z - radius; z <= center.z + radius; z++) {
-        long chunk = ChunkPos.toLong(x, z);
-        int version = engine.grid().chunkVersion(chunk);
-        if (viewer.sent.get(chunk) != version) {
-          viewer.sent.put(chunk, version);
-          sendIfDifferent(player, viewer, describe(viewer.world, engine, chunk, viewer.access));
-        }
-      }
-    }
-    forgetChunksOutOfRange(player, viewer, center, radius);
-  }
-
-  private static void sendIfDifferent(
-      ServerPlayerEntity player, Viewer viewer, WireChunkPayload payload) {
-    WireChunkPayload last = viewer.shown.get(payload.chunk());
-    boolean empty = payload.cells().isEmpty();
-    if (empty ? last == null : payload.equals(last)) {
-      return;
-    }
-    if (empty) {
-      viewer.shown.remove(payload.chunk());
-    } else {
-      viewer.shown.put(payload.chunk(), payload);
-    }
-    ServerPlayNetworking.send(player, payload);
-  }
-
-  private static void forgetChunksOutOfRange(
-      ServerPlayerEntity player, Viewer viewer, ChunkPos center, int radius) {
-    for (long chunk : viewer.sent.keySet().toLongArray()) {
-      ChunkPos pos = new ChunkPos(chunk);
-      if (Math.abs(pos.x - center.x) > radius || Math.abs(pos.z - center.z) > radius) {
-        viewer.sent.remove(chunk);
-        if (viewer.shown.remove(chunk) != null) {
-          ServerPlayNetworking.send(player, new WireChunkPayload(chunk, List.of(), List.of()));
-        }
-      }
-    }
+    viewer
+        .tracker
+        .update(
+            player.getBlockPos(),
+            Hardwired.SERVER_CONFIG.wire().viewRangeBlocks(),
+            engine.grid()::chunkVersion,
+            chunk -> describe(viewer.world, engine, chunk, viewer.access))
+        .forEach(payload -> ServerPlayNetworking.send(player, payload));
   }
 
   static WireChunkPayload describe(

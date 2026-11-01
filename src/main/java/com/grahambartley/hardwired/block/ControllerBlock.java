@@ -4,6 +4,7 @@ import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.AnimatedDevice;
 import com.grahambartley.hardwired.device.DeviceActions;
+import com.grahambartley.hardwired.device.DeviceStops;
 import com.grahambartley.hardwired.device.PanelAction;
 import com.grahambartley.hardwired.device.PanelDevice;
 import com.grahambartley.hardwired.device.PanelKind;
@@ -77,6 +78,9 @@ public final class ControllerBlock extends HorizontalFacingBlock
   @Override
   protected ActionResult onUse(
       BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    if (world instanceof ServerWorld server) {
+      DeviceStops.tell(server, pos, player);
+    }
     return DeviceActions.open(player, pos);
   }
 

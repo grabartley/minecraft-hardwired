@@ -14,9 +14,12 @@ public final class RadioTuner {
 
   public static Optional<Reception> best(ServerWorld world, BlockPos pos, int frequency) {
     RadioSettings settings = Hardwired.SERVER_CONFIG.radio();
+    BlockPos.Mutable probe = pos.mutableCopy();
     int depth =
-        world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, pos.getX(), pos.getZ())
-            - pos.getY();
+        RadioDepth.below(
+            world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, pos.getX(), pos.getZ()),
+            pos.getY(),
+            y -> world.getBlockState(probe.setY(y)).isSolidBlock(world, probe));
     List<Reception> heard =
         StationRegistry.of(world).stations().stream()
             .filter(station -> world.isChunkLoaded(station.towerFoot()))

@@ -14,6 +14,7 @@ public final class PowerDials {
   private static final float DAWN_ANGLE = 0.75F;
   private static final float QUARTER = 0.25F;
   private static final float SKY_ARC = 2F;
+  private static final float SUN_EASE = 0.01F;
 
   private PowerDials() {}
 
@@ -28,6 +29,14 @@ public final class PowerDials {
   public static float sunPhase(float skyAngle) {
     float climbed = skyAngle > DAWN_ANGLE ? skyAngle - DAWN_ANGLE : skyAngle + QUARTER;
     return Math.clamp(climbed * SKY_ARC, 0F, 1F);
+  }
+
+  public static float easeSun(float current, float target, boolean running, float ticks) {
+    if (!running) {
+      return current;
+    }
+    float step = Math.max(ticks, 0F) * SUN_EASE;
+    return current + Math.clamp(target - current, -step, step);
   }
 
   public static float needle(boolean live, int workload, float time) {

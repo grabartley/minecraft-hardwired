@@ -128,7 +128,7 @@ public final class BroadcastSounds {
                 device.hearing(settings)));
       }
     }
-    return StreamPicker.nearest(candidates, StreamPicker.MOST_STREAMS);
+    return StreamPicker.nearest(candidates, candidates.size());
   }
 
   private static void keepPlaying(MinecraftClient client, SoundingBlockEntity device) {

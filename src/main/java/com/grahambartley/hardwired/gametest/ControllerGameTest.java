@@ -277,10 +277,11 @@ public class ControllerGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = TICK_LIMIT)
   public void aSavedControllerKeepsItsPlaceMidRun(TestContext context) {
+    TestPower.keepFed(context);
     ControllerBlockEntity controller = buildDoor(context, DOOR);
-    controller.order(TimelineOrder.FORWARD);
+    context.waitAndRun(SETTLE_TICKS, () -> controller.order(TimelineOrder.FORWARD));
     context.waitAndRun(
-        SETTLE_TICKS,
+        2L * SETTLE_TICKS,
         () -> {
           var registries = context.getWorld().getRegistryManager();
           NbtCompound saved = controller.createNbt(registries);
@@ -375,6 +376,7 @@ public class ControllerGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH, tickLimit = TICK_LIMIT)
   public void movingAPistonEarnsNowYouSeeMe(TestContext context) {
+    TestPower.keepFed(context);
     ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, at(7, 7));
     buildDoor(context, DOOR);
     context.waitAndRun(

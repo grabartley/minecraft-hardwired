@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.block;
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.power.CellRules;
+import com.grahambartley.hardwired.power.SourceKind;
 import com.grahambartley.hardwired.wire.WireEngine;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -101,7 +102,7 @@ public abstract class FuelledSourceBlock extends SourceBlock {
     if (world instanceof ServerWorld server) {
       WireEngine.of(server).power().changed(pos);
     }
-    if (player instanceof ServerPlayerEntity serverPlayer) {
+    if (player instanceof ServerPlayerEntity serverPlayer && source.kind() == SourceKind.CELL) {
       ModCriteria.DEVICE.trigger(serverPlayer, ModCriteria.CELL_FILLED);
     }
   }

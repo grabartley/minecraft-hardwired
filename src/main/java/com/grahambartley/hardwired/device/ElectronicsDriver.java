@@ -1,10 +1,8 @@
 package com.grahambartley.hardwired.device;
 
-import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
 import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.wire.WireEngine;
-import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,7 +34,6 @@ public final class ElectronicsDriver {
         || !(world.getBlockEntity(pos) instanceof ElectronicBlockEntity entity)) {
       return;
     }
-    DeviceStatus before = entity.status();
     DeviceStatus demand = device.demand(world, pos, state);
     BlockPos wired = device.wiredAt(world, pos, state);
     long now = world.getTime();
@@ -56,9 +53,6 @@ public final class ElectronicsDriver {
     if (device.keepsChecking(next)) {
       world.scheduleBlockTick(pos, state.getBlock(), BEAT_TICKS);
     }
-    if (ElectronicsRule.lightsOut(before, next, () -> networkStatuses(world, wired))) {
-      ModCriteria.DEVICE.triggerNear(world, pos, ModCriteria.LIGHTS_OUT);
-    }
   }
 
   public static void show(World world, BlockPos pos, BlockState state, BlockState next) {
@@ -75,11 +69,5 @@ public final class ElectronicsDriver {
 
   private static PowerGrids power(ServerWorld world) {
     return WireEngine.of(world).power();
-  }
-
-  private static List<DeviceStatus> networkStatuses(ServerWorld world, BlockPos pos) {
-    return WireEngine.of(world).allOnNetwork(pos, ElectronicBlockEntity.class).stream()
-        .map(ElectronicBlockEntity::status)
-        .toList();
   }
 }

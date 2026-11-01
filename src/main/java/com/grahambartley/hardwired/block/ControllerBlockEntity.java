@@ -91,6 +91,10 @@ public final class ControllerBlockEntity extends BlockEntity {
   }
 
   public void order(TimelineOrder order) {
+    if (world instanceof ServerWorld server && !WireEngine.of(server).power().hasPower(pos)) {
+      change(() -> run.orderDark(timeline(), order));
+      return;
+    }
     change(() -> run.order(timeline(), order));
   }
 

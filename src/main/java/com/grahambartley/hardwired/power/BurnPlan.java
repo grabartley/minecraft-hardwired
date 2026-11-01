@@ -9,6 +9,8 @@ public final class BurnPlan {
 
   public record Source(SourceKind kind, int rating) {}
 
+  public record Away(int free, int fuelled) {}
+
   private final double[] burns;
   private final double earned;
 
@@ -17,9 +19,13 @@ public final class BurnPlan {
     this.earned = earned;
   }
 
-  public static BurnPlan forSecond(List<Source> sources, int load, BurnRates rates) {
-    int free = sources.stream().filter(s -> !s.kind().burnsFuel()).mapToInt(Source::rating).sum();
-    int fuelled = sources.stream().filter(s -> s.kind().burnsFuel()).mapToInt(Source::rating).sum();
+  public static BurnPlan forSecond(List<Source> sources, Away away, int load, BurnRates rates) {
+    int loadedFree =
+        sources.stream().filter(s -> !s.kind().burnsFuel()).mapToInt(Source::rating).sum();
+    int free = loadedFree + away.free();
+    int fuelled =
+        sources.stream().filter(s -> s.kind().burnsFuel()).mapToInt(Source::rating).sum()
+            + away.fuelled();
     int left = Math.max(load - free, 0);
     double[] burns = new double[sources.size()];
     if (fuelled > 0) {
@@ -31,7 +37,7 @@ public final class BurnPlan {
         }
       }
     }
-    double spare = Math.max(free - load, 0);
+    double spare = Math.clamp(free - load, 0, loadedFree);
     return new BurnPlan(burns, spare * rates.spareChargePerLoadMinute() / SECONDS_PER_MINUTE);
   }
 

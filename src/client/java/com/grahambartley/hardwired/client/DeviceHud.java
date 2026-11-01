@@ -1,8 +1,11 @@
 package com.grahambartley.hardwired.client;
 
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
+import com.grahambartley.hardwired.device.StopRule;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.network.DeviceInspectResultPayload;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -25,14 +28,12 @@ public final class DeviceHud {
     if (client.options.hudHidden || client.currentScreen != null) {
       return;
     }
-    Text line = line(aimedAt(client));
-    if (line != null) {
+    List<Text> lines = lines(aimedAt(client));
+    int y = context.getScaledWindowHeight() / 2 + BELOW_CROSSHAIR;
+    for (Text line : lines) {
       context.drawCenteredTextWithShadow(
-          client.textRenderer,
-          line,
-          context.getScaledWindowWidth() / 2,
-          context.getScaledWindowHeight() / 2 + BELOW_CROSSHAIR,
-          WHITE);
+          client.textRenderer, line, context.getScaledWindowWidth() / 2, y, WHITE);
+      y += client.textRenderer.fontHeight + 1;
     }
   }
 
@@ -48,17 +49,26 @@ public final class DeviceHud {
         state.getBlock() instanceof WireDevice device ? device.loadAnchor(pos, state) : pos);
   }
 
-  private static Text line(BlockEntity entity) {
+  private static List<Text> lines(BlockEntity entity) {
     if (entity instanceof ElectronicBlockEntity device && device.status().isStopped()) {
-      return Text.translatable(device.status().translationKey());
+      return List.of(Text.translatable(device.status().translationKey()));
     }
     DeviceInspectResultPayload reading = entity == null ? null : DeviceReadings.at(entity);
     if (reading == null) {
-      return null;
+      return List.of();
     }
-    return Text.translatable(
-        reading.overloaded() ? "hud.hardwired.overloaded" : "hud.hardwired.load",
-        reading.load(),
-        reading.supply());
+    boolean totals = DeviceReadings.showsGridTotals(entity);
+    List<Text> lines = new ArrayList<>();
+    if (StopRule.showsStatus(reading.status(), reading.overloaded(), totals)) {
+      lines.add(Text.translatable(reading.status().translationKey()));
+    }
+    if (totals) {
+      lines.add(
+          Text.translatable(
+              reading.overloaded() ? "hud.hardwired.overloaded" : "hud.hardwired.load",
+              reading.load(),
+              reading.supply()));
+    }
+    return lines;
   }
 }

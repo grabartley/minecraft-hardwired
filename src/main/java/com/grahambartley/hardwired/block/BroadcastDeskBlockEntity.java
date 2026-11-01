@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.device.DeviceStatus;
+import com.grahambartley.hardwired.device.ElectronicsDriver;
 import com.grahambartley.hardwired.radio.DeskMic;
 import com.grahambartley.hardwired.radio.DeskRun;
 import com.grahambartley.hardwired.radio.Frequency;
@@ -9,6 +10,7 @@ import com.grahambartley.hardwired.radio.Station;
 import com.grahambartley.hardwired.radio.StationRegistry;
 import com.grahambartley.hardwired.radio.TowerFinder;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.block.BlockState;
@@ -166,12 +168,29 @@ public final class BroadcastDeskBlockEntity extends ElectronicBlockEntity {
   public void publish(ServerWorld server) {
     StationRegistry stations = StationRegistry.of(server);
     if (status() != DeviceStatus.RUNNING || tower == null) {
-      stations.withdraw(pos);
+      if (stations.withdraw(pos)) {
+        wakeAudience(server, stations);
+      }
       return;
     }
-    stations.publish(
-        new Station(
-            pos, tower.foot(), frequency, tower.reach(), onAirSince, playingSongId(), songStart));
+    boolean reachLost =
+        stations.publish(
+            new Station(
+                pos,
+                tower.foot(),
+                frequency,
+                tower.reach(),
+                onAirSince,
+                playingSongId(),
+                songStart));
+    if (reachLost) {
+      wakeAudience(server, stations);
+    }
+  }
+
+  private void wakeAudience(ServerWorld server, StationRegistry stations) {
+    List.copyOf(stations.audience().tunedTo(pos))
+        .forEach(device -> ElectronicsDriver.pulse(server, device.getPos()));
   }
 
   private Identifier playingSongId() {

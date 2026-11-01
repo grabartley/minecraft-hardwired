@@ -41,4 +41,17 @@ class PowerDialsTest {
   void theLeverTravelsOneWayEachThrow(boolean closed, float ticks, float value) {
     assertEquals(value, PowerDials.thrown(closed, ticks), CLOSE);
   }
+
+  @ParameterizedTest(name = "from {0} to {1}, running {2}, {3} ticks")
+  @CsvSource({
+    "0.5,0.9,true,10,0.6",
+    "0.5,0.1,true,10,0.4",
+    "0.5,0.51,true,10,0.51",
+    "0.5,0.9,false,10,0.5",
+    "0.5,0.9,true,-5,0.5"
+  })
+  void aRunningPanelEasesToTheSunAndAStoppedOneHolds(
+      float current, float target, boolean running, float ticks, float next) {
+    assertEquals(next, PowerDials.easeSun(current, target, running, ticks), 1E-5F);
+  }
 }

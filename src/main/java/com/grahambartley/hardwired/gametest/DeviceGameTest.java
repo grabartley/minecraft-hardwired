@@ -12,6 +12,7 @@ import com.grahambartley.hardwired.block.StreetlightBlock;
 import com.grahambartley.hardwired.block.SwitchBlock;
 import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.network.JunctionSetPayload;
+import com.grahambartley.hardwired.network.PanelActionPayload;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.server.ServerConfigEditPermission;
@@ -171,6 +172,69 @@ public class DeviceGameTest implements FabricGameTest {
                 context.expectBlockProperty(at(4, 4), MountedDeviceBlock.POWERED, true);
                 context.complete();
               });
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 120)
+  public void aDyeHoldsUntilAControlPanelChangesTheNetwork(TestContext context) {
+    BlockPos panel = at(2, 1);
+    BlockPos lamp = at(5, 1);
+    BlockPos toggle = at(3, 1);
+    context.setBlockState(at(1, 1), ModBlocks.LODESTONE_DYNAMO);
+    context.setBlockState(panel, floor(ModBlocks.CONTROL_PANEL));
+    context.setBlockState(toggle, floor(ModBlocks.WALL_SWITCH));
+    context.setBlockState(lamp, ModBlocks.LIGHT_STRIP);
+    WireEngine engine = WireEngine.of(context.getWorld());
+    for (int x = 1; x <= 5; x++) {
+      engine.lay(
+          new WireCell(
+              new WireFace(context.getAbsolutePos(new BlockPos(x, -1, 1)), Direction.UP),
+              Hue.PLAIN));
+    }
+    ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, at(4, 3));
+    LampBlockEntity entity = context.getBlockEntity(lamp);
+    context.waitAndRun(
+        12,
+        () -> {
+          setColour(context, player, panel, Hue.RED);
+          player.hold(new ItemStack(Items.BLUE_DYE), ItemStack.EMPTY);
+          player.useOn(new WireFace(context.getAbsolutePos(lamp), Direction.UP));
+          context.assertTrue(entity.color() == Hue.BLUE, "the dye sets the colour");
+          context.setBlockState(
+              toggle, floor(ModBlocks.WALL_SWITCH).with(MountedDeviceBlock.POWERED, true));
+        });
+    context.waitAndRun(
+        30,
+        () -> {
+          context.assertTrue(entity.color() == Hue.BLUE, "a wire change keeps the dye");
+          setColour(context, player, panel, Hue.LIME);
+        });
+    context.waitAndRun(
+        45,
+        () -> {
+          context.assertTrue(entity.color() == Hue.LIME, "the next panel change replaces it");
+          player.leave();
+          context.complete();
+        });
+  }
+
+  private static void setColour(
+      TestContext context, ConnectedTestPlayer player, BlockPos panel, Hue hue) {
+    DeviceActions.panel(
+        player.player(),
+        new PanelActionPayload(
+            context.getAbsolutePos(panel), new LampLook(hue, 9), PanelActionPayload.NO_SLOT, ""));
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 40)
+  public void aMotionSensorIgnoresTaggedEntities(TestContext context) {
+    context.setBlockState(at(4, 4), floor(ModBlocks.MOTION_SENSOR));
+    context.spawnEntity(EntityType.ARMOR_STAND, at(5, 4));
+    context.waitAndRun(
+        25,
+        () -> {
+          context.expectBlockProperty(at(4, 4), MountedDeviceBlock.POWERED, false);
+          context.complete();
         });
   }
 

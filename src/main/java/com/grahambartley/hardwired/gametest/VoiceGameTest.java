@@ -4,6 +4,7 @@ import static com.grahambartley.hardwired.gametest.RadioStage.*;
 
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
+import com.grahambartley.hardwired.block.SpeakerBlockEntity;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.device.DeviceStatus;
@@ -322,6 +323,27 @@ public class VoiceGameTest implements FabricGameTest {
               BEAT + 2,
               () -> {
                 context.assertTrue(desk(context).mic().speaker() == null, "a leaver frees it");
+                context.complete();
+              });
+        });
+  }
+
+  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 60)
+  public void aSpeakerHissesWithItsRadio(TestContext context) {
+    RedstoneCellBlockEntity cell = wiredCell(context, 50);
+    context.setBlockState(RADIO, ModBlocks.RADIO);
+    context.setBlockState(SPEAKER, ModBlocks.SPEAKER);
+    radio(context).set(true, Frequency.MAX, ReceptionMix.MAX_VOLUME);
+    context.waitAndRun(
+        SETTLE + BEAT,
+        () -> {
+          SpeakerBlockEntity speaker = context.getBlockEntity(SPEAKER);
+          context.assertTrue(speaker.hisses(), "a Speaker repeats its Radio's static");
+          cell.setCharge(0);
+          context.waitAndRun(
+              BEAT + 2,
+              () -> {
+                context.assertFalse(speaker.hisses(), "and stops with it");
                 context.complete();
               });
         });

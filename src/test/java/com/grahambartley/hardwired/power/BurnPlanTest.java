@@ -15,6 +15,7 @@ class BurnPlanTest {
   private static final int MINUTES_PER_DAY = 20;
   private static final int STACK = 64;
   private static final BurnRates RATES = new BurnRates(3, 1, 3);
+  private static final BurnPlan.Away NONE_AWAY = new BurnPlan.Away(0, 0);
 
   @ParameterizedTest(name = "load {0}")
   @CsvSource({"0,0,0.3", "6,0,0", "10,0.2,0", "22,0.8,0"})
@@ -23,6 +24,7 @@ class BurnPlanTest {
         BurnPlan.forSecond(
             List.of(
                 new BurnPlan.Source(SourceKind.SOLAR, 6), new BurnPlan.Source(SourceKind.CELL, 16)),
+            NONE_AWAY,
             load,
             RATES);
     assertEquals(0D, plan.burnFor(0), CLOSE);
@@ -38,6 +40,7 @@ class BurnPlanTest {
             List.of(
                 new BurnPlan.Source(SourceKind.CELL, 16),
                 new BurnPlan.Source(SourceKind.GENERATOR, 64)),
+            NONE_AWAY,
             load,
             RATES);
     assertEquals(load * 16D / 80 * 3 / 60, plan.burnFor(0), CLOSE);
@@ -49,14 +52,45 @@ class BurnPlanTest {
   void spareEarningsFollowTheirOwnRate(int spareRate, double earned) {
     BurnPlan plan =
         BurnPlan.forSecond(
-            List.of(new BurnPlan.Source(SourceKind.DYNAMO, 6)), 0, new BurnRates(9, 9, spareRate));
+            List.of(new BurnPlan.Source(SourceKind.DYNAMO, 6)),
+            NONE_AWAY,
+            0,
+            new BurnRates(9, 9, spareRate));
+    assertEquals(earned, plan.earned(), CLOSE);
+  }
+
+  @ParameterizedTest(name = "load {0} with {1} free and {2} fuelled away")
+  @CsvSource({"16,16,0,0", "24,16,0,0.4", "24,16,16,0.2", "32,0,16,0.8", "4,6,0,0"})
+  void sourcesInUnloadedChunksTakeTheirShareOfTheLoad(
+      int load, int awayFree, int awayFuelled, double cellBurn) {
+    BurnPlan plan =
+        BurnPlan.forSecond(
+            List.of(new BurnPlan.Source(SourceKind.CELL, 16)),
+            new BurnPlan.Away(awayFree, awayFuelled),
+            load,
+            RATES);
+    assertEquals(cellBurn, plan.burnFor(0), CLOSE);
+  }
+
+  @ParameterizedTest(name = "load {0} with {1} free away earns {2}")
+  @CsvSource({"0,6,0.3", "8,6,0.2", "12,6,0", "0,0,0.3"})
+  void onlyLoadedFuelFreeSourcesEarn(int load, int awayFree, double earned) {
+    BurnPlan plan =
+        BurnPlan.forSecond(
+            List.of(new BurnPlan.Source(SourceKind.SOLAR, 6)),
+            new BurnPlan.Away(awayFree, 0),
+            load,
+            RATES);
     assertEquals(earned, plan.earned(), CLOSE);
   }
 
   private static double burnPerMinute(SourceKind kind, int load) {
     PowerSettings power = PowerSettings.DEFAULTS;
     return BurnPlan.forSecond(
-                List.of(new BurnPlan.Source(kind, kind.rating(power))), load, power.burn())
+                List.of(new BurnPlan.Source(kind, kind.rating(power))),
+                NONE_AWAY,
+                load,
+                power.burn())
             .burnFor(0)
         * SECONDS_PER_MINUTE;
   }

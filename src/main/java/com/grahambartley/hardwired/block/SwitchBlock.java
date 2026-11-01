@@ -37,6 +37,11 @@ public final class SwitchBlock extends MountedDeviceBlock implements PanelDevice
   }
 
   @Override
+  public boolean isSwitch() {
+    return true;
+  }
+
+  @Override
   protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
     super.appendProperties(builder);
     builder.add(SCENE);

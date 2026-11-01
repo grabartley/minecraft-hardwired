@@ -23,11 +23,13 @@ public abstract class SoundingBlockEntity extends ElectronicBlockEntity {
   private static final String STRENGTH = "strength";
   private static final String VOLUME = "volume";
   private static final String STATION = "station";
+  private static final String HISSING = "hissing";
   private static final double NOTE_HEIGHT = 1.0;
 
   @Nullable private Identifier song;
   private long songStart = SongClock.STOPPED;
   private float strength;
+  private boolean hissing;
   private int volume = ReceptionMix.MAX_VOLUME;
   @Nullable private BlockPos station;
 
@@ -40,7 +42,16 @@ public abstract class SoundingBlockEntity extends ElectronicBlockEntity {
   public abstract int dial();
 
   public boolean hisses() {
-    return false;
+    return hissing;
+  }
+
+  public boolean setHissing(boolean next) {
+    if (hissing == next) {
+      return false;
+    }
+    hissing = next;
+    sync();
+    return true;
   }
 
   @Nullable
@@ -124,6 +135,7 @@ public abstract class SoundingBlockEntity extends ElectronicBlockEntity {
     nbt.putLong(SONG_START, songStart);
     nbt.putFloat(STRENGTH, strength);
     nbt.putInt(VOLUME, volume);
+    nbt.putBoolean(HISSING, hissing);
   }
 
   @Override
@@ -140,6 +152,7 @@ public abstract class SoundingBlockEntity extends ElectronicBlockEntity {
     strength = nbt.getFloat(STRENGTH);
     station = nbt.contains(STATION) ? BlockPos.fromLong(nbt.getLong(STATION)) : null;
     volume = nbt.contains(VOLUME) ? nbt.getInt(VOLUME) : ReceptionMix.MAX_VOLUME;
+    hissing = nbt.getBoolean(HISSING);
   }
 
   @Override
@@ -149,6 +162,7 @@ public abstract class SoundingBlockEntity extends ElectronicBlockEntity {
     nbt.remove(SONG_START);
     nbt.remove(STRENGTH);
     nbt.remove(VOLUME);
+    nbt.remove(HISSING);
   }
 
   @Override

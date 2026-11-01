@@ -26,12 +26,13 @@ public final class StationRegistry {
     return audience;
   }
 
-  public void publish(Station station) {
-    stations.put(station.desk().toImmutable(), station);
+  public boolean publish(Station station) {
+    Station before = stations.put(station.desk().toImmutable(), station);
+    return before != null && station.reach() < before.reach();
   }
 
-  public void withdraw(BlockPos desk) {
-    stations.remove(desk);
+  public boolean withdraw(BlockPos desk) {
+    return stations.remove(desk) != null;
   }
 
   public boolean towerUsedByAnother(BlockPos towerFoot, BlockPos desk) {

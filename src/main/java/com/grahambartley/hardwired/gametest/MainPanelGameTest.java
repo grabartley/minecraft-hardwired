@@ -75,6 +75,7 @@ public class MainPanelGameTest implements FabricGameTest {
   }
 
   private static void buildHouse(TestContext context, UUID owner) {
+    TestPower.keepFed(context);
     context.setBlockState(PANEL, floor(ModBlocks.MAIN_PANEL));
     context.setBlockState(LAMP, ModBlocks.LIGHT_STRIP);
     context.setBlockState(SWITCH, floor(ModBlocks.WALL_SWITCH));
@@ -427,6 +428,7 @@ public class MainPanelGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void smartHomeCountsDistinctDevicesAndShowsProgress(TestContext context) {
+    TestPower.keepFed(context);
     context.setBlockState(PANEL, floor(ModBlocks.MAIN_PANEL));
     List<BlockPos> lamps = new ArrayList<>();
     for (int x = 2; x <= 7; x++) {

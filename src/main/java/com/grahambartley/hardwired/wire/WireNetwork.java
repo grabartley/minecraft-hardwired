@@ -178,10 +178,6 @@ public final class WireNetwork {
     gridSupply = supply;
   }
 
-  public boolean isLive() {
-    return on && gridState.givesPower();
-  }
-
   void inheritPower(WireNetwork other) {
     lastLoads.putAll(other.lastLoads);
     lastRatings.putAll(other.lastRatings);

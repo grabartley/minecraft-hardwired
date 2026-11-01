@@ -207,8 +207,8 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 | ID | Requirement |
 |---|---|
 | VIEW-1 | Wire draws nothing until a player is holding wire. It then shows within range, through blocks, on every face, as a line as thin as tripwire |
-| VIEW-2 | Each network shows its colour and its state with a shape as well as a colour: solid when live, dashed when off, and dotted when on without power |
-| VIEW-3 | Looking at a wire shows its colour, lists what is driving it, and shows its grid's load and supply (POWER-15) |
+| VIEW-2 | Each network shows its colour and its state with a shape as well as a colour: solid when live, dashed when off, and dotted when on without power. Colours sharing a face sit side by side |
+| VIEW-3 | Looking at a wire, the one nearest the crosshair on a shared face, shows its colour, lists what is driving it, and shows its grid's load and supply (POWER-15) |
 | VIEW-4 | Inputs and outputs are marked, so a player can trace why something is on or off |
 | VIEW-5 | A broken connection is marked on the wire where it ends, and a tripped network is marked as tripped |
 | VIEW-6 | The server sends a player wiring only while they are holding wire, within range, and never sends sealed wire to anyone but its owner or an operator using PERM-6 |
@@ -246,7 +246,7 @@ This is the first wow moment. A player wires lamps to a switch, then changes all
 |---|---|
 | LIGHT-1 | A Copper Lamp comes in ceiling and wall forms, made from copper, redstone and a torch, so the first lamp needs no trip to the Nether |
 | LIGHT-2 | A Light Strip is a rail of small bulbs along a wall, floor or ceiling, and a Streetlight is a four block tall 1920s street lamp on a fluted post |
-| LIGHT-3 | A lamp starts as warm white and can show that or any of the 16 dye colours. Using a dye on a lamp sets its colour |
+| LIGHT-3 | A lamp starts as warm white and can show that or any of the 16 dye colours. Using a dye on a lamp sets its colour, and it holds until a Control Panel next changes its network |
 | LIGHT-4 | Brightness runs from the vanilla light level 0 to 15 |
 | LIGHT-5 | Exposed lamps age like copper over time, and honeycomb stops it. Age changes the look, not the light |
 | LIGHT-6 | A lamp on a network with no panel turns on at full brightness in the last colour it was given, by a dye or a panel |
@@ -467,7 +467,7 @@ A player raises a tower, wires a Broadcast Desk to it and goes on the air. A dis
 | RADIO-12 | A station goes off the air when it loses power, when its tower falls below RADIO-2, or when its Desk or tower chunk unloads. Radios lose it within a second. It comes back by itself when the cause clears, with any song starting from the top. Nothing forces a chunk to stay loaded, and a Radio in an unloaded chunk does nothing |
 | RADIO-13 | Anyone may tune any Radio and listen to any station: broadcasts are public. Working a Desk needs build rights at the Desk. A Desk on sealed wire can be worked only by the wire's owner, or an operator using PERM-6, because a seal keeps a stranger's voice off a private station |
 | RADIO-14 | Every state shows without sound: a Desk's red On Air lamp and glowing valves, a Radio's lit dial and signal needle, a playing look and note particles. These work on Minimal particles because the look carries the meaning (ACC-2) |
-| RADIO-15 | Static is part of listening. Turning a dial plays a sweep of static between stations. A Radio with nothing on its dial hisses quietly while it has power. A station has a rare crackle behind it, about every half minute at full signal. As signal falls the static rises, the crackle comes more often and the station gets quieter. Where a station reaches several receivers, the strongest sets how often it crackles. Static plays on each Radio and Speaker. The same crackle comes in step on every Radio and Speaker on a station, so more Speakers do not mean more crackle. Both follow volume and never reach the Desk. They are real recordings of radio noise (LOOK-6). The client setting `radioNoise` turns them down on one device. Client settings can also be set with `/hardwiredclient config` |
+| RADIO-15 | Static is part of listening. Turning a dial plays a sweep of static between stations. A Radio with nothing on its dial hisses quietly while it has power. A station has a rare crackle behind it, about every half minute at full signal. As signal falls the static rises, the crackle comes more often and the station gets quieter. Where a station reaches several receivers, the strongest sets how often it crackles. Static plays on each Radio and Speaker. The same crackle comes in step on every Radio and Speaker on a station, so more Speakers do not mean more crackle. Both follow volume and never reach the Desk. They are real recordings of radio noise (LOOK-6). The client setting `radioNoise` turns them down on one device. Every client setting, including the wire ones, can also be set with `/hardwiredclient config` |
 | RADIO-16 | Rock weakens a signal. Depth is counted from the top solid block above a Radio, and leaves do not count. The first `undergroundFreeDepth` blocks cost nothing, so homes and cellars are unaffected. Past that, signal falls evenly until it is gone at `undergroundLossDepth` blocks further down, where a Radio finds nothing however close the tower is. Moving a Radio up a shaft brings the signal back |
 | RADIO-17 | Towers follow steel lattice masts of the 1920s, built in copper: four legs with X bracing, on a porcelain insulated foot, tapering upwards. Masts age as copper does and can be waxed. The Broadcast Desk is two blocks wide, placed with its front facing the player, with the panel two blocks tall on the left: a black slate transmitter panel with brass meters, glowing glass valves, a large frequency dial and a red On Air button, then a desk with a turntable and, beside it on the table, a round carbon microphone hung by springs in a brass ring, on a short stem and a heavy round base. Radios keep their wooden cabinet and gain a volume knob. The dial screens follow LOOK-8 |
 | RADIO-18 | Everything on the air sounds like it came over a radio. Songs and voices on a Radio or Speaker lose some low and high end and gain a little warmth, the same at any signal strength. The effect is subtle: a voice stays clear and a song stays recognisable. It happens on the client, never touches the disc, and has no setting |
@@ -490,6 +490,7 @@ A modified client is assumed. Hiding a control is never the enforcement of a rul
 | Cut or join sealed wire | No | Yes | Yes, through PERM-6 |
 | Break a block with sealed wire on it | Yes, the wire drops | Yes | Yes |
 | Use a switch, panel or Controller | Yes | Yes | Yes |
+| Change a Controller's timeline or a Junction's rule | With build rights | With build rights | With build rights |
 | Throw a source switch or Master Switch | Yes | Yes | Yes |
 | Fill a cell or generator | Yes | Yes | Yes |
 | Tune a Radio | Yes | Yes | Yes |
@@ -498,7 +499,7 @@ A modified client is assumed. Hiding a control is never the enforcement of a rul
 | Work a source switch or Master Switch on sealed wire | No | Yes | Yes, through PERM-6 |
 | Seal open wire | Yes | Yes | Yes |
 | Remove a seal | No | Yes | Yes, through PERM-6 |
-| Change server settings | No | No | Yes |
+| Change server settings | The host of their own world, from the settings screen | The host of their own world, from the settings screen | Yes |
 
 ### Requirements
 
@@ -574,12 +575,12 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | ID | Requirement |
 |---|---|
 | PERF-1 | A network with no changing input costs nothing per tick |
-| PERF-2 | A network has a size limit, set by the server. Wire beyond it is refused with a message |
+| PERF-2 | A network has a size limit, set by the server. Wire beyond it is refused with a message. Wire a piston would carry past the limit drops as items |
 | PERF-3 | A network change updates only blocks touching that network |
 | PERF-4 | Wire adds no render cost for a player who is not holding it |
 | PERF-5 | Chunk load adds no noticeable cost for chunks with no wire |
-| PERF-6 | Finding a network's parts never loads a chunk |
-| PERF-7 | A Radio looks for stations once a second, not every tick. A voice is sent only to players within hearing of a Radio or Speaker playing it, and uses about 32 kbit/s for each of them |
+| PERF-6 | Finding a network's parts, or updating them, never loads a chunk |
+| PERF-7 | A Radio looks for stations once a second, not every tick. A voice is sent only to players within hearing of a Radio or Speaker playing it, and uses about 64 kbit/s for each of them |
 | PERF-8 | A grid adds up its load and supply only when something on it changes, and burns or earns charge once a second. Sending the hum level costs nothing for a player with no running devices in range |
 
 ### Persistence
@@ -640,7 +641,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | COMPAT-2 | Mod Menu, JEI and EMI are optional. Without them, the mod works fully. Every recipe is a plain crafting recipe, so JEI and EMI show them with no code in the mod |
 | COMPAT-3 | Hardwired needs no other mod in the family. With More Doors, wire opens its doors like any other. With Total Storage, wire powers its terminals |
 | COMPAT-4 | Vanilla redstone behaves as it does without the mod |
-| COMPAT-5 | Costs, sensors and loot can be changed by data packs |
+| COMPAT-5 | Costs, sensors and loot can be changed by data packs. A data pack sets what a Motion Sensor ignores with the `hardwired:motion_sensor_ignores` entity tag, which holds armor stands by default. A Dusk Sensor follows the time of day and has nothing to change |
 | COMPAT-6 | Shipped languages: English, German, Spanish, French, Brazilian Portuguese, Russian and Simplified Chinese |
 | COMPAT-7 | Every declared dependency is used |
 

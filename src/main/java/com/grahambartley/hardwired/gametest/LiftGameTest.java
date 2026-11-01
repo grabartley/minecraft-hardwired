@@ -79,6 +79,7 @@ public class LiftGameTest implements FabricGameTest {
   private static final int START_TICK = 5;
   private static final int TICKS_FOR_SIX_BLOCKS = 36;
   private static final int SIX_BLOCK_RIDE_TICKS = 60;
+  private static final int AFTER_RIDE_TICKS = 25;
   private static final int RIDE_TICK_LIMIT = 240;
   private static final Identifier GOING_UP = Identifier.of(Hardwired.MOD_ID, "going_up");
   private static final BlockPos CELL = new BlockPos(PILLAR_X, FLOOR_Y + 1, 2);
@@ -266,23 +267,23 @@ public class LiftGameTest implements FabricGameTest {
   public void aCellBurnsOnlyWhileTheLiftMoves(TestContext context) {
     RedstoneCellBlockEntity cell = build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);
-    int[] afterRide = new int[1];
+    double[] afterRide = new double[1];
     context.runAtTick(
         START_TICK,
         () -> {
           openAt(context, rider, LOW);
-          choose(context, rider, LOW, MIDDLE);
+          choose(context, rider, LOW, HIGH);
         });
     context.runAtTick(
-        START_TICK + SIX_BLOCK_RIDE_TICKS,
+        START_TICK + SIX_BLOCK_RIDE_TICKS + AFTER_RIDE_TICKS,
         () -> {
-          afterRide[0] = cell.charge();
+          afterRide[0] = cell.exactCharge();
           context.assertTrue(afterRide[0] < FULL_CHARGE, "a ride burns charge: " + afterRide[0]);
         });
     context.runAtTick(
         START_TICK + 2 * SIX_BLOCK_RIDE_TICKS,
         () -> {
-          context.assertEquals(afterRide[0], cell.charge(), "a waiting lift is free");
+          context.assertTrue(afterRide[0] == cell.exactCharge(), "a waiting lift is free");
           finish(context, rider);
         });
   }

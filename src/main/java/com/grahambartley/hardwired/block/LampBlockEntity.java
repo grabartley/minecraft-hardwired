@@ -55,12 +55,6 @@ public final class LampBlockEntity extends BlockEntity {
     markDirty();
   }
 
-  public void recolourOwnLook(Hue hue) {
-    if (ownLook != null) {
-      setOwnLook(new LampLook(hue, ownLook.brightness()), ownStamp);
-    }
-  }
-
   public LampLook lookOver(LampLook networkLook, long networkStamp) {
     if (ownLook == null) {
       return networkLook;

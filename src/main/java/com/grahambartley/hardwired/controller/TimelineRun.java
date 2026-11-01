@@ -32,7 +32,7 @@ public final class TimelineRun {
             Math.clamp(position, 0, timeline.size()),
             travelling ? travel : null,
             travelling ? Math.min(ticksLeft, TimelineStep.MAX_WAIT_TICKS) : 0,
-            travelling ? pending : null,
+            pending,
             travelling ? 0 : Math.clamp(reverseLeft, 0, timeline.autoReverseTicks()));
     run.dropReverseUnlessAtEnd(timeline);
     return run;
@@ -59,7 +59,7 @@ public final class TimelineRun {
   }
 
   public boolean isRunning() {
-    return travel != null || reverseLeft > 0;
+    return travel != null || reverseLeft > 0 || pending != null;
   }
 
   public int outputs(Timeline timeline) {
@@ -73,6 +73,14 @@ public final class TimelineRun {
       orderWhileHolding(timeline, order);
     } else {
       begin(timeline, order);
+    }
+  }
+
+  public void orderDark(Timeline timeline, TimelineOrder order) {
+    if (travel != null) {
+      order(timeline, order);
+    } else {
+      pending = order;
     }
   }
 
@@ -96,6 +104,12 @@ public final class TimelineRun {
   }
 
   public void tick(Timeline timeline) {
+    if (travel == null && pending != null) {
+      TimelineOrder waiting = pending;
+      pending = null;
+      order(timeline, waiting);
+      return;
+    }
     if (reverseLeft > 0) {
       reverseLeft--;
       if (reverseLeft == 0) {

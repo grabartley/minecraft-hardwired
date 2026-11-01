@@ -24,6 +24,22 @@ public interface WireDevice {
     return true;
   }
 
+  default boolean needsWireOn() {
+    return false;
+  }
+
+  default boolean showsGridTotals() {
+    return false;
+  }
+
+  default boolean isSwitch() {
+    return false;
+  }
+
+  default boolean hasPorts() {
+    return false;
+  }
+
   default boolean isDrivingFrom(
       ServerWorld world, BlockPos pos, BlockState state, Hue color, Direction side) {
     return connectsFrom(state, side) && isDriving(world, pos, state, color);

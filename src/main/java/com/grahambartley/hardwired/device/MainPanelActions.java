@@ -24,6 +24,9 @@ public final class MainPanelActions {
   private MainPanelActions() {}
 
   public static void open(ServerPlayerEntity player, BlockPos panel) {
+    if (DeviceStops.tell(player.getServerWorld(), panel, player)) {
+      return;
+    }
     if (RATES.allowOpen(player.getUuid(), player.getServer().getTicks())) {
       send(player, panel, true);
     }
@@ -42,8 +45,8 @@ public final class MainPanelActions {
 
   public static boolean perform(ServerPlayerEntity player, MainPanelActionPayload action) {
     if (!DeviceActions.canUse(player, action.panel())
-        || !(player.getServerWorld().getBlockEntity(action.panel())
-            instanceof MainPanelBlockEntity)) {
+        || !(player.getServerWorld().getBlockEntity(action.panel()) instanceof MainPanelBlockEntity)
+        || !WireEngine.of(player.getServerWorld()).power().hasPower(action.panel())) {
       return false;
     }
     if (action.action() != PanelAction.REFRESH && work(player, action)) {

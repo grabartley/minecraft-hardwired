@@ -36,6 +36,8 @@ class GridTallyTest {
   @ParameterizedTest(name = "{0} waiting {1} master open {2}")
   @CsvSource({
     "READY, false, false, true",
+    "READY_FREE, false, false, true",
+    "READY_FREE, false, true, false",
     "READY, true, false, false",
     "READY, false, true, false",
     "NO_FUEL, false, false, false",

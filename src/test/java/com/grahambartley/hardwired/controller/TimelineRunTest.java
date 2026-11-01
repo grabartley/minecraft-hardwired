@@ -42,6 +42,45 @@ class TimelineRunTest {
     return run;
   }
 
+  @ParameterizedTest(name = "dark order {0} holds position {1}")
+  @CsvSource({"FORWARD,0,1", "BACKWARD,0,0", "STOP,0,0"})
+  void anOrderOnADarkGridWaitsForPower(TimelineOrder order, int held, int afterPower) {
+    TimelineRun run = new TimelineRun();
+    run.orderDark(DOOR, order);
+    assertEquals(held, run.position());
+    run.tick(DOOR);
+    assertEquals(afterPower, run.position());
+  }
+
+  @Test
+  void theLatestDarkOrderWins() {
+    TimelineRun run = finishedForward(DOOR);
+    run.orderDark(DOOR, TimelineOrder.FORWARD);
+    run.orderDark(DOOR, TimelineOrder.BACKWARD);
+    run.tick(DOOR);
+    assertEquals(1, run.position());
+  }
+
+  @Test
+  void aDarkOrderMidStepFollowsTheStep() {
+    TimelineRun run = new TimelineRun();
+    run.order(DOOR, TimelineOrder.FORWARD);
+    run.orderDark(DOOR, TimelineOrder.BACKWARD);
+    assertEquals(1, run.position());
+    assertEquals(TimelineOrder.BACKWARD, run.pending());
+  }
+
+  @Test
+  void aDarkOrderSurvivesAReload() {
+    TimelineRun run = new TimelineRun();
+    run.orderDark(DOOR, TimelineOrder.FORWARD);
+    TimelineRun restored =
+        TimelineRun.restored(
+            DOOR, run.position(), run.travel(), run.ticksLeft(), run.pending(), run.reverseLeft());
+    restored.tick(DOOR);
+    assertEquals(1, restored.position());
+  }
+
   @Test
   void forwardsSetsEachStepInOrderThenRests() {
     TimelineRun run = new TimelineRun();
@@ -211,7 +250,7 @@ class TimelineRunTest {
         Arguments.of(99, null, 0, null, 0, 2, false),
         Arguments.of(-5, null, 0, null, 0, 0, false),
         Arguments.of(1, TimelineOrder.STOP, 5, null, 0, 1, false),
-        Arguments.of(1, null, 0, TimelineOrder.FORWARD, 0, 1, false),
+        Arguments.of(1, null, 0, TimelineOrder.FORWARD, 0, 1, true),
         Arguments.of(1, null, 0, null, 50, 1, false));
   }
 
@@ -228,6 +267,5 @@ class TimelineRunTest {
     TimelineRun run = TimelineRun.restored(DOOR, position, travel, ticksLeft, pending, reverseLeft);
     assertEquals(expectedPosition, run.position());
     assertEquals(running, run.isRunning());
-    assertNull(run.pending());
   }
 }

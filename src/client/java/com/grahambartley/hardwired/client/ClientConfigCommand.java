@@ -1,7 +1,9 @@
-package com.grahambartley.hardwired.client.radio;
+package com.grahambartley.hardwired.client;
 
+import com.grahambartley.hardwired.client.radio.MicrophoneSource;
 import com.grahambartley.hardwired.config.ClientRadioSettings;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
+import com.grahambartley.hardwired.config.ClientWireSettings;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -12,14 +14,14 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.command.CommandSource;
 import net.minecraft.text.Text;
 
-public final class ClientRadioCommand {
+public final class ClientConfigCommand {
 
   private static final String ROOT = "hardwiredclient";
   private static final String CONFIG = "config";
   private static final String VALUE = "value";
   private static final String DEFAULT_MICROPHONE = "default";
 
-  private ClientRadioCommand() {}
+  private ClientConfigCommand() {}
 
   public static void register() {
     ClientCommandRegistrationCallback.EVENT.register(
@@ -36,7 +38,7 @@ public final class ClientRadioCommand {
                                                 IntegerArgumentType.integer(
                                                     ClientRadioSettings.NOISE_MIN,
                                                     ClientRadioSettings.NOISE_MAX))
-                                            .executes(ClientRadioCommand::setNoise)))
+                                            .executes(ClientConfigCommand::setNoise)))
                             .then(
                                 ClientCommandManager.literal("electrichum")
                                     .then(
@@ -45,13 +47,37 @@ public final class ClientRadioCommand {
                                                 IntegerArgumentType.integer(
                                                     ClientRadioSettings.NOISE_MIN,
                                                     ClientRadioSettings.NOISE_MAX))
-                                            .executes(ClientRadioCommand::setHum)))
+                                            .executes(ClientConfigCommand::setHum)))
+                            .then(
+                                ClientCommandManager.literal("throughblocks")
+                                    .then(
+                                        ClientCommandManager.argument(
+                                                VALUE,
+                                                IntegerArgumentType.integer(
+                                                    ClientWireSettings.THROUGH_MIN,
+                                                    ClientWireSettings.THROUGH_MAX))
+                                            .executes(ClientConfigCommand::setThroughBlocks)))
+                            .then(
+                                ClientCommandManager.literal("onsurface")
+                                    .then(
+                                        ClientCommandManager.argument(
+                                                VALUE,
+                                                IntegerArgumentType.integer(
+                                                    ClientWireSettings.SURFACE_MIN,
+                                                    ClientWireSettings.SURFACE_MAX))
+                                            .executes(ClientConfigCommand::setOnSurface)))
+                            .then(
+                                ClientCommandManager.literal("showmarkers")
+                                    .then(
+                                        ClientCommandManager.argument(
+                                                VALUE, BoolArgumentType.bool())
+                                            .executes(ClientConfigCommand::setShowMarkers)))
                             .then(
                                 ClientCommandManager.literal("hearvoicebroadcasts")
                                     .then(
                                         ClientCommandManager.argument(
                                                 VALUE, BoolArgumentType.bool())
-                                            .executes(ClientRadioCommand::setHearing)))
+                                            .executes(ClientConfigCommand::setHearing)))
                             .then(
                                 ClientCommandManager.literal("microphone")
                                     .then(
@@ -61,7 +87,7 @@ public final class ClientRadioCommand {
                                                 (context, builder) ->
                                                     CommandSource.suggestMatching(
                                                         MicrophoneSource.names(), builder))
-                                            .executes(ClientRadioCommand::setMicrophone))))));
+                                            .executes(ClientConfigCommand::setMicrophone))))));
   }
 
   private static int setNoise(CommandContext<FabricClientCommandSource> context) {
@@ -82,6 +108,33 @@ public final class ClientRadioCommand {
         Integer.toString(value));
   }
 
+  private static int setThroughBlocks(CommandContext<FabricClientCommandSource> context) {
+    int value = IntegerArgumentType.getInteger(context, VALUE);
+    return applyWire(
+        context,
+        ClientSettingsStore.get().withThroughBlocksPercent(value),
+        "throughblocks",
+        Integer.toString(value));
+  }
+
+  private static int setOnSurface(CommandContext<FabricClientCommandSource> context) {
+    int value = IntegerArgumentType.getInteger(context, VALUE);
+    return applyWire(
+        context,
+        ClientSettingsStore.get().withOnSurfacePercent(value),
+        "onsurface",
+        Integer.toString(value));
+  }
+
+  private static int setShowMarkers(CommandContext<FabricClientCommandSource> context) {
+    boolean value = BoolArgumentType.getBool(context, VALUE);
+    return applyWire(
+        context,
+        ClientSettingsStore.get().withShowMarkers(value),
+        "showmarkers",
+        Boolean.toString(value));
+  }
+
   private static int setHearing(CommandContext<FabricClientCommandSource> context) {
     boolean value = BoolArgumentType.getBool(context, VALUE);
     return apply(
@@ -98,12 +151,26 @@ public final class ClientRadioCommand {
     return apply(context, ClientSettingsStore.radio().withMicrophone(chosen), "microphone", value);
   }
 
+  private static int applyWire(
+      CommandContext<FabricClientCommandSource> context,
+      ClientWireSettings settings,
+      String label,
+      String shown) {
+    ClientSettingsStore.update(settings);
+    return confirm(context, label, shown);
+  }
+
   private static int apply(
       CommandContext<FabricClientCommandSource> context,
       ClientRadioSettings settings,
       String label,
       String shown) {
     ClientSettingsStore.update(settings);
+    return confirm(context, label, shown);
+  }
+
+  private static int confirm(
+      CommandContext<FabricClientCommandSource> context, String label, String shown) {
     context
         .getSource()
         .sendFeedback(Text.translatable("command.hardwired.update.success", label, shown));
