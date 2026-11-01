@@ -82,7 +82,7 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | Does the mod replace vanilla redstone? | No. It sits beside it and connects to it | LINK-3, LINK-4 |
 | Is a signal on or off, or a level? | On or off | WIRE-6 |
 | Do lights and doors need power? | Yes. Every network needs a source, and a single cell runs a room | POWER-1 |
-| What fuels a source? | Redstone only, so redstone earns its place. Fuel-free sources are harder to build and put out less | POWER-2 |
+| What fuels a source? | Redstone only, so redstone earns its place. Fuel-free sources are harder to build and put out less for their cost | POWER-2 |
 | When can a player start? | Early game, about when vanilla redstone becomes available | WIRE-2 |
 | What is the first wow moment? | Wiring up lamps, then changing their colour | ADV-2, ADV-3 |
 | Which look? | Early analog electrics in copper and redstone, with 1980s and 1990s computing, in vanilla's style | LOOK-1 to LOOK-4, LOOK-8, LOOK-9 |
@@ -116,7 +116,7 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | Wire end | The last face of a line of wire. A branching network has many |
 | Device | Any block in this mod that connects to wire |
 | On | A network with at least one active input |
-| Live | A network that is on, in a grid with enough supply for its load |
+| Live | A network that is on, in a grid that is not dark |
 | Input | Anything that turns a network on: a switch, a sensor, a Junction, a Controller or Circuit Block output, or vanilla redstone power |
 | Output | Anything a network drives: a device or a vanilla component |
 | Junction | A block that joins different colours under a rule the player sets |
@@ -132,11 +132,12 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | Solar Panel | A fuel-free source that runs by day |
 | Lodestone Dynamo | A fuel-free source that runs day and night |
 | Charge | The fuel a cell or generator holds, made from redstone |
-| Output | The steady power a running source puts out |
-| Supply | The total output of the running sources in a grid |
-| Load | The steady power a device draws while running, and the total for a grid |
-| Grid | Networks that share power because they touch the same device. Power crosses between them. On and off never does |
-| Overloaded | A grid whose load is more than its supply |
+| Rating | The steady power a running source puts out |
+| Supply | The total rating of the running sources in a grid |
+| Load | The steady power a device draws, counted as POWER-3 says, and the total for a grid |
+| Grid | Networks that share power because they touch the same device or vanilla component. Power crosses between them. On and off never does |
+| Overloaded | A grid with at least one running source, whose load is more than its supply |
+| Dark | A grid that gives no power: it has no running source, it is overloaded, or it is waiting out POWER-5 or POWER-12 |
 | Source switch | The small knife switch on each source |
 | Master Switch | A large wall switch that controls every source in its grid |
 | Holding wire | Having wire in the main hand or off hand |
@@ -187,7 +188,7 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 | WIRE-5 | Wires of different colours may share a face and never join. Wires of one colour join wherever they touch, in any direction, so a line can branch freely, except as WIRE-13 says |
 | WIRE-6 | A network is on or off. Every part of it reads the same state |
 | WIRE-7 | A signal has no length limit, up to the network size limit (PERF-2) |
-| WIRE-8 | A change at an input reaches every loaded output on its network on the next game tick, whatever the distance, the shape of the build or where the wire was laid, except as ACC-3 says |
+| WIRE-8 | A change at an input reaches every loaded output on its network on the next game tick, whatever the distance, the shape of the build or where the wire was laid, except as ACC-3 says. A dark grid drives nothing until it comes back (POWER-5, POWER-12) |
 | WIRE-9 | The result never depends on update order, the direction of a run or where in the world it sits |
 | WIRE-10 | Breaking a block drops the wire on its faces. So does an explosion, a piston that destroys the block, or the block starting to fall |
 | WIRE-11 | A block moved by a piston takes its wire with it, and connections re-form where it lands |
@@ -318,11 +319,11 @@ A player builds a wall section with pistons behind it, wires them up, and sets t
 
 A switch sends the signal, and a source provides the power. A player places a source, wires it to their devices and fills it if it burns fuel. As a build grows they add more sources or better ones, and the sources add up. In a larger build, they run every source back to a Master Switch and bring the whole place up with one pull.
 
-| Source | Built from | Fuel | Output |
+| Source | Built from | Fuel | Rating |
 |---|---|---|---|
 | Redstone Cell | Copper, redstone and glass | Charge, from redstone | 16 |
 | Redstone Generator | Iron, copper, pistons and a furnace | Charge, from redstone | 64 |
-| Solar Panel | Daylight detectors | None, runs by day | 6 |
+| Solar Panel | Daylight detectors, copper and redstone | None, runs by day | 6 |
 | Lodestone Dynamo | A lodestone, copper and gold | None | 24 |
 
 | Device | Load |
@@ -338,21 +339,21 @@ A switch sends the signal, and a source provides the power. A player places a so
 | ID | Requirement |
 |---|---|
 | POWER-1 | A device or vanilla component runs only with power. An input still turns its network on, and a source never does, so a switch keeps its job. A network that is on with no power drives nothing. Every device that draws load follows this rule. A device with no load, such as a switch or sensor, works with no power |
-| POWER-2 | The mod has four sources, with the outputs and materials above. Cells and generators need redstone and put out more for their cost. Fuel-free sources are harder to build, or depend on the sun, and put out less for that cost. Coal and every other fuel are refused |
-| POWER-3 | A device draws its load only while running: a lamp or vanilla component while its network is on, a Controller or Circuit Block while a network touching it is on, and the others while they are working. An Intercom draws its load whenever it is wired, as a telephone line would. A device touched by several networks counts once |
-| POWER-4 | Sources add up. Every network touching the same device is in one grid and shares one supply, so a source on any of them serves them all. This never joins their signals: WIRE-5 still holds, and a network in a grid stays on or off by its own inputs. The whole grid shares one budget, and wire itself has no limit |
-| POWER-5 | An overloaded grid goes dark, like a blown fuse. All of its devices stop together, lamps flicker out, and its sources play a fuse pop. It comes back by itself once supply covers load, checked when anything on the grid changes and at least once a second. A grid that goes dark for any reason stays dark for at least two seconds |
+| POWER-2 | The mod has four sources, with the ratings and materials above. Cells and generators need redstone and put out more for their cost. Fuel-free sources are harder to build, or depend on the sun, and put out less for that cost. Coal and every other fuel are refused |
+| POWER-3 | A device's load counts while it wants to run, with or without power, so a dark grid cannot come back just because its own devices stopped. A lamp, Alarm or vanilla component counts while its network is on. A Controller, Circuit Block or Main Panel counts while a network touching it is on. A Radio counts while its knob is on, a Speaker while a Radio on its network is on, and a Broadcast Desk while its On Air button is on. An Intercom counts whenever it is wired, as a telephone line would. A Lift counts only while moving, so a trip that blows the fuse stops the Lift, drops out of the count and blows it once. A device or vanilla component touched by several networks counts once |
+| POWER-4 | Sources add up. Every network touching the same device or vanilla component is in one grid and shares one supply, so a source on any of them serves them all. This never joins their signals: WIRE-5 still holds, and a network in a grid stays on or off by its own inputs. The whole grid shares one budget, and wire itself has no limit |
+| POWER-5 | An overloaded grid goes dark, like a blown fuse. All of its devices stop together, lamps flicker out within ACC-3, and its sources play a fuse pop. Its sources stand idle: they burn nothing and still count towards supply. It comes back by itself once supply covers load, checked when anything on the grid changes and at least once a second. A grid with no running source goes dark with no fuse pop, and it is not overloaded. A grid that goes dark for any reason stays dark for at least two seconds |
 | POWER-6 | A Redstone Cell or Redstone Generator holds charge. Using redstone dust or a block of redstone on it fills it, using the item up. A dust adds `dustCharge` and a block adds nine times that. An item is used only when all of its charge fits, so a nearly full source refuses it, says so and keeps the item in the hand, and a source never holds more than its capacity. Hoppers can feed a generator redstone, and never take any out |
-| POWER-7 | Fuel-free sources cover load first. Cells and generators share the rest in proportion to their outputs. Each unit of load burns `chargePerLoadMinute` from a cell, and half that from a generator. A source with no load burns nothing, and a source with no charge stops |
-| POWER-8 | A Solar Panel reads sky light as a daylight detector does, counts as day from a reading of 8, and puts out its full output by day and nothing by night. It shows it is working with its lit state |
+| POWER-7 | Fuel-free sources cover load first. Cells and generators share the rest in proportion to their ratings. Each unit of load burns `chargePerLoadMinute` from a cell, and half that from a generator. A source with no load burns nothing, and a source with no charge stops |
+| POWER-8 | A Solar Panel reads sky light as a daylight detector does, counts as day from a reading of 8, and puts out its full rating by day and nothing by night. It shows it is working with its lit state |
 | POWER-9 | Lightning striking a vanilla lightning rod that wire touches fills the cells on that wire, once per bolt |
-| POWER-10 | Spare output charges cells. Each spare unit from a fuel-free source adds `chargePerLoadMinute` a minute, shared across the cells in its grid. So a panel earns by day what a cell can spend at night. Generators never charge cells, and neither do other cells |
-| POWER-11 | Every source has its own source switch, worked by using the source with an empty hand. It stays where it was set through a world reload and drops open when broken. A source runs only with its switch closed, so one source can be taken out of a grid for repairs |
-| POWER-12 | A Master Switch is a wall block, two blocks tall, built from a lever, lightning rods, polished blackstone and a block of redstone. Any wire touching it joins its grid, so wires from every source run back to it. A source runs only while its own switch and every Master Switch in its grid are closed. Using it throws a long handle. Opening it shuts every source down at once. Closing it takes a second: sparks fly from its blades, the sources start one after another with the nearest first, and the grid goes live when the last has started, which is the one exception to WIRE-8. Breaking a Master Switch leaves its sources on their own switches |
+| POWER-10 | Spare power charges cells. Each spare unit from a fuel-free source adds `chargePerLoadMinute` a minute, shared across the cells in its grid. So a panel earns by day what a cell can spend at night. Generators never charge cells, and neither do other cells |
+| POWER-11 | Every source has its own source switch, worked by using the source with an empty hand. A new source is placed with its switch closed, so a cell, a switch and a lamp need no extra step. The switch stays where it was set through a world reload, and breaking the source resets it. A source runs only with its switch closed, so one source can be taken out of a grid for repairs |
+| POWER-12 | A Master Switch is a wall block, two blocks tall, built from a lever, lightning rods, polished blackstone and a block of redstone. Any wire touching it joins its grid, so wires from every source run back to it. A source runs only while its own switch and every Master Switch in its grid are closed. A new Master Switch is placed open. Using it throws a long handle. Opening it shuts every source down at once. Closing it takes a second: sparks fly from its blades, the sources start one after another with the nearest first, and the grid stays dark until the last has started. Breaking a Master Switch leaves its sources on their own switches |
 | POWER-13 | A device with no power stops, says why when looked at, and starts again when power returns. A stopped device shows its reason under the crosshair and on using it: no source on its wire, sources off, out of fuel, overloaded, wire off, no tower, tower too short, no rod on the tower, tower in use, no station, switched off, no Radio playing, shaft blocked or no Lift on its wire. A Lift that loses power mid-ride stops, tells its riders why, then lowers them free of charge at half speed to the nearest floor below and opens the gate, or gives them Slow Falling if there is no floor below. It drops its waiting calls, and once powered it stays where it is and answers the next call |
 | POWER-14 | A cell and a generator show how full they are in their look, without a number: five looks, empty only at no charge and full from just over three quarters |
 | POWER-15 | Looking at a source or Master Switch shows its grid's load against its supply, and whether it is overloaded. A gauge on the generator and dynamo shows how hard each is working |
-| POWER-16 | A source or device in an unloaded chunk keeps counting towards its grid at the output or load it last had, so a long run does not go dark when a player walks away. Nothing burns or earns in an unloaded chunk, and finding this never loads a chunk (PERF-6) |
+| POWER-16 | A source or device in an unloaded chunk keeps counting towards its grid at the rating or load it last had, saved with the world, so a long run does not go dark when a player walks away or the server restarts. Nothing burns or earns in an unloaded chunk, and finding this never loads a chunk (PERF-6) |
 | POWER-17 | Every source plays a power up sound when it starts and a power down sound when it stops, for any reason: its switch, a Master Switch, running out of fuel or nightfall. The sound follows what really happened, so a failing source is heard from the source |
 | POWER-18 | Each source moves and sounds in its own way, and works harder as its load rises. A cell's jar fills with rising bubbles and a soft fizz. A generator's piston and flywheel chug, with smoke at its stack. A Solar Panel tilts slowly towards the sun on clockwork with a faint tick. A dynamo's brass rotor spins with a clean whine and a rare spark, rising in pitch with load. A source that stops slows to a halt with its sound. A stopped source is still and silent |
 | POWER-19 | Running devices hum. Each client plays one quiet electric hum whose volume follows the load running within `humRange` blocks of the player: silent below `humStartLoad`, and full at `humFullLoad`. It never stacks, and it fades out quickly in a blackout. The client setting `electricHum` turns it down on one device |
@@ -370,10 +371,10 @@ A switch sends the signal, and a source provides the power. A player places a so
 |---|---|
 | DEV-1 | A Lift moves players between Lift Floors on a wired shaft. The Lift is a winch head at the top of a one block wide shaft, and each Lift Floor is a two block tall folding gate that opens on to the shaft and shares a wire network with the Lift. Floors at the same height count as one floor, numbered from the bottom. Using a gate calls the car to that floor. Using a gate with the car there lists the floors, and choosing one takes every player standing in the car there and sets them down in the gate, facing out. Calls wait their turn in order. The first use of a shaft brings the car to that floor. A gate has full collision while closed, and only the car opens it: hands and redstone do not. Sneaking does not leave a moving car. Only players ride |
 | DEV-2 | An Alarm sounds when its network turns on. It mounts on a floor, wall or ceiling, rings a vanilla bell once a second while its network is on and it has power, and shows that in its powered look |
-| DEV-3 | A Speaker repeats a Radio on its network, so one Radio can fill a house. Each Speaker plays exactly what the Radio is receiving, in step with it and heard further away (RADIO-10). A Speaker with no Radio receiving a station stays quiet, draws no load and says so. Breaking a Speaker stops its sound. Note particles and a playing look show it working with the sound off |
+| DEV-3 | A Speaker repeats a Radio on its network, so one Radio can fill a house. Each Speaker plays exactly what the Radio is receiving, in step with it and heard further away (RADIO-10). A Speaker with no Radio receiving a station stays quiet and says so. Breaking a Speaker stops its sound. Note particles and a playing look show it working with the sound off |
 | DEV-4 | An Intercom shares a chat line with other Intercoms on its network. Using it opens a one-line box of up to 256 characters. A line follows chat rules: the server strips characters chat forbids, a player with chat hidden cannot send, only players with full chat receive it, and a player may send one line a second. Every player within `intercomRange` blocks of any Intercom on the network hears it, and each Intercom rings briefly. A grid with no power carries no lines |
 | DEV-5 | A Main Panel on a network lists its lamps, Controllers and switches and works them from one screen, with up to 128 rows. It flips switches, runs or stops Controllers, and sets the colour and brightness of one lamp. A stopped Controller finishes its step and holds there, and Run carries on forwards, or backwards from the end. A lamp set this way keeps that look until a Control Panel next changes its network |
-| DEV-6 | Every device, including the Radio Mast and Broadcast Desk, has a plain name, a recipe in copper and redstone, and a sound that fits vanilla |
+| DEV-6 | Every device, including the Radio Mast and Broadcast Desk, has a plain name, a recipe in copper and redstone, and a sound that fits vanilla. Sources and the Master Switch add the other materials in POWER-2 and POWER-12 |
 | DEV-7 | A Main Panel lists only networks the player may see (PERM-4), and every action checks reach of the panel, build rights and that the device is still on a network the player may see. A device in an unloaded chunk shows its last known state and cannot be worked, and other wire points there are counted as unknown |
 | DEV-8 | A Lift never hurts its riders. A block in the way refuses the trip, or sends a moving car back to the last floor it can reach. A rider who disconnects is set down in the nearest gate, and the car carries on. Breaking the Lift removes the car, closes the gates and sets riders down in the nearest gate. If no gate is left, riders get Slow Falling for long enough to land |
 
@@ -391,7 +392,7 @@ A switch sends the signal, and a source provides the power. A player places a so
 | CFG-2 | Settings are saved per world as JSON in the world save directory |
 | CFG-3 | A missing file gives defaults. A broken file gives defaults, is logged and is kept |
 | CFG-4 | Out-of-range values are clamped on load |
-| CFG-5 | Every balance value is a setting with a balanced default, never a fixed number in code. That covers wire view range, network size, circuit size, source outputs, device loads, cell and generator capacity, charge use, hum range and levels, lamp ageing, Motion Sensor range, Intercom range, Push Button hold time, tower height and reach, depth loss underground, and how far Radios and Speakers are heard. Accessibility and safety limits such as ACC-3 and LINK-8 are requirements, not settings |
+| CFG-5 | Every balance value is a setting with a balanced default, never a fixed number in code. That covers wire view range, network size, circuit size, source ratings, device loads, cell and generator capacity, charge use, hum range and levels, lamp ageing, Motion Sensor range, Intercom range, Push Button hold time, tower height and reach, depth loss underground, and how far Radios and Speakers are heard. Accessibility and safety limits such as ACC-3 and LINK-8, and the POWER-5 and POWER-12 timings, are requirements, not settings |
 | CFG-6 | A settings screen through Mod Menu shows the same server options and shares their validation with the commands |
 | CFG-7 | An option that only changes what one player sees, such as how wire is drawn, is a client setting saved on that player's device |
 
@@ -452,7 +453,7 @@ A player raises a tower, wires a Broadcast Desk to it and goes on the air. A dis
 | RADIO-1 | A frequency runs from 530 to 1600 kHz in steps of 10. A station's frequency is set on its Broadcast Desk. A Radio tunes to it with its own dial |
 | RADIO-2 | A tower is a straight column of Radio Masts with a vanilla Lightning Rod on top. It can be any height from `towerMinMasts` to `towerMaxMasts`, and players build it up or cut it down one mast at a time. Masts fit themselves to the column: wide at the foot, narrowing as it rises, then a slim lattice to the top. A shorter or uncapped column is not a tower, and a Desk wired to it says why |
 | RADIO-3 | A tower reaches `towerReachPerMast` blocks for each mast, on top of `towerBaseReach`. Masts past `towerMaxMasts` add nothing. Reach is measured flat from the tower, ignores height, and stays in one dimension. Adding or breaking a mast changes reach within a second. All four numbers are server settings |
-| RADIO-4 | A Broadcast Desk joins a tower by wire: any mast on the Desk's network counts, and the tallest tower on the network is used. A tower carries one station, and a second Desk says the tower is in use. A Desk on the air draws its load from its grid. Masts draw none |
+| RADIO-4 | A Broadcast Desk joins a tower by wire: any mast on the Desk's network counts, and the tallest tower on the network is used. A tower carries one station, and a second Desk says the tower is in use. A Desk draws its load from its grid as POWER-3 says. Masts draw none |
 | RADIO-5 | A Desk holds one disc on its turntable. Using a disc puts it in, its screen ejects it, and breaking the Desk drops it. The Desk's screen sets the frequency and has a red On Air button that takes the station live or off the air, with a matching red lamp on the block. On the air, pressing Play starts the song. A song plays once, then the station stays on the air in silence. Stop and Play start it from the top. The turntable turns only with a disc on it |
 | RADIO-6 | A broadcast is live. Every Radio in reach hears the same moment of a song, and a Radio that tunes in partway, or comes into reach partway, joins at that moment. Nothing is replayed |
 | RADIO-7 | A player at a Desk that is on the air speaks by holding its Talk button or the Talk key while the screen is open. The microphone opens only while Talk is held, and the screen shows it is open. Closing the screen or moving out of reach shuts it. One player talks at a time on each Desk, and a player still holding Talk gets the microphone when it comes free. A voice goes out over a disc, and the disc dips while it does |
@@ -592,8 +593,8 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | Circuit design, on a board or a block | kept | kept | block does not move | drops as item data | kept to the last save |
 | A Circuit Block's running state | kept | kept | block does not move | lost | kept to the last save |
 | Charge | kept | kept | source does not move | drops as item data | kept to the last save |
-| Source switch and Master Switch position | kept | kept | block does not move | lost, dropped open | kept to the last save |
-| A grid's last load and supply | kept | counted again | not applicable | not applicable | counted again |
+| Source switch and Master Switch position | kept | kept | block does not move | lost | kept to the last save |
+| A grid's last load and supply | kept | kept | not applicable | not applicable | kept to the last save |
 | A disc in a Broadcast Desk | kept | kept | Desk does not move | drops | kept to the last save |
 | A station's frequency, on-air state and place in a song | kept, off the air while unloaded | kept | Desk does not move | lost | kept to the last save |
 | A Radio's frequency, on and off knob and volume | kept | kept | Radio does not move | lost | kept to the last save |
@@ -646,7 +647,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 - A vanilla redstone machine behaves the same with the mod installed (COMPAT-4).
 - Every string is translated in every shipped language.
 - Every server setting is reachable from the command line.
-- A world from the previous release opens with all its wiring intact.
+- A world from the previous release opens with all its wiring intact, and its networks stay dark until they have a source.
 
 ## 10. References
 
