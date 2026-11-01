@@ -1,6 +1,5 @@
 package com.grahambartley.hardwired.block;
 
-import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.lift.LiftActions;
 import com.mojang.serialization.MapCodec;
@@ -26,7 +25,6 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -64,10 +62,6 @@ public class LiftFloorBlock extends Block implements BlockEntityProvider, WireDe
 
   public float dialPivotX() {
     return 0.5F;
-  }
-
-  public Identifier leafModel() {
-    return Identifier.of(Hardwired.MOD_ID, "block/lift_gate_leaf");
   }
 
   public BlockPos origin(BlockPos pos, BlockState state) {

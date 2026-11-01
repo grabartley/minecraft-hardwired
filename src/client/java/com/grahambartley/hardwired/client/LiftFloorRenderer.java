@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.client;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.block.LargeLiftFloorBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlockEntity;
 import com.grahambartley.hardwired.lift.LiftDial;
@@ -83,7 +84,7 @@ public final class LiftFloorRenderer implements BlockEntityRenderer<LiftFloorBlo
     drawFace(matrices, vertices, dial, needle, lit, pivotX, HALL_FACE, 0, light);
     drawFace(matrices, vertices, dial, needle, lit, pivotX, SHAFT_FACE, BEHIND, light);
     float width = gate.swing().width(state.get(LiftFloorBlock.OPEN), time);
-    Identifier leaf = floor.leafModel();
+    Identifier leaf = floor instanceof LargeLiftFloorBlock ? WIDE_LEAF : LEAF;
     drawLeaf(matrices, vertices, leaf, HINGE, 0, width, light);
     drawLeaf(matrices, vertices, leaf, 2 * pivotX - HINGE, BEHIND, width, light);
     matrices.pop();

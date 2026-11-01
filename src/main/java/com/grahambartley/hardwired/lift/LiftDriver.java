@@ -74,7 +74,7 @@ public final class LiftDriver {
       return;
     }
     if (car.age % SYNC_TICKS == 0) {
-      shaft.car().filter(first -> first != car).ifPresent(first -> car.discard());
+      shaft.car().filter(first -> first != car).ifPresent(first -> car.retire());
       shaft.showGates(route(), run.level(), true);
       shaft.gateFacing((int) Math.round(run.level())).ifPresent(car::faceGate);
       showDial();
@@ -222,7 +222,7 @@ public final class LiftDriver {
     run.rest(run.level(), 0);
     changed();
     pulse();
-    car.discard();
+    car.retire();
   }
 
   private void arrive(int level) {
@@ -242,7 +242,7 @@ public final class LiftDriver {
         STRIKE_VOLUME,
         1F);
     for (ServerPlayerEntity rider : LiftRiders.aboard(car)) {
-      LiftRiders.setDown(world, rider, gates, level);
+      LiftRiders.moveIfNoGateHere(world, rider, gates, level);
       if (ride) {
         ModCriteria.DEVICE.trigger(rider, ModCriteria.LIFT_RIDDEN);
       }
@@ -269,9 +269,11 @@ public final class LiftDriver {
     }
   }
 
-  public void abandon() {
+  public void abandon(boolean moveRiders) {
     List<BlockPos> gates = route();
-    LiftRiders.aboard(car).forEach(this::release);
+    if (moveRiders) {
+      LiftRiders.aboard(car).forEach(this::release);
+    }
     shaft.showGates(gates, run.level(), false);
     shaft.showDial(gates, LiftDial.NONE);
     shaft.mirror(gates, DeviceStatus.READY);

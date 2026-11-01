@@ -7,6 +7,7 @@ import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -28,9 +29,13 @@ public final class LiftRiders {
 
   public static void carry(List<ServerPlayerEntity> riders, double rise) {
     for (ServerPlayerEntity rider : riders) {
-      rider.setPosition(rider.getX(), rider.getY() + rise, rider.getZ());
-      rider.fallDistance = 0;
+      lift(rider, rise);
     }
+  }
+
+  public static void lift(PlayerEntity player, double rise) {
+    player.setPosition(player.getX(), player.getY() + rise, player.getZ());
+    player.fallDistance = 0;
   }
 
   public static void tell(List<ServerPlayerEntity> players, Text message) {
@@ -48,7 +53,7 @@ public final class LiftRiders {
     rider.teleport(world, spot.x, spot.y, spot.z, out.asRotation(), 0);
   }
 
-  public static void setDown(
+  public static void moveIfNoGateHere(
       ServerWorld world, ServerPlayerEntity rider, List<BlockPos> gates, int level) {
     Optional<BlockPos> gate = nearestGate(gates, level);
     if (gate.filter(spot -> spot.getY() == level).isEmpty()) {

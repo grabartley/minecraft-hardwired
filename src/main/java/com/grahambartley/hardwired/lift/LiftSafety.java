@@ -4,8 +4,9 @@ public final class LiftSafety {
 
   public static final int LOWERING_SLOWDOWN = 2;
 
-  private static final double REACH_BELOW_FLOOR = 0.5;
-  private static final double REACH_ABOVE_FLOOR = 1.3;
+  public static final double REACH_BELOW_FLOOR = 0.5;
+
+  private static final double FEET_REACH_ABOVE_FLOOR = 1.3;
   private static final int SLOW_FALL_BASE_TICKS = 100;
   private static final int SLOW_FALL_TICKS_PER_BLOCK = 4;
 
@@ -17,7 +18,7 @@ public final class LiftSafety {
     return Math.abs(x - carX) < half
         && Math.abs(z - carZ) < half
         && y >= floorY - REACH_BELOW_FLOOR
-        && y <= floorY + REACH_ABOVE_FLOOR;
+        && y <= floorY + FEET_REACH_ABOVE_FLOOR;
   }
 
   public static int slowFallTicks(double drop) {

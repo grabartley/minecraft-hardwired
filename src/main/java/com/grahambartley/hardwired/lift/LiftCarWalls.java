@@ -12,7 +12,6 @@ public final class LiftCarWalls {
   private static final double WALL = 0.0625;
   private static final double CEILING = 1.85;
   private static final int WHOLE_TURN = 4;
-  private static final double FLOOR_GRACE = 0.5;
   private static final double FLOOR_DEPTH = 0.125;
 
   private LiftCarWalls() {}
@@ -38,7 +37,7 @@ public final class LiftCarWalls {
 
   public static Box floor(double x, double floorY, double z, int span, double feetY) {
     double half = span / 2.0;
-    double top = feetY < floorY && feetY >= floorY - FLOOR_GRACE ? feetY : floorY;
+    double top = feetY < floorY && feetY >= floorY - LiftSafety.REACH_BELOW_FLOOR ? feetY : floorY;
     return new Box(x - half, top - FLOOR_DEPTH, z - half, x + half, top, z + half);
   }
 

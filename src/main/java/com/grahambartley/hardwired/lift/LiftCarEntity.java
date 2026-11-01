@@ -45,6 +45,7 @@ public final class LiftCarEntity extends Entity {
   private static final TrackedData<Boolean> SEALED =
       DataTracker.registerData(LiftCarEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
+  private boolean retired;
   private final LiftRun run = new LiftRun();
   private final LiftMotion motion = new LiftMotion();
   private BlockPos head;
@@ -147,19 +148,14 @@ public final class LiftCarEntity extends Entity {
         pace == 0 ? null : new LiftTrip(dataTracker.get(TRIP_FROM), dataTracker.get(TRIP_TO), pace);
     motion.sync(dataTracker.get(TRIP_SERIAL), trip, dataTracker.get(TRIP_ELAPSED));
     double before = getY();
+    List<PlayerEntity> carried =
+        getWorld().getPlayers().stream()
+            .filter(player -> player.isMainPlayer() && holds(player))
+            .map(PlayerEntity.class::cast)
+            .toList();
     setPosition(getX(), motion.next(getY() + PLATE) - PLATE, getZ());
-    carryLocalPlayer(getY() - before);
-  }
-
-  private void carryLocalPlayer(double rise) {
-    if (rise != 0) {
-      for (PlayerEntity player : getWorld().getPlayers()) {
-        if (player.isMainPlayer() && holds(player)) {
-          player.setPosition(player.getX(), player.getY() + rise, player.getZ());
-          player.fallDistance = 0;
-        }
-      }
-    }
+    double rise = getY() - before;
+    carried.forEach(player -> LiftRiders.lift(player, rise));
   }
 
   public boolean holds(PlayerEntity player) {
@@ -176,9 +172,14 @@ public final class LiftCarEntity extends Entity {
   @Override
   public void remove(RemovalReason reason) {
     if (reason.shouldDestroy() && head != null && getWorld() instanceof ServerWorld world) {
-      driver(world).abandon();
+      driver(world).abandon(!retired);
     }
     super.remove(reason);
+  }
+
+  public void retire() {
+    retired = true;
+    discard();
   }
 
   @Override

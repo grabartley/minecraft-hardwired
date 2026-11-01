@@ -1,6 +1,5 @@
 package com.grahambartley.hardwired.block;
 
-import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.lift.LiftGateCells;
 import java.util.List;
@@ -13,7 +12,6 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -36,11 +34,6 @@ public final class LargeLiftFloorBlock extends LiftFloorBlock {
   @Override
   public float dialPivotX() {
     return 1F;
-  }
-
-  @Override
-  public Identifier leafModel() {
-    return Identifier.of(Hardwired.MOD_ID, "block/lift_gate_leaf_wide");
   }
 
   @Override
