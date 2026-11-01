@@ -30,11 +30,23 @@ import net.minecraft.util.math.BlockPos;
 
 public class RadioGameTest implements FabricGameTest {
 
+  private static final String TUNING_BATCH = "radio-tuning";
+
   private static final int MEASURE_FROM = SETTLE + 2 * BEAT;
   private static final int DRAIN_WINDOW = 3 * ElectronicsDriver.BEAT_TICKS;
   private static final int TOGGLE_TICKS = 4;
 
   private static HardwiredConfig savedConfig;
+
+  @BeforeBatch(batchId = TUNING_BATCH)
+  public void lowerTheTowerRuleForTuning(ServerWorld world) {
+    lowerTheTowerRule(world);
+  }
+
+  @AfterBatch(batchId = TUNING_BATCH)
+  public void restoreAfterTuning(ServerWorld world) {
+    restoreTheTowerRule(world);
+  }
 
   @BeforeBatch(batchId = BATCH)
   public void lowerTheTowerRule(ServerWorld world) {
@@ -127,7 +139,11 @@ public class RadioGameTest implements FabricGameTest {
   }
 
   private static void expectTogglingCostsNoMoreThanRunning(
-      TestContext context, RedstoneCellBlockEntity cell, int spareCharge, Runnable toggle) {
+      TestContext context,
+      ConnectedTestPlayer player,
+      RedstoneCellBlockEntity cell,
+      int spareCharge,
+      Runnable toggle) {
     int[] charge = new int[2];
     context.runAtTick(MEASURE_FROM, () -> charge[0] = cell.charge());
     context.runAtTick(MEASURE_FROM + DRAIN_WINDOW, () -> charge[1] = cell.charge());
@@ -149,6 +165,7 @@ public class RadioGameTest implements FabricGameTest {
           context.assertTrue(
               toggling <= running + spareCharge,
               "toggling used " + toggling + " where running used " + running);
+          player.leave();
           context.complete();
         });
   }
@@ -163,6 +180,7 @@ public class RadioGameTest implements FabricGameTest {
             + Hardwired.SERVER_CONFIG.power().speakerChargePerSecond();
     expectTogglingCostsNoMoreThanRunning(
         context,
+        player,
         cell,
         oneBeat,
         () ->
@@ -184,6 +202,7 @@ public class RadioGameTest implements FabricGameTest {
     context.waitAndRun(SETTLE, () -> act(context, player, PANEL, DeskAction.TOGGLE_AIR));
     expectTogglingCostsNoMoreThanRunning(
         context,
+        player,
         cell,
         Hardwired.SERVER_CONFIG.power().broadcastChargePerSecond(),
         () -> act(context, player, PANEL, DeskAction.TOGGLE_AIR));
@@ -361,7 +380,7 @@ public class RadioGameTest implements FabricGameTest {
         });
   }
 
-  @GameTest(templateName = BENCH, batchId = BATCH, tickLimit = 80)
+  @GameTest(templateName = BENCH, batchId = TUNING_BATCH, tickLimit = 80)
   public void oneStepOffHalvesTheSignalAndTwoStepsLoseIt(TestContext context) {
     buildStation(context, 500);
     ConnectedTestPlayer player = playerAt(context, 3);

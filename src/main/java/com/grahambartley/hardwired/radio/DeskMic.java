@@ -10,7 +10,6 @@ public final class DeskMic {
   public static final long SILENT_MILLIS = 3000;
 
   @Nullable private UUID speaker;
-  @Nullable private UUID lastSpeaker;
   private boolean taken;
   private final VoiceRateLimit limit = new VoiceRateLimit(0);
   private long lastHeard;
@@ -32,17 +31,12 @@ public final class DeskMic {
     if (speaker != null && !speaker.equals(player)) {
       return false;
     }
-    if (speaker == null && startsAfresh(player, nowMillis)) {
+    if (speaker == null) {
       lastHeard = nowMillis;
     }
     speaker = player;
-    lastSpeaker = player;
     taken = true;
     return true;
-  }
-
-  private boolean startsAfresh(UUID player, long nowMillis) {
-    return !player.equals(lastSpeaker) || nowMillis - lastHeard > SILENT_MILLIS;
   }
 
   public boolean release(UUID player) {

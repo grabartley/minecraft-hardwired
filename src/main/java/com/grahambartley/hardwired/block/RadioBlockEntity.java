@@ -63,10 +63,14 @@ public final class RadioBlockEntity extends SoundingBlockEntity {
   }
 
   public void set(boolean nextOn, int nextFrequency, int nextVolume) {
+    int snapped = Frequency.snap(nextFrequency);
+    boolean changed = on != nextOn || frequency != snapped || volume() != nextVolume;
     on = nextOn;
-    frequency = Frequency.snap(nextFrequency);
+    frequency = snapped;
     setVolume(nextVolume);
-    sync();
+    if (changed) {
+      sync();
+    }
   }
 
   @Override

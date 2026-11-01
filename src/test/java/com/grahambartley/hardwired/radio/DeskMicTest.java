@@ -113,12 +113,13 @@ class DeskMicTest {
 
   @ParameterizedTest(name = "cycled at {0}")
   @ValueSource(longs = {1000, 2900})
-  void cyclingTheMicDoesNotKeepASilentSpeakerOnIt(long cycledAt) {
+  void takingAFreeMicGivesTheSpeakerAFullWindow(long cycledAt) {
     DeskMic mic = new DeskMic();
     mic.take(FIRST, 0);
     mic.release(FIRST);
     assertTrue(mic.take(FIRST, cycledAt));
-    assertTrue(mic.gaveUp(3001));
+    assertFalse(mic.gaveUp(cycledAt + DeskMic.SILENT_MILLIS));
+    assertTrue(mic.gaveUp(cycledAt + DeskMic.SILENT_MILLIS + 1));
   }
 
   @ParameterizedTest(name = "heard at {0}")

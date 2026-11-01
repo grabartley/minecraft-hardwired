@@ -49,13 +49,14 @@ public final class MicrophoneSource implements CaptureSource {
   public void open() throws MicFailure {
     try {
       Optional<Mixer.Info> mixer = mixerNamed(chosen);
-      line =
+      TargetDataLine opening =
           mixer.isPresent()
               ? AudioSystem.getTargetDataLine(FORMAT, mixer.get())
               : AudioSystem.getTargetDataLine(FORMAT);
-      line.open(
+      opening.open(
           FORMAT, LINE_BUFFER_FRAMES * VoiceFormat.FRAME_SAMPLES * VoiceFormat.BYTES_PER_SAMPLE);
-      line.start();
+      opening.start();
+      line = opening;
     } catch (LineUnavailableException failure) {
       throw new MicFailure(MicProblem.BUSY, failure);
     } catch (IllegalArgumentException failure) {

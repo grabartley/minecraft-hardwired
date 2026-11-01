@@ -21,11 +21,13 @@ public final class DeskActions {
 
   private static final int MIN_TICKS_BETWEEN_AIR_TOGGLES = 4;
   private static final ActionRate AIR_TOGGLES = new ActionRate(MIN_TICKS_BETWEEN_AIR_TOGGLES);
+  private static final ActionRate SONG_PRESSES = new ActionRate(MIN_TICKS_BETWEEN_AIR_TOGGLES);
 
   private DeskActions() {}
 
   public static void forget(ServerPlayerEntity player) {
     AIR_TOGGLES.forget(player.getUuid());
+    SONG_PRESSES.forget(player.getUuid());
   }
 
   public static boolean mayWork(ServerPlayerEntity player, BlockPos panel) {
@@ -65,14 +67,22 @@ public final class DeskActions {
     }
     switch (asked) {
       case SET_FREQUENCY -> {
-        desk.setFrequency(action.value());
-        desk.publish(world);
+        if (Frequency.snap(action.value()) != desk.frequency()) {
+          desk.setFrequency(action.value());
+          desk.publish(world);
+        }
       }
       case TOGGLE_AIR -> toggleAir(player, world, desk);
-      case PLAY -> play(player, world, desk);
+      case PLAY -> {
+        if (SONG_PRESSES.allow(player.getUuid(), player.getServer().getTicks())) {
+          play(player, world, desk);
+        }
+      }
       case STOP -> {
-        desk.stopSong();
-        desk.publish(world);
+        if (SONG_PRESSES.allow(player.getUuid(), player.getServer().getTicks())) {
+          desk.stopSong();
+          desk.publish(world);
+        }
       }
       case EJECT -> {
         player.getInventory().offerOrDrop(desk.takeDisc());
