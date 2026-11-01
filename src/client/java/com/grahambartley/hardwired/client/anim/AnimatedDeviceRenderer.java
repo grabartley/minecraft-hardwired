@@ -77,7 +77,8 @@ public final class AnimatedDeviceRenderer<T extends BlockEntity> implements Bloc
                   ? animation.clip().sample(part.bone(), seconds)
                   : DeviceClip.Pose.REST;
       matrices.push();
-      apply(matrices, part.pivot(), pose);
+      float unturn = part.dial() != null && part.dial().world() ? turn.y() + animation.yaw() : 0F;
+      apply(matrices, part.pivot(), pose, unturn);
       BakedModel model =
           MinecraftClient.getInstance().getBakedModelManager().getModel(part.model());
       models.render(
@@ -104,16 +105,19 @@ public final class AnimatedDeviceRenderer<T extends BlockEntity> implements Bloc
     return (entity.getWorld().getTime() % 24000L + phase + tickDelta) / TICKS_PER_SECOND;
   }
 
-  private static void apply(MatrixStack matrices, float[] pivot, DeviceClip.Pose pose) {
+  private static void apply(
+      MatrixStack matrices, float[] pivot, DeviceClip.Pose pose, float unturn) {
     float[] position = pose.position();
     float[] rotation = pose.rotation();
     matrices.translate(
         (position[0] + pivot[0]) * PIXEL,
         (position[1] + pivot[1]) * PIXEL,
         (position[2] + pivot[2]) * PIXEL);
+    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(unturn));
     matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotation[2]));
     matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation[1]));
     matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(rotation[0]));
+    matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-unturn));
     matrices.translate(-pivot[0] * PIXEL, -pivot[1] * PIXEL, -pivot[2] * PIXEL);
   }
 }

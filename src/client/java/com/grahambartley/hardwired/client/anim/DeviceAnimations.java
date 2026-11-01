@@ -23,7 +23,7 @@ import net.minecraft.util.Identifier;
 
 public final class DeviceAnimations {
 
-  public record Dial(String value, char axis, float from, float to) {
+  public record Dial(String value, char axis, float from, float to, boolean world) {
 
     float degrees(float amount) {
       return from + (to - from) * amount;
@@ -140,6 +140,7 @@ public final class DeviceAnimations {
         dial.get("value").getAsString(),
         dial.get("axis").getAsString().charAt(0),
         dial.get("from").getAsFloat(),
-        dial.get("to").getAsFloat());
+        dial.get("to").getAsFloat(),
+        dial.has("world") && dial.get("world").getAsBoolean());
   }
 }

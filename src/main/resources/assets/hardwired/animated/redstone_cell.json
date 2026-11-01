@@ -1,0 +1,50 @@
+{
+  "clip": "hardwired:clips/redstone_cell.animation.json",
+  "parts": [
+    {
+      "bone": "bubble_1",
+      "model": "hardwired:block/part/redstone_cell_bubble_1",
+      "pivot": [
+        8,
+        8,
+        8
+      ],
+      "glow": true
+    },
+    {
+      "bone": "bubble_2",
+      "model": "hardwired:block/part/redstone_cell_bubble_2",
+      "pivot": [
+        8,
+        8,
+        8
+      ],
+      "glow": true
+    },
+    {
+      "bone": "bubble_3",
+      "model": "hardwired:block/part/redstone_cell_bubble_3",
+      "pivot": [
+        8,
+        8,
+        8
+      ],
+      "glow": true
+    },
+    {
+      "bone": "switch_blade",
+      "model": "hardwired:block/part/redstone_cell_switch_blade",
+      "pivot": [
+        5.25,
+        2.375,
+        3.625
+      ],
+      "dial": {
+        "value": "switch",
+        "axis": "x",
+        "from": -70,
+        "to": 0
+      }
+    }
+  ]
+}

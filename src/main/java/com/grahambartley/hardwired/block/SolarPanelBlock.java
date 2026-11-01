@@ -22,7 +22,7 @@ public final class SolarPanelBlock extends SourceBlock {
 
   public static final BooleanProperty LIT = Properties.LIT;
 
-  private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 6, 16);
+  private static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 9.5, 16);
 
   public SolarPanelBlock(Settings settings) {
     super(settings);

@@ -1,0 +1,68 @@
+{
+  "clip": "hardwired:clips/solar_panel.animation.json",
+  "parts": [
+    {
+      "bone": "panel",
+      "model": "hardwired:block/part/solar_panel_panel",
+      "pivot": [
+        8,
+        7.25,
+        10
+      ],
+      "dial": {
+        "value": "sun",
+        "axis": "z",
+        "from": 50,
+        "to": -50,
+        "world": true
+      }
+    },
+    {
+      "bone": "panel_lit",
+      "model": "hardwired:block/part/solar_panel_panel_lit",
+      "pivot": [
+        8,
+        7.25,
+        10
+      ],
+      "when": "lit",
+      "dial": {
+        "value": "sun",
+        "axis": "z",
+        "from": 50,
+        "to": -50,
+        "world": true
+      }
+    },
+    {
+      "bone": "gear",
+      "model": "hardwired:block/part/solar_panel_gear",
+      "pivot": [
+        11,
+        2.25,
+        2.25
+      ],
+      "dial": {
+        "value": "sun",
+        "axis": "y",
+        "from": 360,
+        "to": -360
+      }
+    },
+    {
+      "bone": "switch_blade",
+      "model": "hardwired:block/part/solar_panel_switch_blade",
+      "pivot": [
+        4.75,
+        2.375,
+        3.625
+      ],
+      "dial": {
+        "value": "switch",
+        "axis": "x",
+        "from": -70,
+        "to": 0
+      }
+    }
+  ]
+}
