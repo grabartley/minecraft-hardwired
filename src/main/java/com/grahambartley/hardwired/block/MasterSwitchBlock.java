@@ -4,6 +4,7 @@ import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.power.SourceSwitches;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -41,15 +42,16 @@ public final class MasterSwitchBlock extends Block implements BlockEntityProvide
   public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
   public static final EnumProperty<DoubleBlockHalf> HALF = Properties.DOUBLE_BLOCK_HALF;
   public static final BooleanProperty CLOSED = BooleanProperty.of("closed");
+  public static final BooleanProperty LIVE = BooleanProperty.of("live");
 
   private static final double DEPTH = 6D;
   private static final Map<Direction, VoxelShape> SHAPES = new EnumMap<>(Direction.class);
 
   static {
-    SHAPES.put(Direction.NORTH, Block.createCuboidShape(1, 0, 16 - DEPTH, 15, 16, 16));
-    SHAPES.put(Direction.SOUTH, Block.createCuboidShape(1, 0, 0, 15, 16, DEPTH));
-    SHAPES.put(Direction.WEST, Block.createCuboidShape(16 - DEPTH, 0, 1, 16, 16, 15));
-    SHAPES.put(Direction.EAST, Block.createCuboidShape(0, 0, 1, DEPTH, 16, 15));
+    SHAPES.put(Direction.NORTH, Block.createCuboidShape(0, 0, 16 - DEPTH, 16, 16, 16));
+    SHAPES.put(Direction.SOUTH, Block.createCuboidShape(0, 0, 0, 16, 16, DEPTH));
+    SHAPES.put(Direction.WEST, Block.createCuboidShape(16 - DEPTH, 0, 0, 16, 16, 16));
+    SHAPES.put(Direction.EAST, Block.createCuboidShape(0, 0, 0, DEPTH, 16, 16));
   }
 
   public MasterSwitchBlock(Settings settings) {
@@ -59,7 +61,8 @@ public final class MasterSwitchBlock extends Block implements BlockEntityProvide
             .getDefaultState()
             .with(FACING, Direction.NORTH)
             .with(HALF, DoubleBlockHalf.LOWER)
-            .with(CLOSED, false));
+            .with(CLOSED, false)
+            .with(LIVE, false));
   }
 
   public static void setClosed(
@@ -71,13 +74,22 @@ public final class MasterSwitchBlock extends Block implements BlockEntityProvide
     }
   }
 
+  public static void showLive(ServerWorld world, BlockPos lower, boolean live) {
+    for (BlockPos half : List.of(lower, lower.up())) {
+      BlockState state = world.getBlockState(half);
+      if (state.getBlock() instanceof MasterSwitchBlock && state.get(LIVE) != live) {
+        world.setBlockState(half, state.with(LIVE, live), NOTIFY_LISTENERS);
+      }
+    }
+  }
+
   public boolean isClosed(BlockState state) {
     return state.get(CLOSED);
   }
 
   @Override
   protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-    builder.add(FACING, HALF, CLOSED);
+    builder.add(FACING, HALF, CLOSED, LIVE);
   }
 
   @Override

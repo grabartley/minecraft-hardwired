@@ -1,0 +1,145 @@
+{
+  "format_version": "1.9.0",
+  "textures": {
+    "black": "minecraft:block/polished_blackstone",
+    "particle": "minecraft:block/polished_deepslate"
+  },
+  "elements": [
+    {
+      "from": [
+        3.375,
+        27.25,
+        14.05
+      ],
+      "to": [
+        3.625,
+        28.875,
+        14.25
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12.375,
+            3.125,
+            12.625,
+            4.75
+          ],
+          "texture": "#black"
+        },
+        "east": {
+          "uv": [
+            1.75,
+            3.125,
+            1.9499999999999993,
+            4.75
+          ],
+          "texture": "#black"
+        },
+        "south": {
+          "uv": [
+            3.375,
+            3.125,
+            3.625,
+            4.75
+          ],
+          "texture": "#black"
+        },
+        "west": {
+          "uv": [
+            14.05,
+            3.125,
+            14.25,
+            4.75
+          ],
+          "texture": "#black"
+        },
+        "up": {
+          "uv": [
+            3.375,
+            14.05,
+            3.625,
+            14.25
+          ],
+          "texture": "#black"
+        },
+        "down": {
+          "uv": [
+            3.375,
+            14.05,
+            3.625,
+            14.25
+          ],
+          "texture": "#black"
+        }
+      }
+    },
+    {
+      "from": [
+        3.25,
+        27,
+        14
+      ],
+      "to": [
+        3.75,
+        27.5,
+        14.25
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            12.25,
+            4.5,
+            12.75,
+            5
+          ],
+          "texture": "#black"
+        },
+        "east": {
+          "uv": [
+            1.75,
+            4.5,
+            2,
+            5
+          ],
+          "texture": "#black"
+        },
+        "south": {
+          "uv": [
+            3.25,
+            4.5,
+            3.75,
+            5
+          ],
+          "texture": "#black"
+        },
+        "west": {
+          "uv": [
+            14,
+            4.5,
+            14.25,
+            5
+          ],
+          "texture": "#black"
+        },
+        "up": {
+          "uv": [
+            3.25,
+            14,
+            3.75,
+            14.25
+          ],
+          "texture": "#black"
+        },
+        "down": {
+          "uv": [
+            3.25,
+            14,
+            3.75,
+            14.25
+          ],
+          "texture": "#black"
+        }
+      }
+    }
+  ]
+}

@@ -259,7 +259,7 @@ public final class PowerGrids {
       network.setGridState(next);
       network.setDarkUntil(nextDark);
       network.showTotals(load, supply);
-      showOnMasters(network, load, supply);
+      showOnMasters(network, load, supply, next.givesPower());
       if (powerChanged) {
         engine.pushNetwork(network);
       } else if (stateChanged) {
@@ -277,7 +277,7 @@ public final class PowerGrids {
     }
   }
 
-  private void showOnMasters(WireNetwork network, int load, int supply) {
+  private void showOnMasters(WireNetwork network, int load, int supply, boolean live) {
     for (long link : network.links()) {
       BlockPos pos = BlockPos.fromLong(link);
       if (engine.isLoaded(pos)
@@ -285,6 +285,7 @@ public final class PowerGrids {
         BlockPos anchor = master.loadAnchor(pos, world.getBlockState(pos));
         if (world.getBlockEntity(anchor) instanceof MasterSwitchBlockEntity entity) {
           entity.showGrid(load, supply);
+          MasterSwitchBlock.showLive(world, anchor, live);
         }
       }
     }

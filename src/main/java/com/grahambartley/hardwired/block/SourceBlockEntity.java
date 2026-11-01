@@ -93,16 +93,16 @@ public class SourceBlockEntity extends BlockEntity implements DialDevice {
     supply = nextSupply;
     grid = nextGrid;
     if (startedOrStopped) {
-      play(running ? ModSounds.SOURCE_UP : ModSounds.SOURCE_DOWN);
+      play(running ? ModSounds.SOURCE_UP : ModSounds.SOURCE_DOWN, kind().soundVolume());
     }
     if (changed) {
       sync();
     }
   }
 
-  private void play(SoundEvent sound) {
+  private void play(SoundEvent sound, float volume) {
     if (world != null) {
-      world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1F, 1F);
+      world.playSound(null, pos, sound, SoundCategory.BLOCKS, volume, 1F);
     }
   }
 

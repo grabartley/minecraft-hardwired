@@ -37,14 +37,15 @@ public final class DeviceAnimations {
       boolean glow,
       String when,
       String movesWhen,
-      Dial dial) {
+      Dial dial,
+      boolean always) {
 
     public boolean drawnWhile(boolean animating) {
-      return animating || !glow;
+      return animating || always || !glow;
     }
 
     public boolean shownIn(BlockState state) {
-      return when == null || AnimatedDevice.flagged(state, when);
+      return when == null || AnimatedDevice.shownWhen(state, when);
     }
 
     public boolean movesIn(BlockState state) {
@@ -132,7 +133,8 @@ public final class DeviceAnimations {
         part.has("glow") && part.get("glow").getAsBoolean(),
         part.has("when") ? part.get("when").getAsString() : null,
         part.has("moves_when") ? part.get("moves_when").getAsString() : null,
-        part.has("dial") ? dial(part.getAsJsonObject("dial")) : null);
+        part.has("dial") ? dial(part.getAsJsonObject("dial")) : null,
+        part.has("always") && part.get("always").getAsBoolean());
   }
 
   private static Dial dial(JsonObject dial) {

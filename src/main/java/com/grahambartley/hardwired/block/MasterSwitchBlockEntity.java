@@ -17,6 +17,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -27,10 +28,14 @@ public final class MasterSwitchBlockEntity extends BlockEntity implements DialDe
   private static final String THROWN_AT = "thrown_at";
   private static final float THROW_TICKS = StartOrder.START_TICKS;
   private static final int SPARK_COUNT = 4;
+  private static final float NEEDLE_REST = 0.15F;
+  private static final float NEEDLE_RANGE = 0.75F;
+  private static final float NEEDLE_FLICKER = 0.03F;
+  private static final float NEEDLE_SPEED = 0.7F;
   private static final double SPARK_SPREAD = 0.08D;
   private static final double SPARK_SPEED = 0.15D;
-  private static final double SPARK_OUT = 0.32D;
-  private static final double SPARK_UP = 1D;
+  private static final double SPARK_OUT = -0.14D;
+  private static final double SPARK_UP = 0.5D;
 
   private boolean queued;
   private int load;
@@ -128,6 +133,20 @@ public final class MasterSwitchBlockEntity extends BlockEntity implements DialDe
 
   @Override
   public float dial(String value, float tickDelta) {
+    return "load".equals(value) ? needle(tickDelta) : thrown(tickDelta);
+  }
+
+  private float needle(float tickDelta) {
+    if (!getCachedState().get(MasterSwitchBlock.LIVE) || world == null) {
+      return 0F;
+    }
+    float flow = supply <= 0 ? 0F : Math.min(1F, (float) load / supply);
+    float time = (world.getTime() + tickDelta) * NEEDLE_SPEED;
+    return Math.clamp(
+        NEEDLE_REST + flow * NEEDLE_RANGE + MathHelper.sin(time) * NEEDLE_FLICKER, 0F, 1F);
+  }
+
+  private float thrown(float tickDelta) {
     boolean closed = getCachedState().get(MasterSwitchBlock.CLOSED);
     float time = world == null ? THROW_TICKS : world.getTime() - thrownAt + tickDelta;
     float travelled = Math.clamp(time / THROW_TICKS, 0F, 1F);

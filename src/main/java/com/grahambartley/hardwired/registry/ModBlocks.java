@@ -149,7 +149,8 @@ public final class ModBlocks {
               deviceSettings()
                   .mapColor(MapColor.DEEPSLATE_GRAY)
                   .sounds(BlockSoundGroup.POLISHED_DEEPSLATE)
-                  .pistonBehavior(PistonBehavior.DESTROY)));
+                  .pistonBehavior(PistonBehavior.DESTROY)
+                  .luminance(state -> state.get(MasterSwitchBlock.LIVE) ? 7 : 3)));
   public static final Block SOLAR_PANEL =
       register(
           "solar_panel",

@@ -57,7 +57,8 @@ public abstract class SourceBlock extends Block
     if (!state.isOf(newState.getBlock())
         && world.getBlockEntity(pos) instanceof SourceBlockEntity source
         && source.isRunning()) {
-      world.playSound(null, pos, ModSounds.SOURCE_DOWN, SoundCategory.BLOCKS, 1F, 1F);
+      world.playSound(
+          null, pos, ModSounds.SOURCE_DOWN, SoundCategory.BLOCKS, source.kind().soundVolume(), 1F);
     }
     super.onStateReplaced(state, world, pos, newState, moved);
   }
