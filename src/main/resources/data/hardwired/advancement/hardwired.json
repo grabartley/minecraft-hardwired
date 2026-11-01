@@ -10,12 +10,21 @@
       "translate": "advancement.hardwired.hardwired.description"
     },
     "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
     "hidden": false,
     "background": "hardwired:textures/wire/advancement_background.png"
   },
   "criteria": {
-    "tick": {
-      "trigger": "minecraft:tick"
+    "wire": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "hardwired:copper_wire"
+          }
+        ]
+      }
     }
   }
 }

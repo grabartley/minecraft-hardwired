@@ -425,7 +425,7 @@ The mod has its own tab, with a background of copper and redstone traces and a w
 | ADV-16 | Short Circuit | Cutting a wire that is on |
 | ADV-17 | Vintage | A lamp reaching full age |
 | ADV-18 | Lights Out | Being near the last running device on a network as it stops for lack of power |
-| ADV-19 | Hardwired | Granted on joining a world: the root of the tab |
+| ADV-19 | Hardwired | First having Copper Wire: the root of the tab, earned silently, so the tab appears at that moment |
 | ADV-26 | Tuned In | Tuning a Radio to a live station |
 | ADV-27 | On The Air | Broadcasting a disc through a tower |
 | ADV-28 | Live Mic | Speaking on a broadcast that a Radio is receiving |
@@ -435,7 +435,7 @@ The mod has its own tab, with a background of copper and redstone traces and a w
 | ID | Requirement |
 |---|---|
 | ADV-20 | Hardwired, Live Wire, Let There Be Light and Mood Lighting are not hidden and chain in that order. Their descriptions tell the player what to do next, including wiring a Redstone Cell to a first lamp |
-| ADV-21 | Lighting (ADV-4 to ADV-6), Mechanisms (ADV-7 to ADV-9), Circuits (ADV-10 to ADV-12), Power (ADV-13 to ADV-15, ADV-29) and Broadcast (ADV-26 to ADV-28) each branch from Let There Be Light, in any order |
+| ADV-21 | Lighting (ADV-4 to ADV-6), Mechanisms (ADV-7 to ADV-9), Circuits (ADV-10 to ADV-12), Power (ADV-13 to ADV-15) and Broadcast (ADV-26 to ADV-28) each branch from Live Wire, in any order. Power's On sits under Charged Up |
 | ADV-22 | Short Circuit (under Live Wire), Vintage (under Let There Be Light), and Lights Out and Blown Fuse (under Charged Up) stay hidden until earned |
 | ADV-23 | Let There Be Light, Mood Lighting, Full Spectrum, Share The Love and Live Mic are goals. Smart Home and Caught Lightning are challenges. Goals give 50 experience and challenges give 100 |
 | ADV-24 | An advancement earned in steps shows its progress |
