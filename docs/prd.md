@@ -519,7 +519,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | Lamp colour and brightness | Draws lamps |
 | Circuit designs, checks and cost | Offers the board screen |
 | Charge, load, supply and which sources run | Shows them in looks, gauges and text, and animates sources from them |
-| Load near each player, sent once a second | Fades the one electric hum |
+| Running devices near each player, sent once a second | Fades the one electric hum |
 | Stations, frequencies, reach, signal strength and who is talking | Offers the Desk and Radio screens |
 | Which players are sent a voice | Opens the microphone only while Talk is held, and plays what it is sent |
 
