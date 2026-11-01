@@ -73,6 +73,12 @@ public final class ClientConfigCommand {
                                                 VALUE, BoolArgumentType.bool())
                                             .executes(ClientConfigCommand::setShowMarkers)))
                             .then(
+                                ClientCommandManager.literal("colouredlight")
+                                    .then(
+                                        ClientCommandManager.argument(
+                                                VALUE, BoolArgumentType.bool())
+                                            .executes(ClientConfigCommand::setColouredLight)))
+                            .then(
                                 ClientCommandManager.literal("hearvoicebroadcasts")
                                     .then(
                                         ClientCommandManager.argument(
@@ -132,6 +138,15 @@ public final class ClientConfigCommand {
         context,
         ClientSettingsStore.get().withShowMarkers(value),
         "showmarkers",
+        Boolean.toString(value));
+  }
+
+  private static int setColouredLight(CommandContext<FabricClientCommandSource> context) {
+    boolean value = BoolArgumentType.getBool(context, VALUE);
+    return applyWire(
+        context,
+        ClientSettingsStore.get().withColouredLight(value),
+        "colouredlight",
         Boolean.toString(value));
   }
 

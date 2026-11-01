@@ -142,6 +142,8 @@
   "screen.hardwired.settings.surfaceopacity.tooltip": "How strongly wire shows on the faces you can see.",
   "screen.hardwired.settings.showmarkers": "Input and Output Marks",
   "screen.hardwired.settings.showmarkers.tooltip": "Shows the marks on blocks that drive or read a wire.",
+  "screen.hardwired.settings.colouredlight": "Coloured Light",
+  "screen.hardwired.settings.colouredlight.tooltip": "Coloured lamps cast their colour on nearby blocks.",
   "message.hardwired.sealed": "Network sealed",
   "message.hardwired.unsealed": "Seal removed",
   "message.hardwired.already_sealed": "This network is already sealed",

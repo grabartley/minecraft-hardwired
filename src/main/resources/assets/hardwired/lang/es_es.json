@@ -142,6 +142,8 @@
   "screen.hardwired.settings.surfaceopacity.tooltip": "Con qué fuerza se ve el cable en las caras visibles.",
   "screen.hardwired.settings.showmarkers": "Marcas de entrada y salida",
   "screen.hardwired.settings.showmarkers.tooltip": "Muestra las marcas en los bloques que activan o leen un cable.",
+  "screen.hardwired.settings.colouredlight": "Luz de color",
+  "screen.hardwired.settings.colouredlight.tooltip": "Las lámparas de color proyectan su color sobre los bloques cercanos.",
   "message.hardwired.sealed": "Red sellada",
   "message.hardwired.unsealed": "Sello retirado",
   "message.hardwired.already_sealed": "Esta red ya está sellada",

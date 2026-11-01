@@ -19,6 +19,7 @@ import com.grahambartley.hardwired.client.WireRenderer;
 import com.grahambartley.hardwired.client.WireViewStore;
 import com.grahambartley.hardwired.client.anim.AnimatedDeviceRenderer;
 import com.grahambartley.hardwired.client.anim.DeviceAnimations;
+import com.grahambartley.hardwired.client.glow.GlowRenderer;
 import com.grahambartley.hardwired.client.power.PowerSounds;
 import com.grahambartley.hardwired.client.power.PowerTooltip;
 import com.grahambartley.hardwired.client.radio.BroadcastSounds;
@@ -114,6 +115,7 @@ public class HardwiredClient implements ClientModInitializer {
     ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> WireViewStore.clear());
     ClientTickEvents.END_CLIENT_TICK.register(WireDrag::tick);
     UseBlockCallback.EVENT.register(WireDrag::onUseBlock);
+    WorldRenderEvents.LAST.register(GlowRenderer::render);
     WorldRenderEvents.LAST.register(WireRenderer::render);
     HudRenderCallback.EVENT.register(WireHud::render);
     HudRenderCallback.EVENT.register(DeviceHud::render);

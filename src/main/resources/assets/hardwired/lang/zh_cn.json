@@ -142,6 +142,8 @@
   "screen.hardwired.settings.surfaceopacity.tooltip": "电线在可见表面上显示的强度。",
   "screen.hardwired.settings.showmarkers": "输入和输出标记",
   "screen.hardwired.settings.showmarkers.tooltip": "显示驱动或读取电线的方块上的标记。",
+  "screen.hardwired.settings.colouredlight": "彩色灯光",
+  "screen.hardwired.settings.colouredlight.tooltip": "彩色灯具会将自身颜色投射到附近的方块上。",
   "message.hardwired.sealed": "网络已封蜡",
   "message.hardwired.unsealed": "封蜡已移除",
   "message.hardwired.already_sealed": "此网络已封蜡",

@@ -69,7 +69,6 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 |---|---|
 | Replacing vanilla dust | Starting beside vanilla is safer. A world setting could later turn placed dust into new wire |
 | Televisions and video streaming | Available video libraries bring licence, platform and stability problems, and the mod does not need them |
-| Coloured light on nearby blocks | Vanilla light has no colour. A lamp changes its own colour, and a glow on the world must first be proven alongside Sodium and shaders |
 | Signal levels from 0 to 15 | On and off keeps wiring simple |
 | Visible decorative wire | Hidden wire comes first |
 | Wireless signal links | Wire is the core of the mod. Radio carries sound, never an on or off signal |
@@ -248,12 +247,13 @@ This is the first wow moment. A player wires lamps to a switch, then changes all
 | LIGHT-2 | A Light Strip is a rail of small bulbs along a wall, floor or ceiling, and a Streetlight is a four block tall 1920s street lamp on a fluted post |
 | LIGHT-3 | A lamp starts as warm white and can show that or any of the 16 dye colours. Using a dye on a lamp sets its colour, and it holds until a Control Panel next changes its network |
 | LIGHT-4 | Brightness runs from the vanilla light level 0 to 15 |
+| LIGHT-9 | A lit lamp in a dye colour casts that colour on the blocks its light reaches, fading with distance and blending with other lamps. Daylight washes it out. Warm white casts no tint. The colour sits on top of vanilla light, so light levels and mob spawning do not change |
 | LIGHT-5 | Exposed lamps age like copper over time, and honeycomb stops it. Age changes the look, not the light |
 | LIGHT-6 | A lamp on a network with no panel turns on at full brightness in the last colour it was given, by a dye or a panel |
 | LIGHT-8 | Lamps are Art Deco fittings: stepped copper mounts, fan and sunburst shapes and frosted glass. They stay simple and blocky, and every lamp's item shows its real model |
 | LIGHT-7 | A Streetlight with a Dusk Sensor on its network turns on at dusk and off at dawn |
 
-**Not supported:** coloured light cast on other blocks (Section 2).
+**Not supported:** cast colour on mobs, players, dropped items or held items. Each player can turn cast colour off in their client settings.
 
 **Enforcement:** server. The client draws the colour it is told.
 

@@ -36,6 +36,11 @@ final class ClientConfigSection {
             settings.showMarkers(),
             value -> settings = settings.withShowMarkers(value)));
     list.addRow(
+        rows.toggle(
+            KEY + "colouredlight",
+            settings.colouredLight(),
+            value -> settings = settings.withColouredLight(value)));
+    list.addRow(
         rows.percentSlider(
             KEY + "radionoise",
             ClientRadioSettings.NOISE_MIN,

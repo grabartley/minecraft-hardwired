@@ -11,6 +11,7 @@ import com.grahambartley.hardwired.block.MountedDeviceBlock;
 import com.grahambartley.hardwired.block.StreetlightBlock;
 import com.grahambartley.hardwired.block.SwitchBlock;
 import com.grahambartley.hardwired.device.DeviceActions;
+import com.grahambartley.hardwired.light.Glow;
 import com.grahambartley.hardwired.network.JunctionSetPayload;
 import com.grahambartley.hardwired.network.PanelActionPayload;
 import com.grahambartley.hardwired.registry.ModBlocks;
@@ -23,6 +24,7 @@ import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireFace;
 import com.grahambartley.hardwired.wire.WireLaying;
 import java.util.List;
+import java.util.Optional;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -284,6 +286,29 @@ public class DeviceGameTest implements FabricGameTest {
           context.expectBlockProperty(base.up(2), AbstractLampBlock.LEVEL, 15);
           context.complete();
         });
+  }
+
+  @GameTest(templateName = BENCH)
+  public void aLitDyedStreetlightGlowsFromItsHead(TestContext context) {
+    BlockPos base = at(4, 2);
+    placeStreetlight(context, base);
+    context.setBlockState(base, context.getBlockState(base).with(AbstractLampBlock.LEVEL, 12));
+    LampBlockEntity lamp = context.getBlockEntity(base);
+    lamp.setLook(Hue.LIME, 12);
+    Glow expected =
+        new Glow(context.getAbsolutePos(base.up(StreetlightBlock.HEAD)), 12, Hue.LIME.lampRgb());
+    context.assertTrue(lamp.glow().equals(Optional.of(expected)), "lamp must glow from its head");
+    context.complete();
+  }
+
+  @GameTest(templateName = BENCH)
+  public void aLitWarmWhiteLampCastsNoColour(TestContext context) {
+    BlockPos base = at(4, 2);
+    placeStreetlight(context, base);
+    context.setBlockState(base, context.getBlockState(base).with(AbstractLampBlock.LEVEL, 15));
+    LampBlockEntity lamp = context.getBlockEntity(base);
+    context.assertTrue(lamp.glow().isEmpty(), "warm white must cast no colour");
+    context.complete();
   }
 
   @GameTest(templateName = BENCH)

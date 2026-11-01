@@ -97,6 +97,10 @@ public abstract class AbstractLampBlock extends Block
     return pos;
   }
 
+  public BlockPos lightPos(BlockPos lampPos) {
+    return lampPos;
+  }
+
   protected void update(World world, BlockPos pos, BlockState state) {
     world.setBlockState(pos, state, NOTIFY_ALL);
   }
