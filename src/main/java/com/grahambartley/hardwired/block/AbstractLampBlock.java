@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.block;
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.advancement.DeviceCriterion;
 import com.grahambartley.hardwired.advancement.ModCriteria;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.PanelAction;
 import com.grahambartley.hardwired.device.PanelDevice;
 import com.grahambartley.hardwired.device.PanelKind;
@@ -75,11 +76,14 @@ public abstract class AbstractLampBlock extends Block
 
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
     WireEngine engine = WireEngine.of(world);
-    return parts(pos, state).stream().anyMatch(engine::isOn) ? runningLoad() : 0;
+    return parts(pos, state).stream().anyMatch(engine::isOn)
+        ? ratedLoad(Hardwired.SERVER_CONFIG.power())
+        : 0;
   }
 
-  protected int runningLoad() {
-    return Hardwired.SERVER_CONFIG.power().lampLoad();
+  @Override
+  public int ratedLoad(PowerSettings settings) {
+    return settings.lampLoad();
   }
 
   @Override

@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
@@ -79,9 +80,14 @@ public final class RadioBlock extends TableDeviceBlock {
   }
 
   @Override
+  public int ratedLoad(PowerSettings settings) {
+    return settings.radioLoad();
+  }
+
+  @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
     return world.getBlockEntity(pos) instanceof RadioBlockEntity radio && radio.isOn()
-        ? Hardwired.SERVER_CONFIG.power().radioLoad()
+        ? ratedLoad(Hardwired.SERVER_CONFIG.power())
         : 0;
   }
 

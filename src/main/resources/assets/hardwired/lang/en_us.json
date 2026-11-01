@@ -416,5 +416,8 @@
   "screen.hardwired.settings.humfullload": "Hum Full Load",
   "screen.hardwired.settings.humfullload.tooltip": "Running load nearby where the hum is at its loudest.",
   "screen.hardwired.settings.electrichum": "Electric Hum",
-  "screen.hardwired.settings.electrichum.tooltip": "How loud the hum of running devices is on this device."
+  "screen.hardwired.settings.electrichum.tooltip": "How loud the hum of running devices is on this device.",
+  "tooltip.hardwired.gives_power": "Gives %s power",
+  "tooltip.hardwired.draws_power": "Draws %s power",
+  "tooltip.hardwired.draws_power_moving": "Draws %s power while moving"
 }

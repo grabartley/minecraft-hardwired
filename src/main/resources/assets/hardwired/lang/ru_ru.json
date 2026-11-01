@@ -416,5 +416,8 @@
   "screen.hardwired.settings.humfullload": "Нагрузка полного гула",
   "screen.hardwired.settings.humfullload.tooltip": "Нагрузка рядом, при которой гул громче всего.",
   "screen.hardwired.settings.electrichum": "Электрический гул",
-  "screen.hardwired.settings.electrichum.tooltip": "Громкость гула работающих устройств на этом компьютере."
+  "screen.hardwired.settings.electrichum.tooltip": "Громкость гула работающих устройств на этом компьютере.",
+  "tooltip.hardwired.gives_power": "Даёт %s энергии",
+  "tooltip.hardwired.draws_power": "Потребляет %s энергии",
+  "tooltip.hardwired.draws_power_moving": "Потребляет %s энергии при движении"
 }

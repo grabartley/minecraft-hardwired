@@ -416,5 +416,8 @@
   "screen.hardwired.settings.humfullload": "Charge maximale du bourdonnement",
   "screen.hardwired.settings.humfullload.tooltip": "Charge proche où le bourdonnement est au plus fort.",
   "screen.hardwired.settings.electrichum": "Bourdonnement électrique",
-  "screen.hardwired.settings.electrichum.tooltip": "Volume du bourdonnement des appareils sur cet ordinateur."
+  "screen.hardwired.settings.electrichum.tooltip": "Volume du bourdonnement des appareils sur cet ordinateur.",
+  "tooltip.hardwired.gives_power": "Fournit %s d'énergie",
+  "tooltip.hardwired.draws_power": "Consomme %s d'énergie",
+  "tooltip.hardwired.draws_power_moving": "Consomme %s d'énergie en mouvement"
 }

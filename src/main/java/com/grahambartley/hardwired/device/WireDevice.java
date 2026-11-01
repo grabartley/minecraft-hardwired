@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.device;
 
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.wire.Hue;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
@@ -28,6 +29,10 @@ public interface WireDevice {
   default void onWireChange(ServerWorld world, BlockPos pos, BlockState state) {}
 
   default int load(ServerWorld world, BlockPos pos, BlockState state) {
+    return 0;
+  }
+
+  default int ratedLoad(PowerSettings settings) {
     return 0;
   }
 

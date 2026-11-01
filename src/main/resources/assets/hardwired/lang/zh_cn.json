@@ -416,5 +416,8 @@
   "screen.hardwired.settings.humfullload": "嗡鸣满载负载",
   "screen.hardwired.settings.humfullload.tooltip": "附近负载达到此值时嗡鸣最响。",
   "screen.hardwired.settings.electrichum": "电流嗡鸣",
-  "screen.hardwired.settings.electrichum.tooltip": "此设备上运行中电器的嗡鸣音量。"
+  "screen.hardwired.settings.electrichum.tooltip": "此设备上运行中电器的嗡鸣音量。",
+  "tooltip.hardwired.gives_power": "提供 %s 电力",
+  "tooltip.hardwired.draws_power": "消耗 %s 电力",
+  "tooltip.hardwired.draws_power_moving": "移动时消耗 %s 电力"
 }

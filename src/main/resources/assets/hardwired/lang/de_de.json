@@ -416,5 +416,8 @@
   "screen.hardwired.settings.humfullload": "Summ-Volllast",
   "screen.hardwired.settings.humfullload.tooltip": "Laufende Last in der Nähe, bei der das Summen am lautesten ist.",
   "screen.hardwired.settings.electrichum": "Elektrisches Summen",
-  "screen.hardwired.settings.electrichum.tooltip": "Wie laut das Summen laufender Geräte hier ist."
+  "screen.hardwired.settings.electrichum.tooltip": "Wie laut das Summen laufender Geräte hier ist.",
+  "tooltip.hardwired.gives_power": "Liefert %s Strom",
+  "tooltip.hardwired.draws_power": "Zieht %s Strom",
+  "tooltip.hardwired.draws_power_moving": "Zieht %s Strom während der Fahrt"
 }

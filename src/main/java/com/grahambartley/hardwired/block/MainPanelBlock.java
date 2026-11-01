@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.MainPanelActions;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.WireEngine;
@@ -41,8 +42,13 @@ public final class MainPanelBlock extends MountedDeviceBlock implements BlockEnt
   }
 
   @Override
+  public int ratedLoad(PowerSettings settings) {
+    return settings.logicLoad();
+  }
+
+  @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
-    return WireEngine.of(world).isOn(pos) ? Hardwired.SERVER_CONFIG.power().logicLoad() : 0;
+    return WireEngine.of(world).isOn(pos) ? ratedLoad(Hardwired.SERVER_CONFIG.power()) : 0;
   }
 
   @Override

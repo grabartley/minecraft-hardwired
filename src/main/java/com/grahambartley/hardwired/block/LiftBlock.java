@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
 import com.grahambartley.hardwired.lift.LiftCarEntity;
@@ -47,13 +48,18 @@ public final class LiftBlock extends TableDeviceBlock {
   }
 
   @Override
+  public int ratedLoad(PowerSettings settings) {
+    return settings.liftLoad();
+  }
+
+  @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
     boolean moving =
         new LiftShaft(world, pos)
             .car()
             .filter(car -> car.run().phase() == LiftPhase.MOVING)
             .isPresent();
-    return moving ? Hardwired.SERVER_CONFIG.power().liftLoad() : 0;
+    return moving ? ratedLoad(Hardwired.SERVER_CONFIG.power()) : 0;
   }
 
   @Override

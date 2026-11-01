@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.AnimatedDevice;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.Electronic;
@@ -186,10 +187,15 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
   }
 
   @Override
+  public int ratedLoad(PowerSettings settings) {
+    return settings.broadcastLoad();
+  }
+
+  @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
     return world.getBlockEntity(panelOf(pos, state)) instanceof BroadcastDeskBlockEntity desk
             && desk.wantsAir()
-        ? Hardwired.SERVER_CONFIG.power().broadcastLoad()
+        ? ratedLoad(Hardwired.SERVER_CONFIG.power())
         : 0;
   }
 

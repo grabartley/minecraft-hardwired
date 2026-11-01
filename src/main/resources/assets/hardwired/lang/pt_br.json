@@ -416,5 +416,8 @@
   "screen.hardwired.settings.humfullload": "Carga Máxima do Zumbido",
   "screen.hardwired.settings.humfullload.tooltip": "Carga por perto onde o zumbido é mais alto.",
   "screen.hardwired.settings.electrichum": "Zumbido elétrico",
-  "screen.hardwired.settings.electrichum.tooltip": "Volume do zumbido dos aparelhos neste computador."
+  "screen.hardwired.settings.electrichum.tooltip": "Volume do zumbido dos aparelhos neste computador.",
+  "tooltip.hardwired.gives_power": "Fornece %s de energia",
+  "tooltip.hardwired.draws_power": "Consome %s de energia",
+  "tooltip.hardwired.draws_power_moving": "Consome %s de energia em movimento"
 }

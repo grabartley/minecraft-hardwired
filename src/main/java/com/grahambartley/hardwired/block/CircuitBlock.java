@@ -4,6 +4,7 @@ import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.circuit.Design;
 import com.grahambartley.hardwired.circuit.Evaluator;
 import com.grahambartley.hardwired.circuit.Side;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.wire.Hue;
@@ -101,8 +102,13 @@ public final class CircuitBlock extends Block implements BlockEntityProvider, Wi
   }
 
   @Override
+  public int ratedLoad(PowerSettings settings) {
+    return settings.logicLoad();
+  }
+
+  @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
-    return WireEngine.of(world).isOn(pos) ? Hardwired.SERVER_CONFIG.power().logicLoad() : 0;
+    return WireEngine.of(world).isOn(pos) ? ratedLoad(Hardwired.SERVER_CONFIG.power()) : 0;
   }
 
   @Override

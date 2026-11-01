@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.AnimatedDevice;
 import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.device.PanelAction;
@@ -86,8 +87,13 @@ public final class ControllerBlock extends HorizontalFacingBlock
   }
 
   @Override
+  public int ratedLoad(PowerSettings settings) {
+    return settings.logicLoad();
+  }
+
+  @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
-    return WireEngine.of(world).isOn(pos) ? Hardwired.SERVER_CONFIG.power().logicLoad() : 0;
+    return WireEngine.of(world).isOn(pos) ? ratedLoad(Hardwired.SERVER_CONFIG.power()) : 0;
   }
 
   @Override

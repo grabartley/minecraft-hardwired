@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.AnimatedDevice;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.Electronic;
@@ -78,8 +79,13 @@ public final class AlarmBlock extends MountedDeviceBlock
   }
 
   @Override
+  public int ratedLoad(PowerSettings settings) {
+    return settings.alarmLoad();
+  }
+
+  @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
-    return WireEngine.of(world).isOn(pos) ? Hardwired.SERVER_CONFIG.power().alarmLoad() : 0;
+    return WireEngine.of(world).isOn(pos) ? ratedLoad(Hardwired.SERVER_CONFIG.power()) : 0;
   }
 
   @Override

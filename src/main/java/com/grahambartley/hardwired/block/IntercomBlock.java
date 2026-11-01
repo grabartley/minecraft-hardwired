@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
 import com.grahambartley.hardwired.device.IntercomActions;
@@ -74,8 +75,13 @@ public final class IntercomBlock extends TableDeviceBlock {
   }
 
   @Override
+  public int ratedLoad(PowerSettings settings) {
+    return settings.intercomLoad();
+  }
+
+  @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
-    return WireEngine.of(world).isWired(pos) ? Hardwired.SERVER_CONFIG.power().intercomLoad() : 0;
+    return WireEngine.of(world).isWired(pos) ? ratedLoad(Hardwired.SERVER_CONFIG.power()) : 0;
   }
 
   @Override
