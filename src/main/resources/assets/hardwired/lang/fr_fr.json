@@ -276,6 +276,7 @@
   "block.hardwired.lift": "Ascenseur",
   "block.hardwired.large_lift": "Grand ascenseur",
   "block.hardwired.lift_floor": "Étage d'ascenseur",
+  "block.hardwired.large_lift_floor": "Grand étage d'ascenseur",
   "entity.hardwired.lift_car": "Cabine d'ascenseur",
   "entity.hardwired.large_lift_car": "Grande cabine d'ascenseur",
   "device.hardwired.status.shaft_blocked": "Quelque chose bloque la cage.",

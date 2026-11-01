@@ -5,6 +5,7 @@
 	"mixins": [
 		"AbstractBlockStateMixin",
 		"DispenserBlockMixin",
+		"EntityMixin",
 		"LevelStorageMixin",
 		"LightningRodBlockMixin",
 		"PistonBlockMixin",

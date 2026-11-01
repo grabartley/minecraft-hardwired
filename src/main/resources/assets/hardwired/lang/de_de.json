@@ -276,6 +276,7 @@
   "block.hardwired.lift": "Aufzug",
   "block.hardwired.large_lift": "Großer Aufzug",
   "block.hardwired.lift_floor": "Aufzugsetage",
+  "block.hardwired.large_lift_floor": "Große Aufzugsetage",
   "entity.hardwired.lift_car": "Aufzugskabine",
   "entity.hardwired.large_lift_car": "Große Aufzugskabine",
   "device.hardwired.status.shaft_blocked": "Etwas blockiert den Schacht.",

@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.gametest;
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
 import com.grahambartley.hardwired.block.LargeLiftBlock;
+import com.grahambartley.hardwired.block.LargeLiftFloorBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlockEntity;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
@@ -912,5 +913,136 @@ public class LiftGameTest implements FabricGameTest {
         context.getBlockState(placed.south()).get(LargeLiftBlock.FACING) == Direction.SOUTH,
         "the far row faces away");
     context.complete();
+  }
+
+  private static void placeWideGate(TestContext context, int level) {
+    BlockState lower =
+        ModBlocks.LARGE_LIFT_FLOOR
+            .getDefaultState()
+            .with(LiftFloorBlock.FACING, Direction.EAST)
+            .with(LiftFloorBlock.HALF, DoubleBlockHalf.LOWER);
+    BlockState upper = lower.with(LiftFloorBlock.HALF, DoubleBlockHalf.UPPER);
+    context.setBlockState(gate(level).up(), Blocks.AIR);
+    context.setBlockState(gate(level), Blocks.AIR);
+    context.setBlockState(gate(level), lower);
+    context.setBlockState(gate(level).up(), upper);
+    context.setBlockState(gate(level).south(), lower.with(LargeLiftFloorBlock.SECOND, true));
+    context.setBlockState(gate(level).south().up(), upper.with(LargeLiftFloorBlock.SECOND, true));
+  }
+
+  private static boolean allOpen(TestContext context, int level, boolean open) {
+    BlockPos first = gate(level);
+    return List.of(first, first.up(), first.south(), first.south().up()).stream()
+        .allMatch(cell -> context.getBlockState(cell).get(LiftFloorBlock.OPEN) == open);
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void aWideGateOpensAndClosesAsOne(TestContext context) {
+    build(context, FULL_CHARGE);
+    growToLarge(context);
+    placeWideGate(context, LOW);
+    placeWideGate(context, HIGH);
+    ConnectedTestPlayer rider = riderFrom(context, LOW);
+    context.runAtTick(
+        START_TICK,
+        () -> {
+          openAt(context, rider, LOW);
+          context.assertTrue(allOpen(context, LOW, true), "all four cells open");
+          choose(context, rider, LOW, HIGH);
+        });
+    context.runAtTick(
+        START_TICK + 3,
+        () -> context.assertTrue(allOpen(context, LOW, false), "all four cells closed"));
+    context.runAtTick(
+        START_TICK + SIX_BLOCK_RIDE_TICKS,
+        () -> {
+          context.assertTrue(allOpen(context, HIGH, true), "the top gate opens whole");
+          context.assertTrue(dialReading(context, HIGH) == 1, "the wide gate has a needle");
+          finish(context, rider);
+        });
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void aWideGateDoesNotServeASmallLift(TestContext context) {
+    build(context, FULL_CHARGE);
+    placeWideGate(context, LOW);
+    context.runAtTick(
+        START_TICK,
+        () -> {
+          BlockPos absolute = context.getAbsolutePos(gate(LOW));
+          context.assertTrue(
+              LiftShaft.forGate(context.getWorld(), absolute).isEmpty(), "no Lift for it");
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void breakingOneCellTakesTheWholeWideGateAndDropsOneItem(TestContext context) {
+    placeWideGate(context, MIDDLE);
+    context.getWorld().breakBlock(context.getAbsolutePos(gate(MIDDLE).south().up()), true);
+    context.runAtTick(
+        2,
+        () -> {
+          context.expectBlock(Blocks.AIR, gate(MIDDLE));
+          context.expectBlock(Blocks.AIR, gate(MIDDLE).up());
+          context.expectBlock(Blocks.AIR, gate(MIDDLE).south());
+          Item wide = ModBlocks.LARGE_LIFT_FLOOR.asItem();
+          int dropped =
+              context
+                  .getWorld()
+                  .getEntitiesByClass(ItemEntity.class, context.getTestBox(), item -> true)
+                  .stream()
+                  .filter(item -> item.getStack().isOf(wide))
+                  .mapToInt(item -> item.getStack().getCount())
+                  .sum();
+          context.assertEquals(dropped, 1, "wide gate items dropped");
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void placingAWideGateFillsFourCells(TestContext context) {
+    BlockPos placed = new BlockPos(COLUMN_X, 1, 1);
+    context.setBlockState(placed.down(), Blocks.STONE);
+    context.setBlockState(placed.down().east(), Blocks.STONE);
+    context.setBlockState(placed.down().west(), Blocks.STONE);
+    BlockPos absolute = context.getAbsolutePos(placed);
+    PlayerEntity player = context.createMockPlayer(GameMode.CREATIVE);
+    ItemStack stack = new ItemStack(ModBlocks.LARGE_LIFT_FLOOR);
+    player.setStackInHand(Hand.MAIN_HAND, stack);
+    BlockHitResult hit =
+        new BlockHitResult(Vec3d.ofCenter(absolute), Direction.UP, absolute, false);
+    ActionResult result =
+        ((BlockItem) stack.getItem())
+            .place(new ItemPlacementContext(player, Hand.MAIN_HAND, stack, hit));
+    context.assertTrue(result.isAccepted(), "placed: " + result);
+    int cells = 0;
+    for (BlockPos cell : BlockPos.iterate(placed.add(-1, 0, -1), placed.add(1, 1, 1))) {
+      if (context.getBlockState(cell).isOf(ModBlocks.LARGE_LIFT_FLOOR)) {
+        cells++;
+      }
+    }
+    context.assertEquals(4, cells, "four cells");
+    context.complete();
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void theCarWallsStopEveryoneButItsRiders(TestContext context) {
+    build(context, FULL_CHARGE);
+    ConnectedTestPlayer rider = riderFrom(context, LOW);
+    context.runAtTick(START_TICK, () -> openAt(context, rider, LOW));
+    context.runAtTick(
+        START_TICK + 2,
+        () -> {
+          ServerPlayerEntity player = rider.player();
+          context.assertFalse(
+              LiftCarEntity.withWalls(player, player.getBoundingBox(), List.of()).isEmpty(),
+              "a walker meets the walls");
+          player.startRiding(car(context), true);
+          context.assertTrue(
+              LiftCarEntity.withWalls(player, player.getBoundingBox(), List.of()).isEmpty(),
+              "a rider does not");
+          finish(context, rider);
+        });
   }
 }

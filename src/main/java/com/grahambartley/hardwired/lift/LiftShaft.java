@@ -38,12 +38,13 @@ public record LiftShaft(ServerWorld world, BlockPos head, int span) {
     if (!(state.getBlock() instanceof LiftFloorBlock)) {
       return Optional.empty();
     }
-    BlockPos column = LiftFloorBlock.column(gate, state);
-    return devicesOn(world, List.of(gate, gate.up()))
+    LiftFloorBlock floor = (LiftFloorBlock) state.getBlock();
+    List<BlockPos> columns = floor.columns(gate, state);
+    return devicesOn(world, floor.cells(gate, state))
         .map(pos -> headAt(world, pos))
         .flatMap(Optional::stream)
         .map(pos -> new LiftShaft(world, pos))
-        .filter(shaft -> shaft.holds(column))
+        .filter(shaft -> columns.stream().allMatch(shaft::holds))
         .filter(shaft -> shaft.head().getY() > gate.getY() + 1)
         .min(Comparator.comparingInt(shaft -> shaft.head().getY()));
   }
@@ -102,8 +103,9 @@ public record LiftShaft(ServerWorld world, BlockPos head, int span) {
     if (!(state.getBlock() instanceof LiftFloorBlock)) {
       return Optional.empty();
     }
-    BlockPos column = LiftFloorBlock.column(lower, state);
-    return holds(column) && lower.getY() + 1 < head.getY() ? Optional.of(lower) : Optional.empty();
+    boolean served =
+        ((LiftFloorBlock) state.getBlock()).columns(lower, state).stream().allMatch(this::holds);
+    return served && lower.getY() + 1 < head.getY() ? Optional.of(lower) : Optional.empty();
   }
 
   public Optional<Direction> gateFacing(int level) {
@@ -165,11 +167,11 @@ public record LiftShaft(ServerWorld world, BlockPos head, int span) {
     for (BlockPos gate : gates) {
       BlockState state = world.getBlockState(gate);
       boolean wanted = open && gate.getY() == level;
-      if (state.getBlock() instanceof LiftFloorBlock && state.get(LiftFloorBlock.OPEN) != wanted) {
-        world.setBlockState(
-            gate,
-            state.with(LiftFloorBlock.OPEN, wanted),
-            Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
+      if (state.getBlock() instanceof LiftFloorBlock floor
+          && state.get(LiftFloorBlock.OPEN) != wanted) {
+        for (BlockPos cell : floor.cells(gate, state)) {
+          setOpen(cell, wanted);
+        }
         world.playSound(
             null,
             gate,
@@ -178,6 +180,16 @@ public record LiftShaft(ServerWorld world, BlockPos head, int span) {
             GATE_VOLUME,
             GATE_PITCH);
       }
+    }
+  }
+
+  private void setOpen(BlockPos cell, boolean open) {
+    BlockState state = world.getBlockState(cell);
+    if (state.getBlock() instanceof LiftFloorBlock) {
+      world.setBlockState(
+          cell,
+          state.with(LiftFloorBlock.OPEN, open),
+          Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
     }
   }
 

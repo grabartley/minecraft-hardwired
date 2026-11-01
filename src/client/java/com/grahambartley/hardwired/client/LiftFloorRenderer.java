@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.client;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.block.LargeLiftFloorBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlockEntity;
 import com.grahambartley.hardwired.lift.LiftDial;
@@ -38,6 +39,11 @@ public final class LiftFloorRenderer implements BlockEntityRenderer<LiftFloorBlo
   }
 
   @Override
+  public boolean rendersOutsideBoundingBox(LiftFloorBlockEntity gate) {
+    return true;
+  }
+
+  @Override
   public void render(
       LiftFloorBlockEntity gate,
       float tickDelta,
@@ -54,8 +60,9 @@ public final class LiftFloorRenderer implements BlockEntityRenderer<LiftFloorBlo
     matrices.translate(HALF, 0, HALF);
     matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(facing.asRotation() + BEHIND));
     matrices.translate(-HALF, 0, -HALF);
-    drawFace(matrices, vertices, dial, needle, HALL_FACE, 0, light);
-    drawFace(matrices, vertices, dial, needle, SHAFT_FACE, BEHIND, light);
+    float pivotX = gate.getCachedState().getBlock() instanceof LargeLiftFloorBlock ? 1F : PIVOT_X;
+    drawFace(matrices, vertices, dial, needle, pivotX, HALL_FACE, 0, light);
+    drawFace(matrices, vertices, dial, needle, pivotX, SHAFT_FACE, BEHIND, light);
     matrices.pop();
   }
 
@@ -64,11 +71,12 @@ public final class LiftFloorRenderer implements BlockEntityRenderer<LiftFloorBlo
       VertexConsumer vertices,
       LiftDial dial,
       float needle,
+      float pivotX,
       float depth,
       float turn,
       int light) {
     matrices.push();
-    matrices.translate(PIVOT_X, PIVOT_Y, depth);
+    matrices.translate(pivotX, PIVOT_Y, depth);
     matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(turn));
     for (float mark : dial.markDegrees()) {
       drawAt(matrices, vertices, MARK, mark, light);

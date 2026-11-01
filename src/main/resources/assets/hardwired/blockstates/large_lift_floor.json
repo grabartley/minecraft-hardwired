@@ -1,0 +1,106 @@
+{
+  "variants": {
+    "facing=north,half=lower,open=false,second=false": {
+      "model": "hardwired:block/large_lift_floor"
+    },
+    "facing=north,half=upper,open=false,second=false": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=north,half=lower,open=false,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=north,half=upper,open=false,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=north,half=lower,open=true,second=false": {
+      "model": "hardwired:block/large_lift_floor_open"
+    },
+    "facing=north,half=upper,open=true,second=false": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=north,half=lower,open=true,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=north,half=upper,open=true,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=east,half=lower,open=false,second=false": {
+      "model": "hardwired:block/large_lift_floor",
+      "y": 90
+    },
+    "facing=east,half=upper,open=false,second=false": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=east,half=lower,open=false,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=east,half=upper,open=false,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=east,half=lower,open=true,second=false": {
+      "model": "hardwired:block/large_lift_floor_open",
+      "y": 90
+    },
+    "facing=east,half=upper,open=true,second=false": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=east,half=lower,open=true,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=east,half=upper,open=true,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=south,half=lower,open=false,second=false": {
+      "model": "hardwired:block/large_lift_floor",
+      "y": 180
+    },
+    "facing=south,half=upper,open=false,second=false": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=south,half=lower,open=false,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=south,half=upper,open=false,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=south,half=lower,open=true,second=false": {
+      "model": "hardwired:block/large_lift_floor_open",
+      "y": 180
+    },
+    "facing=south,half=upper,open=true,second=false": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=south,half=lower,open=true,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=south,half=upper,open=true,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=west,half=lower,open=false,second=false": {
+      "model": "hardwired:block/large_lift_floor",
+      "y": 270
+    },
+    "facing=west,half=upper,open=false,second=false": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=west,half=lower,open=false,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=west,half=upper,open=false,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=west,half=lower,open=true,second=false": {
+      "model": "hardwired:block/large_lift_floor_open",
+      "y": 270
+    },
+    "facing=west,half=upper,open=true,second=false": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=west,half=lower,open=true,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    },
+    "facing=west,half=upper,open=true,second=true": {
+      "model": "hardwired:block/large_lift_floor_part"
+    }
+  }
+}

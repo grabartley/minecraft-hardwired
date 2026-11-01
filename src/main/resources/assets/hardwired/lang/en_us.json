@@ -276,6 +276,7 @@
   "block.hardwired.lift": "Lift",
   "block.hardwired.large_lift": "Large Lift",
   "block.hardwired.lift_floor": "Lift Floor",
+  "block.hardwired.large_lift_floor": "Large Lift Floor",
   "entity.hardwired.lift_car": "Lift Car",
   "entity.hardwired.large_lift_car": "Large Lift Car",
   "device.hardwired.status.shaft_blocked": "Something is blocking the shaft.",

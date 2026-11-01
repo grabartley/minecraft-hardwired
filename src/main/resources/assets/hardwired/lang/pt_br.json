@@ -276,6 +276,7 @@
   "block.hardwired.lift": "Elevador",
   "block.hardwired.large_lift": "Elevador grande",
   "block.hardwired.lift_floor": "Andar de Elevador",
+  "block.hardwired.large_lift_floor": "Andar de Elevador Grande",
   "entity.hardwired.lift_car": "Cabine de Elevador",
   "entity.hardwired.large_lift_car": "Cabine de elevador grande",
   "device.hardwired.status.shaft_blocked": "Algo está bloqueando o poço.",

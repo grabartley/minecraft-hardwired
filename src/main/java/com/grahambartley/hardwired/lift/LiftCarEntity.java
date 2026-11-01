@@ -1,5 +1,7 @@
 package com.grahambartley.hardwired.lift;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -15,6 +17,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 
 public final class LiftCarEntity extends Entity {
@@ -243,6 +247,25 @@ public final class LiftCarEntity extends Entity {
     dataTracker.set(QUARTER_TURNS, nbt.getInt(TURNS));
     run.read(nbt);
     tripChanged();
+  }
+
+  public List<Box> walls() {
+    return LiftCarWalls.boxes(getX(), getY() + PLATE, getZ(), span(), quarterTurns());
+  }
+
+  public static List<VoxelShape> withWalls(Entity mover, Box path, List<VoxelShape> shapes) {
+    if (mover instanceof LiftCarEntity || mover.getVehicle() instanceof LiftCarEntity) {
+      return shapes;
+    }
+    Box reach = path.stretch(0, -LiftCarWalls.REACH_ABOVE_FLOOR, 0);
+    List<LiftCarEntity> cars =
+        mover.getWorld().getEntitiesByClass(LiftCarEntity.class, reach, car -> true);
+    if (cars.isEmpty()) {
+      return shapes;
+    }
+    List<VoxelShape> all = new ArrayList<>(shapes);
+    cars.forEach(car -> car.walls().forEach(wall -> all.add(VoxelShapes.cuboid(wall))));
+    return all;
   }
 
   public static boolean holdsUp(Entity entity) {

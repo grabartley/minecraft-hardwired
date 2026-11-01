@@ -13,6 +13,7 @@ import com.grahambartley.hardwired.block.FuelledSourceBlock;
 import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.LargeLiftBlock;
+import com.grahambartley.hardwired.block.LargeLiftFloorBlock;
 import com.grahambartley.hardwired.block.LiftBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlock;
 import com.grahambartley.hardwired.block.LodestoneDynamoBlock;
@@ -194,6 +195,9 @@ public final class ModBlocks {
                   .pistonBehavior(PistonBehavior.BLOCK)));
   public static final Block LIFT_FLOOR =
       register("lift_floor", new LiftFloorBlock(deviceSettings()));
+
+  public static final Block LARGE_LIFT_FLOOR =
+      register("large_lift_floor", new LargeLiftFloorBlock(deviceSettings()));
 
   public static final Block RADIO_MAST =
       register(

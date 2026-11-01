@@ -194,6 +194,7 @@ public class HardwiredClient implements ClientModInitializer {
         ModBlocks.LIFT,
         ModBlocks.LARGE_LIFT,
         ModBlocks.LIFT_FLOOR,
+        ModBlocks.LARGE_LIFT_FLOOR,
         ModBlocks.RADIO_MAST);
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.BROADCAST_DESK, RenderLayer.getTranslucent());
     ColorProviderRegistry.BLOCK.register(

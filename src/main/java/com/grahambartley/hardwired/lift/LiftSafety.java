@@ -4,7 +4,7 @@ public final class LiftSafety {
 
   public static final int LOWERING_SLOWDOWN = 2;
 
-  private static final double SEAT_OFFSET = 0.2;
+  private static final double SEAT_OFFSET = 0.1;
   private static final int SEATS = 4;
   private static final int SLOW_FALL_BASE_TICKS = 100;
   private static final int SLOW_FALL_TICKS_PER_BLOCK = 4;

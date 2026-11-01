@@ -112,14 +112,16 @@ public final class ModBlockEntities {
                   ModBlocks.INTERCOM,
                   ModBlocks.LIFT,
                   ModBlocks.LARGE_LIFT,
-                  ModBlocks.LIFT_FLOOR)
+                  ModBlocks.LIFT_FLOOR,
+                  ModBlocks.LARGE_LIFT_FLOOR)
               .build(null));
 
   public static final BlockEntityType<LiftFloorBlockEntity> LIFT_FLOOR =
       Registry.register(
           Registries.BLOCK_ENTITY_TYPE,
           Identifier.of(Hardwired.MOD_ID, "lift_floor"),
-          BlockEntityType.Builder.create(LiftFloorBlockEntity::new, ModBlocks.LIFT_FLOOR)
+          BlockEntityType.Builder.create(
+                  LiftFloorBlockEntity::new, ModBlocks.LIFT_FLOOR, ModBlocks.LARGE_LIFT_FLOOR)
               .build(null));
 
   public static final BlockEntityType<RadioBlockEntity> RADIO =

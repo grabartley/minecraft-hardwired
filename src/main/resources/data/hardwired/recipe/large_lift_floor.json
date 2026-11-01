@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "FF"
+  ],
+  "key": {
+    "F": {
+      "item": "hardwired:lift_floor"
+    }
+  },
+  "result": {
+    "id": "hardwired:large_lift_floor",
+    "count": 1
+  }
+}

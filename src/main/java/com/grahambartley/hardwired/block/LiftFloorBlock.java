@@ -36,7 +36,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 
-public final class LiftFloorBlock extends Block implements BlockEntityProvider, WireDevice {
+public class LiftFloorBlock extends Block implements BlockEntityProvider, WireDevice {
 
   public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
   public static final EnumProperty<DoubleBlockHalf> HALF = Properties.DOUBLE_BLOCK_HALF;
@@ -61,16 +61,20 @@ public final class LiftFloorBlock extends Block implements BlockEntityProvider, 
   }
 
   public static BlockPos lower(BlockPos pos, BlockState state) {
+    return ((LiftFloorBlock) state.getBlock()).origin(pos, state);
+  }
+
+  public BlockPos origin(BlockPos pos, BlockState state) {
     return WireDevice.twoTall(pos, state.get(HALF)).getFirst();
+  }
+
+  public List<BlockPos> columns(BlockPos pos, BlockState state) {
+    return List.of(origin(pos, state).offset(state.get(FACING)));
   }
 
   @Override
   public List<BlockPos> cells(BlockPos pos, BlockState state) {
     return WireDevice.twoTall(pos, state.get(HALF));
-  }
-
-  public static BlockPos column(BlockPos pos, BlockState state) {
-    return pos.offset(state.get(FACING));
   }
 
   @Override
