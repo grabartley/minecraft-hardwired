@@ -1,9 +1,9 @@
 package com.grahambartley.hardwired.screen;
 
 import com.grahambartley.hardwired.client.radio.MicrophoneSource;
+import com.grahambartley.hardwired.config.ClientDisplaySettings;
 import com.grahambartley.hardwired.config.ClientRadioSettings;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
-import com.grahambartley.hardwired.config.ClientWireSettings;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.text.Text;
@@ -11,7 +11,7 @@ import net.minecraft.text.Text;
 final class ClientConfigSection {
   private static final String KEY = "screen.hardwired.settings.";
 
-  private ClientWireSettings settings = ClientSettingsStore.get();
+  private ClientDisplaySettings settings = ClientSettingsStore.get();
   private ClientRadioSettings radio = ClientSettingsStore.radio();
 
   void addTo(final HardwiredConfigList list, final ConfigRows rows) {
@@ -19,15 +19,15 @@ final class ClientConfigSection {
     list.addRow(
         rows.percentSlider(
             KEY + "throughopacity",
-            ClientWireSettings.THROUGH_MIN,
-            ClientWireSettings.THROUGH_MAX,
+            ClientDisplaySettings.THROUGH_MIN,
+            ClientDisplaySettings.THROUGH_MAX,
             settings.throughBlocksPercent(),
             value -> settings = settings.withThroughBlocksPercent(value)));
     list.addRow(
         rows.percentSlider(
             KEY + "surfaceopacity",
-            ClientWireSettings.SURFACE_MIN,
-            ClientWireSettings.SURFACE_MAX,
+            ClientDisplaySettings.SURFACE_MIN,
+            ClientDisplaySettings.SURFACE_MAX,
             settings.onSurfacePercent(),
             value -> settings = settings.withOnSurfacePercent(value)));
     list.addRow(
@@ -83,7 +83,7 @@ final class ClientConfigSection {
     return radio;
   }
 
-  ClientWireSettings settings() {
+  ClientDisplaySettings settings() {
     return settings;
   }
 }

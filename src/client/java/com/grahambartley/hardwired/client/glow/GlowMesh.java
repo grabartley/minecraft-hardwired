@@ -34,7 +34,7 @@ final class GlowMesh {
     if (glows.isEmpty()) {
       return EMPTY;
     }
-    GlowField field = new GlowField(surfaces::isSolid);
+    GlowField field = new GlowField(surfaces::isSolid, surfaces);
     glows.forEach(field::add);
     GlowMesh mesh = new GlowMesh(glows.get(0).pos());
     for (long key : field.cells()) {
@@ -74,7 +74,9 @@ final class GlowMesh {
     }
     for (Box box : surfaces.partBoxes(cell)) {
       for (Direction side : Direction.values()) {
-        addFace(field, box.offset(cell), side, daylight);
+        if (surfaces.showsSide(cell, side)) {
+          addFace(field, box.offset(cell), side, daylight);
+        }
       }
     }
   }

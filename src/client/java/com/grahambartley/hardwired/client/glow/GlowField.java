@@ -2,6 +2,7 @@ package com.grahambartley.hardwired.client.glow;
 
 import com.grahambartley.hardwired.light.Glow;
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
@@ -21,12 +22,14 @@ final class GlowField {
   private static final double CELL_CENTRE = 0.5D;
 
   private final Predicate<BlockPos> blocksLight;
+  private final LightCost lightCost;
   private final Long2ObjectOpenHashMap<float[]> cells = new Long2ObjectOpenHashMap<>();
   private final Long2BooleanOpenHashMap blocked = new Long2BooleanOpenHashMap();
   private final BlockPos.Mutable cursor = new BlockPos.Mutable();
 
-  GlowField(Predicate<BlockPos> blocksLight) {
+  GlowField(Predicate<BlockPos> blocksLight, LightCost lightCost) {
     this.blocksLight = blocksLight;
+    this.lightCost = lightCost;
   }
 
   void add(Glow glow) {
@@ -38,11 +41,10 @@ final class GlowField {
     queue.enqueue(origin);
     while (!queue.isEmpty()) {
       long pos = queue.dequeueLong();
-      int level = reached.get(pos);
-      mix(pos, hue, (float) level / Glow.MAX_LEVEL);
-      if (level > 1) {
-        spread(pos, level - 1, reached, queue);
-      }
+      spread(pos, reached.get(pos), reached, queue);
+    }
+    for (Long2IntMap.Entry entry : reached.long2IntEntrySet()) {
+      mix(entry.getLongKey(), hue, (float) entry.getIntValue() / Glow.MAX_LEVEL);
     }
   }
 
@@ -98,10 +100,12 @@ final class GlowField {
   }
 
   private void spread(long pos, int level, Long2IntOpenHashMap reached, LongArrayFIFOQueue queue) {
+    BlockPos from = BlockPos.fromLong(pos);
     for (Direction side : Direction.values()) {
       long next = BlockPos.offset(pos, side);
-      if (!reached.containsKey(next) && !blocked(next)) {
-        reached.put(next, level);
+      int left = level - lightCost.cost(from, side);
+      if (left > reached.get(next)) {
+        reached.put(next, left);
         queue.enqueue(next);
       }
     }

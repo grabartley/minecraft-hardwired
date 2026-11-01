@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -18,7 +19,8 @@ class GlowMeshTest {
 
   private static final int RED = 0xFF0000;
 
-  private record Surfaces(Predicate<BlockPos> solid, List<Box> parts, float daylight)
+  private record Surfaces(
+      Predicate<BlockPos> solid, List<Box> parts, float daylight, Direction hidden)
       implements GlowSurfaces {
     @Override
     public boolean isSolid(BlockPos pos) {
@@ -31,13 +33,23 @@ class GlowMeshTest {
     }
 
     @Override
+    public boolean showsSide(BlockPos pos, Direction side) {
+      return side != hidden;
+    }
+
+    @Override
+    public int cost(BlockPos from, Direction side) {
+      return solid.test(from.offset(side)) ? Glow.MAX_LEVEL + 1 : 1;
+    }
+
+    @Override
     public float daylight(BlockPos pos) {
       return daylight;
     }
   }
 
   private static Surfaces floorAtMinusOne(float daylight) {
-    return new Surfaces(pos -> pos.getY() < 0, List.of(), daylight);
+    return new Surfaces(pos -> pos.getY() < 0, List.of(), daylight, null);
   }
 
   private record Vertex(
@@ -66,21 +78,21 @@ class GlowMeshTest {
 
   @Test
   void openAirHasNothingToTint() {
-    Surfaces air = new Surfaces(pos -> false, List.of(), 0F);
+    Surfaces air = new Surfaces(pos -> false, List.of(), 0F, null);
     assertEquals(0, faces(GlowMesh.build(List.of(new Glow(BlockPos.ORIGIN, 15, RED)), air)));
   }
 
   @ParameterizedTest(name = "level {0} tints {1} faces of one block")
   @CsvSource({"2,1", "1,1"})
   void lightOnlyTintsTheSideItCanReach(int level, int expected) {
-    Surfaces block = new Surfaces(pos -> pos.equals(new BlockPos(0, 0, 1)), List.of(), 0F);
+    Surfaces block = new Surfaces(pos -> pos.equals(new BlockPos(0, 0, 1)), List.of(), 0F, null);
     GlowMesh mesh = GlowMesh.build(List.of(new Glow(BlockPos.ORIGIN, level, RED)), block);
     assertEquals(expected, faces(mesh));
   }
 
   @Test
   void faceSitsJustOffTheBlockTowardsTheLight() {
-    Surfaces block = new Surfaces(pos -> pos.equals(new BlockPos(0, 0, 1)), List.of(), 0F);
+    Surfaces block = new Surfaces(pos -> pos.equals(new BlockPos(0, 0, 1)), List.of(), 0F, null);
     GlowMesh mesh = GlowMesh.build(List.of(new Glow(BlockPos.ORIGIN, 2, RED)), block);
     assertFalse(vertices(mesh).isEmpty());
     vertices(mesh).forEach(vertex -> assertEquals(0.99F, vertex.z(), 0.0001F));
@@ -109,8 +121,22 @@ class GlowMeshTest {
     Predicate<BlockPos> floor = pos -> pos.getY() < -1;
     Box carpet = new Box(0, 0, 0, 1, 0.0625, 1);
     Glow glow = new Glow(BlockPos.ORIGIN, 15, RED);
-    int without = faces(GlowMesh.build(List.of(glow), new Surfaces(floor, List.of(), 0F)));
-    int with = faces(GlowMesh.build(List.of(glow), new Surfaces(floor, List.of(carpet), 0F)));
+    int without = faces(GlowMesh.build(List.of(glow), new Surfaces(floor, List.of(), 0F, null)));
+    int with = faces(GlowMesh.build(List.of(glow), new Surfaces(floor, List.of(carpet), 0F, null)));
     assertEquals(without + 5, with);
+  }
+
+  @Test
+  void hiddenSideOfAPartBlockIsSkipped() {
+    Predicate<BlockPos> floor = pos -> pos.getY() < -1;
+    Box carpet = new Box(0, 0, 0, 1, 0.0625, 1);
+    Glow glow = new Glow(BlockPos.ORIGIN, 15, RED);
+    int shown =
+        faces(GlowMesh.build(List.of(glow), new Surfaces(floor, List.of(carpet), 0F, null)));
+    int hidden =
+        faces(
+            GlowMesh.build(
+                List.of(glow), new Surfaces(floor, List.of(carpet), 0F, Direction.NORTH)));
+    assertEquals(shown - 1, hidden);
   }
 }

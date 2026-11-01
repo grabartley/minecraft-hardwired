@@ -4,10 +4,10 @@ import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.BuiltBuffer;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -23,11 +23,16 @@ public final class GlowRenderer {
 
   private GlowRenderer() {}
 
+  public static void register() {
+    GlowShader.register();
+    WorldRenderEvents.LAST.register(GlowRenderer::render);
+  }
+
   public static void clear() {
     TRACKER.clear();
   }
 
-  public static void render(WorldRenderContext context) {
+  private static void render(WorldRenderContext context) {
     ClientWorld world = context.world();
     if (world == null || !ClientSettingsStore.get().colouredLight()) {
       return;
@@ -42,7 +47,7 @@ public final class GlowRenderer {
     RenderSystem.enableDepthTest();
     RenderSystem.depthFunc(GL11.GL_LEQUAL);
     RenderSystem.disableCull();
-    RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+    RenderSystem.setShader(GlowShader::program);
     RenderSystem.blendFuncSeparate(
         GlStateManager.SrcFactor.DST_COLOR,
         GlStateManager.DstFactor.ONE,

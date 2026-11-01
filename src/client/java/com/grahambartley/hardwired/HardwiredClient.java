@@ -121,7 +121,7 @@ public class HardwiredClient implements ClientModInitializer {
         });
     ClientTickEvents.END_CLIENT_TICK.register(WireDrag::tick);
     UseBlockCallback.EVENT.register(WireDrag::onUseBlock);
-    WorldRenderEvents.LAST.register(GlowRenderer::render);
+    GlowRenderer.register();
     WorldRenderEvents.LAST.register(WireRenderer::render);
     HudRenderCallback.EVENT.register(WireHud::render);
     HudRenderCallback.EVENT.register(DeviceHud::render);

@@ -19,7 +19,7 @@ class ClientSettingsStoreTest {
   @CsvSource({"44,100,true", "10,30,false", "100,50,true"})
   void settingsRoundTrip(int through, int surface, boolean markers) {
     Path file = dir.resolve("settings.json");
-    ClientWireSettings settings = new ClientWireSettings(through, surface, markers, !markers);
+    ClientDisplaySettings settings = new ClientDisplaySettings(through, surface, markers, !markers);
     ClientRadioSettings radio = new ClientRadioSettings("Desk Mic", !markers, through, through);
     ClientSettingsStore.write(file, settings, radio);
     assertEquals(settings, ClientSettingsStore.read(file));
@@ -31,13 +31,13 @@ class ClientSettingsStoreTest {
   void brokenFileGivesDefaultsAndIsKept(String body) throws IOException {
     Path file = dir.resolve("settings.json");
     Files.writeString(file, body);
-    assertEquals(ClientWireSettings.DEFAULTS, ClientSettingsStore.read(file));
+    assertEquals(ClientDisplaySettings.DEFAULTS, ClientSettingsStore.read(file));
     assertTrue(Files.exists(dir.resolve("hardwired-client.broken.json")));
   }
 
   @ParameterizedTest(name = "missing {0}")
   @ValueSource(strings = {"absent.json"})
   void missingFileGivesDefaults(String name) {
-    assertEquals(ClientWireSettings.DEFAULTS, ClientSettingsStore.read(dir.resolve(name)));
+    assertEquals(ClientDisplaySettings.DEFAULTS, ClientSettingsStore.read(dir.resolve(name)));
   }
 }

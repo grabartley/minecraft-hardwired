@@ -33,10 +33,10 @@ class GlowColorTest {
     assertTrue(darkTop < lightTop);
   }
 
-  @ParameterizedTest(name = "sky {0}, darkness {1} gives {2}")
-  @CsvSource({"15,0,1", "0,0,0", "15,11,0", "15,4,0.636", "7,0,0.467"})
-  void daylightFollowsSkyLightAndTimeOfDay(int sky, int darkness, float expected) {
-    assertEquals(expected, GlowColor.daylight(sky, darkness), EPSILON);
+  @ParameterizedTest(name = "sky light {0}, sky brightness {1} gives {2}")
+  @CsvSource({"15,1,1", "0,1,0", "15,0.2,0", "15,0.6,0.5", "7,1,0.467", "15,0.1,0"})
+  void daylightFollowsSkyLightAndTimeOfDay(int sky, float brightness, float expected) {
+    assertEquals(expected, GlowColor.daylight(sky, brightness), EPSILON);
   }
 
   @ParameterizedTest(name = "weight {0} in daylight {1} gives {2}")

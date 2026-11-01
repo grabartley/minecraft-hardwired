@@ -8,7 +8,8 @@ final class GlowColor {
 
   private static final float GAIN = 2.2F;
   private static final float MAX_CHANNEL = 255F;
-  private static final float DARKEST_SKY = 11F;
+  private static final float NIGHT_SKY = 0.2F;
+  private static final float SKY_RANGE = 1F - NIGHT_SKY;
 
   private GlowColor() {}
 
@@ -29,7 +30,8 @@ final class GlowColor {
     return x * x * (3F - 2F * x) * (1F - daylight);
   }
 
-  static float daylight(int skyLight, int ambientDarkness) {
-    return (float) skyLight / Glow.MAX_LEVEL * (1F - ambientDarkness / DARKEST_SKY);
+  static float daylight(int skyLight, float skyBrightness) {
+    float day = MathHelper.clamp((skyBrightness - NIGHT_SKY) / SKY_RANGE, 0F, 1F);
+    return (float) skyLight / Glow.MAX_LEVEL * day;
   }
 }
