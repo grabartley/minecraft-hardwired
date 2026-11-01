@@ -97,7 +97,7 @@ public class ElectronicsGameTest implements FabricGameTest {
     ConnectedTestPlayer player = playerAt(context, 4);
     context.waitAndRun(SETTLE_TICKS, () -> context.useBlock(SWITCH));
     context.waitAndRun(
-        SETTLE_TICKS * 4L,
+        SETTLE_TICKS + BEAT_TICKS + SETTLE_TICKS * 2L,
         () -> {
           context.expectBlockProperty(ALARM, AlarmBlock.POWERED, true);
           expectStatus(context, ALARM, DeviceStatus.RUNNING);
