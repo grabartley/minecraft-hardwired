@@ -67,6 +67,7 @@ public final class LiftDriver {
     if (car.age % SYNC_TICKS == 0) {
       shaft.car().filter(first -> first != car).ifPresent(first -> car.discard());
       shaft.showGates(route(), run.level(), true);
+      shaft.gateFacing((int) Math.round(run.level())).ifPresent(car::faceGate);
       showDial();
     }
     if (!run.pausing() && !run.queue().isEmpty()) {
@@ -202,6 +203,7 @@ public final class LiftDriver {
     run.rest(run.level(), 0);
     changed();
     pulse();
+    car.discard();
   }
 
   private void arrive(int level) {

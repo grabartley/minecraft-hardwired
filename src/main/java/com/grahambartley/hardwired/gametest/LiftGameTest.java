@@ -13,6 +13,7 @@ import com.grahambartley.hardwired.config.LiftSettings;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.lift.LiftActions;
 import com.grahambartley.hardwired.lift.LiftCarEntity;
+import com.grahambartley.hardwired.lift.LiftCarWalls;
 import com.grahambartley.hardwired.lift.LiftCorner;
 import com.grahambartley.hardwired.lift.LiftDial;
 import com.grahambartley.hardwired.lift.LiftPhase;
@@ -32,6 +33,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -1006,6 +1008,7 @@ public class LiftGameTest implements FabricGameTest {
     context.setBlockState(placed.down(), Blocks.STONE);
     context.setBlockState(placed.down().east(), Blocks.STONE);
     context.setBlockState(placed.down().west(), Blocks.STONE);
+    context.setBlockState(placed.down().east(2), Blocks.STONE);
     BlockPos absolute = context.getAbsolutePos(placed);
     PlayerEntity player = context.createMockPlayer(GameMode.CREATIVE);
     ItemStack stack = new ItemStack(ModBlocks.LARGE_LIFT_FLOOR);
@@ -1027,7 +1030,7 @@ public class LiftGameTest implements FabricGameTest {
   }
 
   @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
-  public void theCarWallsStopEveryoneButItsRiders(TestContext context) {
+  public void aWalkerStopsAtTheWallsButPassesTheOpening(TestContext context) {
     build(context, FULL_CHARGE);
     ConnectedTestPlayer rider = riderFrom(context, LOW);
     context.runAtTick(START_TICK, () -> openAt(context, rider, LOW));
@@ -1035,13 +1038,61 @@ public class LiftGameTest implements FabricGameTest {
         START_TICK + 2,
         () -> {
           ServerPlayerEntity player = rider.player();
-          context.assertFalse(
-              LiftCarEntity.withWalls(player, player.getBoundingBox(), List.of()).isEmpty(),
-              "a walker meets the walls");
-          player.startRiding(car(context), true);
+          Vec3d center = player.getPos();
+          for (Direction wall : List.of(Direction.EAST, Direction.NORTH, Direction.SOUTH)) {
+            player.setPosition(center);
+            player.move(MovementType.SELF, Vec3d.of(wall.getVector()));
+            context.assertTrue(
+                player.getPos().distanceTo(center) < 0.25, wall + " wall let a walker through");
+          }
+          player.setPosition(center);
+          player.move(MovementType.SELF, Vec3d.of(Direction.WEST.getVector()));
           context.assertTrue(
-              LiftCarEntity.withWalls(player, player.getBoundingBox(), List.of()).isEmpty(),
-              "a rider does not");
+              player.getPos().distanceTo(center) > 0.9, "the open side stopped a walker");
+          finish(context, rider);
+        });
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void aParkedCarTurnsBackToItsGate(TestContext context) {
+    build(context, FULL_CHARGE);
+    ConnectedTestPlayer rider = riderFrom(context, LOW);
+    context.runAtTick(START_TICK, () -> openAt(context, rider, LOW));
+    context.runAtTick(START_TICK + 2, () -> car(context).faceGate(Direction.NORTH));
+    context.runAtTick(
+        START_TICK + 30,
+        () -> {
+          context.assertTrue(
+              LiftCarWalls.opening(car(context).quarterTurns()) == Direction.WEST,
+              "the opening faces the gate again");
+          finish(context, rider);
+        });
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void withNoGatesLeftTheCarGoesAndRidersLand(TestContext context) {
+    RedstoneCellBlockEntity cell = build(context, FULL_CHARGE);
+    ConnectedTestPlayer rider = riderFrom(context, LOW);
+    context.runAtTick(
+        START_TICK,
+        () -> {
+          openAt(context, rider, LOW);
+          choose(context, rider, LOW, HIGH);
+        });
+    context.runAtTick(
+        START_TICK + 4,
+        () -> {
+          for (int level : List.of(LOW, MIDDLE, HIGH)) {
+            context.setBlockState(gate(level).up(), Blocks.AIR);
+            context.setBlockState(gate(level), Blocks.AIR);
+          }
+          cell.setCharge(0);
+        });
+    context.runAtTick(
+        START_TICK + 80,
+        () -> {
+          context.assertFalse(rider.player().hasVehicle(), "rider let down");
+          context.assertTrue(shaft(context).car().isEmpty(), "the car is gone");
           finish(context, rider);
         });
   }

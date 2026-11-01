@@ -1,7 +1,6 @@
 package com.grahambartley.hardwired.client;
 
 import com.grahambartley.hardwired.Hardwired;
-import com.grahambartley.hardwired.block.LargeLiftFloorBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlockEntity;
 import com.grahambartley.hardwired.lift.LiftDial;
@@ -26,7 +25,6 @@ public final class LiftFloorRenderer implements BlockEntityRenderer<LiftFloorBlo
   private static final Identifier MARK = Identifier.of(Hardwired.MOD_ID, "block/lift_floor_mark");
   private static final float PIXEL = 1F / 16F;
   private static final float HALF = 0.5F;
-  private static final float PIVOT_X = 8F * PIXEL;
   private static final float PIVOT_Y = 12.25F * PIXEL;
   private static final float HALL_FACE = 3.15F * PIXEL;
   private static final float SHAFT_FACE = -0.15F * PIXEL;
@@ -60,7 +58,7 @@ public final class LiftFloorRenderer implements BlockEntityRenderer<LiftFloorBlo
     matrices.translate(HALF, 0, HALF);
     matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(facing.asRotation() + BEHIND));
     matrices.translate(-HALF, 0, -HALF);
-    float pivotX = gate.getCachedState().getBlock() instanceof LargeLiftFloorBlock ? 1F : PIVOT_X;
+    float pivotX = ((LiftFloorBlock) gate.getCachedState().getBlock()).dialPivotX();
     drawFace(matrices, vertices, dial, needle, pivotX, HALL_FACE, 0, light);
     drawFace(matrices, vertices, dial, needle, pivotX, SHAFT_FACE, BEHIND, light);
     matrices.pop();

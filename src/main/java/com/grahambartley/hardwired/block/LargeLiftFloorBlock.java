@@ -1,10 +1,10 @@
 package com.grahambartley.hardwired.block;
 
+import com.grahambartley.hardwired.device.WireDevice;
+import com.grahambartley.hardwired.lift.LiftGateCells;
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.LivingEntity;
@@ -25,10 +25,6 @@ public final class LargeLiftFloorBlock extends LiftFloorBlock {
     setDefaultState(getDefaultState().with(SECOND, false));
   }
 
-  private static Direction along(Direction facing) {
-    return facing.rotateYClockwise();
-  }
-
   @Override
   protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
     super.appendProperties(builder);
@@ -36,54 +32,57 @@ public final class LargeLiftFloorBlock extends LiftFloorBlock {
   }
 
   @Override
-  public BlockPos origin(BlockPos pos, BlockState state) {
-    BlockPos lower = super.origin(pos, state);
-    return state.get(SECOND) ? lower.offset(along(state.get(FACING)).getOpposite()) : lower;
+  public float dialPivotX() {
+    return 1F;
   }
 
-  private static List<BlockPos> cells(BlockPos origin, Direction facing) {
-    BlockPos second = origin.offset(along(facing));
-    return List.of(origin, origin.up(), second, second.up());
+  @Override
+  public BlockPos origin(BlockPos pos, BlockState state) {
+    return LiftGateCells.origin(super.origin(pos, state), state.get(FACING), state.get(SECOND));
   }
 
   @Override
   public List<BlockPos> cells(BlockPos pos, BlockState state) {
-    return cells(origin(pos, state), state.get(FACING));
+    return LiftGateCells.cells(origin(pos, state), state.get(FACING));
   }
 
   @Override
   public List<BlockPos> columns(BlockPos pos, BlockState state) {
-    Direction facing = state.get(FACING);
-    BlockPos first = origin(pos, state).offset(facing);
-    return List.of(first, first.offset(along(facing)));
+    return LiftGateCells.columns(origin(pos, state), state.get(FACING));
   }
 
   @Override
   public BlockState getPlacementState(ItemPlacementContext context) {
-    BlockState placed = getDefaultState().with(FACING, context.getHorizontalPlayerFacing());
+    Direction facing = context.getHorizontalPlayerFacing();
+    BlockPos pos = context.getBlockPos();
+    boolean aimed = LiftGateCells.placedAsSecond(pos, facing, context.getHitPos());
+    BlockState state = placed(context, facing, aimed);
+    return state != null ? state : placed(context, facing, !aimed);
+  }
+
+  private BlockState placed(ItemPlacementContext context, Direction facing, boolean second) {
+    BlockState state = getDefaultState().with(FACING, facing).with(SECOND, second);
+    BlockPos origin = LiftGateCells.origin(context.getBlockPos(), facing, second);
+    List<BlockPos> cells = LiftGateCells.cells(origin, facing);
     World world = context.getWorld();
-    BlockPos second = context.getBlockPos().offset(along(placed.get(FACING)));
-    for (BlockPos cell : cells(context.getBlockPos(), placed.get(FACING))) {
-      if (!world.isInBuildLimit(cell)
-          || !world.getWorldBorder().contains(cell)
-          || !world.getBlockState(cell).canReplace(context)
-          || !world.canPlace(placed, cell, ShapeContext.absent())) {
-        return null;
-      }
-    }
-    return placed.canPlaceAt(world, context.getBlockPos()) && placed.canPlaceAt(world, second)
-        ? placed
-        : null;
+    boolean stands = state.canPlaceAt(world, cells.get(0)) && state.canPlaceAt(world, cells.get(2));
+    return stands && WireDevice.fits(context, state, cells) ? state : null;
   }
 
   @Override
   public void onPlaced(
       World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-    BlockPos second = pos.offset(along(state.get(FACING)));
-    world.setBlockState(pos.up(), state.with(HALF, DoubleBlockHalf.UPPER), Block.NOTIFY_ALL);
-    world.setBlockState(second, state.with(SECOND, true), Block.NOTIFY_ALL);
-    world.setBlockState(
-        second.up(), state.with(SECOND, true).with(HALF, DoubleBlockHalf.UPPER), Block.NOTIFY_ALL);
+    List<BlockPos> cells = cells(pos, state);
+    for (int cell = 0; cell < cells.size(); cell++) {
+      if (!cells.get(cell).equals(pos)) {
+        world.setBlockState(
+            cells.get(cell),
+            state
+                .with(SECOND, cell >= 2)
+                .with(HALF, cell % 2 == 0 ? DoubleBlockHalf.LOWER : DoubleBlockHalf.UPPER),
+            Block.NOTIFY_ALL);
+      }
+    }
   }
 
   @Override
@@ -97,12 +96,7 @@ public final class LargeLiftFloorBlock extends LiftFloorBlock {
   protected void onStateReplaced(
       BlockState state, World world, BlockPos pos, BlockState next, boolean moved) {
     if (!state.isOf(next.getBlock())) {
-      for (BlockPos cell : cells(pos, state)) {
-        if (!cell.equals(pos) && world.getBlockState(cell).isOf(this)) {
-          world.setBlockState(
-              cell, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.SKIP_DROPS);
-        }
-      }
+      WireDevice.clearOthers(world, pos, this, cells(pos, state));
     }
     super.onStateReplaced(state, world, pos, next, moved);
   }

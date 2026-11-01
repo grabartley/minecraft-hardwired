@@ -74,4 +74,12 @@ class HardwiredConfigTest {
     assertEquals(WireSettings.DEFAULTS.viewRangeBlocks(), config.wire().viewRangeBlocks());
     assertEquals(DeviceSettings.DEFAULTS, config.device());
   }
+
+  @Test
+  void aWorldSavedWithTheOldLiftSpeedKeyMovesToTheNewDefault() throws IOException {
+    Path file = dir.resolve("old-speed.json");
+    Files.writeString(file, "{\"ticksPerBlock\": 6}");
+    assertEquals(
+        LiftSettings.DEFAULTS.ticksPerBlock(), HardwiredConfig.load(file).lift().ticksPerBlock());
+  }
 }

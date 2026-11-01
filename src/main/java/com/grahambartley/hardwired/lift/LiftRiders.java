@@ -18,8 +18,8 @@ import net.minecraft.util.math.Vec3d;
 
 public final class LiftRiders {
 
-  private static final double REACH_ABOVE_FLOOR = 2.5;
-  private static final double REACH_BELOW_FLOOR = 0.5;
+  private static final double BOARDING_REACH_ABOVE = 2.5;
+  private static final double BOARDING_REACH_BELOW = 0.5;
 
   private LiftRiders() {}
 
@@ -34,8 +34,8 @@ public final class LiftRiders {
                     && !player.hasVehicle()
                     && LiftSafety.inColumn(
                         player.getX(), player.getZ(), head.getX(), head.getZ(), shaft.span())
-                    && player.getY() >= level - REACH_BELOW_FLOOR
-                    && player.getY() <= level + REACH_ABOVE_FLOOR);
+                    && player.getY() >= level - BOARDING_REACH_BELOW
+                    && player.getY() <= level + BOARDING_REACH_ABOVE);
   }
 
   public static void board(LiftCarEntity car, LiftShaft shaft) {

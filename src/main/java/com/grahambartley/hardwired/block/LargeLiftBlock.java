@@ -1,14 +1,13 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.config.PowerSettings;
+import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.lift.LiftCarEntity;
 import com.grahambartley.hardwired.lift.LiftCorner;
 import com.grahambartley.hardwired.registry.ModEntities;
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -67,15 +66,7 @@ public final class LargeLiftBlock extends LiftBlock {
     BlockPos pos = context.getBlockPos();
     BlockPos head = LiftCorner.headFor(pos, look);
     BlockState placed = cellState(LiftCorner.of(head, pos), look.getOpposite());
-    World world = context.getWorld();
-    for (BlockPos cell : LiftCorner.cells(head)) {
-      if (!world.getWorldBorder().contains(cell)
-          || !world.getBlockState(cell).canReplace(context)
-          || !world.canPlace(placed, cell, ShapeContext.absent())) {
-        return null;
-      }
-    }
-    return placed;
+    return WireDevice.fits(context, placed, LiftCorner.cells(head)) ? placed : null;
   }
 
   private BlockState cellState(LiftCorner corner, Direction front) {
@@ -100,12 +91,7 @@ public final class LargeLiftBlock extends LiftBlock {
   protected void onStateReplaced(
       BlockState state, World world, BlockPos pos, BlockState next, boolean moved) {
     if (!state.isOf(next.getBlock())) {
-      for (BlockPos cell : cells(pos, state)) {
-        if (!cell.equals(pos) && world.getBlockState(cell).isOf(this)) {
-          world.setBlockState(
-              cell, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.SKIP_DROPS);
-        }
-      }
+      WireDevice.clearOthers(world, pos, this, cells(pos, state));
     }
     super.onStateReplaced(state, world, pos, next, moved);
   }

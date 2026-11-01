@@ -35,10 +35,9 @@ public record LiftShaft(ServerWorld world, BlockPos head, int span) {
 
   public static Optional<LiftShaft> forGate(ServerWorld world, BlockPos gate) {
     BlockState state = world.getBlockState(gate);
-    if (!(state.getBlock() instanceof LiftFloorBlock)) {
+    if (!(state.getBlock() instanceof LiftFloorBlock floor)) {
       return Optional.empty();
     }
-    LiftFloorBlock floor = (LiftFloorBlock) state.getBlock();
     List<BlockPos> columns = floor.columns(gate, state);
     return devicesOn(world, floor.cells(gate, state))
         .map(pos -> headAt(world, pos))
@@ -93,18 +92,17 @@ public record LiftShaft(ServerWorld world, BlockPos head, int span) {
 
   private Optional<BlockPos> lowerGate(BlockPos pos) {
     BlockState state = world.getBlockState(pos);
-    return state.getBlock() instanceof LiftFloorBlock
-        ? gateAt(LiftFloorBlock.lower(pos, state))
+    return state.getBlock() instanceof LiftFloorBlock floor
+        ? gateAt(floor.origin(pos, state))
         : Optional.empty();
   }
 
   public Optional<BlockPos> gateAt(BlockPos lower) {
     BlockState state = world.getBlockState(lower);
-    if (!(state.getBlock() instanceof LiftFloorBlock)) {
+    if (!(state.getBlock() instanceof LiftFloorBlock floor)) {
       return Optional.empty();
     }
-    boolean served =
-        ((LiftFloorBlock) state.getBlock()).columns(lower, state).stream().allMatch(this::holds);
+    boolean served = floor.columns(lower, state).stream().allMatch(this::holds);
     return served && lower.getY() + 1 < head.getY() ? Optional.of(lower) : Optional.empty();
   }
 

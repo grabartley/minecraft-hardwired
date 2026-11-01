@@ -26,7 +26,6 @@ public final class LiftCarEntity extends Entity {
   public static final float PLATE = 0.125F;
 
   private static final double COLUMN_CENTER = 0.5;
-  private static final double ROOM_ABOVE_PLATE = 2.0;
   private static final double STANDING_REACH = 0.25;
   private static final int ELAPSED_TICKS = 20;
   private static final String HEAD = "head";
@@ -227,7 +226,7 @@ public final class LiftCarEntity extends Entity {
 
   @Override
   public Box getVisibilityBoundingBox() {
-    return getBoundingBox().stretch(0, ROOM_ABOVE_PLATE, 0);
+    return getBoundingBox().stretch(0, LiftCarWalls.REACH_ABOVE_FLOOR, 0);
   }
 
   @Override

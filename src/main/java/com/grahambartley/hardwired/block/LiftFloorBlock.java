@@ -60,8 +60,8 @@ public class LiftFloorBlock extends Block implements BlockEntityProvider, WireDe
             .with(OPEN, false));
   }
 
-  public static BlockPos lower(BlockPos pos, BlockState state) {
-    return ((LiftFloorBlock) state.getBlock()).origin(pos, state);
+  public float dialPivotX() {
+    return 0.5F;
   }
 
   public BlockPos origin(BlockPos pos, BlockState state) {
@@ -161,7 +161,7 @@ public class LiftFloorBlock extends Block implements BlockEntityProvider, WireDe
   protected ActionResult onUse(
       BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
     if (player instanceof ServerPlayerEntity serverPlayer) {
-      LiftActions.use(serverPlayer, lower(pos, state));
+      LiftActions.use(serverPlayer, origin(pos, state));
     }
     return ActionResult.SUCCESS;
   }
