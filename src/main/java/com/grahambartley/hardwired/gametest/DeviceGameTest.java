@@ -174,6 +174,18 @@ public class DeviceGameTest implements FabricGameTest {
         });
   }
 
+  @GameTest(templateName = BENCH, tickLimit = 40)
+  public void aMotionSensorIgnoresTaggedEntities(TestContext context) {
+    context.setBlockState(at(4, 4), floor(ModBlocks.MOTION_SENSOR));
+    context.spawnEntity(EntityType.ARMOR_STAND, at(5, 4));
+    context.waitAndRun(
+        25,
+        () -> {
+          context.expectBlockProperty(at(4, 4), MountedDeviceBlock.POWERED, false);
+          context.complete();
+        });
+  }
+
   @GameTest(templateName = BENCH, batchId = "dusk", tickLimit = 60)
   public void aDuskSensorFollowsTheClock(TestContext context) {
     context.setTime(DuskClock.DUSK + 100);

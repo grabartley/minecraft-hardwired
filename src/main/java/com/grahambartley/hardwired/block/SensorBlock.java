@@ -3,9 +3,13 @@ package com.grahambartley.hardwired.block;
 import com.grahambartley.hardwired.Hardwired;
 import java.util.function.BiPredicate;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.random.Random;
@@ -14,6 +18,8 @@ import net.minecraft.world.World;
 public final class SensorBlock extends MountedDeviceBlock {
 
   public static final int CHECK_INTERVAL = 10;
+  public static final TagKey<EntityType<?>> IGNORED =
+      TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.of(Hardwired.MOD_ID, "motion_sensor_ignores"));
 
   private final BiPredicate<ServerWorld, BlockPos> sense;
 
@@ -28,7 +34,7 @@ public final class SensorBlock extends MountedDeviceBlock {
         .getEntitiesByClass(
             LivingEntity.class,
             new Box(pos).expand(Hardwired.SERVER_CONFIG.device().motionSensorRangeBlocks()),
-            EntityPredicates.EXCEPT_SPECTATOR)
+            EntityPredicates.EXCEPT_SPECTATOR.and(entity -> !entity.getType().isIn(IGNORED)))
         .isEmpty();
   }
 

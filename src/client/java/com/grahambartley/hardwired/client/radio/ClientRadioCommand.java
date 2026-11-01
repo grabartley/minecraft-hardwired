@@ -2,6 +2,7 @@ package com.grahambartley.hardwired.client.radio;
 
 import com.grahambartley.hardwired.config.ClientRadioSettings;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
+import com.grahambartley.hardwired.config.ClientWireSettings;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -47,6 +48,30 @@ public final class ClientRadioCommand {
                                                     ClientRadioSettings.NOISE_MAX))
                                             .executes(ClientRadioCommand::setHum)))
                             .then(
+                                ClientCommandManager.literal("throughblocks")
+                                    .then(
+                                        ClientCommandManager.argument(
+                                                VALUE,
+                                                IntegerArgumentType.integer(
+                                                    ClientWireSettings.THROUGH_MIN,
+                                                    ClientWireSettings.THROUGH_MAX))
+                                            .executes(ClientRadioCommand::setThroughBlocks)))
+                            .then(
+                                ClientCommandManager.literal("onsurface")
+                                    .then(
+                                        ClientCommandManager.argument(
+                                                VALUE,
+                                                IntegerArgumentType.integer(
+                                                    ClientWireSettings.SURFACE_MIN,
+                                                    ClientWireSettings.SURFACE_MAX))
+                                            .executes(ClientRadioCommand::setOnSurface)))
+                            .then(
+                                ClientCommandManager.literal("showmarkers")
+                                    .then(
+                                        ClientCommandManager.argument(
+                                                VALUE, BoolArgumentType.bool())
+                                            .executes(ClientRadioCommand::setShowMarkers)))
+                            .then(
                                 ClientCommandManager.literal("hearvoicebroadcasts")
                                     .then(
                                         ClientCommandManager.argument(
@@ -82,6 +107,33 @@ public final class ClientRadioCommand {
         Integer.toString(value));
   }
 
+  private static int setThroughBlocks(CommandContext<FabricClientCommandSource> context) {
+    int value = IntegerArgumentType.getInteger(context, VALUE);
+    return applyWire(
+        context,
+        ClientSettingsStore.get().withThroughBlocksPercent(value),
+        "throughblocks",
+        Integer.toString(value));
+  }
+
+  private static int setOnSurface(CommandContext<FabricClientCommandSource> context) {
+    int value = IntegerArgumentType.getInteger(context, VALUE);
+    return applyWire(
+        context,
+        ClientSettingsStore.get().withOnSurfacePercent(value),
+        "onsurface",
+        Integer.toString(value));
+  }
+
+  private static int setShowMarkers(CommandContext<FabricClientCommandSource> context) {
+    boolean value = BoolArgumentType.getBool(context, VALUE);
+    return applyWire(
+        context,
+        ClientSettingsStore.get().withShowMarkers(value),
+        "showmarkers",
+        Boolean.toString(value));
+  }
+
   private static int setHearing(CommandContext<FabricClientCommandSource> context) {
     boolean value = BoolArgumentType.getBool(context, VALUE);
     return apply(
@@ -96,6 +148,18 @@ public final class ClientRadioCommand {
     String chosen =
         value.equals(DEFAULT_MICROPHONE) ? ClientRadioSettings.DEFAULT_MICROPHONE : value;
     return apply(context, ClientSettingsStore.radio().withMicrophone(chosen), "microphone", value);
+  }
+
+  private static int applyWire(
+      CommandContext<FabricClientCommandSource> context,
+      ClientWireSettings settings,
+      String label,
+      String shown) {
+    ClientSettingsStore.update(settings);
+    context
+        .getSource()
+        .sendFeedback(Text.translatable("command.hardwired.update.success", label, shown));
+    return 1;
   }
 
   private static int apply(

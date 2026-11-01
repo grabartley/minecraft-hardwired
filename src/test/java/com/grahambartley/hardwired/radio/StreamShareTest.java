@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class StreamShareTest {
 
@@ -44,5 +46,18 @@ class StreamShareTest {
     assertEquals(true, granted.songs().contains(nearest));
     assertEquals(true, granted.songs().contains(next));
     assertEquals(true, granted.songs().contains(last));
+  }
+
+  @ParameterizedTest(name = "{0} nearer songs")
+  @ValueSource(ints = {5, 6, 9})
+  void aFarVoiceBeatsAnyNumberOfNearerSongs(int songs) {
+    List<StreamShare.Wants<Integer>> wants = new ArrayList<>();
+    for (int device = 0; device < songs; device++) {
+      wants.add(new StreamShare.Wants<>(device, false, true));
+    }
+    wants.add(new StreamShare.Wants<>(songs, true, false));
+    StreamShare.Granted<Integer> granted = StreamShare.share(wants, 6);
+    assertEquals(Set.of(songs), granted.voices());
+    assertEquals(5, granted.songs().size());
   }
 }

@@ -58,6 +58,9 @@ public final class SpeakerBlock extends TableDeviceBlock {
       Optional<RadioBlockEntity> radio =
           status == DeviceStatus.RUNNING ? receivingRadio(world, pos) : Optional.empty();
       radio.ifPresentOrElse(speaker::repeat, speaker::silence);
+      speaker.setHissing(
+          WireEngine.of(world).allOnNetwork(pos, RadioBlockEntity.class).stream()
+              .anyMatch(RadioBlockEntity::hisses));
     }
     ElectronicsDriver.show(world, pos, state, state.with(PLAYING, status == DeviceStatus.RUNNING));
   }

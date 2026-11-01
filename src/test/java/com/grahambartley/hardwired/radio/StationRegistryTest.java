@@ -16,6 +16,24 @@ class StationRegistryTest {
     return new Station(desk, TOWER, frequency, 100, 0, null, -1);
   }
 
+  @ParameterizedTest(name = "reach {0} then {1}")
+  @CsvSource({"100,90,true", "100,100,false", "100,120,false"})
+  void publishingSaysWhenReachFell(int first, int second, boolean fell) {
+    StationRegistry registry = new StationRegistry();
+    registry.publish(new Station(DESK, TOWER, 1000, first, 0, null, -1));
+    assertEquals(fell, registry.publish(new Station(DESK, TOWER, 1000, second, 0, null, -1)));
+  }
+
+  @ParameterizedTest(name = "on the air {0}")
+  @CsvSource({"true", "false"})
+  void withdrawingSaysWhetherAStationWent(boolean onAir) {
+    StationRegistry registry = new StationRegistry();
+    if (onAir) {
+      registry.publish(on(DESK, 1000));
+    }
+    assertEquals(onAir, registry.withdraw(DESK));
+  }
+
   @ParameterizedTest(name = "frequency {0} then {1}")
   @CsvSource({"1000,1010", "530,1600"})
   void publishingAgainReplacesTheDesksStation(int first, int second) {

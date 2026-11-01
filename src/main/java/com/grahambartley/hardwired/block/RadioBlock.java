@@ -105,8 +105,10 @@ public final class RadioBlock extends TableDeviceBlock {
                   reception.station().songStart(),
                   reception.strength()),
           radio::silence);
-      radio.setHissing(
-          status == DeviceStatus.NO_STATION && WireEngine.of(world).power().hasPower(pos));
+      if (radio.setHissing(
+          status == DeviceStatus.NO_STATION && WireEngine.of(world).power().hasPower(pos))) {
+        wakeSpeakers(world, pos);
+      }
     }
     if (state.get(PLAYING) != playing) {
       ElectronicsDriver.show(world, pos, state, state.with(PLAYING, playing));

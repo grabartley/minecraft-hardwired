@@ -250,7 +250,7 @@ class TimelineRunTest {
         Arguments.of(99, null, 0, null, 0, 2, false),
         Arguments.of(-5, null, 0, null, 0, 0, false),
         Arguments.of(1, TimelineOrder.STOP, 5, null, 0, 1, false),
-        Arguments.of(1, null, 0, TimelineOrder.FORWARD, 0, 1, false),
+        Arguments.of(1, null, 0, TimelineOrder.FORWARD, 0, 1, true),
         Arguments.of(1, null, 0, null, 50, 1, false));
   }
 
