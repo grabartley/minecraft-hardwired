@@ -80,7 +80,7 @@ public final class AlarmBlock extends MountedDeviceBlock
 
   @Override
   public int ratedLoad(PowerSettings settings) {
-    return settings.alarmLoad();
+    return settings.loads().alarmLoad();
   }
 
   @Override

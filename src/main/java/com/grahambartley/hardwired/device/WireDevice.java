@@ -2,6 +2,7 @@ package com.grahambartley.hardwired.device;
 
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.wire.Hue;
+import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -36,7 +37,11 @@ public interface WireDevice {
     return 0;
   }
 
+  default List<BlockPos> cells(BlockPos pos, BlockState state) {
+    return List.of(pos);
+  }
+
   default BlockPos loadAnchor(BlockPos pos, BlockState state) {
-    return pos;
+    return cells(pos, state).getFirst();
   }
 }

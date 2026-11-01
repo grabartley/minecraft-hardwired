@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.util.math.BlockPos;
@@ -147,7 +148,7 @@ public final class WireNetwork {
   }
 
   public boolean sharesPowerWith(WireNetwork other) {
-    return java.util.Objects.equals(owner, other.owner);
+    return Objects.equals(owner, other.owner);
   }
 
   public boolean isTripped() {

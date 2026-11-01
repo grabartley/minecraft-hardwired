@@ -88,7 +88,7 @@ public final class ControllerBlock extends HorizontalFacingBlock
 
   @Override
   public int ratedLoad(PowerSettings settings) {
-    return settings.logicLoad();
+    return settings.loads().logicLoad();
   }
 
   @Override

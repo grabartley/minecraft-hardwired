@@ -76,7 +76,7 @@ public final class IntercomBlock extends TableDeviceBlock {
 
   @Override
   public int ratedLoad(PowerSettings settings) {
-    return settings.intercomLoad();
+    return settings.loads().intercomLoad();
   }
 
   @Override

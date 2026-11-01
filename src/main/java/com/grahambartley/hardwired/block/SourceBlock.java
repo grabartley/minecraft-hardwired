@@ -10,6 +10,7 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -18,6 +19,8 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -61,6 +64,20 @@ public abstract class SourceBlock extends Block
           null, pos, ModSounds.SOURCE_DOWN, SoundCategory.BLOCKS, source.kind().soundVolume(), 1F);
     }
     super.onStateReplaced(state, world, pos, newState, moved);
+  }
+
+  @Override
+  protected ItemActionResult onUseWithItem(
+      ItemStack stack,
+      BlockState state,
+      World world,
+      BlockPos pos,
+      PlayerEntity player,
+      Hand hand,
+      BlockHitResult hit) {
+    return stack.isEmpty()
+        ? ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+        : ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
   }
 
   @Override

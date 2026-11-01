@@ -2,6 +2,8 @@ package com.grahambartley.hardwired.power;
 
 public final class PowerWear {
 
+  public static final int MAX_WORKLOAD = 15;
+
   private PowerWear() {}
 
   public static int whole(double amount) {
@@ -12,6 +14,6 @@ public final class PowerWear {
     if (supply <= 0 || load <= 0) {
       return 0;
     }
-    return (int) Math.min(15L, Math.max(1L, load * 15L / supply));
+    return (int) Math.min(MAX_WORKLOAD, Math.max(1L, load * (long) MAX_WORKLOAD / supply));
   }
 }

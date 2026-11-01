@@ -103,7 +103,7 @@ public final class CircuitBlock extends Block implements BlockEntityProvider, Wi
 
   @Override
   public int ratedLoad(PowerSettings settings) {
-    return settings.logicLoad();
+    return settings.loads().logicLoad();
   }
 
   @Override

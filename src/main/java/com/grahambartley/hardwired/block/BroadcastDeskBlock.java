@@ -14,6 +14,7 @@ import com.grahambartley.hardwired.radio.StationRegistry;
 import com.grahambartley.hardwired.radio.TowerFinder;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.mojang.serialization.MapCodec;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -188,7 +189,7 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
 
   @Override
   public int ratedLoad(PowerSettings settings) {
-    return settings.broadcastLoad();
+    return settings.loads().broadcastLoad();
   }
 
   @Override
@@ -200,8 +201,8 @@ public final class BroadcastDeskBlock extends HorizontalFacingBlock
   }
 
   @Override
-  public BlockPos loadAnchor(BlockPos pos, BlockState state) {
-    return panelOf(pos, state);
+  public List<BlockPos> cells(BlockPos pos, BlockState state) {
+    return DeskLayout.cells(state.get(FACING), panelOf(pos, state));
   }
 
   @Override

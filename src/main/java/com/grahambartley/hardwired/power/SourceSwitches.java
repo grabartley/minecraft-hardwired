@@ -13,7 +13,7 @@ public final class SourceSwitches {
   public static boolean mayWork(ServerPlayerEntity player, BlockPos pos) {
     WireViewer viewer = WireViewer.of(player);
     boolean allowed =
-        WireEngine.of(player.getServerWorld()).grid().networksTouching(pos).stream()
+        WireEngine.of(player.getServerWorld()).power().networksAt(pos).stream()
             .allMatch(viewer::canSee);
     if (!allowed) {
       player.sendMessage(Text.translatable("message.hardwired.switch_sealed"), true);

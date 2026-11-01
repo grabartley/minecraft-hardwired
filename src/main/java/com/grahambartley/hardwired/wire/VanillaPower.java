@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.wire;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
@@ -53,11 +54,13 @@ public final class VanillaPower {
     return state.isIn(WireRules.OUTPUTS);
   }
 
-  public static BlockPos loadAnchor(BlockPos pos, BlockState state) {
-    return state.contains(Properties.DOUBLE_BLOCK_HALF)
-            && state.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER
-        ? pos.down()
-        : pos;
+  public static List<BlockPos> cells(BlockPos pos, BlockState state) {
+    if (!state.contains(Properties.DOUBLE_BLOCK_HALF)) {
+      return List.of(pos);
+    }
+    return state.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER
+        ? List.of(pos.down(), pos)
+        : List.of(pos, pos.up());
   }
 
   public static boolean suppliesWire(ServerWorld world, TouchPoint touch) {

@@ -4,8 +4,11 @@ import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.config.CircuitSettings;
 import com.grahambartley.hardwired.config.DeviceSettings;
 import com.grahambartley.hardwired.config.HardwiredConfig;
+import com.grahambartley.hardwired.config.HumSettings;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.PowerLoads;
+import com.grahambartley.hardwired.config.PowerRatings;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.config.WireSettings;
@@ -34,23 +37,23 @@ public final class ServerConfigPayloads {
     buf.writeVarInt(power.dustCharge());
     buf.writeVarInt(power.lightningCharge());
     buf.writeVarInt(power.chargePerLoadMinute());
-    buf.writeVarInt(power.cellRating());
-    buf.writeVarInt(power.generatorRating());
-    buf.writeVarInt(power.solarRating());
-    buf.writeVarInt(power.dynamoRating());
-    buf.writeVarInt(power.lampLoad());
-    buf.writeVarInt(power.streetlightLoad());
-    buf.writeVarInt(power.logicLoad());
-    buf.writeVarInt(power.vanillaLoad());
-    buf.writeVarInt(power.radioLoad());
-    buf.writeVarInt(power.speakerLoad());
-    buf.writeVarInt(power.intercomLoad());
-    buf.writeVarInt(power.alarmLoad());
-    buf.writeVarInt(power.broadcastLoad());
-    buf.writeVarInt(power.liftLoad());
-    buf.writeVarInt(power.humRange());
-    buf.writeVarInt(power.humStartLoad());
-    buf.writeVarInt(power.humFullLoad());
+    buf.writeVarInt(power.ratings().cellRating());
+    buf.writeVarInt(power.ratings().generatorRating());
+    buf.writeVarInt(power.ratings().solarRating());
+    buf.writeVarInt(power.ratings().dynamoRating());
+    buf.writeVarInt(power.loads().lampLoad());
+    buf.writeVarInt(power.loads().streetlightLoad());
+    buf.writeVarInt(power.loads().logicLoad());
+    buf.writeVarInt(power.loads().vanillaLoad());
+    buf.writeVarInt(power.loads().radioLoad());
+    buf.writeVarInt(power.loads().speakerLoad());
+    buf.writeVarInt(power.loads().intercomLoad());
+    buf.writeVarInt(power.loads().alarmLoad());
+    buf.writeVarInt(power.loads().broadcastLoad());
+    buf.writeVarInt(power.loads().liftLoad());
+    buf.writeVarInt(power.hum().humRange());
+    buf.writeVarInt(power.hum().humStartLoad());
+    buf.writeVarInt(power.hum().humFullLoad());
     buf.writeVarInt(config.lift().ticksPerBlock());
     buf.writeVarInt(config.circuit().maxParts());
     buf.writeVarInt(config.circuit().partsPerRedstone());
@@ -77,23 +80,20 @@ public final class ServerConfigPayloads {
             buf.readVarInt(),
             buf.readVarInt(),
             buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt(),
-            buf.readVarInt()),
+            new PowerRatings(
+                buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt()),
+            new PowerLoads(
+                buf.readVarInt(),
+                buf.readVarInt(),
+                buf.readVarInt(),
+                buf.readVarInt(),
+                buf.readVarInt(),
+                buf.readVarInt(),
+                buf.readVarInt(),
+                buf.readVarInt(),
+                buf.readVarInt(),
+                buf.readVarInt()),
+            new HumSettings(buf.readVarInt(), buf.readVarInt(), buf.readVarInt())),
         new LiftSettings(buf.readVarInt()),
         new CircuitSettings(buf.readVarInt(), buf.readVarInt()),
         new RadioSettings(

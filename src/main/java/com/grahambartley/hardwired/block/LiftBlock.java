@@ -49,7 +49,7 @@ public final class LiftBlock extends TableDeviceBlock {
 
   @Override
   public int ratedLoad(PowerSettings settings) {
-    return settings.liftLoad();
+    return settings.loads().liftLoad();
   }
 
   @Override

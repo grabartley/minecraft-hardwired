@@ -43,7 +43,7 @@ public final class MainPanelBlock extends MountedDeviceBlock implements BlockEnt
 
   @Override
   public int ratedLoad(PowerSettings settings) {
-    return settings.logicLoad();
+    return settings.loads().logicLoad();
   }
 
   @Override

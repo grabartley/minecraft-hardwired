@@ -52,7 +52,7 @@ public final class StreetlightBlock extends AbstractLampBlock {
 
   @Override
   public int ratedLoad(PowerSettings settings) {
-    return settings.streetlightLoad();
+    return settings.loads().streetlightLoad();
   }
 
   @Override
@@ -61,7 +61,7 @@ public final class StreetlightBlock extends AbstractLampBlock {
   }
 
   @Override
-  protected List<BlockPos> parts(BlockPos pos, BlockState state) {
+  public List<BlockPos> cells(BlockPos pos, BlockState state) {
     BlockPos base = lampPos(pos, state);
     return List.of(base, base.up(), base.up(2), base.up(HEAD));
   }

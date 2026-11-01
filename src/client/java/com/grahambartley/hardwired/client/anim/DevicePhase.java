@@ -11,23 +11,27 @@ final class DevicePhase {
 
   private static final Map<BlockEntity, Phase> PHASES = new WeakHashMap<>();
 
-  private static final class Phase {
+  static final class Phase {
     private float seconds;
     private float speed;
     private double lastTick = Double.NaN;
+
+    float advance(float targetSpeed, double now) {
+      if (!Double.isNaN(lastTick) && now > lastTick) {
+        float ticks = (float) (now - lastTick);
+        speed += (targetSpeed - speed) * Math.min(1F, ticks * SETTLE);
+        seconds += ticks / TICKS_PER_SECOND * speed;
+      }
+      lastTick = now;
+      return seconds;
+    }
   }
 
   private DevicePhase() {}
 
   static float seconds(BlockEntity entity, float speed, float tickDelta) {
-    Phase phase = PHASES.computeIfAbsent(entity, ignored -> new Phase());
-    double now = entity.getWorld().getTime() + (double) tickDelta;
-    if (!Double.isNaN(phase.lastTick) && now > phase.lastTick) {
-      float ticks = (float) (now - phase.lastTick);
-      phase.speed += (speed - phase.speed) * Math.min(1F, ticks * SETTLE);
-      phase.seconds += ticks / TICKS_PER_SECOND * phase.speed;
-    }
-    phase.lastTick = now;
-    return phase.seconds;
+    return PHASES
+        .computeIfAbsent(entity, ignored -> new Phase())
+        .advance(speed, entity.getWorld().getTime() + (double) tickDelta);
   }
 }

@@ -13,6 +13,7 @@ final class LoopSound extends MovingSoundInstance {
   private static final float FADE = 0.06F;
 
   private final SourceBlockEntity source;
+  private boolean fading;
 
   LoopSound(SoundEvent event, SourceBlockEntity source, Random random) {
     super(event, SoundCategory.BLOCKS, random);
@@ -27,6 +28,10 @@ final class LoopSound extends MovingSoundInstance {
     this.pitch = PowerSoundLevels.loopPitch(source.workload());
   }
 
+  void fadeOut() {
+    fading = true;
+  }
+
   @Override
   public boolean shouldAlwaysPlay() {
     return true;
@@ -34,7 +39,7 @@ final class LoopSound extends MovingSoundInstance {
 
   @Override
   public void tick() {
-    boolean running = source.isRunning() && !source.isRemoved();
+    boolean running = !fading && source.isRunning() && !source.isRemoved();
     float targetVolume = running ? PowerSoundLevels.loopVolume(source.workload()) : 0F;
     float targetPitch = PowerSoundLevels.loopPitch(running ? source.workload() : 0);
     volume += Math.clamp(targetVolume - volume, -FADE, FADE);

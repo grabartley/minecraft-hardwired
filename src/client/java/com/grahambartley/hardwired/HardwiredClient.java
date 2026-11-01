@@ -10,6 +10,7 @@ import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.LampBlockEntity;
 import com.grahambartley.hardwired.block.RadioBlockEntity;
 import com.grahambartley.hardwired.client.DeviceHud;
+import com.grahambartley.hardwired.client.DeviceReadings;
 import com.grahambartley.hardwired.client.LiftCarRenderer;
 import com.grahambartley.hardwired.client.WireDrag;
 import com.grahambartley.hardwired.client.WireHud;
@@ -123,6 +124,7 @@ public class HardwiredClient implements ClientModInitializer {
     LiftCarRenderer.registerModel();
     BroadcastSounds.register();
     PowerSounds.register();
+    DeviceReadings.register();
     PowerTooltip.register();
     TalkKey.register();
     ClientRadioCommand.register();

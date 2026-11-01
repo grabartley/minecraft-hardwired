@@ -8,6 +8,9 @@ import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
 import com.grahambartley.hardwired.block.RedstoneGeneratorBlockEntity;
 import com.grahambartley.hardwired.block.SourceBlockEntity;
 import com.grahambartley.hardwired.device.DeviceStatus;
+import com.grahambartley.hardwired.network.DeviceInspectPayload;
+import com.grahambartley.hardwired.network.DeviceInspectResultPayload;
+import com.grahambartley.hardwired.power.DeviceInspector;
 import com.grahambartley.hardwired.power.GridRule;
 import com.grahambartley.hardwired.power.StartOrder;
 import com.grahambartley.hardwired.registry.ModBlocks;
@@ -15,6 +18,8 @@ import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.WireCell;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireFace;
+import com.grahambartley.hardwired.wire.WireNetwork;
+import java.util.List;
 import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.BlockState;
@@ -315,7 +320,13 @@ public class PowerGridGameTest implements FabricGameTest {
           context.expectBlockProperty(LAMP, AbstractLampBlock.LEVEL, FULL);
           SourceBlockEntity dynamo = context.getBlockEntity(CELL);
           context.assertTrue(dynamo.isRunning(), "the dynamo must be running");
-          context.assertTrue(dynamo.load() == 1 && dynamo.supply() == 24, "wrong totals");
+          WireNetwork network =
+              WireEngine.of(context.getWorld())
+                  .grid()
+                  .networksTouching(context.getAbsolutePos(CELL))
+                  .iterator()
+                  .next();
+          context.assertTrue(network.gridLoad() == 1 && network.gridSupply() == 24, "wrong totals");
           context.complete();
         });
   }
@@ -360,6 +371,100 @@ public class PowerGridGameTest implements FabricGameTest {
     engine.setCharge(0);
     context.expectBlockProperty(generator, FuelledSourceBlock.LEVEL, 0);
     context.complete();
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 60)
+  public void removingTheSharedDeviceSplitsAGridAndRecountsEachSide(TestContext context) {
+    WireEngine engine = WireEngine.of(context.getWorld());
+    BlockPos shared = at(3, 1);
+    cell(context, CELL, 100);
+    context.setBlockState(shared, ModBlocks.LIGHT_STRIP);
+    context.setBlockState(at(6, 1), floorSwitch(true));
+    context.setBlockState(LAMP, ModBlocks.LIGHT_STRIP);
+    layRun(context, 1, 3, 1, Hue.PLAIN);
+    layRun(context, 3, 6, 1, Hue.BLUE);
+    context.waitAndRun(
+        SETTLE,
+        () -> {
+          context.expectBlockProperty(LAMP, AbstractLampBlock.LEVEL, FULL);
+          context.setBlockState(shared, Blocks.AIR);
+        });
+    context.waitAndRun(
+        SETTLE * 2L,
+        () -> {
+          WireCell blue = new WireCell(floor(context, 5, 1), Hue.BLUE);
+          WireCell plain = new WireCell(floor(context, 1, 1), Hue.PLAIN);
+          context.expectBlockProperty(LAMP, AbstractLampBlock.LEVEL, 0);
+          context.assertFalse(
+              engine.grid().networkOf(blue).gridState().givesPower(),
+              "the side with no source must lose power");
+          context.assertTrue(
+              engine.grid().networkOf(plain).gridState().givesPower(),
+              "the side with the cell must keep power");
+          context.assertTrue(
+              engine.grid().networkOf(plain).gridSupply() == 16
+                  && engine.grid().networkOf(blue).gridSupply() == 0,
+              "each side must show its own supply");
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH)
+  public void wireOnTheTopHalfOfAMasterSwitchJoinsItsGrid(TestContext context) {
+    lampRun(context);
+    BlockPos master = at(4, 2);
+    BlockPos ledge = at(5, 2);
+    masterAt(context, master, true);
+    context.setBlockState(ledge, Blocks.STONE);
+    WireEngine engine = WireEngine.of(context.getWorld());
+    engine.lay(new WireCell(floor(context, 4, 2), Hue.PLAIN));
+    engine.lay(new WireCell(new WireFace(context.getAbsolutePos(ledge), Direction.UP), Hue.BLUE));
+    cell(context, ledge.up(), 100);
+    context.waitAndRun(
+        SETTLE,
+        () -> {
+          context.expectBlockProperty(LAMP, AbstractLampBlock.LEVEL, FULL);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH)
+  public void onlyAnEmptyHandWorksASourceSwitch(TestContext context) {
+    SourceBlockEntity source = cell(context, CELL, 100);
+    WireFace top = new WireFace(context.getAbsolutePos(CELL), Direction.UP);
+    ConnectedTestPlayer player = ConnectedTestPlayer.joinAt(context, at(1, 3));
+    player.hold(new ItemStack(Items.STICK), ItemStack.EMPTY);
+    player.useOn(top);
+    context.assertTrue(source.isClosed(), "a held item must not work the switch");
+    player.hold(ItemStack.EMPTY, ItemStack.EMPTY);
+    player.useOn(top);
+    context.assertFalse(source.isClosed(), "an empty hand must work the switch");
+    player.leave();
+    context.complete();
+  }
+
+  @GameTest(templateName = BENCH)
+  public void sealedTotalsReachOnlyItsOwner(TestContext context) {
+    WireEngine engine = WireEngine.of(context.getWorld());
+    ConnectedTestPlayer owner = ConnectedTestPlayer.joinAt(context, at(2, 3));
+    ConnectedTestPlayer stranger = ConnectedTestPlayer.joinAt(context, at(3, 3));
+    context.setBlockState(CELL, ModBlocks.LODESTONE_DYNAMO);
+    engine.lay(new WireCell(floor(context, 1, 1), Hue.PLAIN, owner.id()));
+    DeviceInspectPayload request = new DeviceInspectPayload(context.getAbsolutePos(CELL));
+    context.waitAndRun(
+        SETTLE,
+        () -> {
+          DeviceInspector.inspect(owner.player(), request);
+          DeviceInspector.inspect(stranger.player(), request);
+          List<DeviceInspectResultPayload> seen = owner.deviceResults();
+          context.assertTrue(
+              seen.size() == 1 && seen.getFirst().supply() == 24, "the owner must get the totals");
+          context.assertTrue(
+              stranger.deviceResults().isEmpty(), "a stranger must never get sealed totals");
+          owner.leave();
+          stranger.leave();
+          context.complete();
+        });
   }
 
   @GameTest(templateName = BENCH)

@@ -1,7 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.device.DialDevice;
-import com.grahambartley.hardwired.power.StartOrder;
+import com.grahambartley.hardwired.power.PowerDials;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
 import com.grahambartley.hardwired.registry.ModSounds;
 import com.grahambartley.hardwired.wire.WireEngine;
@@ -17,29 +17,21 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public final class MasterSwitchBlockEntity extends BlockEntity implements DialDevice {
 
-  private static final String LOAD = "grid_load";
-  private static final String SUPPLY = "grid_supply";
+  private static final String WORKLOAD = "workload";
   private static final String THROWN_AT = "thrown_at";
-  private static final float THROW_TICKS = StartOrder.START_TICKS;
   private static final int SPARK_COUNT = 4;
-  private static final float NEEDLE_REST = 0.15F;
-  private static final float NEEDLE_RANGE = 0.75F;
-  private static final float NEEDLE_FLICKER = 0.03F;
-  private static final float NEEDLE_SPEED = 0.7F;
   private static final double SPARK_SPREAD = 0.08D;
   private static final double SPARK_SPEED = 0.15D;
   private static final double SPARK_OUT = -0.14D;
   private static final double SPARK_UP = 0.5D;
 
   private boolean queued;
-  private int load;
-  private int supply;
+  private int workload;
   private long thrownAt = Long.MIN_VALUE / 2;
 
   public MasterSwitchBlockEntity(BlockPos pos, BlockState state) {
@@ -105,10 +97,9 @@ public final class MasterSwitchBlockEntity extends BlockEntity implements DialDe
         SPARK_SPEED);
   }
 
-  public void showGrid(int nextLoad, int nextSupply) {
-    if (load != nextLoad || supply != nextSupply) {
-      load = nextLoad;
-      supply = nextSupply;
+  public void showGrid(int nextWorkload) {
+    if (workload != nextWorkload) {
+      workload = nextWorkload;
       markDirty();
       if (world != null && !world.isClient) {
         world.updateListeners(pos, getCachedState(), getCachedState(), 0);
@@ -123,34 +114,15 @@ public final class MasterSwitchBlockEntity extends BlockEntity implements DialDe
     }
   }
 
-  public int load() {
-    return load;
-  }
-
-  public int supply() {
-    return supply;
-  }
-
   @Override
   public float dial(String value, float tickDelta) {
-    return "load".equals(value) ? needle(tickDelta) : thrown(tickDelta);
-  }
-
-  private float needle(float tickDelta) {
-    if (!getCachedState().get(MasterSwitchBlock.LIVE) || world == null) {
-      return 0F;
+    long time = world == null ? 0L : world.getTime();
+    if ("load".equals(value)) {
+      boolean live = world != null && getCachedState().get(MasterSwitchBlock.LIVE);
+      return PowerDials.needle(live, workload, time + tickDelta);
     }
-    float flow = supply <= 0 ? 0F : Math.min(1F, (float) load / supply);
-    float time = (world.getTime() + tickDelta) * NEEDLE_SPEED;
-    return Math.clamp(
-        NEEDLE_REST + flow * NEEDLE_RANGE + MathHelper.sin(time) * NEEDLE_FLICKER, 0F, 1F);
-  }
-
-  private float thrown(float tickDelta) {
     boolean closed = getCachedState().get(MasterSwitchBlock.CLOSED);
-    float time = world == null ? THROW_TICKS : world.getTime() - thrownAt + tickDelta;
-    float travelled = Math.clamp(time / THROW_TICKS, 0F, 1F);
-    return closed ? travelled : 1F - travelled;
+    return PowerDials.thrown(closed, world == null ? 1F : time - thrownAt + tickDelta);
   }
 
   @Override
@@ -166,16 +138,14 @@ public final class MasterSwitchBlockEntity extends BlockEntity implements DialDe
   @Override
   protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
     super.writeNbt(nbt, registries);
-    nbt.putInt(LOAD, load);
-    nbt.putInt(SUPPLY, supply);
+    nbt.putByte(WORKLOAD, (byte) workload);
     nbt.putLong(THROWN_AT, thrownAt);
   }
 
   @Override
   protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
     super.readNbt(nbt, registries);
-    load = nbt.getInt(LOAD);
-    supply = nbt.getInt(SUPPLY);
+    workload = nbt.getByte(WORKLOAD);
     thrownAt = nbt.getLong(THROWN_AT);
   }
 

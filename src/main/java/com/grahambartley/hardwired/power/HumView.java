@@ -32,7 +32,7 @@ public final class HumView {
     if (server.getTicks() % INTERVAL != 0) {
       return;
     }
-    int range = Hardwired.SERVER_CONFIG.power().humRange();
+    int range = Hardwired.SERVER_CONFIG.power().hum().humRange();
     for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
       int load = loadNear(player, range);
       Integer last = SENT.put(player.getUuid(), load);
@@ -65,11 +65,11 @@ public final class HumView {
       if (network.gridState().givesPower()) {
         for (Long2IntMap.Entry entry : network.lastLoads().long2IntEntrySet()) {
           if (BlockPos.fromLong(entry.getLongKey()).getSquaredDistance(at) <= reach) {
-            counted.mergeInt(entry.getLongKey(), entry.getIntValue(), Math::max);
+            GridTally.addLoad(counted, entry.getLongKey(), entry.getIntValue());
           }
         }
       }
     }
-    return counted.values().intStream().sum();
+    return GridTally.total(counted);
   }
 }

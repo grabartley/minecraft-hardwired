@@ -1,10 +1,9 @@
 package com.grahambartley.hardwired.client;
 
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
-import com.grahambartley.hardwired.block.MasterSwitchBlock;
-import com.grahambartley.hardwired.block.MasterSwitchBlockEntity;
-import com.grahambartley.hardwired.block.SourceBlockEntity;
-import com.grahambartley.hardwired.power.GridState;
+import com.grahambartley.hardwired.device.WireDevice;
+import com.grahambartley.hardwired.network.DeviceInspectResultPayload;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -23,19 +22,10 @@ public final class DeviceHud {
 
   public static void render(DrawContext context, RenderTickCounter tick) {
     MinecraftClient client = MinecraftClient.getInstance();
-    if (client.world == null
-        || client.options.hudHidden
-        || client.currentScreen != null
-        || client.crosshairTarget == null
-        || client.crosshairTarget.getType() != HitResult.Type.BLOCK) {
+    if (client.options.hudHidden || client.currentScreen != null) {
       return;
     }
-    BlockPos pos = ((BlockHitResult) client.crosshairTarget).getBlockPos();
-    BlockEntity entity = client.world.getBlockEntity(pos);
-    if (entity == null && client.world.getBlockState(pos).getBlock() instanceof MasterSwitchBlock) {
-      entity = client.world.getBlockEntity(pos.down());
-    }
-    Text line = line(entity);
+    Text line = line(aimedAt(client));
     if (line != null) {
       context.drawCenteredTextWithShadow(
           client.textRenderer,
@@ -46,21 +36,29 @@ public final class DeviceHud {
     }
   }
 
+  static BlockEntity aimedAt(MinecraftClient client) {
+    if (client.world == null
+        || client.crosshairTarget == null
+        || client.crosshairTarget.getType() != HitResult.Type.BLOCK) {
+      return null;
+    }
+    BlockPos pos = ((BlockHitResult) client.crosshairTarget).getBlockPos();
+    BlockState state = client.world.getBlockState(pos);
+    return client.world.getBlockEntity(
+        state.getBlock() instanceof WireDevice device ? device.loadAnchor(pos, state) : pos);
+  }
+
   private static Text line(BlockEntity entity) {
     if (entity instanceof ElectronicBlockEntity device && device.status().isStopped()) {
       return Text.translatable(device.status().translationKey());
     }
-    if (entity instanceof SourceBlockEntity source) {
-      return totals(source.load(), source.supply(), source.grid() == GridState.OVERLOADED);
+    DeviceInspectResultPayload reading = entity == null ? null : DeviceReadings.at(entity);
+    if (reading == null) {
+      return null;
     }
-    if (entity instanceof MasterSwitchBlockEntity master) {
-      return totals(master.load(), master.supply(), master.load() > master.supply());
-    }
-    return null;
-  }
-
-  private static Text totals(int load, int supply, boolean overloaded) {
     return Text.translatable(
-        overloaded ? "hud.hardwired.overloaded" : "hud.hardwired.load", load, supply);
+        reading.overloaded() ? "hud.hardwired.overloaded" : "hud.hardwired.load",
+        reading.load(),
+        reading.supply());
   }
 }

@@ -2,7 +2,6 @@ package com.grahambartley.hardwired.power;
 
 public final class PowerSoundLevels {
 
-  private static final float MAX_WORKLOAD = 15F;
   private static final float LOWEST_PITCH = 0.7F;
   private static final float PITCH_RISE = 0.9F;
   private static final float QUIETEST_LOOP = 0.25F;
@@ -20,10 +19,10 @@ public final class PowerSoundLevels {
   }
 
   public static float loopPitch(int workload) {
-    return LOWEST_PITCH + PITCH_RISE * workload / MAX_WORKLOAD;
+    return LOWEST_PITCH + PITCH_RISE * PowerDials.gauge(workload);
   }
 
   public static float loopVolume(int workload) {
-    return QUIETEST_LOOP + LOOP_RISE * workload / MAX_WORKLOAD;
+    return QUIETEST_LOOP + LOOP_RISE * PowerDials.gauge(workload);
   }
 }

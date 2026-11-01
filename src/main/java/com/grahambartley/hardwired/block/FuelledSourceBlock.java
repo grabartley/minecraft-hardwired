@@ -66,7 +66,7 @@ public abstract class FuelledSourceBlock extends SourceBlock {
       BlockHitResult hit) {
     boolean redstoneBlock = stack.isOf(Items.REDSTONE_BLOCK);
     if (!redstoneBlock && !stack.isOf(Items.REDSTONE)) {
-      return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+      return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
     if (world.getBlockEntity(pos) instanceof FuelledSourceBlockEntity source && !world.isClient) {
       int worth = CellRules.worth(Hardwired.SERVER_CONFIG.power().dustCharge(), redstoneBlock);

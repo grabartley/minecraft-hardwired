@@ -52,7 +52,10 @@ public class LiftGameTest implements FabricGameTest {
   public void strongCells(ServerWorld world) {
     savedConfig = Hardwired.SERVER_CONFIG;
     Hardwired.SERVER_CONFIG =
-        savedConfig.withPower(savedConfig.power().withCellRating(STRONG_CELL));
+        savedConfig.withPower(
+            savedConfig
+                .power()
+                .withRatings(savedConfig.power().ratings().withCellRating(STRONG_CELL)));
   }
 
   @AfterBatch(batchId = BATCH)

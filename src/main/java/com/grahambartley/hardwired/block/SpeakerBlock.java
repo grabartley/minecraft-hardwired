@@ -41,7 +41,7 @@ public final class SpeakerBlock extends TableDeviceBlock {
 
   @Override
   public int ratedLoad(PowerSettings settings) {
-    return settings.speakerLoad();
+    return settings.loads().speakerLoad();
   }
 
   @Override

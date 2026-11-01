@@ -4,8 +4,11 @@ import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.config.CircuitSettings;
 import com.grahambartley.hardwired.config.DeviceSettings;
 import com.grahambartley.hardwired.config.HardwiredConfig;
+import com.grahambartley.hardwired.config.HumSettings;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.PowerLoads;
+import com.grahambartley.hardwired.config.PowerRatings;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.config.WireSettings;
@@ -128,122 +131,160 @@ public final class HardwiredCommand {
           new IntOption(
               "cellrating",
               "value",
-              PowerSettings.CELL_RATING_MIN,
-              PowerSettings.CELL_RATING_MAX,
-              config -> config.power().cellRating(),
-              (config, value) -> config.withPower(config.power().withCellRating(value))),
+              PowerRatings.CELL_RATING_MIN,
+              PowerRatings.CELL_RATING_MAX,
+              config -> config.power().ratings().cellRating(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withRatings(config.power().ratings().withCellRating(value)))),
           new IntOption(
               "generatorrating",
               "value",
-              PowerSettings.GENERATOR_RATING_MIN,
-              PowerSettings.GENERATOR_RATING_MAX,
-              config -> config.power().generatorRating(),
-              (config, value) -> config.withPower(config.power().withGeneratorRating(value))),
+              PowerRatings.GENERATOR_RATING_MIN,
+              PowerRatings.GENERATOR_RATING_MAX,
+              config -> config.power().ratings().generatorRating(),
+              (config, value) ->
+                  config.withPower(
+                      config
+                          .power()
+                          .withRatings(config.power().ratings().withGeneratorRating(value)))),
           new IntOption(
               "solarrating",
               "value",
-              PowerSettings.SOLAR_RATING_MIN,
-              PowerSettings.SOLAR_RATING_MAX,
-              config -> config.power().solarRating(),
-              (config, value) -> config.withPower(config.power().withSolarRating(value))),
+              PowerRatings.SOLAR_RATING_MIN,
+              PowerRatings.SOLAR_RATING_MAX,
+              config -> config.power().ratings().solarRating(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withRatings(config.power().ratings().withSolarRating(value)))),
           new IntOption(
               "dynamorating",
               "value",
-              PowerSettings.DYNAMO_RATING_MIN,
-              PowerSettings.DYNAMO_RATING_MAX,
-              config -> config.power().dynamoRating(),
-              (config, value) -> config.withPower(config.power().withDynamoRating(value))),
+              PowerRatings.DYNAMO_RATING_MIN,
+              PowerRatings.DYNAMO_RATING_MAX,
+              config -> config.power().ratings().dynamoRating(),
+              (config, value) ->
+                  config.withPower(
+                      config
+                          .power()
+                          .withRatings(config.power().ratings().withDynamoRating(value)))),
           new IntOption(
               "lampload",
               "value",
-              PowerSettings.LAMP_LOAD_MIN,
-              PowerSettings.LAMP_LOAD_MAX,
-              config -> config.power().lampLoad(),
-              (config, value) -> config.withPower(config.power().withLampLoad(value))),
+              PowerLoads.LAMP_LOAD_MIN,
+              PowerLoads.LAMP_LOAD_MAX,
+              config -> config.power().loads().lampLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withLampLoad(value)))),
           new IntOption(
               "streetlightload",
               "value",
-              PowerSettings.STREETLIGHT_LOAD_MIN,
-              PowerSettings.STREETLIGHT_LOAD_MAX,
-              config -> config.power().streetlightLoad(),
-              (config, value) -> config.withPower(config.power().withStreetlightLoad(value))),
+              PowerLoads.STREETLIGHT_LOAD_MIN,
+              PowerLoads.STREETLIGHT_LOAD_MAX,
+              config -> config.power().loads().streetlightLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withStreetlightLoad(value)))),
           new IntOption(
               "logicload",
               "value",
-              PowerSettings.LOGIC_LOAD_MIN,
-              PowerSettings.LOGIC_LOAD_MAX,
-              config -> config.power().logicLoad(),
-              (config, value) -> config.withPower(config.power().withLogicLoad(value))),
+              PowerLoads.LOGIC_LOAD_MIN,
+              PowerLoads.LOGIC_LOAD_MAX,
+              config -> config.power().loads().logicLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withLogicLoad(value)))),
           new IntOption(
               "vanillaload",
               "value",
-              PowerSettings.VANILLA_LOAD_MIN,
-              PowerSettings.VANILLA_LOAD_MAX,
-              config -> config.power().vanillaLoad(),
-              (config, value) -> config.withPower(config.power().withVanillaLoad(value))),
+              PowerLoads.VANILLA_LOAD_MIN,
+              PowerLoads.VANILLA_LOAD_MAX,
+              config -> config.power().loads().vanillaLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withVanillaLoad(value)))),
           new IntOption(
               "radioload",
               "value",
-              PowerSettings.RADIO_LOAD_MIN,
-              PowerSettings.RADIO_LOAD_MAX,
-              config -> config.power().radioLoad(),
-              (config, value) -> config.withPower(config.power().withRadioLoad(value))),
+              PowerLoads.RADIO_LOAD_MIN,
+              PowerLoads.RADIO_LOAD_MAX,
+              config -> config.power().loads().radioLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withRadioLoad(value)))),
           new IntOption(
               "speakerload",
               "value",
-              PowerSettings.SPEAKER_LOAD_MIN,
-              PowerSettings.SPEAKER_LOAD_MAX,
-              config -> config.power().speakerLoad(),
-              (config, value) -> config.withPower(config.power().withSpeakerLoad(value))),
+              PowerLoads.SPEAKER_LOAD_MIN,
+              PowerLoads.SPEAKER_LOAD_MAX,
+              config -> config.power().loads().speakerLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withSpeakerLoad(value)))),
           new IntOption(
               "intercomload",
               "value",
-              PowerSettings.INTERCOM_LOAD_MIN,
-              PowerSettings.INTERCOM_LOAD_MAX,
-              config -> config.power().intercomLoad(),
-              (config, value) -> config.withPower(config.power().withIntercomLoad(value))),
+              PowerLoads.INTERCOM_LOAD_MIN,
+              PowerLoads.INTERCOM_LOAD_MAX,
+              config -> config.power().loads().intercomLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withIntercomLoad(value)))),
           new IntOption(
               "alarmload",
               "value",
-              PowerSettings.ALARM_LOAD_MIN,
-              PowerSettings.ALARM_LOAD_MAX,
-              config -> config.power().alarmLoad(),
-              (config, value) -> config.withPower(config.power().withAlarmLoad(value))),
+              PowerLoads.ALARM_LOAD_MIN,
+              PowerLoads.ALARM_LOAD_MAX,
+              config -> config.power().loads().alarmLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withAlarmLoad(value)))),
           new IntOption(
               "broadcastload",
               "value",
-              PowerSettings.BROADCAST_LOAD_MIN,
-              PowerSettings.BROADCAST_LOAD_MAX,
-              config -> config.power().broadcastLoad(),
-              (config, value) -> config.withPower(config.power().withBroadcastLoad(value))),
+              PowerLoads.BROADCAST_LOAD_MIN,
+              PowerLoads.BROADCAST_LOAD_MAX,
+              config -> config.power().loads().broadcastLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withBroadcastLoad(value)))),
           new IntOption(
               "liftload",
               "value",
-              PowerSettings.LIFT_LOAD_MIN,
-              PowerSettings.LIFT_LOAD_MAX,
-              config -> config.power().liftLoad(),
-              (config, value) -> config.withPower(config.power().withLiftLoad(value))),
+              PowerLoads.LIFT_LOAD_MIN,
+              PowerLoads.LIFT_LOAD_MAX,
+              config -> config.power().loads().liftLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withLiftLoad(value)))),
           new IntOption(
               "humrange",
               "value",
-              PowerSettings.HUM_RANGE_MIN,
-              PowerSettings.HUM_RANGE_MAX,
-              config -> config.power().humRange(),
-              (config, value) -> config.withPower(config.power().withHumRange(value))),
+              HumSettings.HUM_RANGE_MIN,
+              HumSettings.HUM_RANGE_MAX,
+              config -> config.power().hum().humRange(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withHum(config.power().hum().withHumRange(value)))),
           new IntOption(
               "humstartload",
               "value",
-              PowerSettings.HUM_START_LOAD_MIN,
-              PowerSettings.HUM_START_LOAD_MAX,
-              config -> config.power().humStartLoad(),
-              (config, value) -> config.withPower(config.power().withHumStartLoad(value))),
+              HumSettings.HUM_START_LOAD_MIN,
+              HumSettings.HUM_START_LOAD_MAX,
+              config -> config.power().hum().humStartLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withHum(config.power().hum().withHumStartLoad(value)))),
           new IntOption(
               "humfullload",
               "value",
-              PowerSettings.HUM_FULL_LOAD_MIN,
-              PowerSettings.HUM_FULL_LOAD_MAX,
-              config -> config.power().humFullLoad(),
-              (config, value) -> config.withPower(config.power().withHumFullLoad(value))),
+              HumSettings.HUM_FULL_LOAD_MIN,
+              HumSettings.HUM_FULL_LOAD_MAX,
+              config -> config.power().hum().humFullLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withHum(config.power().hum().withHumFullLoad(value)))),
           new IntOption(
               "liftticksperblock",
               "ticks",

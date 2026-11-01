@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.gametest;
 
 import com.grahambartley.hardwired.network.CircuitResultPayload;
+import com.grahambartley.hardwired.network.DeviceInspectResultPayload;
 import com.grahambartley.hardwired.network.MainPanelViewPayload;
 import com.grahambartley.hardwired.network.OpenDevicePayload;
 import com.grahambartley.hardwired.network.WireChunkPayload;
@@ -209,6 +210,10 @@ public final class ConnectedTestPlayer {
 
   public int inspectResults() {
     return received(WireInspectResultPayload.class).size();
+  }
+
+  public List<DeviceInspectResultPayload> deviceResults() {
+    return received(DeviceInspectResultPayload.class);
   }
 
   private <T extends CustomPayload> List<T> received(Class<T> type) {

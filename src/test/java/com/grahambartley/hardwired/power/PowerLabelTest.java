@@ -2,6 +2,7 @@ package com.grahambartley.hardwired.power;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.grahambartley.hardwired.config.PowerLoads;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import java.util.Optional;
@@ -53,6 +54,8 @@ class PowerLabelTest {
   void aChangedSettingChangesTheLabel() {
     assertEquals(
         Optional.of(new PowerLabel(DRAWS, 9)),
-        PowerLabel.of(ModBlocks.ALARM, PowerSettings.DEFAULTS.withAlarmLoad(9)));
+        PowerLabel.of(
+            ModBlocks.ALARM,
+            PowerSettings.DEFAULTS.withLoads(PowerLoads.DEFAULTS.withAlarmLoad(9))));
   }
 }

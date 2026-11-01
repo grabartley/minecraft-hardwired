@@ -5,8 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.grahambartley.hardwired.config.CircuitSettings;
 import com.grahambartley.hardwired.config.DeviceSettings;
 import com.grahambartley.hardwired.config.HardwiredConfig;
+import com.grahambartley.hardwired.config.HumSettings;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.PowerLoads;
+import com.grahambartley.hardwired.config.PowerRatings;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.config.WireSettings;
@@ -54,7 +57,9 @@ class ServerConfigPayloadsTest {
                 new WireSettings(9, 65),
                 new LampSettings(150),
                 new DeviceSettings(2, 3, 4),
-                PowerSettings.DEFAULTS.withCellRating(40).withLiftLoad(16),
+                PowerSettings.DEFAULTS
+                    .withRatings(PowerRatings.DEFAULTS.withCellRating(40))
+                    .withLoads(PowerLoads.DEFAULTS.withLiftLoad(16)),
                 new LiftSettings(13),
                 new CircuitSettings(200, 15),
                 new RadioSettings(17, 18, 19, 20, 21, 22, 23, 24, false))),
@@ -63,7 +68,9 @@ class ServerConfigPayloadsTest {
                 new WireSettings(96, 65536),
                 new LampSettings(1000),
                 new DeviceSettings(16, 200, 128),
-                PowerSettings.DEFAULTS.withHumFullLoad(900).withChargePerLoadMinute(9),
+                PowerSettings.DEFAULTS
+                    .withHum(HumSettings.DEFAULTS.withHumFullLoad(900))
+                    .withChargePerLoadMinute(9),
                 new LiftSettings(40),
                 new CircuitSettings(256, 64),
                 new RadioSettings(63, 127, 4096, 512, 126, 255, 254, 253, true))));

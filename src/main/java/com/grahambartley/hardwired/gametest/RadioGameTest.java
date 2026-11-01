@@ -52,7 +52,10 @@ public class RadioGameTest implements FabricGameTest {
     Hardwired.SERVER_CONFIG =
         savedConfig
             .withRadio(RadioSettings.DEFAULTS.withTowerMinMasts(MASTS))
-            .withPower(savedConfig.power().withCellRating(STRONG_CELL));
+            .withPower(
+                savedConfig
+                    .power()
+                    .withRatings(savedConfig.power().ratings().withCellRating(STRONG_CELL)));
   }
 
   @AfterBatch(batchId = BATCH)

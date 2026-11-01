@@ -81,7 +81,7 @@ public final class RadioBlock extends TableDeviceBlock {
 
   @Override
   public int ratedLoad(PowerSettings settings) {
-    return settings.radioLoad();
+    return settings.loads().radioLoad();
   }
 
   @Override

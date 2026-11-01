@@ -163,16 +163,17 @@ public final class MasterSwitchBlock extends Block implements BlockEntityProvide
     if (player instanceof ServerPlayerEntity serverPlayer
         && world instanceof ServerWorld server
         && world.getBlockEntity(lower) instanceof MasterSwitchBlockEntity master
-        && SourceSwitches.mayWork(serverPlayer, lower)
-        && SourceSwitches.mayWork(serverPlayer, lower.up())) {
+        && SourceSwitches.mayWork(serverPlayer, lower)) {
       master.requestThrow(server, world.getBlockState(lower));
     }
     return ActionResult.SUCCESS;
   }
 
   @Override
-  public BlockPos loadAnchor(BlockPos pos, BlockState state) {
-    return state.get(HALF) == DoubleBlockHalf.UPPER ? pos.down() : pos;
+  public List<BlockPos> cells(BlockPos pos, BlockState state) {
+    return state.get(HALF) == DoubleBlockHalf.UPPER
+        ? List.of(pos.down(), pos)
+        : List.of(pos, pos.up());
   }
 
   @Override

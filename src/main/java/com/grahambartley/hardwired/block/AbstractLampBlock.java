@@ -76,27 +76,18 @@ public abstract class AbstractLampBlock extends Block
 
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
     WireEngine engine = WireEngine.of(world);
-    return parts(pos, state).stream().anyMatch(engine::isOn)
+    return cells(pos, state).stream().anyMatch(engine::isOn)
         ? ratedLoad(Hardwired.SERVER_CONFIG.power())
         : 0;
   }
 
   @Override
   public int ratedLoad(PowerSettings settings) {
-    return settings.lampLoad();
-  }
-
-  @Override
-  public BlockPos loadAnchor(BlockPos pos, BlockState state) {
-    return lampPos(pos, state);
+    return settings.loads().lampLoad();
   }
 
   public BlockPos lampPos(BlockPos pos, BlockState state) {
     return pos;
-  }
-
-  protected List<BlockPos> parts(BlockPos pos, BlockState state) {
-    return List.of(pos);
   }
 
   protected void update(World world, BlockPos pos, BlockState state) {
@@ -115,7 +106,7 @@ public abstract class AbstractLampBlock extends Block
       return;
     }
     WireEngine engine = WireEngine.of(world);
-    List<BlockPos> parts = parts(pos, state);
+    List<BlockPos> parts = cells(pos, state);
     BlockPos lookPart =
         parts.stream().filter(part -> engine.lookAt(part) != null).findFirst().orElse(pos);
     LampLook look = lamp.lookOver(engine.lookAt(lookPart), engine.lookStampAt(lookPart));

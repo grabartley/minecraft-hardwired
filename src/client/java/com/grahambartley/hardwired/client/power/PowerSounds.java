@@ -18,6 +18,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientBlockEntityEvents
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -71,7 +72,13 @@ public final class PowerSounds {
                 Comparator.comparingDouble(source -> source.getPos().getSquaredDistance(listener)))
             .limit(MOST_LOOPS)
             .toList();
-    LOOPS.entrySet().removeIf(entry -> entry.getValue().isDone());
+    LOOPS.entrySet().removeIf(entry -> isSilent(client, entry.getValue()));
+    LOOPS.forEach(
+        (source, sound) -> {
+          if (!heard.contains(source)) {
+            sound.fadeOut();
+          }
+        });
     for (SourceBlockEntity source : heard) {
       SoundEvent loop = loopOf(source.kind());
       if (loop != null && !LOOPS.containsKey(source)) {
@@ -93,17 +100,21 @@ public final class PowerSounds {
     keepHumming(client);
   }
 
+  private static boolean isSilent(MinecraftClient client, MovingSoundInstance sound) {
+    return sound.isDone() || !client.getSoundManager().isPlaying(sound);
+  }
+
   private static double humLevel() {
     PowerSettings power = SyncedServerConfig.get().power();
     return PowerSoundLevels.hum(
         humLoad,
-        power.humStartLoad(),
-        power.humFullLoad(),
+        power.hum().humStartLoad(),
+        power.hum().humFullLoad(),
         ClientSettingsStore.radio().electricHumPercent());
   }
 
   private static void keepHumming(MinecraftClient client) {
-    if (hum != null && hum.isDone()) {
+    if (hum != null && isSilent(client, hum)) {
       hum = null;
     }
     if (hum == null && humLevel() > 0) {

@@ -3,8 +3,11 @@ package com.grahambartley.hardwired.screen;
 import com.grahambartley.hardwired.config.CircuitSettings;
 import com.grahambartley.hardwired.config.DeviceSettings;
 import com.grahambartley.hardwired.config.HardwiredConfig;
+import com.grahambartley.hardwired.config.HumSettings;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.PowerLoads;
+import com.grahambartley.hardwired.config.PowerRatings;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.config.WireSettings;
@@ -115,138 +118,201 @@ final class SettingsConfigSection {
         rows.intSlider(
             KEY + "cellrating",
             KEY + "cellrating.tooltip",
-            PowerSettings.CELL_RATING_MIN,
-            PowerSettings.CELL_RATING_MAX,
-            config.power().cellRating(),
-            value -> config = config.withPower(config.power().withCellRating(value))));
+            PowerRatings.CELL_RATING_MIN,
+            PowerRatings.CELL_RATING_MAX,
+            config.power().ratings().cellRating(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withRatings(config.power().ratings().withCellRating(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "generatorrating",
             KEY + "generatorrating.tooltip",
-            PowerSettings.GENERATOR_RATING_MIN,
-            PowerSettings.GENERATOR_RATING_MAX,
-            config.power().generatorRating(),
-            value -> config = config.withPower(config.power().withGeneratorRating(value))));
+            PowerRatings.GENERATOR_RATING_MIN,
+            PowerRatings.GENERATOR_RATING_MAX,
+            config.power().ratings().generatorRating(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withRatings(config.power().ratings().withGeneratorRating(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "solarrating",
             KEY + "solarrating.tooltip",
-            PowerSettings.SOLAR_RATING_MIN,
-            PowerSettings.SOLAR_RATING_MAX,
-            config.power().solarRating(),
-            value -> config = config.withPower(config.power().withSolarRating(value))));
+            PowerRatings.SOLAR_RATING_MIN,
+            PowerRatings.SOLAR_RATING_MAX,
+            config.power().ratings().solarRating(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withRatings(config.power().ratings().withSolarRating(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "dynamorating",
             KEY + "dynamorating.tooltip",
-            PowerSettings.DYNAMO_RATING_MIN,
-            PowerSettings.DYNAMO_RATING_MAX,
-            config.power().dynamoRating(),
-            value -> config = config.withPower(config.power().withDynamoRating(value))));
+            PowerRatings.DYNAMO_RATING_MIN,
+            PowerRatings.DYNAMO_RATING_MAX,
+            config.power().ratings().dynamoRating(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withRatings(config.power().ratings().withDynamoRating(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "lampload",
             KEY + "lampload.tooltip",
-            PowerSettings.LAMP_LOAD_MIN,
-            PowerSettings.LAMP_LOAD_MAX,
-            config.power().lampLoad(),
-            value -> config = config.withPower(config.power().withLampLoad(value))));
+            PowerLoads.LAMP_LOAD_MIN,
+            PowerLoads.LAMP_LOAD_MAX,
+            config.power().loads().lampLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withLampLoad(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "streetlightload",
             KEY + "streetlightload.tooltip",
-            PowerSettings.STREETLIGHT_LOAD_MIN,
-            PowerSettings.STREETLIGHT_LOAD_MAX,
-            config.power().streetlightLoad(),
-            value -> config = config.withPower(config.power().withStreetlightLoad(value))));
+            PowerLoads.STREETLIGHT_LOAD_MIN,
+            PowerLoads.STREETLIGHT_LOAD_MAX,
+            config.power().loads().streetlightLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withLoads(config.power().loads().withStreetlightLoad(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "logicload",
             KEY + "logicload.tooltip",
-            PowerSettings.LOGIC_LOAD_MIN,
-            PowerSettings.LOGIC_LOAD_MAX,
-            config.power().logicLoad(),
-            value -> config = config.withPower(config.power().withLogicLoad(value))));
+            PowerLoads.LOGIC_LOAD_MIN,
+            PowerLoads.LOGIC_LOAD_MAX,
+            config.power().loads().logicLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withLogicLoad(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "vanillaload",
             KEY + "vanillaload.tooltip",
-            PowerSettings.VANILLA_LOAD_MIN,
-            PowerSettings.VANILLA_LOAD_MAX,
-            config.power().vanillaLoad(),
-            value -> config = config.withPower(config.power().withVanillaLoad(value))));
+            PowerLoads.VANILLA_LOAD_MIN,
+            PowerLoads.VANILLA_LOAD_MAX,
+            config.power().loads().vanillaLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withVanillaLoad(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "radioload",
             KEY + "radioload.tooltip",
-            PowerSettings.RADIO_LOAD_MIN,
-            PowerSettings.RADIO_LOAD_MAX,
-            config.power().radioLoad(),
-            value -> config = config.withPower(config.power().withRadioLoad(value))));
+            PowerLoads.RADIO_LOAD_MIN,
+            PowerLoads.RADIO_LOAD_MAX,
+            config.power().loads().radioLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withRadioLoad(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "speakerload",
             KEY + "speakerload.tooltip",
-            PowerSettings.SPEAKER_LOAD_MIN,
-            PowerSettings.SPEAKER_LOAD_MAX,
-            config.power().speakerLoad(),
-            value -> config = config.withPower(config.power().withSpeakerLoad(value))));
+            PowerLoads.SPEAKER_LOAD_MIN,
+            PowerLoads.SPEAKER_LOAD_MAX,
+            config.power().loads().speakerLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withSpeakerLoad(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "intercomload",
             KEY + "intercomload.tooltip",
-            PowerSettings.INTERCOM_LOAD_MIN,
-            PowerSettings.INTERCOM_LOAD_MAX,
-            config.power().intercomLoad(),
-            value -> config = config.withPower(config.power().withIntercomLoad(value))));
+            PowerLoads.INTERCOM_LOAD_MIN,
+            PowerLoads.INTERCOM_LOAD_MAX,
+            config.power().loads().intercomLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withIntercomLoad(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "alarmload",
             KEY + "alarmload.tooltip",
-            PowerSettings.ALARM_LOAD_MIN,
-            PowerSettings.ALARM_LOAD_MAX,
-            config.power().alarmLoad(),
-            value -> config = config.withPower(config.power().withAlarmLoad(value))));
+            PowerLoads.ALARM_LOAD_MIN,
+            PowerLoads.ALARM_LOAD_MAX,
+            config.power().loads().alarmLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withAlarmLoad(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "broadcastload",
             KEY + "broadcastload.tooltip",
-            PowerSettings.BROADCAST_LOAD_MIN,
-            PowerSettings.BROADCAST_LOAD_MAX,
-            config.power().broadcastLoad(),
-            value -> config = config.withPower(config.power().withBroadcastLoad(value))));
+            PowerLoads.BROADCAST_LOAD_MIN,
+            PowerLoads.BROADCAST_LOAD_MAX,
+            config.power().loads().broadcastLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withLoads(config.power().loads().withBroadcastLoad(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "liftload",
             KEY + "liftload.tooltip",
-            PowerSettings.LIFT_LOAD_MIN,
-            PowerSettings.LIFT_LOAD_MAX,
-            config.power().liftLoad(),
-            value -> config = config.withPower(config.power().withLiftLoad(value))));
+            PowerLoads.LIFT_LOAD_MIN,
+            PowerLoads.LIFT_LOAD_MAX,
+            config.power().loads().liftLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withLiftLoad(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "humrange",
             KEY + "humrange.tooltip",
-            PowerSettings.HUM_RANGE_MIN,
-            PowerSettings.HUM_RANGE_MAX,
-            config.power().humRange(),
-            value -> config = config.withPower(config.power().withHumRange(value))));
+            HumSettings.HUM_RANGE_MIN,
+            HumSettings.HUM_RANGE_MAX,
+            config.power().hum().humRange(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withHum(config.power().hum().withHumRange(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "humstartload",
             KEY + "humstartload.tooltip",
-            PowerSettings.HUM_START_LOAD_MIN,
-            PowerSettings.HUM_START_LOAD_MAX,
-            config.power().humStartLoad(),
-            value -> config = config.withPower(config.power().withHumStartLoad(value))));
+            HumSettings.HUM_START_LOAD_MIN,
+            HumSettings.HUM_START_LOAD_MAX,
+            config.power().hum().humStartLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withHum(config.power().hum().withHumStartLoad(value)))));
     list.addRow(
         rows.intSlider(
             KEY + "humfullload",
             KEY + "humfullload.tooltip",
-            PowerSettings.HUM_FULL_LOAD_MIN,
-            PowerSettings.HUM_FULL_LOAD_MAX,
-            config.power().humFullLoad(),
-            value -> config = config.withPower(config.power().withHumFullLoad(value))));
+            HumSettings.HUM_FULL_LOAD_MIN,
+            HumSettings.HUM_FULL_LOAD_MAX,
+            config.power().hum().humFullLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withHum(config.power().hum().withHumFullLoad(value)))));
     list.addRow(rows.header(KEY + "lift"));
     list.addRow(
         rows.intSlider(

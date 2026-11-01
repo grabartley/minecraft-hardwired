@@ -1,7 +1,7 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.device.DialDevice;
-import com.grahambartley.hardwired.power.GridState;
+import com.grahambartley.hardwired.power.PowerDials;
 import com.grahambartley.hardwired.power.PowerSource;
 import com.grahambartley.hardwired.power.SourceKind;
 import com.grahambartley.hardwired.registry.ModSounds;
@@ -24,19 +24,10 @@ public class SourceBlockEntity extends BlockEntity implements DialDevice {
   private static final String CLOSED = "switch_closed";
   private static final String RUNNING = "running";
   private static final String WORKLOAD = "workload";
-  private static final String LOAD = "load";
-  private static final String SUPPLY = "supply";
-  private static final String GRID = "grid";
-  private static final float MAX_WORKLOAD = 15F;
-  private static final float IDLE_SPEED = 0.35F;
-  private static final float EXTRA_SPEED = 1.65F;
 
   private boolean closed = true;
   private boolean running;
   private int workload;
-  private int load;
-  private int supply;
-  private GridState grid = GridState.NO_SOURCE;
 
   public SourceBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
     super(type, pos, state);
@@ -60,38 +51,17 @@ public class SourceBlockEntity extends BlockEntity implements DialDevice {
     return workload;
   }
 
-  public int load() {
-    return load;
-  }
-
-  public int supply() {
-    return supply;
-  }
-
-  public GridState grid() {
-    return grid;
-  }
-
   public void toggleSwitch(ServerWorld world) {
     closed = !closed;
     sync();
     WireEngine.of(world).power().changed(pos);
   }
 
-  public void showGrid(
-      boolean nowRunning, int nextWorkload, int nextLoad, int nextSupply, GridState nextGrid) {
+  public void showGrid(boolean nowRunning, int nextWorkload) {
     boolean startedOrStopped = running != nowRunning;
-    boolean changed =
-        startedOrStopped
-            || workload != nextWorkload
-            || load != nextLoad
-            || supply != nextSupply
-            || grid != nextGrid;
+    boolean changed = startedOrStopped || workload != nextWorkload;
     running = nowRunning;
     workload = nextWorkload;
-    load = nextLoad;
-    supply = nextSupply;
-    grid = nextGrid;
     if (startedOrStopped) {
       play(running ? ModSounds.SOURCE_UP : ModSounds.SOURCE_DOWN, kind().soundVolume());
     }
@@ -117,16 +87,10 @@ public class SourceBlockEntity extends BlockEntity implements DialDevice {
   public float dial(String value, float tickDelta) {
     return switch (value) {
       case "switch" -> closed ? 1F : 0F;
-      case "load" -> workload / MAX_WORKLOAD;
-      case "sun" -> world == null ? 0.5F : 1F - sunPhase(tickDelta);
+      case "load" -> PowerDials.gauge(workload);
+      case "sun" -> world == null ? 0.5F : 1F - PowerDials.sunPhase(world.getSkyAngle(tickDelta));
       default -> 0F;
     };
-  }
-
-  private float sunPhase(float tickDelta) {
-    float angle = world.getSkyAngle(tickDelta);
-    float climbed = angle > 0.75F ? angle - 0.75F : angle + 0.25F;
-    return Math.clamp(climbed * 2F, 0F, 1F);
   }
 
   @Override
@@ -136,7 +100,7 @@ public class SourceBlockEntity extends BlockEntity implements DialDevice {
 
   @Override
   public float clipSpeed() {
-    return running ? IDLE_SPEED + EXTRA_SPEED * workload / MAX_WORKLOAD : 0F;
+    return PowerDials.clipSpeed(running, workload);
   }
 
   @Override
@@ -149,9 +113,6 @@ public class SourceBlockEntity extends BlockEntity implements DialDevice {
     nbt.putBoolean(CLOSED, closed);
     nbt.putBoolean(RUNNING, running);
     nbt.putByte(WORKLOAD, (byte) workload);
-    nbt.putInt(LOAD, load);
-    nbt.putInt(SUPPLY, supply);
-    nbt.putByte(GRID, (byte) grid.ordinal());
   }
 
   @Override
@@ -160,9 +121,6 @@ public class SourceBlockEntity extends BlockEntity implements DialDevice {
     closed = !nbt.contains(CLOSED) || nbt.getBoolean(CLOSED);
     running = nbt.getBoolean(RUNNING);
     workload = nbt.getByte(WORKLOAD);
-    load = nbt.getInt(LOAD);
-    supply = nbt.getInt(SUPPLY);
-    grid = GridState.byIndex(nbt.getByte(GRID));
   }
 
   @Override
@@ -170,9 +128,6 @@ public class SourceBlockEntity extends BlockEntity implements DialDevice {
     nbt.remove(CLOSED);
     nbt.remove(RUNNING);
     nbt.remove(WORKLOAD);
-    nbt.remove(LOAD);
-    nbt.remove(SUPPLY);
-    nbt.remove(GRID);
   }
 
   @Override
