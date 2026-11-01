@@ -67,7 +67,7 @@ public final class PowerGrids {
   }
 
   public boolean isStarting(BlockPos master) {
-    return startingMasters.contains(master.asLong());
+    return !starts.isEmpty() && startingMasters.contains(master.asLong());
   }
 
   public void startFrom(BlockPos master) {

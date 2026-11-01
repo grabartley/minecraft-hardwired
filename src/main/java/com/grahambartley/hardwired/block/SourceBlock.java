@@ -4,6 +4,7 @@ import com.grahambartley.hardwired.device.AnimatedDevice;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.power.PowerSource;
 import com.grahambartley.hardwired.power.SourceSwitches;
+import com.grahambartley.hardwired.registry.ModSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -48,6 +49,17 @@ public abstract class SourceBlock extends Block
   @Override
   public boolean isAnimating(BlockState state) {
     return true;
+  }
+
+  @Override
+  protected void onStateReplaced(
+      BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    if (!state.isOf(newState.getBlock())
+        && world.getBlockEntity(pos) instanceof SourceBlockEntity source
+        && source.isRunning()) {
+      world.playSound(null, pos, ModSounds.SOURCE_DOWN, SoundCategory.BLOCKS, 1F, 1F);
+    }
+    super.onStateReplaced(state, world, pos, newState, moved);
   }
 
   @Override
