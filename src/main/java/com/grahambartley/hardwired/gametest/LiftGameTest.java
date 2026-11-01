@@ -32,7 +32,11 @@ import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -40,11 +44,15 @@ import net.minecraft.test.AfterBatch;
 import net.minecraft.test.BeforeBatch;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 
 public class LiftGameTest implements FabricGameTest {
@@ -548,6 +556,8 @@ public class LiftGameTest implements FabricGameTest {
           context.assertTrue(
               spot.equals(context.getAbsolutePos(gate(MIDDLE))), "at the nearest gate: " + spot);
           context.assertFalse(isOpen(context, MIDDLE), "no car, no open gate");
+          context.assertTrue(
+              dial(context, MIDDLE).dial().equals(LiftDial.NONE), "the dial goes back to rest");
           Box box = context.getTestBox();
           int dropped =
               context.getWorld().getEntitiesByClass(ItemEntity.class, box, item -> true).stream()
@@ -811,5 +821,88 @@ public class LiftGameTest implements FabricGameTest {
           context.assertEquals(dropped, 1, "large lift items dropped");
           context.complete();
         });
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void wireOnAnyLargeLiftCellServesItsGates(TestContext context) {
+    build(context, FULL_CHARGE);
+    growToLarge(context);
+    WireEngine engine = WireEngine.of(context.getWorld());
+    engine.cut(new WireCell(new WireFace(context.getAbsolutePos(HEAD), Direction.WEST), Hue.PLAIN));
+    context.setBlockState(new BlockPos(GATE_X, HEAD_Y - 1, COLUMN_Z + 1), Blocks.STONE);
+    wire(engine, new BlockPos(GATE_X, HEAD_Y - 1, COLUMN_Z + 1), Direction.UP, context);
+    wire(engine, LiftCorner.SOUTH_WEST.cell(HEAD), Direction.WEST, context);
+    ConnectedTestPlayer rider = riderFrom(context, LOW);
+    context.runAtTick(
+        START_TICK,
+        () -> {
+          context.assertFalse(shaft(context).gates().isEmpty(), "gates found through a far cell");
+          openAt(context, rider, LOW);
+          context.assertTrue(isOpen(context, LOW), "the car opens the gate");
+          choose(context, rider, LOW, HIGH);
+        });
+    context.runAtTick(
+        START_TICK + 4,
+        () -> {
+          context.assertTrue(rider.player().hasVehicle(), "powered through a far cell");
+          finish(context, rider);
+        });
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void aGateMayFaceAnyColumnOfALargeLift(TestContext context) {
+    build(context, FULL_CHARGE);
+    growToLarge(context);
+    BlockPos side = gate(HIGH).south();
+    BlockState lower =
+        ModBlocks.LIFT_FLOOR
+            .getDefaultState()
+            .with(LiftFloorBlock.FACING, Direction.EAST)
+            .with(LiftFloorBlock.HALF, DoubleBlockHalf.LOWER);
+    context.setBlockState(side.down(), Blocks.STONE);
+    context.setBlockState(side, lower);
+    context.setBlockState(side.up(), lower.with(LiftFloorBlock.HALF, DoubleBlockHalf.UPPER));
+    WireEngine engine = WireEngine.of(context.getWorld());
+    wire(engine, side.down(), Direction.UP, context);
+    wire(engine, gate(HIGH).down(), Direction.UP, context);
+    context.runAtTick(
+        START_TICK,
+        () -> {
+          BlockPos absolute = context.getAbsolutePos(side);
+          context.assertTrue(
+              shaft(context).gates().contains(absolute), "the side gate is on the shaft");
+          context.assertTrue(
+              LiftShaft.forGate(context.getWorld(), absolute).isPresent(), "it finds the Lift");
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void placingALargeLiftFillsFourCellsFacingOut(TestContext context) {
+    BlockPos placed = new BlockPos(COLUMN_X, HEAD_Y, COLUMN_Z);
+    BlockPos absolute = context.getAbsolutePos(placed);
+    PlayerEntity player = context.createMockPlayer(GameMode.CREATIVE);
+    ItemStack stack = new ItemStack(ModBlocks.LARGE_LIFT);
+    player.setStackInHand(Hand.MAIN_HAND, stack);
+    BlockHitResult hit =
+        new BlockHitResult(Vec3d.ofCenter(absolute), Direction.UP, absolute, false);
+    ActionResult result =
+        ((BlockItem) stack.getItem())
+            .place(new ItemPlacementContext(player, Hand.MAIN_HAND, stack, hit));
+    context.assertTrue(result.isAccepted(), "placed: " + result);
+    int cells = 0;
+    for (BlockPos cell : BlockPos.iterate(placed.add(-1, 0, -1), placed.add(1, 0, 1))) {
+      if (context.getBlockState(cell).isOf(ModBlocks.LARGE_LIFT)) {
+        cells++;
+      }
+    }
+    context.assertEquals(4, cells, "four cells");
+    context.assertTrue(
+        context.getBlockState(placed).get(LargeLiftBlock.FACING) == Direction.NORTH,
+        "the near row faces the player");
+    context.assertTrue(
+        context.getBlockState(placed.south()).get(LargeLiftBlock.FACING) == Direction.SOUTH,
+        "the far row faces away");
+    context.complete();
   }
 }

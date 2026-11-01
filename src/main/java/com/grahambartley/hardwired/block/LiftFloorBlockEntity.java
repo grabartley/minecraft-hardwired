@@ -39,6 +39,12 @@ public final class LiftFloorBlockEntity extends ElectronicBlockEntity {
   }
 
   @Override
+  public void removeFromCopiedStackNbt(NbtCompound nbt) {
+    super.removeFromCopiedStackNbt(nbt);
+    LiftDial.clear(nbt);
+  }
+
+  @Override
   public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registries) {
     NbtCompound nbt = super.toInitialChunkDataNbt(registries);
     dial.write(nbt);

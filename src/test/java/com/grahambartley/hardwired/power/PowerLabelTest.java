@@ -34,7 +34,8 @@ class PowerLabelTest {
         Arguments.of(ModBlocks.INTERCOM, DRAWS, 4),
         Arguments.of(ModBlocks.ALARM, DRAWS, 8),
         Arguments.of(ModBlocks.BROADCAST_DESK, DRAWS, 16),
-        Arguments.of(ModBlocks.LIFT, "tooltip.hardwired.draws_power_moving", 32));
+        Arguments.of(ModBlocks.LIFT, "tooltip.hardwired.draws_power_moving", 32),
+        Arguments.of(ModBlocks.LARGE_LIFT, "tooltip.hardwired.draws_power_moving", 64));
   }
 
   @ParameterizedTest(name = "{0}")

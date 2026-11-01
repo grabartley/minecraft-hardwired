@@ -9,10 +9,12 @@ import com.grahambartley.hardwired.lift.LiftCharge;
 import com.grahambartley.hardwired.lift.LiftPhase;
 import com.grahambartley.hardwired.lift.LiftShaft;
 import com.grahambartley.hardwired.power.PowerGrids;
+import com.grahambartley.hardwired.registry.ModEntities;
 import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
@@ -42,6 +44,10 @@ public class LiftBlock extends TableDeviceBlock {
 
   public BlockPos head(BlockPos pos, BlockState state) {
     return pos;
+  }
+
+  public EntityType<LiftCarEntity> carType() {
+    return ModEntities.LIFT_CAR;
   }
 
   @Override

@@ -132,6 +132,10 @@ public final class LiftRun {
     pause = 0;
   }
 
+  public boolean leavingNow() {
+    return pause == 0 && !queue.isEmpty();
+  }
+
   public void delayGate(int ticks) {
     gateDelay = ticks;
   }

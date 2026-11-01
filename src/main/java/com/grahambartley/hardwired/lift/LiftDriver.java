@@ -59,7 +59,7 @@ public final class LiftDriver {
 
   private void rest() {
     if (run.holdingGate()) {
-      if (run.gateDue()) {
+      if (run.gateDue() && !run.leavingNow()) {
         shaft.showGates(route(), run.level(), true);
       }
       return;
@@ -96,10 +96,14 @@ public final class LiftDriver {
     }
     shaft.showGates(route(), run.level(), false);
     LiftRiders.board(car, shaft);
-    shaft.gateFacing(level).ifPresent(car::faceGate);
-    run.begin(new LiftTrip(run.level(), level, ticksPerBlock()), LiftPhase.MOVING);
-    changed();
+    setOff(new LiftTrip(run.level(), level, ticksPerBlock()), LiftPhase.MOVING);
     pulse();
+  }
+
+  private void setOff(LiftTrip trip, LiftPhase phase) {
+    shaft.gateFacing((int) Math.round(trip.toLevel())).ifPresent(car::faceGate);
+    run.begin(trip, phase);
+    changed();
   }
 
   public DeviceStatus refusal(int level) {
@@ -124,6 +128,9 @@ public final class LiftDriver {
     run.advance();
     car.moveToLevel(run.level());
     car.keepTripInStep();
+    if (run.ticks() % SYNC_TICKS == 0) {
+      showDial();
+    }
     if (run.ticks() == ANNOUNCE_TICK && run.phase() == LiftPhase.MOVING) {
       announce(trip);
     }
@@ -157,8 +164,7 @@ public final class LiftDriver {
     if (run.phase() == LiftPhase.MOVING
         && safe.isPresent()
         && shaft.pathClear(run.level(), safe.getAsInt())) {
-      run.begin(new LiftTrip(run.level(), safe.getAsInt(), ticksPerBlock()), LiftPhase.MOVING);
-      changed();
+      setOff(new LiftTrip(run.level(), safe.getAsInt(), ticksPerBlock()), LiftPhase.MOVING);
       return;
     }
     stop(DeviceStatus.SHAFT_BLOCKED);
@@ -185,8 +191,7 @@ public final class LiftDriver {
       LiftTrip gentle =
           new LiftTrip(
               run.level(), below.getAsInt(), ticksPerBlock() * LiftSafety.LOWERING_SLOWDOWN);
-      run.begin(gentle, LiftPhase.LOWERING);
-      changed();
+      setOff(gentle, LiftPhase.LOWERING);
       pulse();
     }
   }
@@ -240,6 +245,7 @@ public final class LiftDriver {
     List<BlockPos> gates = route();
     LiftRiders.aboard(car).forEach(this::release);
     shaft.showGates(gates, run.level(), false);
+    shaft.showDial(gates, LiftDial.NONE);
     shaft.mirror(gates, DeviceStatus.READY);
   }
 
@@ -267,7 +273,7 @@ public final class LiftDriver {
         gates,
         trip == null
             ? LiftDial.at(levels, run.level())
-            : LiftDial.riding(levels, trip, world.getTime()));
+            : LiftDial.riding(levels, trip, world.getTime() - run.ticks()));
   }
 
   private void pulse() {

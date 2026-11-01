@@ -5,6 +5,7 @@ import com.grahambartley.hardwired.block.LiftBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlockEntity;
 import com.grahambartley.hardwired.device.DeviceStatus;
+import com.grahambartley.hardwired.registry.ModEntities;
 import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.Collection;
 import java.util.Comparator;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.EntityType;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -67,6 +69,12 @@ public record LiftShaft(ServerWorld world, BlockPos head, int span) {
 
   private List<BlockPos> cells() {
     return span > 1 ? LiftCorner.cells(head) : List.of(head);
+  }
+
+  public EntityType<LiftCarEntity> carType() {
+    return world.getBlockState(head).getBlock() instanceof LiftBlock lift
+        ? lift.carType()
+        : ModEntities.LIFT_CAR;
   }
 
   public boolean standing() {

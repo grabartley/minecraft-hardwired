@@ -1,11 +1,15 @@
 package com.grahambartley.hardwired.block;
 
 import com.grahambartley.hardwired.config.PowerSettings;
+import com.grahambartley.hardwired.lift.LiftCarEntity;
 import com.grahambartley.hardwired.lift.LiftCorner;
+import com.grahambartley.hardwired.registry.ModEntities;
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -43,6 +47,11 @@ public final class LargeLiftBlock extends LiftBlock {
   }
 
   @Override
+  public EntityType<LiftCarEntity> carType() {
+    return ModEntities.LARGE_LIFT_CAR;
+  }
+
+  @Override
   public List<BlockPos> cells(BlockPos pos, BlockState state) {
     return LiftCorner.cells(head(pos, state));
   }
@@ -57,12 +66,16 @@ public final class LargeLiftBlock extends LiftBlock {
     Direction look = context.getHorizontalPlayerFacing();
     BlockPos pos = context.getBlockPos();
     BlockPos head = LiftCorner.headFor(pos, look);
+    BlockState placed = cellState(LiftCorner.of(head, pos), look.getOpposite());
+    World world = context.getWorld();
     for (BlockPos cell : LiftCorner.cells(head)) {
-      if (!context.getWorld().getBlockState(cell).canReplace(context)) {
+      if (!world.getWorldBorder().contains(cell)
+          || !world.getBlockState(cell).canReplace(context)
+          || !world.canPlace(placed, cell, ShapeContext.absent())) {
         return null;
       }
     }
-    return cellState(LiftCorner.of(head, pos), look.getOpposite());
+    return placed;
   }
 
   private BlockState cellState(LiftCorner corner, Direction front) {

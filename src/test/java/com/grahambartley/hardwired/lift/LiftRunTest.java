@@ -92,6 +92,18 @@ class LiftRunTest {
   }
 
   @Test
+  void onlyAClearedPauseWithACallLeavesNow() {
+    LiftRun run = new LiftRun();
+    assertFalse(run.leavingNow());
+    run.queue().add(7);
+    assertTrue(run.leavingNow());
+    run.rest(0, 40);
+    assertFalse(run.leavingNow());
+    run.clearPause();
+    assertTrue(run.leavingNow());
+  }
+
+  @Test
   void aDelayedGateFallsDueOnceAndSurvivesASave() {
     LiftRun run = new LiftRun();
     run.delayGate(2);

@@ -210,10 +210,10 @@ public final class LiftCarEntity extends Entity {
 
   @Override
   public Vec3d updatePassengerForDismount(LivingEntity passenger) {
-    if (run.phase() == LiftPhase.RESTING) {
-      return new Vec3d(passenger.getX(), run.level(), passenger.getZ());
-    }
     if (head != null && getWorld() instanceof ServerWorld world) {
+      if (run.phase() == LiftPhase.RESTING) {
+        return new Vec3d(passenger.getX(), run.level(), passenger.getZ());
+      }
       return LiftRiders.nearestGate(shaft(world).gates(), passenger.getY())
           .map(LiftRiders::spotAt)
           .orElseGet(passenger::getPos);

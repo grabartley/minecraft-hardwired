@@ -63,6 +63,14 @@ class LiftDialTest {
   }
 
   @Test
+  void clearingRemovesEveryDialKey() {
+    NbtCompound nbt = new NbtCompound();
+    LiftDial.at(UNEVEN, 3).write(nbt);
+    LiftDial.clear(nbt);
+    assertTrue(nbt.isEmpty());
+  }
+
+  @Test
   void aDialSurvivesASave() {
     LiftDial dial = LiftDial.riding(UNEVEN, new LiftTrip(1.5, 10, 20), 77);
     NbtCompound nbt = new NbtCompound();

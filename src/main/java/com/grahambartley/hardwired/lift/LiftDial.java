@@ -73,6 +73,10 @@ public record LiftDial(
     nbt.putLong(START, startTick);
   }
 
+  public static void clear(NbtCompound nbt) {
+    List.of(LEVELS, FROM, TO, PACE, START).forEach(nbt::remove);
+  }
+
   public static LiftDial read(NbtCompound nbt) {
     return new LiftDial(
         Arrays.stream(nbt.getIntArray(LEVELS)).boxed().toList(),
