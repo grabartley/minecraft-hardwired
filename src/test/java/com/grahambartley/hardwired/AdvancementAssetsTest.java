@@ -2,6 +2,7 @@ package com.grahambartley.hardwired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -44,6 +45,17 @@ class AdvancementAssetsTest {
             .getAsJsonObject()
             .get("items")
             .getAsString());
+  }
+
+  @ParameterizedTest(name = "{0} earns Juiced Up")
+  @ValueSource(strings = {"redstone_cell", "redstone_generator", "solar_panel", "lodestone_dynamo"})
+  void everySourceEarnsJuicedUp(String source) throws IOException {
+    assertTrue(
+        read("juiced_up")
+            .getAsJsonObject("criteria")
+            .getAsJsonObject("source")
+            .toString()
+            .contains("hardwired:" + source));
   }
 
   @ParameterizedTest(name = "{0} hangs from {1}")
