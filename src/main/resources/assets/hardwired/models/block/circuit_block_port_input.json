@@ -51,36 +51,36 @@
         "east": {
           "uv": [
             15,
-            2,
+            1,
             16,
-            3
+            2
           ],
           "texture": "#parts"
         },
         "west": {
           "uv": [
             15,
-            2,
+            1,
             16,
-            3
+            2
           ],
           "texture": "#parts"
         },
         "up": {
           "uv": [
             15,
-            2,
+            1,
             16,
-            3
+            2
           ],
           "texture": "#parts"
         },
         "down": {
           "uv": [
             15,
-            2,
+            1,
             16,
-            3
+            2
           ],
           "texture": "#parts"
         }

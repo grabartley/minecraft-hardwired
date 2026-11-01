@@ -3,7 +3,7 @@
   "textures": {
     "0": "minecraft:block/polished_deepslate",
     "1": "minecraft:block/polished_blackstone",
-    "11": "hardwired:block/solar_panel_top_lit",
+    "11": "hardwired:block/solar_panel_top",
     "2": "minecraft:block/gold_block",
     "particle": "minecraft:block/polished_blackstone"
   },
