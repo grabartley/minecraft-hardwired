@@ -142,6 +142,8 @@
   "screen.hardwired.settings.surfaceopacity.tooltip": "Quão forte o fio aparece nas faces visíveis.",
   "screen.hardwired.settings.showmarkers": "Marcas de entrada e saída",
   "screen.hardwired.settings.showmarkers.tooltip": "Mostra as marcas nos blocos que acionam ou leem um fio.",
+  "screen.hardwired.settings.colouredlight": "Luz colorida",
+  "screen.hardwired.settings.colouredlight.tooltip": "Lâmpadas coloridas projetam sua cor nos blocos próximos.",
   "message.hardwired.sealed": "Rede selada",
   "message.hardwired.unsealed": "Selo removido",
   "message.hardwired.already_sealed": "Esta rede já está selada",

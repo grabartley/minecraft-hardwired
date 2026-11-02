@@ -142,6 +142,8 @@
   "screen.hardwired.settings.surfaceopacity.tooltip": "Насколько заметен провод на видимых гранях.",
   "screen.hardwired.settings.showmarkers": "Метки входов и выходов",
   "screen.hardwired.settings.showmarkers.tooltip": "Показывает метки на блоках, которые питают или читают провод.",
+  "screen.hardwired.settings.colouredlight": "Цветной свет",
+  "screen.hardwired.settings.colouredlight.tooltip": "Цветные лампы окрашивают своим цветом соседние блоки.",
   "message.hardwired.sealed": "Сеть запечатана",
   "message.hardwired.unsealed": "Печать снята",
   "message.hardwired.already_sealed": "Эта сеть уже запечатана",

@@ -20,6 +20,7 @@ import com.grahambartley.hardwired.client.WireRenderer;
 import com.grahambartley.hardwired.client.WireViewStore;
 import com.grahambartley.hardwired.client.anim.AnimatedDeviceRenderer;
 import com.grahambartley.hardwired.client.anim.DeviceAnimations;
+import com.grahambartley.hardwired.client.glow.GlowRenderer;
 import com.grahambartley.hardwired.client.power.PowerSounds;
 import com.grahambartley.hardwired.client.power.PowerTooltip;
 import com.grahambartley.hardwired.client.radio.BroadcastSounds;
@@ -49,6 +50,7 @@ import com.grahambartley.hardwired.screen.LiftScreen;
 import com.grahambartley.hardwired.screen.MainPanelScreen;
 import com.grahambartley.hardwired.screen.RadioScreen;
 import com.grahambartley.hardwired.wire.Hue;
+import com.grahambartley.hardwired.wire.LampLook;
 import java.util.List;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -69,6 +71,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
 
 public class HardwiredClient implements ClientModInitializer {
 
@@ -112,9 +115,14 @@ public class HardwiredClient implements ClientModInitializer {
         SyncServerConfigS2CPayload.ID,
         (payload, context) -> SyncedServerConfig.apply(payload.config()));
     SyncedServerConfig.resetOnDisconnect();
-    ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> WireViewStore.clear());
+    ClientPlayConnectionEvents.DISCONNECT.register(
+        (handler, client) -> {
+          WireViewStore.clear();
+          GlowRenderer.clear();
+        });
     ClientTickEvents.END_CLIENT_TICK.register(WireDrag::tick);
     UseBlockCallback.EVENT.register(WireDrag::onUseBlock);
+    GlowRenderer.register();
     WorldRenderEvents.LAST.register(WireRenderer::render);
     HudRenderCallback.EVENT.register(WireHud::render);
     HudRenderCallback.EVENT.register(DeviceHud::render);
@@ -227,10 +235,10 @@ public class HardwiredClient implements ClientModInitializer {
 
   private static int dim(int rgb, int brightness) {
     int scale = LAMP_TINT_FLOOR + brightness;
-    int span = LAMP_TINT_FLOOR + 15;
-    int r = ((rgb >> 16) & 0xFF) * scale / span;
-    int g = ((rgb >> 8) & 0xFF) * scale / span;
-    int b = (rgb & 0xFF) * scale / span;
+    int span = LAMP_TINT_FLOOR + LampLook.MAX_BRIGHTNESS;
+    int r = ColorHelper.Argb.getRed(rgb) * scale / span;
+    int g = ColorHelper.Argb.getGreen(rgb) * scale / span;
+    int b = ColorHelper.Argb.getBlue(rgb) * scale / span;
     return r << 16 | g << 8 | b;
   }
 }

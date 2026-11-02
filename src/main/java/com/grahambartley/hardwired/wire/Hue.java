@@ -55,6 +55,10 @@ public enum Hue implements StringIdentifiable {
     return rgb;
   }
 
+  public boolean castsColour() {
+    return this != PLAIN;
+  }
+
   public int lampRgb() {
     return this == PLAIN ? WARM_WHITE : rgb;
   }

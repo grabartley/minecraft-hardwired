@@ -41,7 +41,7 @@ import net.minecraft.world.World;
 public abstract class AbstractLampBlock extends Block
     implements BlockEntityProvider, WireDevice, PanelDevice {
 
-  public static final IntProperty LEVEL = IntProperty.of("level", 0, 15);
+  public static final IntProperty LEVEL = IntProperty.of("level", 0, LampLook.MAX_BRIGHTNESS);
   public static final BooleanProperty LIT = Properties.LIT;
   public static final IntProperty AGE = CopperCare.AGE;
   public static final BooleanProperty WAXED = CopperCare.WAXED;
@@ -95,6 +95,10 @@ public abstract class AbstractLampBlock extends Block
 
   public BlockPos lampPos(BlockPos pos, BlockState state) {
     return pos;
+  }
+
+  public BlockPos lightPos(BlockPos lampPos) {
+    return lampPos;
   }
 
   protected void update(World world, BlockPos pos, BlockState state) {

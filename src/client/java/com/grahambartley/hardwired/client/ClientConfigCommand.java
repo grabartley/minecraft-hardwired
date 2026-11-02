@@ -1,13 +1,16 @@
 package com.grahambartley.hardwired.client;
 
 import com.grahambartley.hardwired.client.radio.MicrophoneSource;
+import com.grahambartley.hardwired.config.ClientDisplaySettings;
 import com.grahambartley.hardwired.config.ClientRadioSettings;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
-import com.grahambartley.hardwired.config.ClientWireSettings;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import java.util.function.BiFunction;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -54,8 +57,8 @@ public final class ClientConfigCommand {
                                         ClientCommandManager.argument(
                                                 VALUE,
                                                 IntegerArgumentType.integer(
-                                                    ClientWireSettings.THROUGH_MIN,
-                                                    ClientWireSettings.THROUGH_MAX))
+                                                    ClientDisplaySettings.THROUGH_MIN,
+                                                    ClientDisplaySettings.THROUGH_MAX))
                                             .executes(ClientConfigCommand::setThroughBlocks)))
                             .then(
                                 ClientCommandManager.literal("onsurface")
@@ -63,21 +66,12 @@ public final class ClientConfigCommand {
                                         ClientCommandManager.argument(
                                                 VALUE,
                                                 IntegerArgumentType.integer(
-                                                    ClientWireSettings.SURFACE_MIN,
-                                                    ClientWireSettings.SURFACE_MAX))
+                                                    ClientDisplaySettings.SURFACE_MIN,
+                                                    ClientDisplaySettings.SURFACE_MAX))
                                             .executes(ClientConfigCommand::setOnSurface)))
-                            .then(
-                                ClientCommandManager.literal("showmarkers")
-                                    .then(
-                                        ClientCommandManager.argument(
-                                                VALUE, BoolArgumentType.bool())
-                                            .executes(ClientConfigCommand::setShowMarkers)))
-                            .then(
-                                ClientCommandManager.literal("hearvoicebroadcasts")
-                                    .then(
-                                        ClientCommandManager.argument(
-                                                VALUE, BoolArgumentType.bool())
-                                            .executes(ClientConfigCommand::setHearing)))
+                            .then(toggle("showmarkers", ClientConfigCommand::setShowMarkers))
+                            .then(toggle("colouredlight", ClientConfigCommand::setColouredLight))
+                            .then(toggle("hearvoicebroadcasts", ClientConfigCommand::setHearing))
                             .then(
                                 ClientCommandManager.literal("microphone")
                                     .then(
@@ -88,6 +82,12 @@ public final class ClientConfigCommand {
                                                     CommandSource.suggestMatching(
                                                         MicrophoneSource.names(), builder))
                                             .executes(ClientConfigCommand::setMicrophone))))));
+  }
+
+  private static LiteralArgumentBuilder<FabricClientCommandSource> toggle(
+      String name, Command<FabricClientCommandSource> command) {
+    return ClientCommandManager.literal(name)
+        .then(ClientCommandManager.argument(VALUE, BoolArgumentType.bool()).executes(command));
   }
 
   private static int setNoise(CommandContext<FabricClientCommandSource> context) {
@@ -110,7 +110,7 @@ public final class ClientConfigCommand {
 
   private static int setThroughBlocks(CommandContext<FabricClientCommandSource> context) {
     int value = IntegerArgumentType.getInteger(context, VALUE);
-    return applyWire(
+    return applyDisplay(
         context,
         ClientSettingsStore.get().withThroughBlocksPercent(value),
         "throughblocks",
@@ -119,7 +119,7 @@ public final class ClientConfigCommand {
 
   private static int setOnSurface(CommandContext<FabricClientCommandSource> context) {
     int value = IntegerArgumentType.getInteger(context, VALUE);
-    return applyWire(
+    return applyDisplay(
         context,
         ClientSettingsStore.get().withOnSurfacePercent(value),
         "onsurface",
@@ -127,12 +127,11 @@ public final class ClientConfigCommand {
   }
 
   private static int setShowMarkers(CommandContext<FabricClientCommandSource> context) {
-    boolean value = BoolArgumentType.getBool(context, VALUE);
-    return applyWire(
-        context,
-        ClientSettingsStore.get().withShowMarkers(value),
-        "showmarkers",
-        Boolean.toString(value));
+    return applyDisplayToggle(context, "showmarkers", ClientDisplaySettings::withShowMarkers);
+  }
+
+  private static int setColouredLight(CommandContext<FabricClientCommandSource> context) {
+    return applyDisplayToggle(context, "colouredlight", ClientDisplaySettings::withColouredLight);
   }
 
   private static int setHearing(CommandContext<FabricClientCommandSource> context) {
@@ -151,9 +150,18 @@ public final class ClientConfigCommand {
     return apply(context, ClientSettingsStore.radio().withMicrophone(chosen), "microphone", value);
   }
 
-  private static int applyWire(
+  private static int applyDisplayToggle(
       CommandContext<FabricClientCommandSource> context,
-      ClientWireSettings settings,
+      String label,
+      BiFunction<ClientDisplaySettings, Boolean, ClientDisplaySettings> setter) {
+    boolean value = BoolArgumentType.getBool(context, VALUE);
+    return applyDisplay(
+        context, setter.apply(ClientSettingsStore.get(), value), label, Boolean.toString(value));
+  }
+
+  private static int applyDisplay(
+      CommandContext<FabricClientCommandSource> context,
+      ClientDisplaySettings settings,
       String label,
       String shown) {
     ClientSettingsStore.update(settings);

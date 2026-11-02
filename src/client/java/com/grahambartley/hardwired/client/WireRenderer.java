@@ -1,8 +1,8 @@
 package com.grahambartley.hardwired.client;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.ClientDisplaySettings;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
-import com.grahambartley.hardwired.config.ClientWireSettings;
 import com.grahambartley.hardwired.item.WireItem;
 import com.grahambartley.hardwired.network.WireChunkPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload.CellView;
@@ -57,7 +57,7 @@ public final class WireRenderer {
     VertexConsumerProvider.Immediate buffers =
         client.getBufferBuilders().getEntityVertexConsumers();
     VertexConsumer through = buffers.getBuffer(THROUGH_BLOCKS);
-    ClientWireSettings settings = ClientSettingsStore.get();
+    ClientDisplaySettings settings = ClientSettingsStore.get();
     drawAll(through, matrix, settings.throughBlocksAlpha(), true);
     buffers.draw(THROUGH_BLOCKS);
     VertexConsumer surface = buffers.getBuffer(ON_SURFACE);

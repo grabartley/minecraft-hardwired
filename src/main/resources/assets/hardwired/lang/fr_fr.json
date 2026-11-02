@@ -142,6 +142,8 @@
   "screen.hardwired.settings.surfaceopacity.tooltip": "Visibilité du fil sur les faces que vous voyez.",
   "screen.hardwired.settings.showmarkers": "Marques d'entrée et de sortie",
   "screen.hardwired.settings.showmarkers.tooltip": "Affiche les marques sur les blocs qui activent ou lisent un fil.",
+  "screen.hardwired.settings.colouredlight": "Lumière colorée",
+  "screen.hardwired.settings.colouredlight.tooltip": "Les lampes colorées projettent leur couleur sur les blocs voisins.",
   "message.hardwired.sealed": "Réseau scellé",
   "message.hardwired.unsealed": "Sceau retiré",
   "message.hardwired.already_sealed": "Ce réseau est déjà scellé",

@@ -6,9 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import net.minecraft.util.DyeColor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class HueTest {
+
+  @ParameterizedTest(name = "{0} casts colour: {1}")
+  @CsvSource({"PLAIN,false", "WHITE,true", "RED,true", "BLACK,true"})
+  void onlyWarmWhiteCastsNoColour(Hue hue, boolean casts) {
+    assertEquals(casts, hue.castsColour());
+  }
 
   @ParameterizedTest(name = "{0} has its own hue")
   @EnumSource(DyeColor.class)

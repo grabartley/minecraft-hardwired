@@ -8,7 +8,7 @@ Bring the wonder of early electricity to your world. Run hidden cloth wire throu
 ## What you can do
 
 - **Lay wire anywhere:** drag it across any wall, floor or ceiling. It stays hidden until you hold wire again.
-- **Light a home:** copper lamps, pendants, wall lights, marquee bulbs and streetlights, in warm white or any dye colour.
+- **Light a home:** copper lamps, pendants, wall lights, marquee bulbs and streetlights, in warm white or any dye colour that spills onto the room around them.
 - **Set the mood:** change every lamp at once from a Control Panel, save scenes for a switch to recall, and work the whole house from a Main Panel.
 - **Hide a door:** set a timeline on a Controller and pistons open and close a wall from one switch.
 - **Build a circuit:** design logic on a Circuit Board and pack it into one block you can copy.

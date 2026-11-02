@@ -11,3 +11,4 @@ Shared engineering standards across all the mods in this family live in [`../sta
 | [0001](0001-a-linter-forbids-comments-rather-than-a-formatter-stripping-them.md) | A linter forbids comments rather than a formatter stripping them |
 | [0002](0002-wire-is-saved-per-world.md) | Wire is saved per world, not per chunk |
 | [0003](0003-voice-streams-short-reads-and-a-separate-client-command.md) | Voice uses short stream reads, and client settings have their own command |
+| [0004](0004-cast-light-is-a-client-pass-over-vanilla-light.md) | Cast light is a client pass over vanilla light |

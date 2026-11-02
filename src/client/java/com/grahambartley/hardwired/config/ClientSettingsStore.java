@@ -21,13 +21,13 @@ public final class ClientSettingsStore {
   private static final String FILE = "hardwired-client.json";
   private static final String BROKEN_FILE = "hardwired-client.broken.json";
 
-  private static volatile ClientWireSettings current = ClientWireSettings.DEFAULTS;
+  private static volatile ClientDisplaySettings current = ClientDisplaySettings.DEFAULTS;
   private static volatile ClientRadioSettings currentRadio = ClientRadioSettings.DEFAULTS;
   private static volatile Path path;
 
   private ClientSettingsStore() {}
 
-  public static ClientWireSettings get() {
+  public static ClientDisplaySettings get() {
     return current;
   }
 
@@ -41,7 +41,7 @@ public final class ClientSettingsStore {
     current = read(path);
   }
 
-  public static void update(final ClientWireSettings settings) {
+  public static void update(final ClientDisplaySettings settings) {
     update(settings, currentRadio);
   }
 
@@ -50,7 +50,7 @@ public final class ClientSettingsStore {
   }
 
   public static void update(
-      final ClientWireSettings settings, final ClientRadioSettings radioSettings) {
+      final ClientDisplaySettings settings, final ClientRadioSettings radioSettings) {
     current = settings;
     currentRadio = radioSettings;
     if (path != null) {
@@ -58,20 +58,20 @@ public final class ClientSettingsStore {
     }
   }
 
-  static ClientWireSettings read(final Path file) {
+  static ClientDisplaySettings read(final Path file) {
     if (!Files.exists(file)) {
-      return ClientWireSettings.DEFAULTS;
+      return ClientDisplaySettings.DEFAULTS;
     }
     try {
       final JsonElement root = JsonParser.parseString(Files.readString(file));
       if (!root.isJsonObject()) {
         throw new JsonParseException("top level is not a JSON object");
       }
-      return ClientWireSettings.fromJson(root.getAsJsonObject());
+      return ClientDisplaySettings.fromJson(root.getAsJsonObject());
     } catch (IOException | JsonParseException ex) {
       LOGGER.warn("Bad Hardwired client settings at {}, using defaults: {}", file, ex.getMessage());
       keepBrokenFile(file);
-      return ClientWireSettings.DEFAULTS;
+      return ClientDisplaySettings.DEFAULTS;
     }
   }
 
@@ -90,7 +90,9 @@ public final class ClientSettingsStore {
   }
 
   static void write(
-      final Path file, final ClientWireSettings settings, final ClientRadioSettings radioSettings) {
+      final Path file,
+      final ClientDisplaySettings settings,
+      final ClientRadioSettings radioSettings) {
     try {
       Files.createDirectories(file.getParent());
       final Path temp = file.resolveSibling(file.getFileName() + ".tmp");

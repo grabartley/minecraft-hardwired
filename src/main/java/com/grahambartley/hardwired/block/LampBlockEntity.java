@@ -1,9 +1,12 @@
 package com.grahambartley.hardwired.block;
 
+import com.grahambartley.hardwired.light.Glow;
+import com.grahambartley.hardwired.light.GlowSource;
 import com.grahambartley.hardwired.registry.ModBlockEntities;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.LampLook;
+import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentMap;
@@ -14,7 +17,7 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 
-public final class LampBlockEntity extends BlockEntity {
+public final class LampBlockEntity extends BlockEntity implements GlowSource {
 
   private static final String COLOR = "color";
   private static final String BRIGHTNESS = "brightness";
@@ -39,6 +42,17 @@ public final class LampBlockEntity extends BlockEntity {
 
   public int brightness() {
     return brightness;
+  }
+
+  @Override
+  public Optional<Glow> glow() {
+    return color.castsColour()
+        ? Glow.of(lightPos(), AbstractLampBlock.lightLevel(getCachedState()), color.lampRgb())
+        : Optional.empty();
+  }
+
+  private BlockPos lightPos() {
+    return ((AbstractLampBlock) getCachedState().getBlock()).lightPos(pos);
   }
 
   public long lastChangeTick() {
@@ -104,8 +118,9 @@ public final class LampBlockEntity extends BlockEntity {
     ownStamp = nbt.getLong(OWN_STAMP);
     if (world != null && world.isClient) {
       world.updateListeners(pos, getCachedState(), getCachedState(), RERENDER);
-      world.updateListeners(
-          pos.up(StreetlightBlock.HEAD), getCachedState(), getCachedState(), RERENDER);
+      if (!lightPos().equals(pos)) {
+        world.updateListeners(lightPos(), getCachedState(), getCachedState(), RERENDER);
+      }
     }
   }
 

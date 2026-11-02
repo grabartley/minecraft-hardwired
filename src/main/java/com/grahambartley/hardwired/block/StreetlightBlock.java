@@ -40,6 +40,11 @@ public final class StreetlightBlock extends AbstractLampBlock {
   }
 
   @Override
+  public BlockPos lightPos(BlockPos lampPos) {
+    return lampPos.up(HEAD);
+  }
+
+  @Override
   protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
     super.appendProperties(builder);
     builder.add(PART);
