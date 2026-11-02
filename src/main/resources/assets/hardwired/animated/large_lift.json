@@ -1,0 +1,14 @@
+{
+  "clip": "hardwired:clips/lift.animation.json",
+  "parts": [
+    {
+      "bone": "lift_wheel",
+      "model": "hardwired:block/part/lift_wheel",
+      "pivot": [
+        8,
+        8,
+        2
+      ]
+    }
+  ]
+}

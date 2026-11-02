@@ -40,6 +40,8 @@
       "com.grahambartley.hardwired.gametest.VoiceGameTest",
       "com.grahambartley.hardwired.gametest.ElectronicsGameTest",
       "com.grahambartley.hardwired.gametest.LiftGameTest",
+      "com.grahambartley.hardwired.gametest.LiftGateGameTest",
+      "com.grahambartley.hardwired.gametest.LargeLiftGameTest",
       "com.grahambartley.hardwired.gametest.RadioGameTest",
       "com.grahambartley.hardwired.gametest.BroadcastDeskGameTest"
     ],
@@ -48,11 +50,7 @@
     ]
   },
   "mixins": [
-    "hardwired.mixins.json",
-    {
-      "config": "hardwired.client.mixins.json",
-      "environment": "client"
-    }
+    "hardwired.mixins.json"
   ],
   "accessWidener": "hardwired.accesswidener",
   "depends": {

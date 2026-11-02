@@ -11,6 +11,7 @@ import net.minecraft.util.Identifier;
 public final class ModEntities {
 
   private static final float CAR_WIDTH = 1F;
+  private static final float LARGE_CAR_WIDTH = 2F;
   private static final float EYE_ABOVE_PLATE = 1F;
   private static final int TRACKING_CHUNKS = 10;
 
@@ -25,6 +26,18 @@ public final class ModEntities {
               .makeFireImmune()
               .disableSummon()
               .build("lift_car"));
+
+  public static final EntityType<LiftCarEntity> LARGE_LIFT_CAR =
+      Registry.register(
+          Registries.ENTITY_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "large_lift_car"),
+          EntityType.Builder.<LiftCarEntity>create(LiftCarEntity::new, SpawnGroup.MISC)
+              .dimensions(LARGE_CAR_WIDTH, LiftCarEntity.PLATE)
+              .eyeHeight(EYE_ABOVE_PLATE)
+              .maxTrackingRange(TRACKING_CHUNKS)
+              .makeFireImmune()
+              .disableSummon()
+              .build("large_lift_car"));
 
   private ModEntities() {}
 

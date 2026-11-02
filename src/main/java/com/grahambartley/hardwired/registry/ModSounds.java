@@ -24,6 +24,9 @@ public final class ModSounds {
   public static final SoundEvent SOLAR_TICK = register("power.solar_tick");
   public static final SoundEvent ELECTRIC_HUM = register("power.electric_hum");
 
+  public static final SoundEvent LIFT_DING = register("lift.ding");
+  public static final SoundEvent LIFT_DING_STRIKE = register("lift.ding_strike");
+
   private ModSounds() {}
 
   public static void register() {}

@@ -90,4 +90,40 @@ class LiftRunTest {
     run.rest(1, 0);
     assertTrue(first < second && second < run.serial());
   }
+
+  @Test
+  void onlyAClearedPauseWithACallLeavesNow() {
+    LiftRun run = new LiftRun();
+    assertFalse(run.leavingNow());
+    run.queue().add(7);
+    assertTrue(run.leavingNow());
+    run.rest(0, 40);
+    assertFalse(run.leavingNow());
+    run.clearPause();
+    assertTrue(run.leavingNow());
+  }
+
+  @Test
+  void aDelayedGateFallsDueOnceAndSurvivesASave() {
+    LiftRun run = new LiftRun();
+    run.delayGate(2);
+    assertTrue(run.holdingGate());
+    LiftRun loaded = reload(run);
+    assertTrue(loaded.holdingGate());
+    assertFalse(loaded.gateDue());
+    assertTrue(loaded.gateDue());
+    assertFalse(loaded.holdingGate());
+  }
+
+  @Test
+  void closingSealsTheCarUntilItRestsAndSurvivesASave() {
+    LiftRun run = new LiftRun();
+    assertFalse(run.sealed());
+    run.beginClosing(3);
+    assertTrue(run.sealed());
+    assertTrue(run.pausing());
+    assertTrue(reload(run).closing());
+    run.rest(0, 0);
+    assertFalse(run.sealed());
+  }
 }
