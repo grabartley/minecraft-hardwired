@@ -21,14 +21,14 @@ final class GlowField {
   private static final int CHANNELS = 4;
   private static final double CELL_CENTRE = 0.5D;
 
-  private final Predicate<BlockPos> blocksLight;
+  private final Predicate<BlockPos> solid;
   private final LightCost lightCost;
   private final Long2ObjectOpenHashMap<float[]> cells = new Long2ObjectOpenHashMap<>();
-  private final Long2BooleanOpenHashMap blocked = new Long2BooleanOpenHashMap();
+  private final Long2BooleanOpenHashMap knownSolid = new Long2BooleanOpenHashMap();
   private final BlockPos.Mutable cursor = new BlockPos.Mutable();
 
-  GlowField(Predicate<BlockPos> blocksLight, LightCost lightCost) {
-    this.blocksLight = blocksLight;
+  GlowField(Predicate<BlockPos> solid, LightCost lightCost) {
+    this.solid = solid;
     this.lightCost = lightCost;
   }
 
@@ -48,8 +48,8 @@ final class GlowField {
     }
   }
 
-  boolean blocksLight(BlockPos pos) {
-    return blocked(pos.asLong());
+  boolean isSolid(BlockPos pos) {
+    return checkSolid(pos.asLong());
   }
 
   LongSet cells() {
@@ -76,7 +76,7 @@ final class GlowField {
           float share =
               share(cornerX - baseX, dx) * share(cornerY - baseY, dy) * share(cornerZ - baseZ, dz);
           pos.set(baseX + dx, baseY + dy, baseZ + dz);
-          if (share > 0F && !blocksLight(pos)) {
+          if (share > 0F && !isSolid(pos)) {
             open += share;
             addShare(sum, cells.get(pos.asLong()), share);
           }
@@ -111,12 +111,12 @@ final class GlowField {
     }
   }
 
-  private boolean blocked(long pos) {
-    if (blocked.containsKey(pos)) {
-      return blocked.get(pos);
+  private boolean checkSolid(long pos) {
+    if (knownSolid.containsKey(pos)) {
+      return knownSolid.get(pos);
     }
-    boolean result = blocksLight.test(cursor.set(pos));
-    blocked.put(pos, result);
+    boolean result = solid.test(cursor.set(pos));
+    knownSolid.put(pos, result);
     return result;
   }
 

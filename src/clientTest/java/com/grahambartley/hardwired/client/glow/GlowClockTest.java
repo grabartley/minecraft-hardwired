@@ -37,4 +37,14 @@ class GlowClockTest {
     assertTrue(clock.checkDue(0));
     assertTrue(clock.rebuildDue(0, false));
   }
+
+  @Test
+  void resetMakesTheNextCallsDueAgain() {
+    GlowClock clock = new GlowClock(5, 20);
+    assertTrue(clock.checkDue(100));
+    assertTrue(clock.rebuildDue(100, false));
+    clock.reset();
+    assertTrue(clock.checkDue(100));
+    assertTrue(clock.rebuildDue(100, false));
+  }
 }

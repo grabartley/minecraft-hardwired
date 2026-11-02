@@ -14,11 +14,12 @@ Vanilla light stores a brightness and no colour. No coloured light library we ch
 
 The pass uses the vanilla program for plain coloured quads, so it needs no shader of its own and shader packs can draw it. A custom core shader was tried and shows nothing while a pack is on. Pack buffers can hold values above 1, so both blends are neutral at zero rather than at white. Vanilla render layers have no blend of this kind.
 
-Building the mesh for 64 glows took up to 85 ms on the render thread, which shows as a stutter. Block entities are read on the render thread. The rest of the build reads block states, shapes and light, and shapes use an empty block view so no block entity is touched off the main thread.
+Building the mesh for 64 glows took up to 85 ms on the render thread, which shows as a stutter. Block entities are read on the render thread. The rest of the build reads block states, shapes and light. Shape reads use an empty block view where they can, so vanilla blocks touch no block entity off the main thread.
 
 ## Consequences
 
 - Mobs, players, dropped items and held items do not pick up the colour.
-- Blocks with a block entity, and blocks with no collision such as plants, take no tint on their own faces.
+- Opaque full cubes take the tint whether or not they have a block entity. Other blocks with a block entity, such as chests, and blocks with no collision, such as plants, take none.
+- See-through parts of leaves, panes and bars take the tint with the rest of their box.
 - Blocks under water or behind other translucent surfaces take no tint, because those surfaces write depth before the pass.
 - Shader packs replace that vanilla program with their own. One pack we read shades these quads flat and runs them through its own lighting, so it shows dark patches and triangles outdoors. Players can turn cast colour off in their client settings.

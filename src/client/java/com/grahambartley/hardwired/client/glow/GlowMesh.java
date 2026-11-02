@@ -68,13 +68,13 @@ final class GlowMesh {
     float daylight = surfaces.daylight(cell);
     for (Direction side : Direction.values()) {
       BlockPos neighbour = cell.offset(side);
-      if (field.blocksLight(neighbour)) {
+      if (field.isSolid(neighbour)) {
         addFace(field, FULL_BLOCK.offset(neighbour), side.getOpposite(), daylight);
       }
     }
     for (Box box : surfaces.partBoxes(cell)) {
       for (Direction side : Direction.values()) {
-        if (surfaces.showsSide(cell, side)) {
+        if (!PartShapes.reachesCellEdge(box, side) || surfaces.showsSide(cell, side)) {
           addFace(field, box.offset(cell), side, daylight);
         }
       }

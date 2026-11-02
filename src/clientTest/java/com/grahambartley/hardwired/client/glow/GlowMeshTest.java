@@ -139,4 +139,18 @@ class GlowMeshTest {
                 List.of(glow), new Surfaces(floor, List.of(carpet), 0F, Direction.NORTH)));
     assertEquals(shown - 1, hidden);
   }
+
+  @Test
+  void faceInsideTheCellStaysEvenWhenTheNeighbourHidesThatSide() {
+    Predicate<BlockPos> floor = pos -> pos.getY() < -1;
+    Box lowerStep = new Box(0, 0, 0, 1, 0.5, 1);
+    Glow glow = new Glow(BlockPos.ORIGIN, 15, RED);
+    int shown =
+        faces(GlowMesh.build(List.of(glow), new Surfaces(floor, List.of(lowerStep), 0F, null)));
+    int upHidden =
+        faces(
+            GlowMesh.build(
+                List.of(glow), new Surfaces(floor, List.of(lowerStep), 0F, Direction.UP)));
+    assertEquals(shown, upHidden);
+  }
 }

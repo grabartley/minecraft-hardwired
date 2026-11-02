@@ -21,7 +21,7 @@ final class GlowTracker {
   private static final int REBUILD_TICKS = 20;
 
   private final GlowBuildSlot<GlowMesh> slot = new GlowBuildSlot<>(GlowMesh.EMPTY);
-  private GlowClock clock = new GlowClock(CHECK_TICKS, REBUILD_TICKS);
+  private final GlowClock clock = new GlowClock(CHECK_TICKS, REBUILD_TICKS);
   private List<Glow> shown = List.of();
   private ClientWorld world;
 
@@ -39,7 +39,7 @@ final class GlowTracker {
 
   void clear() {
     world = null;
-    clock = new GlowClock(CHECK_TICKS, REBUILD_TICKS);
+    clock.reset();
     shown = List.of();
     slot.clear();
   }

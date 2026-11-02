@@ -253,7 +253,7 @@ This is the first wow moment. A player wires lamps to a switch, then changes all
 | LIGHT-8 | Lamps are Art Deco fittings: stepped copper mounts, fan and sunburst shapes and frosted glass. They stay simple and blocky, and every lamp's item shows its real model |
 | LIGHT-7 | A Streetlight with a Dusk Sensor on its network turns on at dusk and off at dawn |
 
-**Not supported:** cast colour on mobs, players, dropped items, held items, plants, blocks with their own block entity such as chests and devices, or blocks seen through water or other translucent surfaces. Shader packs draw cast colour in their own way and some show dark patches outdoors. Each player can turn cast colour off in their client settings.
+**Not supported:** cast colour on mobs, players, dropped items, held items, plants, chests, devices and other part blocks with their own block entity, or blocks seen through water or other translucent surfaces. Shader packs draw cast colour in their own way and some show dark patches outdoors. Each client casts from the 64 nearest lit lamps within four chunks. Each player can turn cast colour off in their client settings.
 
 **Enforcement:** server. The client draws the colour it is told.
 

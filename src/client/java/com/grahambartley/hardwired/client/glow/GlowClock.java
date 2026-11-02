@@ -2,14 +2,21 @@ package com.grahambartley.hardwired.client.glow;
 
 final class GlowClock {
 
+  private static final long NEVER = Long.MIN_VALUE / 2;
+
   private final int checkTicks;
   private final int rebuildTicks;
-  private long checkedAt = Long.MIN_VALUE / 2;
-  private long builtAt = Long.MIN_VALUE / 2;
+  private long checkedAt = NEVER;
+  private long builtAt = NEVER;
 
   GlowClock(int checkTicks, int rebuildTicks) {
     this.checkTicks = checkTicks;
     this.rebuildTicks = rebuildTicks;
+  }
+
+  void reset() {
+    checkedAt = NEVER;
+    builtAt = NEVER;
   }
 
   boolean checkDue(long time) {
