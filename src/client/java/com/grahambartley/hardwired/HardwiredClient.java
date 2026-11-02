@@ -13,6 +13,7 @@ import com.grahambartley.hardwired.client.ClientConfigCommand;
 import com.grahambartley.hardwired.client.DeviceHud;
 import com.grahambartley.hardwired.client.DeviceReadings;
 import com.grahambartley.hardwired.client.LiftCarRenderer;
+import com.grahambartley.hardwired.client.LiftFloorRenderer;
 import com.grahambartley.hardwired.client.WireDrag;
 import com.grahambartley.hardwired.client.WireHud;
 import com.grahambartley.hardwired.client.WireRenderer;
@@ -129,14 +130,17 @@ public class HardwiredClient implements ClientModInitializer {
     ClientSettingsStore.load(FabricLoader.getInstance().getConfigDir());
     DeviceAnimations.register();
     ANIMATED_TYPES.forEach(HardwiredClient::registerAnimated);
-    LiftCarRenderer.registerModel();
+    LiftCarRenderer.registerModels();
+    LiftFloorRenderer.registerModels();
+    BlockEntityRendererFactories.register(ModBlockEntities.LIFT_FLOOR, LiftFloorRenderer::new);
     BroadcastSounds.register();
     PowerSounds.register();
     DeviceReadings.register();
     PowerTooltip.register();
     TalkKey.register();
     ClientConfigCommand.register();
-    EntityRendererRegistry.register(ModEntities.LIFT_CAR, LiftCarRenderer::new);
+    EntityRendererRegistry.register(ModEntities.LIFT_CAR, LiftCarRenderer::small);
+    EntityRendererRegistry.register(ModEntities.LARGE_LIFT_CAR, LiftCarRenderer::large);
   }
 
   private static <T extends BlockEntity> void registerAnimated(BlockEntityType<T> type) {
@@ -196,7 +200,9 @@ public class HardwiredClient implements ClientModInitializer {
         ModBlocks.SPEAKER,
         ModBlocks.INTERCOM,
         ModBlocks.LIFT,
+        ModBlocks.LARGE_LIFT,
         ModBlocks.LIFT_FLOOR,
+        ModBlocks.LARGE_LIFT_FLOOR,
         ModBlocks.RADIO_MAST);
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.BROADCAST_DESK, RenderLayer.getTranslucent());
     ColorProviderRegistry.BLOCK.register(

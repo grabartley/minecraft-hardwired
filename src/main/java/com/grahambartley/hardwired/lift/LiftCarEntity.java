@@ -1,8 +1,9 @@
 package com.grahambartley.hardwired.lift;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -14,7 +15,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 
 public final class LiftCarEntity extends Entity {
@@ -22,7 +24,6 @@ public final class LiftCarEntity extends Entity {
   public static final float PLATE = 0.125F;
 
   private static final double COLUMN_CENTER = 0.5;
-  private static final double ROOM_ABOVE_PLATE = 2.0;
   private static final double STANDING_REACH = 0.25;
   private static final int ELAPSED_TICKS = 20;
   private static final String HEAD = "head";
@@ -41,7 +42,10 @@ public final class LiftCarEntity extends Entity {
 
   private static final TrackedData<Integer> QUARTER_TURNS =
       DataTracker.registerData(LiftCarEntity.class, TrackedDataHandlerRegistry.INTEGER);
+  private static final TrackedData<Boolean> SEALED =
+      DataTracker.registerData(LiftCarEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
+  private boolean retired;
   private final LiftRun run = new LiftRun();
   private final LiftMotion motion = new LiftMotion();
   private BlockPos head;
@@ -73,20 +77,28 @@ public final class LiftCarEntity extends Entity {
     return run;
   }
 
+  public int span() {
+    return Math.round(getWidth());
+  }
+
   public void moveToLevel(double level) {
     setPosition(columnX(), level - PLATE, columnZ());
   }
 
   private double columnX() {
-    return head.getX() + COLUMN_CENTER;
+    return head.getX() + COLUMN_CENTER * span();
   }
 
   private double columnZ() {
-    return head.getZ() + COLUMN_CENTER;
+    return head.getZ() + COLUMN_CENTER * span();
   }
 
   public LiftDriver driver(ServerWorld world) {
-    return new LiftDriver(this, run, new LiftShaft(world, head));
+    return new LiftDriver(this, run, shaft(world));
+  }
+
+  private LiftShaft shaft(ServerWorld world) {
+    return new LiftShaft(world, head, span());
   }
 
   public void tripChanged() {
@@ -96,6 +108,7 @@ public final class LiftCarEntity extends Entity {
     dataTracker.set(TRIP_PACE, trip == null ? 0 : trip.ticksPerBlock());
     dataTracker.set(TRIP_ELAPSED, run.ticks());
     dataTracker.set(TRIP_SERIAL, run.serial());
+    dataTracker.set(SEALED, run.sealed());
   }
 
   public void keepTripInStep() {
@@ -112,6 +125,7 @@ public final class LiftCarEntity extends Entity {
     builder.add(TRIP_PACE, 0);
     builder.add(TRIP_ELAPSED, 0);
     builder.add(QUARTER_TURNS, 0);
+    builder.add(SEALED, false);
   }
 
   @Override
@@ -133,7 +147,20 @@ public final class LiftCarEntity extends Entity {
     LiftTrip trip =
         pace == 0 ? null : new LiftTrip(dataTracker.get(TRIP_FROM), dataTracker.get(TRIP_TO), pace);
     motion.sync(dataTracker.get(TRIP_SERIAL), trip, dataTracker.get(TRIP_ELAPSED));
+    double before = getY();
+    List<PlayerEntity> carried =
+        getWorld().getPlayers().stream()
+            .filter(player -> player.isMainPlayer() && holds(player))
+            .map(PlayerEntity.class::cast)
+            .toList();
     setPosition(getX(), motion.next(getY() + PLATE) - PLATE, getZ());
+    double rise = getY() - before;
+    carried.forEach(player -> LiftRiders.lift(player, rise));
+  }
+
+  public boolean holds(PlayerEntity player) {
+    return LiftSafety.inCar(
+        player.getX(), player.getY(), player.getZ(), getX(), getY() + PLATE, getZ(), span());
   }
 
   @Override
@@ -145,14 +172,14 @@ public final class LiftCarEntity extends Entity {
   @Override
   public void remove(RemovalReason reason) {
     if (reason.shouldDestroy() && head != null && getWorld() instanceof ServerWorld world) {
-      driver(world).abandon();
+      driver(world).abandon(!retired);
     }
     super.remove(reason);
   }
 
-  @Override
-  public boolean isCollidable() {
-    return true;
+  public void retire() {
+    retired = true;
+    discard();
   }
 
   @Override
@@ -181,39 +208,8 @@ public final class LiftCarEntity extends Entity {
   }
 
   @Override
-  public boolean hasPlayerRider() {
-    return false;
-  }
-
-  @Override
-  protected boolean canAddPassenger(Entity passenger) {
-    return passenger instanceof PlayerEntity;
-  }
-
-  @Override
-  protected void updatePassengerPosition(Entity passenger, PositionUpdater updater) {
-    int seat = getPassengerList().indexOf(passenger);
-    updater.accept(
-        passenger,
-        getX() + LiftSafety.seatX(seat),
-        getY() + PLATE,
-        getZ() + LiftSafety.seatZ(seat));
-  }
-
-  @Override
-  public Vec3d updatePassengerForDismount(LivingEntity passenger) {
-    if (head != null && getWorld() instanceof ServerWorld world) {
-      LiftShaft shaft = new LiftShaft(world, head);
-      return LiftRiders.nearestGate(shaft.gates(), passenger.getY())
-          .map(LiftRiders::spotAt)
-          .orElseGet(passenger::getPos);
-    }
-    return passenger.getPos();
-  }
-
-  @Override
   public Box getVisibilityBoundingBox() {
-    return getBoundingBox().stretch(0, ROOM_ABOVE_PLATE, 0);
+    return getBoundingBox().stretch(0, LiftCarWalls.REACH_ABOVE_FLOOR, 0);
   }
 
   @Override
@@ -235,16 +231,51 @@ public final class LiftCarEntity extends Entity {
     tripChanged();
   }
 
+  private Box floorUnder(Entity mover) {
+    return LiftCarWalls.floor(getX(), getY() + PLATE, getZ(), span(), mover.getY());
+  }
+
+  public List<Box> walls() {
+    return LiftCarWalls.boxes(
+        getX(), getY() + PLATE, getZ(), span(), quarterTurns(), dataTracker.get(SEALED));
+  }
+
+  public static List<VoxelShape> withWalls(Entity mover, Box path, List<VoxelShape> shapes) {
+    if (mover instanceof LiftCarEntity) {
+      return shapes;
+    }
+    Box reach = path.stretch(0, -LiftCarWalls.REACH_ABOVE_FLOOR, 0);
+    List<LiftCarEntity> cars =
+        mover.getWorld().getEntitiesByClass(LiftCarEntity.class, reach, car -> true);
+    if (cars.isEmpty()) {
+      return shapes;
+    }
+    List<VoxelShape> all = new ArrayList<>(shapes);
+    for (LiftCarEntity car : cars) {
+      car.walls().forEach(wall -> all.add(VoxelShapes.cuboid(wall)));
+      all.add(VoxelShapes.cuboid(car.floorUnder(mover)));
+    }
+    return all;
+  }
+
   public static boolean holdsUp(Entity entity) {
     Box below = entity.getBoundingBox().stretch(0, -STANDING_REACH, 0);
     return !entity.getWorld().getEntitiesByClass(LiftCarEntity.class, below, car -> true).isEmpty();
   }
 
   public static void riderLeaving(ServerPlayerEntity player) {
-    if (player.getVehicle() instanceof LiftCarEntity car
-        && car.head != null
-        && car.getWorld() instanceof ServerWorld world) {
-      car.driver(world).release(player);
+    Box reach = player.getBoundingBox().stretch(0, -LiftCarWalls.REACH_ABOVE_FLOOR, 0);
+    for (LiftCarEntity car :
+        player
+            .getServerWorld()
+            .getEntitiesByClass(LiftCarEntity.class, reach, LiftCarEntity::sealedWithHead)) {
+      if (car.holds(player)) {
+        car.driver(player.getServerWorld()).release(player);
+      }
     }
+  }
+
+  private boolean sealedWithHead() {
+    return head != null && run.sealed();
   }
 }

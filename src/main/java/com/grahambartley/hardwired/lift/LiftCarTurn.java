@@ -4,9 +4,11 @@ import net.minecraft.util.math.Direction;
 
 public final class LiftCarTurn {
 
+  private static final int WHOLE_TURN = 4;
+
   private LiftCarTurn() {}
 
   public static int quarterTurns(Direction gateFacing) {
-    return gateFacing.getAxis() == Direction.Axis.X ? 1 : 0;
+    return (WHOLE_TURN - gateFacing.getHorizontal()) % WHOLE_TURN;
   }
 }

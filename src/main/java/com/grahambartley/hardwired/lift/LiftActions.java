@@ -7,7 +7,6 @@ import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.network.LiftChoosePayload;
 import com.grahambartley.hardwired.network.LiftViewPayload;
-import com.grahambartley.hardwired.registry.ModEntities;
 import java.util.List;
 import java.util.Optional;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -59,7 +58,7 @@ public final class LiftActions {
     if (!shaft.pathClear(level, level)) {
       return Optional.empty();
     }
-    LiftCarEntity car = ModEntities.LIFT_CAR.create(shaft.world());
+    LiftCarEntity car = shaft.carType().create(shaft.world());
     if (car == null) {
       return Optional.empty();
     }

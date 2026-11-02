@@ -1,0 +1,107 @@
+{
+  "parent": "hardwired:block/large_lift_floor",
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        -3.2,
+        -2.4,
+        0
+      ],
+      "scale": [
+        0.324,
+        0.324,
+        0.324
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0.0,
+        2.0,
+        0.812
+      ],
+      "scale": [
+        0.09,
+        0.09,
+        0.09
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0.0,
+        -2.0,
+        1.625
+      ],
+      "scale": [
+        0.18,
+        0.18,
+        0.18
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0.862,
+        1.279,
+        -1.226
+      ],
+      "scale": [
+        0.135,
+        0.135,
+        0.135
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        135,
+        0
+      ],
+      "translation": [
+        0.919,
+        -1.6,
+        0.919
+      ],
+      "scale": [
+        0.144,
+        0.144,
+        0.144
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        135,
+        0
+      ],
+      "translation": [
+        0.919,
+        -1.6,
+        0.919
+      ],
+      "scale": [
+        0.144,
+        0.144,
+        0.144
+      ]
+    }
+  }
+}

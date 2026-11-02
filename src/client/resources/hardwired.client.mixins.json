@@ -1,9 +1,0 @@
-{
-	"required": true,
-	"package": "com.grahambartley.hardwired.mixin.client",
-	"compatibilityLevel": "JAVA_21",
-	"client": ["LivingEntityRendererMixin"],
-	"injectors": {
-		"defaultRequire": 1
-	}
-}

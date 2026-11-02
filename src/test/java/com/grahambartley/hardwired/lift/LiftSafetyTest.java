@@ -1,7 +1,6 @@
 package com.grahambartley.hardwired.lift;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,19 +11,18 @@ class LiftSafetyTest {
 
   private static final double SLOW_FALL_BLOCKS_PER_TICK = 0.49;
 
-  @ParameterizedTest(name = "rider {0}")
-  @ValueSource(ints = {0, 1, 2, 3, 4, 7})
-  void seatsStayInsideTheCar(int rider) {
-    assertTrue(Math.abs(LiftSafety.seatX(rider)) < 0.5);
-    assertTrue(Math.abs(LiftSafety.seatZ(rider)) < 0.5);
-  }
-
-  @ParameterizedTest(name = "riders {0} and {1}")
-  @CsvSource({"0,1", "1,2", "2,3", "0,3"})
-  void nextRidersStandApart(int first, int second) {
-    assertNotEquals(
-        LiftSafety.seatX(first) * 2 + LiftSafety.seatZ(first),
-        LiftSafety.seatX(second) * 2 + LiftSafety.seatZ(second));
+  @ParameterizedTest(name = "{0},{1},{2} span {3}")
+  @CsvSource({
+    "0.4,10,0.4,1,true",
+    "0.6,10,0,1,false",
+    "0.6,10,0,2,true",
+    "0,10.9,0,1,true",
+    "0,12,0,1,false",
+    "0,9,0,1,false"
+  })
+  void aPlayerIsInTheCarOnlyInsideItsSpaceAndUnderTheRoof(
+      double x, double y, double z, int span, boolean inside) {
+    assertEquals(inside, LiftSafety.inCar(x, y, z, 0, 10, 0, span));
   }
 
   @ParameterizedTest(name = "drop {0}")
@@ -42,6 +40,12 @@ class LiftSafetyTest {
     "-0.5,7.5,false"
   })
   void theColumnIsOneBlock(double x, double z, boolean inside) {
-    assertEquals(inside, LiftSafety.inColumn(x, z, 3, 7));
+    assertEquals(inside, LiftSafety.inColumn(x, z, 3, 7, 1));
+  }
+
+  @ParameterizedTest(name = "{0},{1}")
+  @CsvSource({"3.5,7.5,true", "4.9,8.9,true", "5.0,7.5,false", "3.5,9.0,false", "2.9,8.0,false"})
+  void aLargeColumnIsTwoBlocksEachWay(double x, double z, boolean inside) {
+    assertEquals(inside, LiftSafety.inColumn(x, z, 3, 7, 2));
   }
 }

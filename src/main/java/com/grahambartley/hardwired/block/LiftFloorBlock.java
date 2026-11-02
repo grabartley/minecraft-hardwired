@@ -29,25 +29,24 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 
-public final class LiftFloorBlock extends Block implements BlockEntityProvider, WireDevice {
+public class LiftFloorBlock extends Block implements BlockEntityProvider, WireDevice {
 
   public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
   public static final EnumProperty<DoubleBlockHalf> HALF = Properties.DOUBLE_BLOCK_HALF;
   public static final BooleanProperty OPEN = Properties.OPEN;
 
   private static final Map<Direction, VoxelShape> CLOSED = new EnumMap<>(Direction.class);
-  private static final Map<Direction, VoxelShape> OPENED = new EnumMap<>(Direction.class);
 
   static {
     for (Direction side : Direction.Type.HORIZONTAL) {
       CLOSED.put(side, LiftFloorShapes.closed(side));
-      OPENED.put(side, LiftFloorShapes.open(side));
     }
   }
 
@@ -61,17 +60,21 @@ public final class LiftFloorBlock extends Block implements BlockEntityProvider, 
             .with(OPEN, false));
   }
 
-  public static BlockPos lower(BlockPos pos, BlockState state) {
+  public float dialPivotX() {
+    return 0.5F;
+  }
+
+  public BlockPos origin(BlockPos pos, BlockState state) {
     return WireDevice.twoTall(pos, state.get(HALF)).getFirst();
+  }
+
+  public List<BlockPos> columns(BlockPos pos, BlockState state) {
+    return List.of(origin(pos, state).offset(state.get(FACING)));
   }
 
   @Override
   public List<BlockPos> cells(BlockPos pos, BlockState state) {
     return WireDevice.twoTall(pos, state.get(HALF));
-  }
-
-  public static BlockPos column(BlockPos pos, BlockState state) {
-    return pos.offset(state.get(FACING));
   }
 
   @Override
@@ -86,7 +89,9 @@ public final class LiftFloorBlock extends Block implements BlockEntityProvider, 
 
   @Override
   public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-    return new ElectronicBlockEntity(pos, state);
+    return state.get(HALF) == DoubleBlockHalf.UPPER
+        ? new LiftFloorBlockEntity(pos, state)
+        : new ElectronicBlockEntity(pos, state);
   }
 
   @Override
@@ -156,7 +161,7 @@ public final class LiftFloorBlock extends Block implements BlockEntityProvider, 
   protected ActionResult onUse(
       BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
     if (player instanceof ServerPlayerEntity serverPlayer) {
-      LiftActions.use(serverPlayer, lower(pos, state));
+      LiftActions.use(serverPlayer, origin(pos, state));
     }
     return ActionResult.SUCCESS;
   }
@@ -170,7 +175,7 @@ public final class LiftFloorBlock extends Block implements BlockEntityProvider, 
   @Override
   protected VoxelShape getCollisionShape(
       BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-    return (state.get(OPEN) ? OPENED : CLOSED).get(state.get(FACING));
+    return state.get(OPEN) ? VoxelShapes.empty() : CLOSED.get(state.get(FACING));
   }
 
   @Override

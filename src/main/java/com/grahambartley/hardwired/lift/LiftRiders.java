@@ -1,14 +1,13 @@
 package com.grahambartley.hardwired.lift;
 
 import com.grahambartley.hardwired.block.LiftFloorBlock;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -18,37 +17,25 @@ import net.minecraft.util.math.Vec3d;
 
 public final class LiftRiders {
 
-  private static final double REACH_ABOVE_FLOOR = 2.5;
-  private static final double REACH_BELOW_FLOOR = 0.5;
-
   private LiftRiders() {}
 
-  public static List<ServerPlayerEntity> inColumn(LiftShaft shaft, double level) {
-    BlockPos head = shaft.head();
-    return shaft
-        .world()
-        .getPlayers(
-            player ->
-                !player.isSpectator()
-                    && player.isAlive()
-                    && !player.hasVehicle()
-                    && LiftSafety.inColumn(player.getX(), player.getZ(), head.getX(), head.getZ())
-                    && player.getY() >= level - REACH_BELOW_FLOOR
-                    && player.getY() <= level + REACH_ABOVE_FLOOR);
-  }
-
-  public static void board(LiftCarEntity car, LiftShaft shaft) {
-    inColumn(shaft, car.run().level()).forEach(player -> player.startRiding(car, true));
-  }
-
   public static List<ServerPlayerEntity> aboard(LiftCarEntity car) {
-    List<ServerPlayerEntity> riders = new ArrayList<>();
-    for (Entity passenger : car.getPassengerList()) {
-      if (passenger instanceof ServerPlayerEntity rider) {
-        riders.add(rider);
-      }
+    if (!(car.getWorld() instanceof ServerWorld world)) {
+      return List.of();
     }
-    return riders;
+    return world.getPlayers(
+        player -> !player.isSpectator() && player.isAlive() && car.holds(player));
+  }
+
+  public static void carry(List<ServerPlayerEntity> riders, double rise) {
+    for (ServerPlayerEntity rider : riders) {
+      lift(rider, rise);
+    }
+  }
+
+  public static void lift(PlayerEntity player, double rise) {
+    player.setPosition(player.getX(), player.getY() + rise, player.getZ());
+    player.fallDistance = 0;
   }
 
   public static void tell(List<ServerPlayerEntity> players, Text message) {
@@ -66,12 +53,19 @@ public final class LiftRiders {
     rider.teleport(world, spot.x, spot.y, spot.z, out.asRotation(), 0);
   }
 
+  public static void moveIfNoGateHere(
+      ServerWorld world, ServerPlayerEntity rider, List<BlockPos> gates, int level) {
+    Optional<BlockPos> gate = nearestGate(gates, level);
+    if (gate.filter(spot -> spot.getY() == level).isEmpty()) {
+      gate.ifPresentOrElse(spot -> stepOut(world, rider, spot), () -> letDown(rider, 0));
+    }
+  }
+
   public static Vec3d spotAt(BlockPos gate) {
     return Vec3d.ofBottomCenter(gate);
   }
 
   public static void letDown(ServerPlayerEntity rider, double drop) {
-    rider.stopRiding();
     rider.fallDistance = 0;
     rider.addStatusEffect(
         new StatusEffectInstance(StatusEffects.SLOW_FALLING, LiftSafety.slowFallTicks(drop)));

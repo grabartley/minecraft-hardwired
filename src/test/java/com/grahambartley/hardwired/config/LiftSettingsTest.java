@@ -18,7 +18,7 @@ class LiftSettingsTest {
   }
 
   @ParameterizedTest(name = "default {0}")
-  @CsvSource({"6"})
+  @CsvSource({"20"})
   void defaultsSitInsideTheirBounds(int first) {
     assertEquals(first, LiftSettings.DEFAULTS.ticksPerBlock());
     assertEquals(LiftSettings.DEFAULTS, new LiftSettings(LiftSettings.DEFAULTS.ticksPerBlock()));
