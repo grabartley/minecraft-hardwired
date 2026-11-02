@@ -21,7 +21,7 @@ Hardwired is practical 1920s electrics for Minecraft, built from copper and reds
 ### Experience It Aims For
 
 - **Thirty seconds to light a room.** Wiring is a quick job, not a puzzle. A cell, a switch and a lamp are enough.
-- **Nothing in the way.** Wiring never changes how a build looks or what can be placed in it. Wire is hidden, and even when shown it is a hair-thin line. An overhead line on poles is the one exception, and only a player who raises poles ever sees one.
+- **Nothing in the way.** Wiring never changes how a build looks or what can be placed in it. Wire is hidden, and even when shown it is a hair-thin line. An overhead line on poles is the one exception, and it shows only where a player raises poles.
 - **You can always see why.** Holding wire shows every connection and whether it is on.
 - **Depth when you want it.** A homeowner never has to meet a logic gate, and an engineer can still build real circuits.
 - **Early electrics, in vanilla's style.** Everything looks like it belongs in the game, and captures how exciting early electricity was: the showmanship and elegance of old world meeting new. It is sleek, never bulky, high resolution or plastic.
@@ -148,7 +148,7 @@ This document specifies the Hardwired alpha line for Minecraft 1.21.1 on Fabric.
 | Source switch | The small knife switch on each source |
 | Master Switch | A large wall switch that controls every source in its grid |
 | Holding wire | Having wire in the main hand or off hand |
-| Sealed wire | Wire waxed with honeycomb by a player. Only that player, or an operator using PERM-6, can see or change it |
+| Sealed wire | Wire waxed with honeycomb by a player. Only that player, or an operator using PERM-6, can see or change it, except as LINE-6 says for spans |
 | Tripped | A network shut off by LINK-8 |
 | Radio Mast | A stackable lattice block, the body of a tower |
 | Tower | A straight column of Radio Masts capped by a vanilla Lightning Rod |
@@ -223,14 +223,14 @@ You craft Copper Wire from copper and redstone. While you hold it, you click a s
 
 | ID | Requirement |
 |---|---|
-| VIEW-1 | Wire draws nothing until a player is holding wire. It then shows within range, through blocks, on every face, as a line as thin as tripwire |
+| VIEW-1 | Wire draws nothing until a player is holding wire, except spans (LINE-6). It then shows within range, through blocks, on every face, as a line as thin as tripwire |
 | VIEW-2 | Each network shows its colour and its state with a shape as well as a colour: solid when live, dashed when off, and dotted when on without power. Colours sharing a face sit side by side |
 | VIEW-3 | Looking at a wire, the one nearest the crosshair on a shared face, shows its colour, lists what is driving it, and shows its grid's load and supply (POWER-15) |
 | VIEW-4 | Inputs and outputs are marked, so a player can trace why something is on or off |
 | VIEW-5 | A broken connection is marked on the wire where it ends, and a tripped network is marked as tripped |
 | VIEW-6 | The server sends a player wiring only while they are holding wire, within range, and never sends sealed wire to anyone but its owner or an operator using PERM-6. Spans are the one exception (LINE-6) |
 
-**Not supported:** seeing wire without holding it; seeing another player's sealed wire.
+**Not supported:** seeing wire without holding it, or another player's sealed wire, except spans (LINE-6).
 
 **Enforcement:** server decides what is sent. The client draws it.
 
@@ -347,11 +347,11 @@ A switch sends the signal, and a source provides the power. A player places a so
 | Device | Load |
 |---|---|
 | Wire, Wall Switch, Push Button, sensors, Junction, Control Panel, Lift Floor, Radio Mast, Master Switch, Telephone Pole | 0 |
-| Copper Lamp, Light Strip, Bell Box | 1 |
+| Copper Lamp, Light Strip, Bell Box, Telephone | 1 |
 | Streetlight, Controller, Circuit Block, Main Panel, any vanilla component | 2 |
-| Radio, Speaker, Intercom, Telephone | 4 |
+| Radio, Speaker, Intercom, Exchange | 4 |
 | Alarm | 8 |
-| Broadcast Desk, Exchange | 16 |
+| Broadcast Desk | 16 |
 | Lift, while moving | 32 |
 | Large Lift, while moving | 64 |
 
@@ -360,7 +360,7 @@ A switch sends the signal, and a source provides the power. A player places a so
 | POWER-1 | A device or vanilla component runs only with power. An input still turns its network on, and a source never does, so a switch keeps its job. A network that is on with no power drives nothing. Every device that draws load follows this rule. A device with no load, such as a switch or sensor, works with no power |
 | POWER-2 | The mod has four sources, with the ratings and materials above. Cells and generators need redstone and put out more for their cost. Fuel-free sources are harder to build, or depend on the sun, and put out less for that cost. Coal and every other fuel are refused |
 | POWER-3 | A device's load counts while it wants to run, with or without power, so a device stopping does not bring a dark grid back. A build that feeds its own grid back through vanilla redstone can still cycle, no faster than POWER-5 allows, and that is the player's own clock. A lamp, Alarm or vanilla component counts while its network is on. A Controller, Circuit Block or Main Panel counts while a network touching it is on. A Radio counts while its knob is on, a Speaker while a Radio on its network is on, and a Broadcast Desk while its On Air button is on. An Intercom, Telephone, Bell Box or Exchange counts whenever it is wired, as a telephone line would. A Lift counts only while moving under power, so a trip that blows the fuse stops the Lift, drops out of the count and blows it once. A device or vanilla component touched by several networks counts once |
-| POWER-4 | Sources add up. Every network touching the same device or vanilla component is in one grid and shares one supply, so a source on any of them serves them all. This never joins their signals: WIRE-5 still holds, and a network in a grid stays on or off by its own inputs. The whole grid shares one budget, and wire itself has no limit. A sealed network shares a grid only with networks sealed by the same owner, so nobody else can add load to it, cut its power or read its totals. A device touched by both counts in each grid and runs if either gives power. Open wire shares as normal with other open wire. A Telephone Pole never joins networks into a grid, so colours on one pole stay apart |
+| POWER-4 | Sources add up. Every network touching the same device or vanilla component is in one grid and shares one supply, so a source on any of them serves them all. This never joins their signals: WIRE-5 still holds, and a network in a grid stays on or off by its own inputs. The whole grid shares one budget, and wire itself has no limit. A sealed network shares a grid only with networks sealed by the same owner, so nobody else can add load to it, cut its power or read its totals. A device touched by both counts in each grid and runs if either gives power. Open wire shares as normal with other open wire. A Telephone Pole never joins networks into a grid |
 | POWER-5 | An overloaded grid goes dark, like a blown fuse. All of its devices stop together, lamps flicker out within ACC-3, and its sources play a fuse pop. It comes back by itself once supply covers load, checked when anything on the grid changes and at least once a second. A grid with no running source goes dark with no fuse pop, and it is not overloaded. A grid that goes dark for any reason stays dark for at least two seconds. The running sources of a dark grid stand idle: they burn nothing, earn nothing and still count towards supply |
 | POWER-6 | A Redstone Cell or Redstone Generator holds charge. Using redstone dust or a block of redstone on it fills it from the stack in the hand, taking as many items as fit in one use. A dust adds `dustCharge` and a block adds nine times that. An item is used only when all of its charge fits, so what does not fit stays in the hand, a source with no room for even one item refuses it and says so, and a source never holds more than its capacity. Hoppers can feed a generator redstone, and never take any out |
 | POWER-7 | Fuel-free sources cover load first. Cells and generators share the rest in proportion to their ratings. Each unit of load burns `cellChargePerLoadMinute` from a cell and `generatorChargePerLoadMinute` from a generator. A source with no load burns nothing, and a source with no charge stops |
@@ -507,21 +507,21 @@ A player places an Exchange, wires Telephones to it and has a working network. L
 | ID | Requirement |
 |---|---|
 | PHONE-1 | A Candlestick Telephone stands on a floor or table, and a Wall Telephone hangs on a wall. A Telephone works only with an Exchange on its network. As with a Radio, the wire being on or off does not matter, only that its grid and the Exchange's grid have power |
-| PHONE-2 | An Exchange takes the lowest digit from 1 to 9 not used on its network. A Telephone joins the nearest Exchange on its network when it is first wired, stays with it, and takes the lowest free two line digits under it. Two Exchanges on one network reach each other's Telephones. Separate networks are separate telephone systems and may use the same numbers. Telephones keep their numbers when an Exchange is broken, and a new Exchange picks them up, with any clash giving the later Telephone a new number |
-| PHONE-3 | A Telephone renamed in an anvil shows that name in the directory. The dial screen lists every name and number on its network beside the dial, and an unnamed Telephone shows its number alone |
-| PHONE-4 | Using a Telephone lifts its receiver and opens its dial screen, with the line's dial tone. Dragging a digit round to the stop dials it, and the wheel winds back with one click per pulse, ten for zero. Three digits place the call. A number nobody has gets a message, and a number in use gets a busy tone. Closing the screen or moving out of reach hangs up |
-| PHONE-5 | A called Telephone rings for up to `phoneRingSeconds`, two seconds on and four off, and the caller hears ringback. Using a ringing Telephone answers it, whoever the player is. A Telephone in an unloaded chunk cannot ring, so the caller hears ringback until the time runs out |
-| PHONE-6 | A player on a call speaks by holding the Talk button or Talk key. The microphone opens only while Talk is held, and both players can talk at once. A voice is heard only by the players on the call, straight in the ear, never from the block, and nobody beside them hears it. RADIO-8 holds for how it is carried. A voice takes a stream ahead of every Radio (RADIO-10) and sounds thinner than a radio, with no setting. The server setting `voiceCalls`, on by default, turns voice on calls on or off for the world, and the client setting `hearVoiceCalls` mutes it on one device. A microphone follows RADIO-9 |
+| PHONE-2 | An Exchange takes the lowest digit from 1 to 9 not used on its network. A Telephone joins the nearest Exchange on its network and takes the lowest free two line digits under it, as soon as the two share a network, so the order they are wired in does not matter. Two Exchanges on one network reach each other's Telephones. Separate networks are separate telephone systems and may use the same numbers. A Telephone or Exchange touching several networks stays on the first it joined, so it never bridges two systems. When joining networks gives two Exchanges one digit, the one placed later takes a new digit and its Telephones new numbers. When a cut or a broken Exchange leaves a Telephone with no Exchange, it joins the nearest one left and takes a new number, or has none until an Exchange is on its network. Every other number stays. A Telephone with no free line on any Exchange, or a tenth Exchange on a network, has no number or digit and says the network is full |
+| PHONE-3 | A Telephone renamed in an anvil shows that name in the directory. The dial screen lists every name and number on its network beside the dial, and an unnamed Telephone shows its number alone. On sealed wire, a player who may not see it gets no list and must know the number |
+| PHONE-4 | Using a Telephone lifts its receiver and opens its dial screen, with the line's dial tone. Dragging a digit round to the stop dials it, and the wheel winds back with one click per pulse, ten for zero. Three digits place the call. A number nobody has gets a message, and a number in use gets a busy tone. Closing the screen, moving out of reach, dying or leaving the game hangs up |
+| PHONE-5 | A called Telephone rings for up to `phoneRingSeconds`, two seconds on and four off, and the caller hears ringback. Using a ringing Telephone answers it, whoever the player is, except as PHONE-12 says. An unanswered call ends when the time runs out, and the screen says so. A Telephone in an unloaded chunk cannot ring, so the caller hears ringback until then |
+| PHONE-6 | A player on a call speaks by holding the Talk button or Talk key. The microphone opens only while Talk is held, and everyone on the call can talk at once. A voice is heard only by the players on the call, straight in the ear, never from the block, and nobody beside them hears it. RADIO-8 holds for how it is carried. A voice takes a stream ahead of every Radio (RADIO-10) and sounds thinner than a radio, with no setting. The server setting `voiceCalls`, on by default, turns voice on calls on or off for the world, and the client setting `hearVoiceCalls` mutes it on one device. A microphone follows RADIO-9 |
 | PHONE-7 | A player on a call can type a line of up to 256 characters, so a call works with no microphone or with `voiceCalls` off. A line follows the chat rules in DEV-4, goes to the server log as chat does, and is shown only to the players on the call |
 | PHONE-8 | An Exchange carries up to `exchangeLines` calls at once, and a call between two Exchanges uses a line on each. A call past that gets a busy tone |
-| PHONE-9 | The Exchange's screen can give up to four of its Telephones one number, as a party line. A call to that number rings them all in a pattern of one long and two short, and the first to answer takes it. While a call is live, lifting another Telephone on that number joins it, with a click that everyone on the call hears. A call on sealed wire cannot be joined |
-| PHONE-10 | A call ends when a player hangs up, when the grid of any Telephone or Exchange on it goes dark, or when any of those blocks is broken. The line goes dead and the screen says why. An Exchange's numbers and calls do not need its chunk loaded, so a call needs only the Telephones on it. Nothing forces a chunk to stay loaded |
-| PHONE-11 | A Bell Box rings aloud whenever a Telephone on its network rings, heard up to `bellBoxHearing` blocks away, and turns its network on while it rings, so a call can flash the lights in another room. It does not affect the call |
+| PHONE-9 | The Exchange's screen can give up to four of its Telephones one number, as a party line. A call to that number rings them all in a pattern of one long and two short, and the first to answer takes it. While a call is live, lifting another Telephone on that number joins it, with a click that everyone on the call hears. On sealed wire nobody can join, and lifting another Telephone on that number gets a busy tone |
+| PHONE-10 | A Telephone leaves a call when its player hangs up, when its grid goes dark, or when it is broken or cut off from the network. A call ends for everyone when fewer than two Telephones are left, or when an Exchange on it goes dark, is broken or is cut off. The line goes dead and the screen says why. Turning `voiceCalls` off mutes a live call and leaves it up for typed lines. An Exchange's numbers and calls do not need its chunk loaded, so a call needs only the Telephones on it |
+| PHONE-11 | A Bell Box rings aloud whenever a Telephone on its network rings, heard up to `bellBoxHearing` blocks away, and turns its network on while it rings, so a call can flash the lights in another room. It does not affect the call. A Bell Box in a chunk that unloads mid-ring turns its network off when the chunk loads again (WIRE-12) |
 | PHONE-12 | A Phone Box is one block wide and three tall, and places and breaks as one, dropping one item. A player stands inside it, on a floor behind thin walls, and only a player inside can use its Telephone. Its folding door opens by hand from either side and never locks. Closing the door turns on its ceiling lamp while the box has power. A dye colours the box. It has a number and rings like any other Telephone |
 | PHONE-13 | A bolt that hits a wired rod (POWER-9) puts a loud crackle on every live call in that grid. The call stays up |
-| PHONE-14 | Every state shows without sound: a ringing Telephone's gongs shake, a lifted receiver is off its hook, each live call lights a glass lamp on the Exchange, and the dial screen says in words whether the line is ringing, busy or connected (ACC-2) |
-| PHONE-15 | Telephones follow LOOK-8. A Candlestick Telephone has a stepped blackstone foot, a slim brass stem, a mouthpiece on top, a dial in the base and a receiver on a side hook with a cloth cord. A Wall Telephone is an oak box with a stepped top, two brass gongs and a brass sunburst plate. A Bell Box is a small wall box with two brass gongs. An Exchange is two blocks wide and two tall: a slate board with rows of brass jacks, looped cords and a glass lamp for each line, under a brass sunburst. A Phone Box has an oak frame, frosted glass, a stepped top and a brass sunburst over the door. The dial screen has a calcite face, a brass finger wheel and a number card in the middle |
-| PHONE-16 | Lifting and hanging up use a hook click. Dialling, the Exchange's relay clatter, the two-gong bell and the Phone Box door are real recordings, and the bell has its own sound rather than a vanilla one. Line noise uses the radio hiss and crackle (RADIO-15). The dial tone, ringback and busy tone are the generated tones LOOK-6 allows |
+| PHONE-14 | Every state shows without sound: a ringing Telephone's receiver jumps on its hook, a ringing Bell Box's gongs shake, a lifted receiver is off its hook, live calls light glass lamps on the Exchange, and the dial screen says in words whether the line is ringing, busy or connected (ACC-2) |
+| PHONE-15 | Telephones follow LOOK-8. A Candlestick Telephone has a stepped blackstone foot, a slim brass stem, a mouthpiece on top, a dial in the base and a receiver on a side hook with a cloth cord. A Wall Telephone is an oak box with a stepped top, two brass gongs and a brass sunburst plate. A Bell Box is a small wall box with two brass gongs. An Exchange is two blocks wide and two tall, and places and breaks as one: a slate board with rows of brass jacks, looped cords and 12 glass lamps, one lit for each live call, under a brass sunburst. A Phone Box has an oak frame, frosted glass, a stepped top, a brass sunburst over the door and a Wall Telephone on its back wall. The dial screen has a calcite face, a brass finger wheel and a number card in the middle |
+| PHONE-16 | Lifting and hanging up use the vanilla lever click. Dialling, the Exchange's relay clatter, the two-gong bell and the Phone Box door are real recordings, because vanilla has no telephone bell. Line noise uses the radio hiss and crackle (RADIO-15). The dial tone, ringback and busy tone are the generated tones LOOK-6 allows |
 
 **Not supported:** calls between dimensions; calls in an unloaded chunk; conference calls beyond a party line; recording a call; a loudspeaker on a call.
 
@@ -531,16 +531,16 @@ A player places an Exchange, wires Telephones to it and has a working network. L
 
 **Actor:** Homeowner, tinkerer.
 
-Face wire suits a house and tires over a long run. A player raises poles across the land and strings wire between them, which is how far-off builds and Exchanges join one network.
+Face wire suits a house, but laying it over a long distance takes too much of it. A player raises poles across the land and strings wire between them, which is how far-off builds and Exchanges join one network.
 
 | ID | Requirement |
 |---|---|
-| LINE-1 | A Telephone Pole is crafted from logs, copper and calcite. Poles stack into a column of any height, and fit themselves to it, with a cross arm and calcite insulators on the top block. An oak, spruce or dark oak post follows the log used. Poles do not burn, and a piston cannot move one. Overhead lines are the only wire a player sees without holding wire (VIEW-1) |
-| LINE-2 | Using wire on the top of a pole starts a span, and using it on the top of another pole within `poleSpanBlocks` blocks finishes it. A span costs one wire for every `spanBlocksPerWire` blocks, rounded up, and a pole holds up to 8. Sneaking and using wire on a pole removes its spans of that colour and returns their wire. Breaking a pole drops the wire of its spans. Creative players use none |
-| LINE-3 | A span joins the poles at each end into one network, in the span's colour. Wire of that colour touching a pole joins that pole's spans. It carries anything a network carries: signals, power and calls. WIRE-5 still holds, so colours on one pole never mix. A span counts as one part towards the size limit (PERF-2) |
+| LINE-1 | A Telephone Pole is crafted from logs, copper and calcite. Poles stack into a column of any height, and fit themselves to it, with a cross arm and calcite insulators on the top block. A column counts as one pole. An oak, spruce or dark oak log gives a post of that wood, and any other log gives oak. Poles do not burn, and a piston cannot move one |
+| LINE-2 | Using wire on a pole's top block starts a span instead of laying wire there, and using it on another pole's top block within `poleSpanBlocks` blocks finishes it. Using it on the first pole again, or putting the wire away, cancels. A span costs one wire for every `spanBlocksPerWire` blocks, rounded up, paid when it is finished, and a pole holds up to 8. A second span of one colour between the same two poles is refused. Sneaking and using wire on a pole's top block removes its spans of that colour and returns their wire. Breaking any block of a pole drops the wire of its spans. Creative players use none |
+| LINE-3 | A span joins the poles at each end into one network, in the span's colour. Wire of that colour touching any block of a pole joins that pole's spans. It carries anything a network carries: signals, power and calls. WIRE-5 still holds, so colours on one pole never mix. A span counts as one part towards the size limit (PERF-2) |
 | LINE-4 | A span runs in a straight line with a slight sag, has no collision, and passes through blocks. It never stops a block being placed, and placing a block does not break it. Spans stay in one dimension |
-| LINE-5 | A span in plain copper ages like copper over time. Using honeycomb on a pole, with no wire in the other hand, waxes its spans and stops it. Age changes the look, not the line |
-| LINE-6 | A span shows state like other wire while a player holds wire (VIEW-2). Seals cover spans as they do wire (WIRE-13), but every player can see a span, so a seal cannot hide where a line runs. The server sends no owner or network data for a sealed span to a player who may not see it |
+| LINE-5 | A span in plain copper ages like copper over time. Using honeycomb on a pole, with no wire in the other hand, waxes its spans and stops it, and only the owner, or an operator using PERM-6, can wax a sealed span. Age changes the look, not the line |
+| LINE-6 | Every player sees a span, whether or not they are holding wire. It also shows state like other wire while a player holds wire (VIEW-2). A seal on a network covers its spans (WIRE-13), and is made on wire touching a pole. It cannot hide where a line runs, but a player who may not see sealed wire is sent only the span's shape, with no state, owner or network data |
 | LINE-7 | A vanilla Lightning Rod on top of a pole is wired to its spans, so POWER-9 applies, once per bolt |
 
 **Not supported:** walking on spans; spans with no pole; spans that carry items.
@@ -557,7 +557,7 @@ A modified client is assumed. Hiding a control is never the enforcement of a rul
 |---|---|---|---|
 | See open wire while holding wire | Yes | Yes | Yes |
 | Cut or join open wire | Yes | Yes | Yes |
-| See sealed wire | No | Yes | Yes, through PERM-6 |
+| See sealed wire, other than a span | No | Yes | Yes, through PERM-6 |
 | Cut or join sealed wire | No | Yes | Yes, through PERM-6 |
 | Break a block with sealed wire on it | Yes, the wire drops | Yes | Yes |
 | Use a switch, panel or Controller | Yes | Yes | Yes |
@@ -619,7 +619,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | CS-5 | Two players editing one Circuit Board save one design, and the last save wins |
 | CS-8 | Two Desks going on the air on one tower in one tick give one station. Two players pressing Talk on one Desk give one speaker |
 | CS-9 | Two players throwing one Master Switch in one tick give one result, and a throw during its one second start waits for that start to finish |
-| CS-10 | Two players dialling one number in one tick give one call, and the other gets a busy tone. Two players answering one Telephone give one answer |
+| CS-10 | Two players dialling one number in one tick give one call, and the other gets a busy tone. Two players answering one Telephone, or two Telephones on a party line, give one answer |
 | CS-11 | Two Telephones wired in one tick get different numbers |
 | CS-12 | Two players finishing the same span in one tick place one span and pay once |
 
@@ -690,6 +690,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | A station's frequency, on-air state and place in a song | kept, off the air while unloaded, with any song starting from the top | kept | Desk does not move | lost | kept to the last save |
 | A paused song's place on a Desk | kept | kept | Desk does not move | lost | kept to the last save |
 | A Radio's frequency, on and off knob and volume | kept | kept | Radio does not move | lost | kept to the last save |
+| An Exchange's digit | kept | kept | Exchange does not move | lost | kept to the last save |
 | A Telephone's number and Exchange, including a shared number | kept | kept | Telephone does not move | lost | kept to the last save |
 | A Telephone's name | kept | kept | Telephone does not move | drops as item data | kept to the last save |
 | A Phone Box's colour and door | kept | kept | box does not move | colour drops as item data, door lost | kept to the last save |
