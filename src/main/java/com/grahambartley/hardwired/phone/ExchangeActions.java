@@ -43,7 +43,7 @@ public final class ExchangeActions {
       return;
     }
     PhoneDirectory directory = PhoneDirectory.of(world);
-    Map<Long, Integer> numbers = numbersOf(directory, anchor.asLong());
+    Map<Long, Integer> numbers = directory.linesOf(anchor.asLong());
     List<Long> chosen = action.phones().stream().map(BlockPos::asLong).toList();
     Map<Long, Long> orders = new HashMap<>();
     numbers
@@ -79,23 +79,12 @@ public final class ExchangeActions {
     return mayChange ? Optional.empty() : Optional.of("screen.hardwired.exchange.not_yours");
   }
 
-  private static Map<Long, Integer> numbersOf(PhoneDirectory directory, long anchor) {
-    Map<Long, Integer> numbers = new HashMap<>();
-    for (long phone : directory.membersOf(anchor)) {
-      directory
-          .entry(phone)
-          .filter(entry -> !entry.exchange() && entry.hasNumber() && entry.numberedBy() == anchor)
-          .ifPresent(entry -> numbers.put(phone, entry.number()));
-    }
-    return numbers;
-  }
-
   private static void send(ServerPlayerEntity player, BlockPos anchor) {
     PhoneDirectory directory = PhoneDirectory.of(player.getServerWorld());
     int digit =
         directory.entry(anchor.asLong()).map(PhoneEntry::number).orElse(PhoneNumbering.NONE);
     List<ExchangeViewPayload.Line> lines =
-        numbersOf(directory, anchor.asLong()).entrySet().stream()
+        directory.linesOf(anchor.asLong()).entrySet().stream()
             .map(
                 entry ->
                     new ExchangeViewPayload.Line(

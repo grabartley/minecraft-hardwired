@@ -49,9 +49,7 @@ public final class TalkControl {
     switch (state.capture(mic.isOpen(), mine(client))) {
       case START ->
           mic.open(
-              client,
-              frame -> ClientPlayNetworking.send(new VoiceFramePayload(pos, frame)),
-              this::drop);
+              frame -> ClientPlayNetworking.send(new VoiceFramePayload(pos, frame)), this::drop);
       case STOP -> mic.close();
       case KEEP -> {}
     }

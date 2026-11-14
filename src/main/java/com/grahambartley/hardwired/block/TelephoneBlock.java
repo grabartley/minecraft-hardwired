@@ -118,7 +118,7 @@ public final class TelephoneBlock extends HorizontalFacingBlock
   protected void onStateReplaced(
       BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
     if (!state.isOf(newState.getBlock()) && world instanceof ServerWorld server) {
-      Switchboard.of(server).hangUp(pos.asLong());
+      Switchboard.of(server).removed(pos.asLong());
       PhoneDirectory.of(server).remove(pos.asLong());
     }
     super.onStateReplaced(state, world, pos, newState, moved);

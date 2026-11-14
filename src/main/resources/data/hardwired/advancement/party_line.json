@@ -10,7 +10,7 @@
       "translate": "advancement.hardwired.party_line.description"
     },
     "frame": "task",
-    "hidden": false
+    "hidden": true
   },
   "criteria": {
     "done": {

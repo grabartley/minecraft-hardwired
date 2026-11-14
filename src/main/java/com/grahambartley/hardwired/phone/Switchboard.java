@@ -115,6 +115,13 @@ public final class Switchboard {
     line.show(phone);
   }
 
+  public void removed(long phone) {
+    Optional<UUID> user = userOf(phone);
+    lifted.remove(phone);
+    callOf(phone).ifPresent(call -> leave(call, phone, LineStatus.LINE_DEAD));
+    user.ifPresent(id -> line.tell(phone, id, LineStatus.LINE_DEAD));
+  }
+
   public void forget(UUID player) {
     for (Map.Entry<Long, UUID> held : List.copyOf(lifted.entrySet())) {
       if (held.getValue().equals(player)) {

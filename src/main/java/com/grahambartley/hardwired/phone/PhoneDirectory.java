@@ -152,20 +152,29 @@ public final class PhoneDirectory {
         .toList();
   }
 
+  public Map<Long, Integer> linesOf(long exchange) {
+    Map<Long, Integer> lines = new HashMap<>();
+    for (long phone : membersOf(exchange)) {
+      book.at(phone)
+          .filter(entry -> !entry.exchange() && entry.hasNumber() && entry.numberedBy() == exchange)
+          .ifPresent(entry -> lines.put(phone, entry.number()));
+    }
+    return lines;
+  }
+
   public DeviceStatus status(long pos) {
-    Optional<PhoneEntry> found = book.at(pos);
-    if (found.isEmpty()) {
-      return DeviceStatus.NO_EXCHANGE;
-    }
-    PhoneEntry entry = found.get();
-    Optional<WireNetwork> system = systemOf(pos);
-    if (system.isEmpty()) {
-      return entry.exchange() ? DeviceStatus.NO_TELEPHONE : DeviceStatus.NO_EXCHANGE;
-    }
-    if (entry.hasNumber()) {
-      return DeviceStatus.READY;
-    }
-    return allowed(entry, system.get()) ? DeviceStatus.NETWORK_FULL : DeviceStatus.SEALED_OUT;
+    Optional<PhoneEntry> entry = book.at(pos);
+    Optional<WireNetwork> system = entry.flatMap(found -> systemOf(pos));
+    return PhoneStatus.of(
+        entry.isPresent(),
+        entry.map(PhoneEntry::exchange).orElse(false),
+        system.isPresent(),
+        entry.map(PhoneEntry::hasNumber).orElse(false),
+        entry.isPresent() && system.isPresent() && mayNumber(entry.get(), system.get()));
+  }
+
+  private boolean mayNumber(PhoneEntry entry, WireNetwork network) {
+    return entry.trusted() || allowed(entry, network);
   }
 
   private boolean allowed(PhoneEntry entry, WireNetwork network) {
@@ -179,7 +188,7 @@ public final class PhoneDirectory {
     List<PhoneNumbering.Phone> phones = new ArrayList<>();
     for (long pos : members) {
       PhoneEntry entry = book.at(pos).orElseThrow();
-      boolean allowed = entry.trusted() || allowed(entry, network);
+      boolean allowed = mayNumber(entry, network);
       if (entry.exchange()) {
         exchanges.add(new PhoneNumbering.Exchange(pos, entry.order(), entry.number(), allowed));
       } else {

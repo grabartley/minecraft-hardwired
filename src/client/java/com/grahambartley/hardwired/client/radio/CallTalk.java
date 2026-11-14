@@ -22,8 +22,7 @@ public final class CallTalk {
 
   public void press(MinecraftClient client, boolean connected) {
     if (connected && allowed()) {
-      mic.open(
-          client, frame -> ClientPlayNetworking.send(new CallVoicePayload(phone, frame)), () -> {});
+      mic.open(frame -> ClientPlayNetworking.send(new CallVoicePayload(phone, frame)), () -> {});
     }
   }
 

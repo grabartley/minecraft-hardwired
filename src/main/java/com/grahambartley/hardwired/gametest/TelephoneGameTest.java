@@ -358,6 +358,47 @@ public class TelephoneGameTest implements FabricGameTest {
         });
   }
 
+  @GameTest(templateName = BENCH, tickLimit = 100)
+  public void breakingALiftedPhoneTellsItsUserTheLineWentDead(TestContext context) {
+    buildNetwork(context);
+    ConnectedTestPlayer user = ConnectedTestPlayer.joinAt(context, at(2, 3));
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          pickUp(context, user, FIRST);
+          context.setBlockState(FIRST, Blocks.AIR);
+          expectStatus(context, user, LineStatus.LINE_DEAD);
+          context.assertFalse(
+              Switchboard.of(context.getWorld()).isLifted(abs(context, FIRST)),
+              "a broken phone must not stay lifted");
+          leaveAll(user);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 100)
+  public void breakingAPhoneOnACallTellsBothSidesTheLineWentDead(TestContext context) {
+    buildNetwork(context);
+    ConnectedTestPlayer caller = ConnectedTestPlayer.joinAt(context, at(2, 3));
+    ConnectedTestPlayer answerer = ConnectedTestPlayer.joinAt(context, at(6, 3));
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          pickUp(context, caller, FIRST);
+          dial(context, caller, FIRST, numberOf(context, SECOND));
+          pickUp(context, answerer, SECOND);
+          expectStatus(context, caller, LineStatus.CONNECTED);
+          context.setBlockState(SECOND, Blocks.AIR);
+          expectStatus(context, answerer, LineStatus.LINE_DEAD);
+          expectStatus(context, caller, LineStatus.LINE_DEAD);
+          context.assertTrue(
+              Switchboard.of(context.getWorld()).callOf(abs(context, FIRST)).isEmpty(),
+              "breaking one side must end a two-way call");
+          leaveAll(caller, answerer);
+          context.complete();
+        });
+  }
+
   @GameTest(templateName = BENCH, tickLimit = 140)
   public void aSealedLineKeepsItsNumbersAndRefusesASecondPhone(TestContext context) {
     buildNetwork(context);
