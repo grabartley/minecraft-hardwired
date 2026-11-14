@@ -1,0 +1,5 @@
+[QA] staged at BlockPos{x=0, y=-60, z=0}
+[QA] spans=3 wireLeft=0
+[QA] off lampLevel=0 lineOn=[false, false, false]
+[QA] on lampLevel=15 lineOn=[true, true, false]
+[QA] DONE
