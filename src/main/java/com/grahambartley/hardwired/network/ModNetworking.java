@@ -30,6 +30,7 @@ public final class ModNetworking {
     PayloadTypeRegistry.playC2S().register(WireRemovePayload.ID, WireRemovePayload.CODEC);
     PayloadTypeRegistry.playC2S().register(WireInspectPayload.ID, WireInspectPayload.CODEC);
     PayloadTypeRegistry.playS2C().register(WireChunkPayload.ID, WireChunkPayload.CODEC);
+    PayloadTypeRegistry.playS2C().register(SpanViewPayload.ID, SpanViewPayload.CODEC);
     PayloadTypeRegistry.playS2C().register(WireViewClearPayload.ID, WireViewClearPayload.CODEC);
     PayloadTypeRegistry.playS2C()
         .register(WireInspectResultPayload.ID, WireInspectResultPayload.CODEC);

@@ -13,6 +13,10 @@ public final class WireViewRange {
 
   private WireViewRange() {}
 
+  public static int blocksIn(int chunks) {
+    return chunks << CHUNK_SHIFT;
+  }
+
   public static int chunkRadius(int range) {
     return (range + LAST_BLOCK_IN_CHUNK) >> CHUNK_SHIFT;
   }

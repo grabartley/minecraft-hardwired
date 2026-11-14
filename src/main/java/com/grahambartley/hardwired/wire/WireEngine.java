@@ -6,9 +6,11 @@ import com.grahambartley.hardwired.registry.ModItems;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import net.minecraft.block.Block;
@@ -66,6 +68,47 @@ public final class WireEngine {
 
   public void reown(WireNetwork network, UUID owner) {
     grid.reown(network, owner).forEach(this::dropItem);
+    state.markDirty();
+  }
+
+  public Set<WireSpan> spans() {
+    return grid.spans().all();
+  }
+
+  public List<WireSpan> spansAt(BlockPos top) {
+    return grid.spans().at(top);
+  }
+
+  public boolean addSpan(WireSpan span) {
+    boolean added = grid.addSpan(span);
+    state.markDirty();
+    return added;
+  }
+
+  public boolean isSpanOn(WireSpan span) {
+    WireNetwork network = grid.networkOf(span.fromAnchor());
+    return network != null && network.isOn();
+  }
+
+  public boolean restyleSpan(WireSpan span, WireSpan next) {
+    boolean changed = grid.spans().restyle(span, next);
+    state.markDirty();
+    return changed;
+  }
+
+  public boolean removeSpan(WireSpan span) {
+    boolean removed = grid.removeSpan(span);
+    state.markDirty();
+    return removed;
+  }
+
+  public void setPoleColumn(BlockPos top, LongList blocks) {
+    grid.setColumn(top, blocks);
+    state.markDirty();
+  }
+
+  public void clearPoleColumn(BlockPos top) {
+    grid.spans().clearColumn(top);
     state.markDirty();
   }
 
@@ -147,8 +190,20 @@ public final class WireEngine {
         .toList();
   }
 
+  public <T> List<T> allOnSpansAt(BlockPos top, Class<T> type) {
+    return loadedOn(grid.spanNetworksAt(top)).stream()
+        .map(world::getBlockEntity)
+        .filter(type::isInstance)
+        .map(type::cast)
+        .toList();
+  }
+
   public List<BlockPos> loadedOnNetwork(BlockPos pos) {
-    return grid.networksTouching(pos).stream()
+    return loadedOn(grid.networksTouching(pos));
+  }
+
+  private List<BlockPos> loadedOn(Collection<WireNetwork> networks) {
+    return networks.stream()
         .flatMap(network -> network.touches().stream())
         .map(TouchPoint::pos)
         .distinct()
@@ -224,7 +279,7 @@ public final class WireEngine {
     for (long packed : checks) {
       BlockPos pos = BlockPos.fromLong(packed);
       for (WireCell cell : List.copyOf(grid.cellsOn(pos))) {
-        if (!WireRules.accepts(world, pos, cell.face().side())) {
+        if (!grid.spans().isAnchor(cell) && !WireRules.accepts(world, pos, cell.face().side())) {
           drop(cell);
         }
       }

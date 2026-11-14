@@ -2,6 +2,7 @@
   "values": [
     "#minecraft:leaves",
     "minecraft:barrier",
-    "minecraft:bedrock"
+    "minecraft:bedrock",
+    "#hardwired:telephone_poles"
   ]
 }

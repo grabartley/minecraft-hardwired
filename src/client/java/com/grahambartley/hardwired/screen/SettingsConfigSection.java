@@ -7,6 +7,7 @@ import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.HumSettings;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.LineSettings;
 import com.grahambartley.hardwired.config.PhoneSettings;
 import com.grahambartley.hardwired.config.PowerLoads;
 import com.grahambartley.hardwired.config.PowerRatings;
@@ -488,6 +489,22 @@ final class SettingsConfigSection {
             KEY + "voicecalls",
             config.phone().voiceCalls(),
             value -> config = config.withPhone(config.phone().withVoiceCalls(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "polespanblocks",
+            KEY + "polespanblocks.tooltip",
+            LineSettings.SPAN_BLOCKS_MIN,
+            LineSettings.SPAN_BLOCKS_MAX,
+            config.line().poleSpanBlocks(),
+            value -> config = config.withLine(config.line().withPoleSpanBlocks(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "spanblocksperwire",
+            KEY + "spanblocksperwire.tooltip",
+            LineSettings.BLOCKS_PER_WIRE_MIN,
+            LineSettings.BLOCKS_PER_WIRE_MAX,
+            config.line().spanBlocksPerWire(),
+            value -> config = config.withLine(config.line().withSpanBlocksPerWire(value))));
   }
 
   HardwiredConfig config() {

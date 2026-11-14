@@ -63,6 +63,9 @@ public final class ModItems {
           ModBlocks.LARGE_LIFT,
           ModBlocks.LARGE_LIFT_FLOOR,
           ModBlocks.RADIO_MAST,
+          ModBlocks.OAK_TELEPHONE_POLE,
+          ModBlocks.SPRUCE_TELEPHONE_POLE,
+          ModBlocks.DARK_OAK_TELEPHONE_POLE,
           ModBlocks.BROADCAST_DESK);
 
   private ModItems() {}

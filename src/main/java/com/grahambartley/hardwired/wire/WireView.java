@@ -89,7 +89,7 @@ public final class WireView {
     Set<MarkView> marks = new HashSet<>();
     WireGrid grid = engine.grid();
     for (WireCell cell : grid.cellsInChunk(chunk)) {
-      if (!access.canSee(cell)) {
+      if (!access.canSee(cell) || grid.spans().isAnchor(cell)) {
         continue;
       }
       WireNetwork network = grid.networkOf(cell);

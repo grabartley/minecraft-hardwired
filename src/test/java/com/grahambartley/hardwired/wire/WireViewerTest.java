@@ -47,6 +47,14 @@ class WireViewerTest {
         visible, new WireViewer(ALICE, override).canSee(new WireCell(FACE, Hue.RED, owner)));
   }
 
+  @ParameterizedTest(name = "span owner {0}, override {1}: visible {2}")
+  @MethodSource("sight")
+  void aSealedSpanShowsOnlyToItsOwnerOrAnOverride(UUID owner, boolean override, boolean visible) {
+    WireSpan span =
+        new WireSpan(new BlockPos(0, 70, 0), new BlockPos(20, 70, 0), Hue.PLAIN, owner, 5);
+    assertEquals(visible, new WireViewer(ALICE, override).canSee(span));
+  }
+
   @Test
   void hiddenCellsAreLeftOutAndTheRestAreRankedOwnFirst() {
     WireGrid grid = new WireGrid();
@@ -140,5 +148,16 @@ class WireViewerTest {
     grid.add(new WireCell(FACE, Hue.BLUE));
     WireWax.Use use = new WireWax.Use(WireWax.Action.UNSEAL, Hand.MAIN_HAND, Hue.BLUE);
     assertEquals(Optional.empty(), new WireViewer(ALICE, false).waxTarget(grid, FACE, use));
+  }
+
+  @ParameterizedTest(name = "sealed {0}")
+  @ValueSource(booleans = {true, false})
+  void aSpansEndIsNeverOfferedAsWireToChangeOrSeal(boolean sealed) {
+    WireGrid grid = new WireGrid();
+    BlockPos top = new BlockPos(0, 70, 0);
+    UUID owner = sealed ? ALICE : null;
+    grid.addSpan(new WireSpan(top, new BlockPos(20, 70, 0), Hue.PLAIN, owner, 5));
+    WireFace topFace = new WireFace(top, Direction.UP);
+    assertEquals(List.of(), new WireViewer(ALICE, true).visibleOn(grid, topFace));
   }
 }

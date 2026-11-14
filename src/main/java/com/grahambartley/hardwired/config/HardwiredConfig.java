@@ -24,7 +24,8 @@ public record HardwiredConfig(
     LiftSettings lift,
     CircuitSettings circuit,
     RadioSettings radio,
-    PhoneSettings phone) {
+    PhoneSettings phone,
+    LineSettings line) {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HardwiredConfig.class);
   private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -38,6 +39,7 @@ public record HardwiredConfig(
     circuit = circuit == null ? CircuitSettings.DEFAULTS : circuit;
     radio = radio == null ? RadioSettings.DEFAULTS : radio;
     phone = phone == null ? PhoneSettings.DEFAULTS : phone;
+    line = line == null ? LineSettings.DEFAULTS : line;
   }
 
   public static HardwiredConfig defaults() {
@@ -49,39 +51,44 @@ public record HardwiredConfig(
         LiftSettings.DEFAULTS,
         CircuitSettings.DEFAULTS,
         RadioSettings.DEFAULTS,
-        PhoneSettings.DEFAULTS);
+        PhoneSettings.DEFAULTS,
+        LineSettings.DEFAULTS);
   }
 
   public HardwiredConfig withWire(final WireSettings value) {
-    return new HardwiredConfig(value, lamp, device, power, lift, circuit, radio, phone);
+    return new HardwiredConfig(value, lamp, device, power, lift, circuit, radio, phone, line);
   }
 
   public HardwiredConfig withLamp(final LampSettings value) {
-    return new HardwiredConfig(wire, value, device, power, lift, circuit, radio, phone);
+    return new HardwiredConfig(wire, value, device, power, lift, circuit, radio, phone, line);
   }
 
   public HardwiredConfig withDevice(final DeviceSettings value) {
-    return new HardwiredConfig(wire, lamp, value, power, lift, circuit, radio, phone);
+    return new HardwiredConfig(wire, lamp, value, power, lift, circuit, radio, phone, line);
   }
 
   public HardwiredConfig withPower(final PowerSettings value) {
-    return new HardwiredConfig(wire, lamp, device, value, lift, circuit, radio, phone);
+    return new HardwiredConfig(wire, lamp, device, value, lift, circuit, radio, phone, line);
   }
 
   public HardwiredConfig withLift(final LiftSettings value) {
-    return new HardwiredConfig(wire, lamp, device, power, value, circuit, radio, phone);
+    return new HardwiredConfig(wire, lamp, device, power, value, circuit, radio, phone, line);
   }
 
   public HardwiredConfig withCircuit(final CircuitSettings value) {
-    return new HardwiredConfig(wire, lamp, device, power, lift, value, radio, phone);
+    return new HardwiredConfig(wire, lamp, device, power, lift, value, radio, phone, line);
   }
 
   public HardwiredConfig withRadio(final RadioSettings value) {
-    return new HardwiredConfig(wire, lamp, device, power, lift, circuit, value, phone);
+    return new HardwiredConfig(wire, lamp, device, power, lift, circuit, value, phone, line);
   }
 
   public HardwiredConfig withPhone(final PhoneSettings value) {
-    return new HardwiredConfig(wire, lamp, device, power, lift, circuit, radio, value);
+    return new HardwiredConfig(wire, lamp, device, power, lift, circuit, radio, value, line);
+  }
+
+  public HardwiredConfig withLine(final LineSettings value) {
+    return new HardwiredConfig(wire, lamp, device, power, lift, circuit, radio, phone, value);
   }
 
   public static HardwiredConfig load(Path path) {
@@ -152,7 +159,8 @@ public record HardwiredConfig(
         LiftSettings.fromJson(fields),
         CircuitSettings.fromJson(fields),
         RadioSettings.fromJson(fields),
-        PhoneSettings.fromJson(fields));
+        PhoneSettings.fromJson(fields),
+        LineSettings.fromJson(fields));
   }
 
   static JsonObject toJson(HardwiredConfig config) {
@@ -165,6 +173,7 @@ public record HardwiredConfig(
     config.circuit.writeJson(root);
     config.radio.writeJson(root);
     config.phone.writeJson(root);
+    config.line.writeJson(root);
     return root;
   }
 

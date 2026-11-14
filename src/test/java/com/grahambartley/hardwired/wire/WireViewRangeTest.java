@@ -61,4 +61,10 @@ class WireViewRangeTest {
   private static MarkView mark(BlockPos pos) {
     return new MarkView(pos.asLong(), false);
   }
+
+  @ParameterizedTest(name = "{0} chunks")
+  @CsvSource({"0,0", "1,16", "7,112", "33,528"})
+  void chunksConvertToBlocks(int chunks, int blocks) {
+    assertEquals(blocks, WireViewRange.blocksIn(chunks));
+  }
 }

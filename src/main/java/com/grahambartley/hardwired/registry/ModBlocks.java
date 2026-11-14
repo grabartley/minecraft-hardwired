@@ -31,6 +31,7 @@ import com.grahambartley.hardwired.block.SpeakerBlock;
 import com.grahambartley.hardwired.block.StreetlightBlock;
 import com.grahambartley.hardwired.block.SwitchBlock;
 import com.grahambartley.hardwired.block.TelephoneBlock;
+import com.grahambartley.hardwired.block.TelephonePoleBlock;
 import java.util.EnumSet;
 import java.util.Set;
 import net.minecraft.block.AbstractBlock;
@@ -38,6 +39,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.enums.BlockFace;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -235,6 +237,9 @@ public final class ModBlocks {
               AbstractBlock.Settings.copy(Blocks.COPPER_BLOCK)
                   .nonOpaque()
                   .pistonBehavior(PistonBehavior.BLOCK)));
+  public static final Block OAK_TELEPHONE_POLE = telephonePole("oak", MapColor.OAK_TAN);
+  public static final Block SPRUCE_TELEPHONE_POLE = telephonePole("spruce", MapColor.SPRUCE_BROWN);
+  public static final Block DARK_OAK_TELEPHONE_POLE = telephonePole("dark_oak", MapColor.BROWN);
   public static final Block BROADCAST_DESK =
       register(
           "broadcast_desk",
@@ -255,6 +260,19 @@ public final class ModBlocks {
 
   public static Block[] animatedDevices() {
     return new Block[] {};
+  }
+
+  private static Block telephonePole(String wood, MapColor color) {
+    return register(
+        wood + "_telephone_pole",
+        new TelephonePoleBlock(
+            AbstractBlock.Settings.create()
+                .mapColor(color)
+                .instrument(NoteBlockInstrument.BASS)
+                .strength(2.0F)
+                .sounds(BlockSoundGroup.WOOD)
+                .nonOpaque()
+                .pistonBehavior(PistonBehavior.BLOCK)));
   }
 
   private static MountedLampBlock mountedLamp(double[] floorBox, Set<BlockFace> faces) {

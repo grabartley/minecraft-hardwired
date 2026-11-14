@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.wire;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 
 public final class WireGrid {
 
@@ -27,9 +29,70 @@ public final class WireGrid {
   private final Long2ObjectMap<Set<WireNetwork>> byTouch = new Long2ObjectOpenHashMap<>();
   private final Long2IntOpenHashMap chunkVersions = new Long2IntOpenHashMap();
   private final Set<WireNetwork> networks = new HashSet<>();
+  private final WireSpans spans = new WireSpans();
   private final Set<WireNetwork> dirty = new LinkedHashSet<>();
   private final LongOpenHashSet touchChanges = new LongOpenHashSet();
   private long lookClock;
+
+  public WireSpans spans() {
+    return spans;
+  }
+
+  public boolean addSpan(WireSpan span) {
+    if (!spans.add(span)) {
+      return false;
+    }
+    add(span.fromAnchor());
+    add(span.toAnchor());
+    connect(span.fromAnchor(), span.toAnchor());
+    return true;
+  }
+
+  public boolean removeSpan(WireSpan span) {
+    WireNetwork network = cells.get(span.fromAnchor());
+    if (!spans.remove(span)) {
+      return false;
+    }
+    for (WireCell anchor : List.of(span.fromAnchor(), span.toAnchor())) {
+      if (!spans.isAnchor(anchor)) {
+        remove(anchor);
+      }
+    }
+    resplit(network);
+    return true;
+  }
+
+  public void setColumn(BlockPos top, LongList blocks) {
+    Set<WireNetwork> before = new HashSet<>();
+    for (WireSpan span : spans.at(top)) {
+      before.add(cells.get(WireSpan.anchor(top, span.color(), span.owner())));
+    }
+    spans.setColumn(top, blocks);
+    before.forEach(this::resplit);
+    for (WireSpan span : spans.at(top)) {
+      WireCell anchor = WireSpan.anchor(top, span.color(), span.owner());
+      for (WireCell neighbour : adjacentCells(anchor)) {
+        connect(anchor, neighbour);
+      }
+    }
+  }
+
+  private void resplit(WireNetwork network) {
+    if (network != null && networks.contains(network) && !network.cells.isEmpty()) {
+      splitIfNeeded(network, List.copyOf(network.cells));
+    }
+  }
+
+  private void connect(WireCell first, WireCell second) {
+    WireNetwork a = cells.get(first);
+    WireNetwork b = cells.get(second);
+    if (a == null || b == null || a == b) {
+      return;
+    }
+    WireNetwork target = a.size() >= b.size() ? a : b;
+    absorb(target, target == a ? b : a);
+    wireChanged(target);
+  }
 
   public boolean contains(WireCell cell) {
     return cells.containsKey(cell);
@@ -134,6 +197,47 @@ public final class WireGrid {
     return 1 + totalSize(joined);
   }
 
+  public int sizeAfterSpan(WireSpan span) {
+    Set<WireNetwork> joined = new HashSet<>();
+    for (WireCell anchor : List.of(span.fromAnchor(), span.toAnchor())) {
+      if (cells.containsKey(anchor)) {
+        joined.add(cells.get(anchor));
+      }
+      for (WireFace face : facesTouchingColumn(anchor.face().pos())) {
+        WireNetwork touching = cells.get(anchor.onFace(face));
+        if (touching != null) {
+          joined.add(touching);
+        }
+      }
+    }
+    return 1 + totalSize(joined);
+  }
+
+  public Set<WireNetwork> spanNetworksAt(BlockPos top) {
+    Set<WireNetwork> found = new LinkedHashSet<>();
+    for (WireSpan span : spans.at(top)) {
+      WireNetwork network =
+          cells.get(
+              span.fromAnchor().face().pos().equals(top) ? span.fromAnchor() : span.toAnchor());
+      if (network != null) {
+        found.add(network);
+      }
+    }
+    return found;
+  }
+
+  public Set<UUID> sealedOwnersTouchingColumn(BlockPos top, Hue color) {
+    Set<UUID> owners = new LinkedHashSet<>();
+    for (WireFace face : facesTouchingColumn(top)) {
+      for (WireCell cell : cellsOn(face.pos())) {
+        if (cell.face().equals(face) && cell.color() == color && cell.isSealed()) {
+          owners.add(cell.owner());
+        }
+      }
+    }
+    return owners;
+  }
+
   public int sizeAfterJoining(WireCell cell) {
     return 1 + totalSize(adjacentNetworks(cell));
   }
@@ -175,6 +279,7 @@ public final class WireGrid {
   }
 
   public List<WireCell> reown(WireNetwork network, UUID owner) {
+    spans.reown(network.cells.stream().filter(spans::isAnchor).toList(), owner);
     List<WireCell> rekeyed = new ArrayList<>(network.size());
     for (WireCell cell : List.copyOf(network.cells)) {
       unplace(cell, network);
@@ -238,7 +343,7 @@ public final class WireGrid {
       dirty.remove(network);
       return;
     }
-    splitIfNeeded(network, adjacent);
+    splitIfNeeded(network, adjacent.isEmpty() ? List.copyOf(network.cells) : adjacent);
   }
 
   private void wireChanged(WireNetwork network) {
@@ -351,9 +456,11 @@ public final class WireGrid {
 
   private void addTouches(WireCell cell, WireNetwork network) {
     List<TouchPoint> touches =
-        WireTopology.touches(
-            cell.face(),
-            WireTopology.arms(cell.face(), face -> cells.containsKey(cell.onFace(face))));
+        spans.isAnchor(cell)
+            ? List.of()
+            : WireTopology.touches(
+                cell.face(),
+                WireTopology.arms(cell.face(), face -> cells.containsKey(cell.onFace(face))));
     cellTouches.put(cell, touches);
     for (TouchPoint touch : touches) {
       network.touches.addTo(touch, 1);
@@ -414,14 +521,41 @@ public final class WireGrid {
   }
 
   private List<WireCell> adjacentCells(WireCell cell) {
-    List<WireCell> adjacent = new ArrayList<>(4);
+    Set<WireCell> adjacent = new LinkedHashSet<>();
     for (WireFace face : WireTopology.neighbours(cell.face())) {
-      WireCell neighbour = cell.onFace(face);
-      if (cells.containsKey(neighbour)) {
-        adjacent.add(neighbour);
+      adjacent.add(cell.onFace(face));
+    }
+    adjacent.addAll(spans.linkedTo(cell));
+    if (spans.isAnchor(cell)) {
+      facesTouchingColumn(cell.face().pos()).forEach(face -> adjacent.add(cell.onFace(face)));
+    } else {
+      for (long block : new long[] {hostKey(cell), cell.face().occupant().asLong()}) {
+        WireCell anchor = spans.anchorFor(block, cell);
+        if (anchor != null) {
+          adjacent.add(anchor);
+        }
       }
     }
-    return adjacent;
+    adjacent.remove(cell);
+    adjacent.removeIf(neighbour -> !cells.containsKey(neighbour));
+    return new ArrayList<>(adjacent);
+  }
+
+  private List<WireFace> facesTouchingColumn(BlockPos top) {
+    LongList column = spans.column(top);
+    if (column == null) {
+      return List.of();
+    }
+    List<WireFace> faces = new ArrayList<>();
+    column.forEach(
+        (long block) -> {
+          BlockPos pos = BlockPos.fromLong(block);
+          for (Direction side : Direction.values()) {
+            faces.add(new WireFace(pos, side));
+            faces.add(new WireFace(pos.offset(side), side.getOpposite()));
+          }
+        });
+    return faces;
   }
 
   private WireNetwork newNetwork(Hue color, UUID owner) {

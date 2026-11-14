@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.client;
 
+import com.grahambartley.hardwired.block.TelephonePoleBlock;
 import com.grahambartley.hardwired.item.WireItem;
 import com.grahambartley.hardwired.network.WireInspectPayload;
 import com.grahambartley.hardwired.network.WireInspectResultPayload;
@@ -51,7 +52,8 @@ public final class WireDrag {
     if (isWaxing(player, hit)) {
       return ActionResult.SUCCESS;
     }
-    if (!WireItem.canLay(player)) {
+    if (!WireItem.canLay(player)
+        || TelephonePoleBlock.isPole(world.getBlockState(hit.getBlockPos()))) {
       return ActionResult.PASS;
     }
     boolean claimed =
@@ -72,7 +74,10 @@ public final class WireDrag {
       return;
     }
     inspect(hit);
-    if (!client.options.useKey.isPressed() || !WireItem.canLay(player) || isWaxing(player, hit)) {
+    if (!client.options.useKey.isPressed()
+        || !WireItem.canLay(player)
+        || isWaxing(player, hit)
+        || TelephonePoleBlock.isPole(client.world.getBlockState(hit.getBlockPos()))) {
       release();
     } else if (player.isSneaking()) {
       remove(hit);
