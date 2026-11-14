@@ -1,23 +1,37 @@
 package com.grahambartley.hardwired.gametest;
 
+import static com.grahambartley.hardwired.gametest.PhoneStage.BENCH;
+import static com.grahambartley.hardwired.gametest.PhoneStage.CELL;
+import static com.grahambartley.hardwired.gametest.PhoneStage.EXCHANGE;
+import static com.grahambartley.hardwired.gametest.PhoneStage.FIRST;
+import static com.grahambartley.hardwired.gametest.PhoneStage.FLOOR_Y;
+import static com.grahambartley.hardwired.gametest.PhoneStage.SECOND;
+import static com.grahambartley.hardwired.gametest.PhoneStage.SETTLE_TICKS;
+import static com.grahambartley.hardwired.gametest.PhoneStage.THIRD;
+import static com.grahambartley.hardwired.gametest.PhoneStage.abs;
+import static com.grahambartley.hardwired.gametest.PhoneStage.at;
+import static com.grahambartley.hardwired.gametest.PhoneStage.buildNetwork;
+import static com.grahambartley.hardwired.gametest.PhoneStage.dial;
+import static com.grahambartley.hardwired.gametest.PhoneStage.expectStatus;
+import static com.grahambartley.hardwired.gametest.PhoneStage.leaveAll;
+import static com.grahambartley.hardwired.gametest.PhoneStage.numberOf;
+import static com.grahambartley.hardwired.gametest.PhoneStage.pickUp;
+import static com.grahambartley.hardwired.gametest.PhoneStage.placeExchange;
+
 import com.grahambartley.hardwired.Hardwired;
-import com.grahambartley.hardwired.block.ExchangeBlock;
-import com.grahambartley.hardwired.block.ExchangeLayout;
-import com.grahambartley.hardwired.block.ExchangePart;
+import com.grahambartley.hardwired.block.BellBoxBlock;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
-import com.grahambartley.hardwired.block.TelephoneBlock;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.device.DeviceStatus;
+import com.grahambartley.hardwired.device.PhoneDevice;
 import com.grahambartley.hardwired.network.CallVoicePayload;
 import com.grahambartley.hardwired.network.ExchangeSharePayload;
 import com.grahambartley.hardwired.network.PhoneActionPayload;
-import com.grahambartley.hardwired.network.PhoneViewPayload;
 import com.grahambartley.hardwired.phone.CallVoice;
 import com.grahambartley.hardwired.phone.ExchangeActions;
 import com.grahambartley.hardwired.phone.LineStatus;
 import com.grahambartley.hardwired.phone.PhoneActions;
 import com.grahambartley.hardwired.phone.PhoneDirectory;
-import com.grahambartley.hardwired.phone.PhoneEntry;
 import com.grahambartley.hardwired.phone.PhoneNumbering;
 import com.grahambartley.hardwired.phone.Switchboard;
 import com.grahambartley.hardwired.radio.AdpcmCodec;
@@ -27,6 +41,7 @@ import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.WireCell;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireFace;
+import com.grahambartley.hardwired.wire.WireNetwork;
 import java.util.List;
 import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -43,97 +58,28 @@ import net.minecraft.util.math.Direction;
 
 public class TelephoneGameTest implements FabricGameTest {
 
-  private static final String BENCH = "hardwired:bench";
   private static final String VOICE_OFF_BATCH = "telephone-voice-off";
-  private static final int FLOOR_Y = -1;
-  private static final int SETTLE_TICKS = 25;
-  private static final BlockPos CELL = at(1, 1);
-  private static final BlockPos FIRST = at(2, 1);
-  private static final BlockPos EXCHANGE = at(4, 1);
-  private static final BlockPos SECOND = at(6, 1);
-  private static final BlockPos THIRD = at(7, 1);
+  private static final BlockPos BELL = at(3, 1);
   private static final Identifier NUMBER_PLEASE = Identifier.of(Hardwired.MOD_ID, "number_please");
   private static final Identifier PARTY_LINE = Identifier.of(Hardwired.MOD_ID, "party_line");
 
   private static HardwiredConfig savedConfig;
 
-  private static BlockPos at(int x, int z) {
-    return new BlockPos(x, FLOOR_Y + 1, z);
-  }
-
-  private static RedstoneCellBlockEntity buildNetwork(TestContext context) {
-    context.setBlockState(CELL, ModBlocks.REDSTONE_CELL);
-    WireEngine engine = WireEngine.of(context.getWorld());
-    for (int x = 1; x <= 7; x++) {
-      engine.lay(
-          new WireCell(
-              new WireFace(context.getAbsolutePos(new BlockPos(x, FLOOR_Y, 1)), Direction.UP),
-              Hue.PLAIN));
-    }
-    RedstoneCellBlockEntity cell = context.getBlockEntity(CELL);
-    cell.setCharge(500);
-    placePhone(context, FIRST);
-    placeExchange(context);
-    placePhone(context, SECOND);
-    placePhone(context, THIRD);
-    return cell;
-  }
-
-  private static void placePhone(TestContext context, BlockPos pos) {
+  private static void placeBellBox(TestContext context, boolean ringing) {
+    context.setBlockState(BELL.south(), Blocks.STONE);
     context.setBlockState(
-        pos,
-        ModBlocks.CANDLESTICK_TELEPHONE
+        BELL,
+        ModBlocks.BELL_BOX
             .getDefaultState()
-            .with(TelephoneBlock.FACING, Direction.NORTH));
+            .with(BellBoxBlock.FACING, Direction.NORTH)
+            .with(BellBoxBlock.POWERED, ringing));
   }
 
-  private static void placeExchange(TestContext context) {
-    for (ExchangePart part : ExchangePart.values()) {
-      context.setBlockState(
-          ExchangeLayout.cell(part, Direction.SOUTH, EXCHANGE),
-          ModBlocks.EXCHANGE
-              .getDefaultState()
-              .with(ExchangeBlock.FACING, Direction.SOUTH)
-              .with(ExchangeBlock.PART, part));
-    }
-  }
-
-  private static long abs(TestContext context, BlockPos pos) {
-    return context.getAbsolutePos(pos).asLong();
-  }
-
-  private static int numberOf(TestContext context, BlockPos pos) {
-    return PhoneDirectory.of(context.getWorld())
-        .entry(abs(context, pos))
-        .map(PhoneEntry::number)
-        .orElse(PhoneNumbering.NONE);
-  }
-
-  private static LineStatus lastStatus(ConnectedTestPlayer player) {
-    List<PhoneViewPayload> views = player.phoneViews();
-    return views.isEmpty() ? null : LineStatus.byIndex(views.getLast().status());
-  }
-
-  private static void expectStatus(
-      TestContext context, ConnectedTestPlayer player, LineStatus expected) {
-    LineStatus actual = lastStatus(player);
-    context.assertTrue(actual == expected, "expected " + expected + " but saw " + actual);
-  }
-
-  private static void pickUp(TestContext context, ConnectedTestPlayer player, BlockPos phone) {
-    PhoneActions.use(player.player(), context.getAbsolutePos(phone));
-  }
-
-  private static void dial(
-      TestContext context, ConnectedTestPlayer player, BlockPos phone, int number) {
-    PhoneActions.act(
-        player.player(), PhoneActionPayload.dial(context.getAbsolutePos(phone), number));
-  }
-
-  private static void leaveAll(ConnectedTestPlayer... players) {
-    for (ConnectedTestPlayer player : players) {
-      player.leave();
-    }
+  private static void expectBell(TestContext context, boolean ringing) {
+    context.expectBlockProperty(BELL, BellBoxBlock.POWERED, ringing);
+    context.assertTrue(
+        WireEngine.of(context.getWorld()).isOn(context.getAbsolutePos(BELL)) == ringing,
+        "the bell's network must be " + (ringing ? "on" : "off"));
   }
 
   @GameTest(templateName = BENCH, tickLimit = 60)
@@ -176,19 +122,19 @@ public class TelephoneGameTest implements FabricGameTest {
         () -> {
           pickUp(context, caller, FIRST);
           expectStatus(context, caller, LineStatus.DIAL_TONE);
-          context.expectBlockProperty(FIRST, TelephoneBlock.LIFTED, true);
+          context.expectBlockProperty(FIRST, PhoneDevice.LIFTED, true);
           dial(context, caller, FIRST, numberOf(context, SECOND));
           expectStatus(context, caller, LineStatus.RINGING_OUT);
         });
     context.waitAndRun(
         SETTLE_TICKS + 2L,
         () -> {
-          context.expectBlockProperty(SECOND, TelephoneBlock.RINGING, true);
+          context.expectBlockProperty(SECOND, PhoneDevice.RINGING, true);
           pickUp(context, answerer, SECOND);
           expectStatus(context, caller, LineStatus.CONNECTED);
           expectStatus(context, answerer, LineStatus.CONNECTED);
-          context.expectBlockProperty(SECOND, TelephoneBlock.RINGING, false);
-          context.expectBlockProperty(SECOND, TelephoneBlock.LIFTED, true);
+          context.expectBlockProperty(SECOND, PhoneDevice.RINGING, false);
+          context.expectBlockProperty(SECOND, PhoneDevice.LIFTED, true);
           context.assertTrue(caller.hasEarned(NUMBER_PLEASE), "the caller must earn the call");
           leaveAll(caller, answerer);
           context.complete();
@@ -258,7 +204,7 @@ public class TelephoneGameTest implements FabricGameTest {
           PhoneActions.act(
               caller.player(), PhoneActionPayload.hangUp(context.getAbsolutePos(FIRST)));
           expectStatus(context, answerer, LineStatus.HUNG_UP);
-          context.expectBlockProperty(FIRST, TelephoneBlock.LIFTED, false);
+          context.expectBlockProperty(FIRST, PhoneDevice.LIFTED, false);
           leaveAll(caller, answerer);
           context.complete();
         });
@@ -316,8 +262,8 @@ public class TelephoneGameTest implements FabricGameTest {
     context.waitAndRun(
         SETTLE_TICKS + 4L,
         () -> {
-          context.expectBlockProperty(SECOND, TelephoneBlock.RINGING, true);
-          context.expectBlockProperty(THIRD, TelephoneBlock.RINGING, true);
+          context.expectBlockProperty(SECOND, PhoneDevice.RINGING, true);
+          context.expectBlockProperty(THIRD, PhoneDevice.RINGING, true);
           pickUp(context, answerer, SECOND);
           pickUp(context, joiner, THIRD);
           expectStatus(context, joiner, LineStatus.CONNECTED);
@@ -547,16 +493,16 @@ public class TelephoneGameTest implements FabricGameTest {
               SECOND,
               context
                   .getBlockState(SECOND)
-                  .with(TelephoneBlock.RINGING, true)
-                  .with(TelephoneBlock.LIFTED, true));
+                  .with(PhoneDevice.RINGING, true)
+                  .with(PhoneDevice.LIFTED, true));
           Switchboard.of(context.getWorld())
               .chunkLoaded(new ChunkPos(context.getAbsolutePos(SECOND)));
         });
     context.waitAndRun(
         SETTLE_TICKS + 2L,
         () -> {
-          context.expectBlockProperty(SECOND, TelephoneBlock.RINGING, false);
-          context.expectBlockProperty(SECOND, TelephoneBlock.LIFTED, false);
+          context.expectBlockProperty(SECOND, PhoneDevice.RINGING, false);
+          context.expectBlockProperty(SECOND, PhoneDevice.LIFTED, false);
           context.complete();
         });
   }
@@ -581,6 +527,76 @@ public class TelephoneGameTest implements FabricGameTest {
               PhoneDirectory.readiness(context.getWorld(), context.getAbsolutePos(EXCHANGE));
           context.assertTrue(
               status == DeviceStatus.NO_TELEPHONE, "a lone Exchange must say so, was " + status);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 80)
+  public void aRingingPhoneRingsABellBoxThatTurnsItsNetworkOn(TestContext context) {
+    buildNetwork(context);
+    placeBellBox(context, false);
+    ConnectedTestPlayer caller = ConnectedTestPlayer.joinAt(context, at(2, 3));
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          expectBell(context, false);
+          pickUp(context, caller, FIRST);
+          dial(context, caller, FIRST, numberOf(context, SECOND));
+        });
+    context.waitAndRun(SETTLE_TICKS + 3L, () -> expectBell(context, true));
+    context.waitAndRun(
+        SETTLE_TICKS + 5L, () -> Switchboard.of(context.getWorld()).hangUp(abs(context, FIRST)));
+    context.waitAndRun(
+        SETTLE_TICKS + 8L,
+        () -> {
+          expectBell(context, false);
+          leaveAll(caller);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 60)
+  public void aBellBoxLeftRingingWithNoCallFallsSilent(TestContext context) {
+    buildNetwork(context);
+    placeBellBox(context, true);
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          expectBell(context, false);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 80)
+  public void aBellBoxWithNoPowerStaysSilentWhileItsPhoneRings(TestContext context) {
+    buildNetwork(context);
+    WireEngine engine = WireEngine.of(context.getWorld());
+    WireNetwork unpowered = null;
+    for (int z = 2; z <= 3; z++) {
+      unpowered =
+          engine.lay(
+              new WireCell(
+                  new WireFace(context.getAbsolutePos(new BlockPos(6, FLOOR_Y, z)), Direction.UP),
+                  Hue.RED));
+    }
+    engine.reown(unpowered, UUID.randomUUID());
+    BlockPos bell = at(6, 3);
+    context.setBlockState(bell.south(), Blocks.STONE);
+    context.setBlockState(
+        bell, ModBlocks.BELL_BOX.getDefaultState().with(BellBoxBlock.FACING, Direction.NORTH));
+    ConnectedTestPlayer caller = ConnectedTestPlayer.joinAt(context, at(2, 3));
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          pickUp(context, caller, FIRST);
+          dial(context, caller, FIRST, numberOf(context, SECOND));
+        });
+    context.waitAndRun(
+        SETTLE_TICKS + 3L,
+        () -> {
+          context.expectBlockProperty(SECOND, PhoneDevice.RINGING, true);
+          context.expectBlockProperty(bell, BellBoxBlock.POWERED, false);
+          leaveAll(caller);
           context.complete();
         });
   }

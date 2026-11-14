@@ -1,0 +1,16 @@
+{
+  "clip": "hardwired:clips/wall_telephone.animation.json",
+  "upright": true,
+  "parts": [
+    {
+      "bone": "wall_receiver",
+      "model": "hardwired:block/part/wall_receiver",
+      "pivot": [
+        3.75,
+        12.25,
+        13.5
+      ],
+      "when": "ringing"
+    }
+  ]
+}

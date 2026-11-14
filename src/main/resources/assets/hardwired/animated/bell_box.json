@@ -1,0 +1,33 @@
+{
+  "clip": "hardwired:clips/bell_box.animation.json",
+  "upright": true,
+  "parts": [
+    {
+      "bone": "bell_box_gong_left",
+      "model": "hardwired:block/part/bell_box_gong_left",
+      "pivot": [
+        6,
+        12.5,
+        12.75
+      ]
+    },
+    {
+      "bone": "bell_box_gong_right",
+      "model": "hardwired:block/part/bell_box_gong_right",
+      "pivot": [
+        10,
+        12.5,
+        12.75
+      ]
+    },
+    {
+      "bone": "bell_box_clapper",
+      "model": "hardwired:block/part/bell_box_clapper",
+      "pivot": [
+        8,
+        10,
+        12.75
+      ]
+    }
+  ]
+}

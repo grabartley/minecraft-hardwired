@@ -12,6 +12,7 @@ import com.grahambartley.hardwired.block.LampBlockEntity;
 import com.grahambartley.hardwired.block.LiftFloorBlockEntity;
 import com.grahambartley.hardwired.block.MainPanelBlockEntity;
 import com.grahambartley.hardwired.block.MasterSwitchBlockEntity;
+import com.grahambartley.hardwired.block.PhoneBoxBlockEntity;
 import com.grahambartley.hardwired.block.RadioBlockEntity;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
 import com.grahambartley.hardwired.block.RedstoneGeneratorBlockEntity;
@@ -117,6 +118,13 @@ public final class ModBlockEntities {
                   ModBlocks.LARGE_LIFT,
                   ModBlocks.LIFT_FLOOR,
                   ModBlocks.LARGE_LIFT_FLOOR)
+              .build(null));
+
+  public static final BlockEntityType<PhoneBoxBlockEntity> PHONE_BOX =
+      Registry.register(
+          Registries.BLOCK_ENTITY_TYPE,
+          Identifier.of(Hardwired.MOD_ID, "phone_box"),
+          BlockEntityType.Builder.create(PhoneBoxBlockEntity::new, ModBlocks.PHONE_BOX)
               .build(null));
 
   public static final BlockEntityType<LiftFloorBlockEntity> LIFT_FLOOR =

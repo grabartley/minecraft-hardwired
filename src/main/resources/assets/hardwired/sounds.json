@@ -117,8 +117,7 @@
     "sounds": [
       {
         "name": "minecraft:block.note_block.bell",
-        "type": "event",
-        "pitch": 1.4
+        "type": "event"
       }
     ]
   },
@@ -141,29 +140,37 @@
         "type": "event",
         "pitch": 1.6,
         "volume": 0.6
+      },
+      {
+        "name": "minecraft:block.lever.click",
+        "type": "event",
+        "pitch": 1.8,
+        "volume": 0.4
+      },
+      {
+        "name": "minecraft:block.tripwire.click_on",
+        "type": "event",
+        "pitch": 1.4,
+        "volume": 0.5
       }
+    ]
+  },
+  "telephone.dial_tone": {
+    "subtitle": "subtitles.hardwired.telephone.dial_tone",
+    "sounds": [
+      "hardwired:telephone/dial_tone"
     ]
   },
   "telephone.ringback": {
     "subtitle": "subtitles.hardwired.telephone.ringback",
     "sounds": [
-      {
-        "name": "minecraft:block.note_block.bell",
-        "type": "event",
-        "pitch": 0.9,
-        "volume": 0.25
-      }
+      "hardwired:telephone/ringback"
     ]
   },
   "telephone.busy": {
     "subtitle": "subtitles.hardwired.telephone.busy",
     "sounds": [
-      {
-        "name": "minecraft:block.note_block.bass",
-        "type": "event",
-        "pitch": 1.2,
-        "volume": 0.4
-      }
+      "hardwired:telephone/busy"
     ]
   },
   "telephone.voice": {
@@ -172,6 +179,26 @@
       {
         "name": "fabric-sound-api-v1:empty",
         "stream": true
+      }
+    ]
+  },
+  "phone_box.door_open": {
+    "subtitle": "subtitles.hardwired.phone_box.door_open",
+    "sounds": [
+      {
+        "name": "minecraft:block.wooden_door.open",
+        "type": "event",
+        "pitch": 1.1
+      }
+    ]
+  },
+  "phone_box.door_close": {
+    "subtitle": "subtitles.hardwired.phone_box.door_close",
+    "sounds": [
+      {
+        "name": "minecraft:block.wooden_door.close",
+        "type": "event",
+        "pitch": 1.1
       }
     ]
   }

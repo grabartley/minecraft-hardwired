@@ -90,6 +90,10 @@ public final class PowerGrids {
     return engine.isLoaded(pos) ? world.getBlockState(pos) : null;
   }
 
+  public Set<WireNetwork> gridOf(Collection<WireNetwork> networks) {
+    return LinkedGroups.reach(networks, this::neighbours);
+  }
+
   public boolean hasPower(BlockPos pos) {
     return networksAt(pos).stream().anyMatch(network -> network.gridState().givesPower());
   }

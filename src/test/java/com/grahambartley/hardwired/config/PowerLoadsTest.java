@@ -25,7 +25,8 @@ class PowerLoadsTest {
         Arguments.of("broadcastLoad", 16, (ToIntFunction<PowerLoads>) PowerLoads::broadcastLoad),
         Arguments.of("liftLoad", 32, (ToIntFunction<PowerLoads>) PowerLoads::liftLoad),
         Arguments.of("telephoneLoad", 1, (ToIntFunction<PowerLoads>) PowerLoads::telephoneLoad),
-        Arguments.of("exchangeLoad", 4, (ToIntFunction<PowerLoads>) PowerLoads::exchangeLoad));
+        Arguments.of("exchangeLoad", 4, (ToIntFunction<PowerLoads>) PowerLoads::exchangeLoad),
+        Arguments.of("bellBoxLoad", 1, (ToIntFunction<PowerLoads>) PowerLoads::bellBoxLoad));
   }
 
   @ParameterizedTest(name = "{0} defaults to {1}")

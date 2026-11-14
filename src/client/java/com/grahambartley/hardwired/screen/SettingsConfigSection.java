@@ -341,6 +341,17 @@ final class SettingsConfigSection {
                         config.power().withLoads(config.power().loads().withExchangeLoad(value)))));
     list.addRow(
         rows.intSlider(
+            KEY + "bellboxload",
+            KEY + "bellboxload.tooltip",
+            PowerLoads.BELL_BOX_LOAD_MIN,
+            PowerLoads.BELL_BOX_LOAD_MAX,
+            config.power().loads().bellBoxLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withBellBoxLoad(value)))));
+    list.addRow(
+        rows.intSlider(
             KEY + "humrange",
             KEY + "humrange.tooltip",
             HumSettings.HUM_RANGE_MIN,
@@ -484,6 +495,14 @@ final class SettingsConfigSection {
             PhoneSettings.EXCHANGE_LINES_MAX,
             config.phone().exchangeLines(),
             value -> config = config.withPhone(config.phone().withExchangeLines(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "bellboxhearing",
+            KEY + "bellboxhearing.tooltip",
+            PhoneSettings.BELL_BOX_HEARING_MIN,
+            PhoneSettings.BELL_BOX_HEARING_MAX,
+            config.phone().bellBoxHearing(),
+            value -> config = config.withPhone(config.phone().withBellBoxHearing(value))));
     list.addRow(
         rows.toggle(
             KEY + "voicecalls",

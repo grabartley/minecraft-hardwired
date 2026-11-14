@@ -1,7 +1,8 @@
 package com.grahambartley.hardwired.phone;
 
-import com.grahambartley.hardwired.block.TelephoneBlock;
+import com.grahambartley.hardwired.block.ExchangeBlock;
 import com.grahambartley.hardwired.device.DeviceActions;
+import com.grahambartley.hardwired.device.PhoneDevice;
 import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.registry.ModSounds;
 import com.grahambartley.hardwired.wire.WireEngine;
@@ -17,6 +18,9 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 
 final class PhoneLine {
+
+  private static final float BELL_VOLUME = 0.6F;
+  private static final float STRIKE_VOLUME = 2F;
 
   private final ServerWorld world;
 
@@ -34,7 +38,8 @@ final class PhoneLine {
     if (player == null
         || player.getServerWorld() != world
         || !player.isAlive()
-        || !player.canInteractWithBlockAt(pos, DeviceActions.REACH_MARGIN)) {
+        || !player.canInteractWithBlockAt(pos, DeviceActions.REACH_MARGIN)
+        || !PhoneDevice.usableAt(world, pos, player)) {
       return Optional.of(LineStatus.LEFT);
     }
     boolean live = WireEngine.of(world).isLoaded(pos) && answerable(phone);
@@ -45,7 +50,7 @@ final class PhoneLine {
     BlockPos pos = BlockPos.fromLong(phone);
     boolean standing =
         !WireEngine.of(world).isLoaded(pos)
-            || world.getBlockState(pos).getBlock() instanceof TelephoneBlock;
+            || world.getBlockState(pos).getBlock() instanceof PhoneDevice;
     return standing
         && power().hasPower(pos)
         && PhoneDirectory.of(world).entry(phone).filter(PhoneEntry::hasNumber).isPresent();
@@ -69,15 +74,16 @@ final class PhoneLine {
   void ring(Call call, long now) {
     long ticks = call.ringingFor(now);
     boolean ringing = RingCadence.ringing(ticks, call.isPartyLine());
-    boolean stroke = RingCadence.strokeStarting(ticks, call.isPartyLine()) > 0;
+    float strike = RingCadence.strikePitch(ticks, call.isPartyLine());
     for (long phone : call.called()) {
       BlockPos pos = BlockPos.fromLong(phone);
       if (!WireEngine.of(world).isLoaded(pos)) {
         continue;
       }
       setLook(pos, false, ringing);
-      if (stroke) {
-        world.playSound(null, pos, ModSounds.TELEPHONE_BELL, SoundCategory.BLOCKS, 1F, 1F);
+      if (strike > 0F) {
+        world.playSound(
+            null, pos, ModSounds.TELEPHONE_BELL, SoundCategory.BLOCKS, BELL_VOLUME, strike);
       }
     }
   }
@@ -113,11 +119,37 @@ final class PhoneLine {
     }
   }
 
+  void crackle(Call call) {
+    for (long phone : call.members().keySet()) {
+      world.playSound(
+          null,
+          BlockPos.fromLong(phone),
+          ModSounds.RADIO_CRACKLE,
+          SoundCategory.BLOCKS,
+          STRIKE_VOLUME,
+          1F);
+    }
+  }
+
+  void lightExchange(long exchange, int lines) {
+    BlockPos anchor = BlockPos.fromLong(exchange);
+    BlockState state = world.getBlockState(anchor);
+    if (!WireEngine.of(world).isLoaded(anchor)
+        || !(state.getBlock() instanceof ExchangeBlock block)) {
+      return;
+    }
+    for (BlockPos cell : block.cells(anchor, state)) {
+      BlockState part = world.getBlockState(cell);
+      if (part.isOf(block) && part.get(ExchangeBlock.LINES) != lines) {
+        world.setBlockState(cell, part.with(ExchangeBlock.LINES, lines), Block.NOTIFY_LISTENERS);
+      }
+    }
+  }
+
   private void setLook(BlockPos pos, boolean lifted, boolean ringing) {
     BlockState state = world.getBlockState(pos);
-    if (state.getBlock() instanceof TelephoneBlock) {
-      BlockState next =
-          state.with(TelephoneBlock.LIFTED, lifted).with(TelephoneBlock.RINGING, ringing);
+    if (state.getBlock() instanceof PhoneDevice) {
+      BlockState next = state.with(PhoneDevice.LIFTED, lifted).with(PhoneDevice.RINGING, ringing);
       if (next != state) {
         world.setBlockState(pos, next, Block.NOTIFY_LISTENERS);
       }

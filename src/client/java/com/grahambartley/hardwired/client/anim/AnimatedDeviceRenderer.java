@@ -60,7 +60,7 @@ public final class AnimatedDeviceRenderer<T extends BlockEntity> implements Bloc
             ? DevicePhase.seconds(entity, dials.clipSpeed(), tickDelta)
             : animating ? clock(entity, tickDelta) : 0;
     VertexConsumer consumer = buffers.getBuffer(TexturedRenderLayers.getEntityCutout());
-    DeviceTurn turn = DeviceTurn.of(state);
+    DeviceTurn turn = DeviceTurn.of(state, animation.upright());
     matrices.push();
     matrices.translate(CENTER, CENTER, CENTER);
     matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-turn.y() - animation.yaw()));

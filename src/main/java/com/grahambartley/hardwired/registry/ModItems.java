@@ -58,6 +58,8 @@ public final class ModItems {
           ModBlocks.INTERCOM,
           ModBlocks.CANDLESTICK_TELEPHONE,
           ModBlocks.WALL_TELEPHONE,
+          ModBlocks.BELL_BOX,
+          ModBlocks.PHONE_BOX,
           ModBlocks.EXCHANGE,
           ModBlocks.LIFT,
           ModBlocks.LARGE_LIFT,

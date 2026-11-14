@@ -9,22 +9,35 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 class DeviceTurnTest {
 
-  @ParameterizedTest(name = "{0} {1} turns x{2} y{3}")
+  @ParameterizedTest(name = "{0} {1} upright {2} turns x{3} y{4}")
   @CsvSource({
-    "FLOOR,NORTH,0,0",
-    "FLOOR,EAST,0,90",
-    "FLOOR,SOUTH,0,180",
-    "FLOOR,WEST,0,270",
-    "WALL,NORTH,90,0",
-    "WALL,EAST,90,90",
-    "WALL,SOUTH,90,180",
-    "WALL,WEST,90,270",
-    "CEILING,NORTH,180,180",
-    "CEILING,EAST,180,270",
-    "CEILING,SOUTH,180,0",
-    "CEILING,WEST,180,90"
+    "FLOOR,NORTH,false,0,0",
+    "FLOOR,EAST,false,0,90",
+    "FLOOR,SOUTH,false,0,180",
+    "FLOOR,WEST,false,0,270",
+    "WALL,NORTH,false,90,0",
+    "WALL,EAST,false,90,90",
+    "WALL,SOUTH,false,90,180",
+    "WALL,WEST,false,90,270",
+    "CEILING,NORTH,false,180,180",
+    "CEILING,EAST,false,180,270",
+    "CEILING,SOUTH,false,180,0",
+    "CEILING,WEST,false,180,90",
+    "FLOOR,NORTH,true,0,0",
+    "FLOOR,EAST,true,0,90",
+    "FLOOR,SOUTH,true,0,180",
+    "FLOOR,WEST,true,0,270",
+    "WALL,NORTH,true,0,0",
+    "WALL,EAST,true,0,90",
+    "WALL,SOUTH,true,0,180",
+    "WALL,WEST,true,0,270",
+    "CEILING,NORTH,true,180,180",
+    "CEILING,EAST,true,180,270",
+    "CEILING,SOUTH,true,180,0",
+    "CEILING,WEST,true,180,90"
   })
-  void turnMatchesTheBlockstateFiles(BlockFace face, Direction facing, int x, int y) {
-    assertEquals(new DeviceTurn(x, y), DeviceTurn.of(face, facing));
+  void turnMatchesTheBlockstateFiles(
+      BlockFace face, Direction facing, boolean upright, int x, int y) {
+    assertEquals(new DeviceTurn(x, y), DeviceTurn.of(face, facing, upright));
   }
 }

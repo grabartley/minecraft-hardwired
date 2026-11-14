@@ -20,13 +20,13 @@ import net.minecraft.world.WorldAccess;
 public final class TelephonePoleBlock extends Block {
 
   public static final EnumProperty<PolePart> PART = EnumProperty.of("part", PolePart.class);
-  public static final double ARM_HEIGHT = 12.5 / 16.0;
+  public static final double ARM_HEIGHT = 15.0 / 16.0;
   public static final double ARM_LENGTH = 14.0 / 16.0;
-  private static final VoxelShape POST = Block.createCuboidShape(5, 0, 5, 11, 16, 11);
+  private static final VoxelShape POST = Block.createCuboidShape(6, 0, 6, 10, 16, 10);
   private static final VoxelShape ARM_X =
-      VoxelShapes.union(POST, Block.createCuboidShape(1, 11, 6, 15, 14, 10));
+      VoxelShapes.union(POST, Block.createCuboidShape(1, 12, 6.5, 15, 16, 9.5));
   private static final VoxelShape ARM_Z =
-      VoxelShapes.union(POST, Block.createCuboidShape(6, 11, 1, 10, 14, 15));
+      VoxelShapes.union(POST, Block.createCuboidShape(6.5, 12, 1, 9.5, 16, 15));
 
   public TelephonePoleBlock(Settings settings) {
     super(settings);

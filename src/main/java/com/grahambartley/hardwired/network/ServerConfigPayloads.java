@@ -58,6 +58,7 @@ public final class ServerConfigPayloads {
     buf.writeVarInt(power.loads().liftLoad());
     buf.writeVarInt(power.loads().telephoneLoad());
     buf.writeVarInt(power.loads().exchangeLoad());
+    buf.writeVarInt(power.loads().bellBoxLoad());
     buf.writeVarInt(power.hum().humRange());
     buf.writeVarInt(power.hum().humStartLoad());
     buf.writeVarInt(power.hum().humFullLoad());
@@ -77,6 +78,7 @@ public final class ServerConfigPayloads {
     PhoneSettings phone = config.phone();
     buf.writeVarInt(phone.phoneRingSeconds());
     buf.writeVarInt(phone.exchangeLines());
+    buf.writeVarInt(phone.bellBoxHearing());
     buf.writeBoolean(phone.voiceCalls());
     buf.writeVarInt(config.line().poleSpanBlocks());
     buf.writeVarInt(config.line().spanBlocksPerWire());
@@ -107,6 +109,7 @@ public final class ServerConfigPayloads {
                 buf.readVarInt(),
                 buf.readVarInt(),
                 buf.readVarInt(),
+                buf.readVarInt(),
                 buf.readVarInt()),
             new HumSettings(buf.readVarInt(), buf.readVarInt(), buf.readVarInt())),
         new LiftSettings(buf.readVarInt()),
@@ -121,7 +124,7 @@ public final class ServerConfigPayloads {
             buf.readVarInt(),
             buf.readVarInt(),
             buf.readBoolean()),
-        new PhoneSettings(buf.readVarInt(), buf.readVarInt(), buf.readBoolean()),
+        new PhoneSettings(buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readBoolean()),
         new LineSettings(buf.readVarInt(), buf.readVarInt()));
   }
 

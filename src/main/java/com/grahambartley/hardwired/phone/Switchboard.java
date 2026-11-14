@@ -2,8 +2,12 @@ package com.grahambartley.hardwired.phone;
 
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.advancement.ModCriteria;
+import com.grahambartley.hardwired.block.ExchangeBlock;
 import com.grahambartley.hardwired.config.PhoneSettings;
 import com.grahambartley.hardwired.device.ActionRate;
+import com.grahambartley.hardwired.power.PowerGrids;
+import com.grahambartley.hardwired.wire.WireEngine;
+import com.grahambartley.hardwired.wire.WireNetwork;
 import com.grahambartley.hardwired.wire.WiredWorld;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayList;
@@ -14,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -29,6 +34,7 @@ public final class Switchboard {
   private final Map<Long, UUID> lifted = new HashMap<>();
   private final ActionRate dialRate = new ActionRate(DIAL_GAP_TICKS);
   private final LongOpenHashSet loadedChunks = new LongOpenHashSet();
+  private Map<Long, Integer> lampsLit = Map.of();
   private final PhoneLine line;
 
   public Switchboard(ServerWorld world) {
@@ -50,6 +56,29 @@ public final class Switchboard {
 
   public boolean isRinging(long phone) {
     return callOf(phone).filter(call -> call.isRinging(phone)).isPresent();
+  }
+
+  public Optional<Call> bellCall(BlockPos bell) {
+    if (calls.stream().allMatch(Call::isConnected)) {
+      return Optional.empty();
+    }
+    Set<Long> touched =
+        WireEngine.of(world).grid().networksTouching(bell).stream()
+            .flatMap(network -> network.touches().stream())
+            .map(touch -> touch.pos().asLong())
+            .collect(Collectors.toSet());
+    PhoneDirectory directory = PhoneDirectory.of(world);
+    return BellRing.ringing(
+        calls,
+        touched,
+        phone -> directory.entry(phone).map(PhoneEntry::cells).orElse(List.of(phone)),
+        world.getTime());
+  }
+
+  public void crackle(Set<WireNetwork> grid) {
+    PowerGrids power = WireEngine.of(world).power();
+    LineStrike.struck(calls, phone -> power.networksAt(BlockPos.fromLong(phone)), grid)
+        .forEach(line::crackle);
   }
 
   public Optional<UUID> userOf(long phone) {
@@ -142,6 +171,7 @@ public final class Switchboard {
   }
 
   public void tick() {
+    lightExchanges();
     settleLoadedPhones();
     for (Map.Entry<Long, UUID> held : List.copyOf(lifted.entrySet())) {
       line.fault(held.getKey(), held.getValue())
@@ -183,6 +213,19 @@ public final class Switchboard {
     }
   }
 
+  private void lightExchanges() {
+    Map<Long, Integer> lit = ExchangeLines.lampsLit(calls, ExchangeBlock.LAMPS);
+    Set<Long> exchanges = new HashSet<>(lampsLit.keySet());
+    exchanges.addAll(lit.keySet());
+    for (long exchange : exchanges) {
+      int lines = lit.getOrDefault(exchange, 0);
+      if (lines != lampsLit.getOrDefault(exchange, 0)) {
+        line.lightExchange(exchange, lines);
+      }
+    }
+    lampsLit = lit;
+  }
+
   private void settleLoadedPhones() {
     if (loadedChunks.isEmpty()) {
       return;
@@ -190,10 +233,14 @@ public final class Switchboard {
     PhoneBook.of(world)
         .entries()
         .forEach(
-            (phone, entry) -> {
-              if (!entry.exchange()
-                  && loadedChunks.contains(ChunkPos.toLong(BlockPos.fromLong(phone)))) {
-                line.show(phone);
+            (device, entry) -> {
+              if (!loadedChunks.contains(ChunkPos.toLong(BlockPos.fromLong(device)))) {
+                return;
+              }
+              if (entry.exchange()) {
+                line.lightExchange(device, lampsLit.getOrDefault(device, 0));
+              } else {
+                line.show(device);
               }
             });
     loadedChunks.clear();

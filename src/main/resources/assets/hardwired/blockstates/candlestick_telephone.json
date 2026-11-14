@@ -1,18 +1,63 @@
 {
   "variants": {
-    "facing=north": {
-      "model": "hardwired:block/intercom"
+    "facing=north,lifted=false,ringing=false": {
+      "model": "hardwired:block/candlestick_telephone"
     },
-    "facing=east": {
-      "model": "hardwired:block/intercom",
+    "facing=north,lifted=false,ringing=true": {
+      "model": "hardwired:block/candlestick_telephone_lifted"
+    },
+    "facing=north,lifted=true,ringing=false": {
+      "model": "hardwired:block/candlestick_telephone_lifted"
+    },
+    "facing=north,lifted=true,ringing=true": {
+      "model": "hardwired:block/candlestick_telephone_lifted"
+    },
+    "facing=east,lifted=false,ringing=false": {
+      "model": "hardwired:block/candlestick_telephone",
       "y": 90
     },
-    "facing=south": {
-      "model": "hardwired:block/intercom",
+    "facing=east,lifted=false,ringing=true": {
+      "model": "hardwired:block/candlestick_telephone_lifted",
+      "y": 90
+    },
+    "facing=east,lifted=true,ringing=false": {
+      "model": "hardwired:block/candlestick_telephone_lifted",
+      "y": 90
+    },
+    "facing=east,lifted=true,ringing=true": {
+      "model": "hardwired:block/candlestick_telephone_lifted",
+      "y": 90
+    },
+    "facing=south,lifted=false,ringing=false": {
+      "model": "hardwired:block/candlestick_telephone",
       "y": 180
     },
-    "facing=west": {
-      "model": "hardwired:block/intercom",
+    "facing=south,lifted=false,ringing=true": {
+      "model": "hardwired:block/candlestick_telephone_lifted",
+      "y": 180
+    },
+    "facing=south,lifted=true,ringing=false": {
+      "model": "hardwired:block/candlestick_telephone_lifted",
+      "y": 180
+    },
+    "facing=south,lifted=true,ringing=true": {
+      "model": "hardwired:block/candlestick_telephone_lifted",
+      "y": 180
+    },
+    "facing=west,lifted=false,ringing=false": {
+      "model": "hardwired:block/candlestick_telephone",
+      "y": 270
+    },
+    "facing=west,lifted=false,ringing=true": {
+      "model": "hardwired:block/candlestick_telephone_lifted",
+      "y": 270
+    },
+    "facing=west,lifted=true,ringing=false": {
+      "model": "hardwired:block/candlestick_telephone_lifted",
+      "y": 270
+    },
+    "facing=west,lifted=true,ringing=true": {
+      "model": "hardwired:block/candlestick_telephone_lifted",
       "y": 270
     }
   }

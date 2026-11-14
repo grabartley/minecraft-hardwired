@@ -5,10 +5,11 @@ import com.grahambartley.hardwired.device.AnimatedDevice;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.Electronic;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
+import com.grahambartley.hardwired.device.PhoneDevice;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.phone.PhoneActions;
 import com.grahambartley.hardwired.phone.PhoneDirectory;
-import com.grahambartley.hardwired.phone.Switchboard;
+import com.grahambartley.hardwired.phone.PhoneLifecycle;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +20,6 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.BlockFace;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -27,8 +27,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -41,10 +39,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public final class TelephoneBlock extends HorizontalFacingBlock
-    implements BlockEntityProvider, WireDevice, AnimatedDevice, Electronic {
-
-  public static final BooleanProperty LIFTED = BooleanProperty.of("lifted");
-  public static final BooleanProperty RINGING = BooleanProperty.of("ringing");
+    implements PhoneDevice, BlockEntityProvider, WireDevice, AnimatedDevice, Electronic {
 
   private final double[] floorBox;
   private final BlockFace mount;
@@ -107,19 +102,14 @@ public final class TelephoneBlock extends HorizontalFacingBlock
   @Override
   public void onPlaced(
       World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-    if (world instanceof ServerWorld server && placer instanceof ServerPlayerEntity player) {
-      Text name = stack.get(DataComponentTypes.CUSTOM_NAME);
-      PhoneDirectory.of(server)
-          .placedBy(pos.asLong(), name == null ? "" : name.getString(), player.getUuid());
-    }
+    PhoneLifecycle.placed(world, pos, placer, stack);
   }
 
   @Override
   protected void onStateReplaced(
       BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-    if (!state.isOf(newState.getBlock()) && world instanceof ServerWorld server) {
-      Switchboard.of(server).removed(pos.asLong());
-      PhoneDirectory.of(server).remove(pos.asLong());
+    if (!state.isOf(newState.getBlock())) {
+      PhoneLifecycle.removed(world, pos);
     }
     super.onStateReplaced(state, world, pos, newState, moved);
   }
@@ -138,9 +128,7 @@ public final class TelephoneBlock extends HorizontalFacingBlock
       BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
     if (!oldState.isOf(this)) {
       world.scheduleBlockTick(pos, this, 1);
-      if (world instanceof ServerWorld server) {
-        PhoneDirectory.of(server).add(pos.asLong(), List.of(pos.asLong()), false);
-      }
+      PhoneLifecycle.listed(world, pos, List.of(pos), false);
     }
   }
 
@@ -151,8 +139,7 @@ public final class TelephoneBlock extends HorizontalFacingBlock
 
   @Override
   public void onWireChange(ServerWorld world, BlockPos pos, BlockState state) {
-    PhoneDirectory.of(world).markStale();
-    ElectronicsDriver.wake(world, pos);
+    PhoneLifecycle.rewired(world, pos);
   }
 
   @Override

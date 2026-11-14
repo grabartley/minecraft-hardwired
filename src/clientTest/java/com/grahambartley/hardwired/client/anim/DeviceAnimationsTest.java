@@ -74,4 +74,17 @@ class DeviceAnimationsTest {
     int expected = glow ? LightmapTextureManager.MAX_LIGHT_COORDINATE : WORLD_LIGHT;
     assertEquals(expected, DeviceAnimations.part(part(extra)).light(WORLD_LIGHT));
   }
+
+  @ParameterizedTest(name = "{0} in {1} is {2}")
+  @CsvSource(
+      delimiter = '|',
+      value = {
+        "upright|{}|false",
+        "upright|{\"upright\":false}|false",
+        "upright|{\"upright\":true}|true",
+        "wide|{\"wide\":true,\"upright\":false}|true"
+      })
+  void aDeviceFlagIsSetOnlyWhenItsDataSaysSo(String key, String json, boolean set) {
+    assertEquals(set, DeviceAnimations.flag(JsonParser.parseString(json).getAsJsonObject(), key));
+  }
 }

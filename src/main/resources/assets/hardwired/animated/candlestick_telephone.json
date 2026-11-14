@@ -1,0 +1,15 @@
+{
+  "clip": "hardwired:clips/candlestick_telephone.animation.json",
+  "parts": [
+    {
+      "bone": "candlestick_receiver",
+      "model": "hardwired:block/part/candlestick_receiver",
+      "pivot": [
+        10,
+        9,
+        8
+      ],
+      "when": "ringing"
+    }
+  ]
+}

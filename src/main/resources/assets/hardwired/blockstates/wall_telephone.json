@@ -1,22 +1,63 @@
 {
   "variants": {
-    "facing=north": {
-      "model": "hardwired:block/wall_switch_off",
-      "x": 90
+    "facing=north,lifted=false,ringing=false": {
+      "model": "hardwired:block/wall_telephone"
     },
-    "facing=east": {
-      "model": "hardwired:block/wall_switch_off",
-      "x": 90,
+    "facing=north,lifted=false,ringing=true": {
+      "model": "hardwired:block/wall_telephone_lifted"
+    },
+    "facing=north,lifted=true,ringing=false": {
+      "model": "hardwired:block/wall_telephone_lifted"
+    },
+    "facing=north,lifted=true,ringing=true": {
+      "model": "hardwired:block/wall_telephone_lifted"
+    },
+    "facing=east,lifted=false,ringing=false": {
+      "model": "hardwired:block/wall_telephone",
       "y": 90
     },
-    "facing=south": {
-      "model": "hardwired:block/wall_switch_off",
-      "x": 90,
+    "facing=east,lifted=false,ringing=true": {
+      "model": "hardwired:block/wall_telephone_lifted",
+      "y": 90
+    },
+    "facing=east,lifted=true,ringing=false": {
+      "model": "hardwired:block/wall_telephone_lifted",
+      "y": 90
+    },
+    "facing=east,lifted=true,ringing=true": {
+      "model": "hardwired:block/wall_telephone_lifted",
+      "y": 90
+    },
+    "facing=south,lifted=false,ringing=false": {
+      "model": "hardwired:block/wall_telephone",
       "y": 180
     },
-    "facing=west": {
-      "model": "hardwired:block/wall_switch_off",
-      "x": 90,
+    "facing=south,lifted=false,ringing=true": {
+      "model": "hardwired:block/wall_telephone_lifted",
+      "y": 180
+    },
+    "facing=south,lifted=true,ringing=false": {
+      "model": "hardwired:block/wall_telephone_lifted",
+      "y": 180
+    },
+    "facing=south,lifted=true,ringing=true": {
+      "model": "hardwired:block/wall_telephone_lifted",
+      "y": 180
+    },
+    "facing=west,lifted=false,ringing=false": {
+      "model": "hardwired:block/wall_telephone",
+      "y": 270
+    },
+    "facing=west,lifted=false,ringing=true": {
+      "model": "hardwired:block/wall_telephone_lifted",
+      "y": 270
+    },
+    "facing=west,lifted=true,ringing=false": {
+      "model": "hardwired:block/wall_telephone_lifted",
+      "y": 270
+    },
+    "facing=west,lifted=true,ringing=true": {
+      "model": "hardwired:block/wall_telephone_lifted",
       "y": 270
     }
   }

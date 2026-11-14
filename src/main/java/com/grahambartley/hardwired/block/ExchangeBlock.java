@@ -7,6 +7,7 @@ import com.grahambartley.hardwired.device.ElectronicsDriver;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.phone.ExchangeActions;
 import com.grahambartley.hardwired.phone.PhoneDirectory;
+import com.grahambartley.hardwired.phone.PhoneLifecycle;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
 import net.minecraft.block.Block;
@@ -24,6 +25,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -37,6 +39,8 @@ public final class ExchangeBlock extends HorizontalFacingBlock
     implements BlockEntityProvider, WireDevice, Electronic {
 
   public static final EnumProperty<ExchangePart> PART = EnumProperty.of("part", ExchangePart.class);
+  public static final int LAMPS = 12;
+  public static final IntProperty LINES = IntProperty.of("lines", 0, LAMPS);
   private static final double[] BOARD_BOX = {0, 0, 6, 16, 16, 16};
 
   public ExchangeBlock(Settings settings) {
@@ -45,7 +49,8 @@ public final class ExchangeBlock extends HorizontalFacingBlock
         getStateManager()
             .getDefaultState()
             .with(FACING, Direction.NORTH)
-            .with(PART, ExchangePart.LOWER_LEFT));
+            .with(PART, ExchangePart.LOWER_LEFT)
+            .with(LINES, 0));
   }
 
   public static BlockPos anchorOf(BlockPos pos, BlockState state) {
@@ -59,7 +64,7 @@ public final class ExchangeBlock extends HorizontalFacingBlock
 
   @Override
   protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-    builder.add(FACING, PART);
+    builder.add(FACING, PART, LINES);
   }
 
   @Override
@@ -86,9 +91,7 @@ public final class ExchangeBlock extends HorizontalFacingBlock
             ExchangeLayout.cell(part, facing, pos), state.with(PART, part), Block.NOTIFY_ALL);
       }
     }
-    if (world instanceof ServerWorld server && placer instanceof ServerPlayerEntity player) {
-      PhoneDirectory.of(server).placedBy(pos.asLong(), "", player.getUuid());
-    }
+    PhoneLifecycle.placed(world, pos, placer, stack);
   }
 
   @Override
@@ -97,9 +100,7 @@ public final class ExchangeBlock extends HorizontalFacingBlock
     if (!state.isOf(newState.getBlock())) {
       BlockPos anchor = anchorOf(pos, state);
       WireDevice.clearOthers(world, pos, this, cells(pos, state));
-      if (world instanceof ServerWorld server) {
-        PhoneDirectory.of(server).remove(anchor.asLong());
-      }
+      PhoneLifecycle.removed(world, anchor);
     }
     super.onStateReplaced(state, world, pos, newState, moved);
   }
@@ -124,10 +125,7 @@ public final class ExchangeBlock extends HorizontalFacingBlock
       BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
     if (!oldState.isOf(this) && state.get(PART) == ExchangePart.LOWER_LEFT) {
       world.scheduleBlockTick(pos, this, 1);
-      if (world instanceof ServerWorld server) {
-        PhoneDirectory.of(server)
-            .add(pos.asLong(), cells(pos, state).stream().map(BlockPos::asLong).toList(), true);
-      }
+      PhoneLifecycle.listed(world, pos, cells(pos, state), true);
     }
   }
 
@@ -138,8 +136,7 @@ public final class ExchangeBlock extends HorizontalFacingBlock
 
   @Override
   public void onWireChange(ServerWorld world, BlockPos pos, BlockState state) {
-    PhoneDirectory.of(world).markStale();
-    ElectronicsDriver.wake(world, anchorOf(pos, state));
+    PhoneLifecycle.rewired(world, anchorOf(pos, state));
   }
 
   @Override

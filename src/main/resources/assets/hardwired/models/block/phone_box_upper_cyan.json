@@ -1,0 +1,6 @@
+{
+  "parent": "hardwired:block/phone_box_upper",
+  "textures": {
+    "oak_planks": "minecraft:block/cyan_concrete"
+  }
+}

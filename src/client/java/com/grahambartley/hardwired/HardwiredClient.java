@@ -8,6 +8,7 @@ import com.grahambartley.hardwired.block.ControllerBlockEntity;
 import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.block.JunctionBlock;
 import com.grahambartley.hardwired.block.LampBlockEntity;
+import com.grahambartley.hardwired.block.PhoneBoxPaint;
 import com.grahambartley.hardwired.block.RadioBlockEntity;
 import com.grahambartley.hardwired.client.ClientConfigCommand;
 import com.grahambartley.hardwired.client.DeviceHud;
@@ -75,9 +76,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.item.Item;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 
@@ -97,6 +100,7 @@ public class HardwiredClient implements ClientModInitializer {
           ModBlockEntities.MASTER_SWITCH,
           ModBlockEntities.CONTROLLER,
           ModBlockEntities.ELECTRONIC,
+          ModBlockEntities.PHONE_BOX,
           ModBlockEntities.RADIO,
           ModBlockEntities.SPEAKER,
           ModBlockEntities.BROADCAST_DESK);
@@ -206,6 +210,11 @@ public class HardwiredClient implements ClientModInitializer {
     Block[] lamps = ModBlocks.lamps();
     BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), lamps);
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.JUNCTION, RenderLayer.getCutout());
+    BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.PHONE_BOX, RenderLayer.getCutout());
+    ModelPredicateProviderRegistry.register(
+        ModBlocks.PHONE_BOX.asItem(),
+        Identifier.of(Hardwired.MOD_ID, "paint"),
+        (stack, world, entity, seed) -> PhoneBoxPaint.on(stack).shade());
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CONTROLLER, RenderLayer.getCutout());
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CIRCUIT_BOARD, RenderLayer.getCutout());
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.CIRCUIT_BLOCK, RenderLayer.getCutout());
