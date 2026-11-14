@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.client.radio;
 
+import com.grahambartley.hardwired.radio.RadioTone;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.DoubleSupplier;
 import java.util.function.LongSupplier;
@@ -33,6 +34,6 @@ public final class BroadcastSoundInstance extends DeviceSoundInstance {
         .thenApplyAsync(
             stream -> SongSeek.seek(stream, songMillis, this::isDone),
             Util.getDownloadWorkerExecutor())
-        .thenApply(RadioToneStream::new);
+        .thenApply(stream -> new RadioToneStream(stream, RadioTone.Band.RADIO));
   }
 }

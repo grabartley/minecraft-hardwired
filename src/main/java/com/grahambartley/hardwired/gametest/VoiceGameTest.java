@@ -10,11 +10,11 @@ import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.network.VoiceFramePayload;
 import com.grahambartley.hardwired.radio.DeskAction;
-import com.grahambartley.hardwired.radio.DeskMic;
 import com.grahambartley.hardwired.radio.DeskVoice;
 import com.grahambartley.hardwired.radio.Frequency;
 import com.grahambartley.hardwired.radio.ReceptionMix;
 import com.grahambartley.hardwired.radio.StationRegistry;
+import com.grahambartley.hardwired.radio.VoiceFormat;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.wire.WireEngine;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -31,8 +31,8 @@ public class VoiceGameTest implements FabricGameTest {
   private static final String VOICE_OFF_BATCH = "radio-voice-off";
   private static final int ON_AIR_TICKS = SETTLE + BEAT;
   private static final Identifier LIVE_MIC = Identifier.of(Hardwired.MOD_ID, "live_mic");
-  private static final byte[] FRAME = new byte[DeskMic.MOST_FRAME_BYTES];
-  private static final byte[] TOO_LONG = new byte[DeskMic.MOST_FRAME_BYTES + 1];
+  private static final byte[] FRAME = new byte[VoiceFormat.MOST_FRAME_BYTES];
+  private static final byte[] TOO_LONG = new byte[VoiceFormat.MOST_FRAME_BYTES + 1];
 
   private static HardwiredConfig savedConfig;
 

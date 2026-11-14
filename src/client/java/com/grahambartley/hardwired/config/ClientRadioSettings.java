@@ -4,16 +4,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public record ClientRadioSettings(
-    String microphone, boolean hearVoiceBroadcasts, int radioNoisePercent, int electricHumPercent) {
+    String microphone,
+    boolean hearVoiceBroadcasts,
+    boolean hearVoiceCalls,
+    int radioNoisePercent,
+    int electricHumPercent) {
 
   public static final String DEFAULT_MICROPHONE = "";
   public static final int NOISE_MIN = 0;
   public static final int NOISE_MAX = 100;
   public static final ClientRadioSettings DEFAULTS =
-      new ClientRadioSettings(DEFAULT_MICROPHONE, true, NOISE_MAX, NOISE_MAX);
+      new ClientRadioSettings(DEFAULT_MICROPHONE, true, true, NOISE_MAX, NOISE_MAX);
 
   static final String KEY_MICROPHONE = "microphone";
   static final String KEY_HEAR_VOICE = "hearVoiceBroadcasts";
+  static final String KEY_HEAR_CALLS = "hearVoiceCalls";
   static final String KEY_NOISE = "radioNoise";
   static final String KEY_HUM = "electricHum";
 
@@ -25,19 +30,27 @@ public record ClientRadioSettings(
 
   public ClientRadioSettings withMicrophone(final String value) {
     return new ClientRadioSettings(
-        value, hearVoiceBroadcasts, radioNoisePercent, electricHumPercent);
+        value, hearVoiceBroadcasts, hearVoiceCalls, radioNoisePercent, electricHumPercent);
   }
 
   public ClientRadioSettings withHearVoiceBroadcasts(final boolean value) {
-    return new ClientRadioSettings(microphone, value, radioNoisePercent, electricHumPercent);
+    return new ClientRadioSettings(
+        microphone, value, hearVoiceCalls, radioNoisePercent, electricHumPercent);
+  }
+
+  public ClientRadioSettings withHearVoiceCalls(final boolean value) {
+    return new ClientRadioSettings(
+        microphone, hearVoiceBroadcasts, value, radioNoisePercent, electricHumPercent);
   }
 
   public ClientRadioSettings withRadioNoisePercent(final int value) {
-    return new ClientRadioSettings(microphone, hearVoiceBroadcasts, value, electricHumPercent);
+    return new ClientRadioSettings(
+        microphone, hearVoiceBroadcasts, hearVoiceCalls, value, electricHumPercent);
   }
 
   public ClientRadioSettings withElectricHumPercent(final int value) {
-    return new ClientRadioSettings(microphone, hearVoiceBroadcasts, radioNoisePercent, value);
+    return new ClientRadioSettings(
+        microphone, hearVoiceBroadcasts, hearVoiceCalls, radioNoisePercent, value);
   }
 
   static ClientRadioSettings fromJson(final JsonObject root) {
@@ -48,6 +61,7 @@ public record ClientRadioSettings(
     return new ClientRadioSettings(
         named ? name.getAsString() : DEFAULTS.microphone,
         fields.readBoolean(KEY_HEAR_VOICE, DEFAULTS.hearVoiceBroadcasts),
+        fields.readBoolean(KEY_HEAR_CALLS, DEFAULTS.hearVoiceCalls),
         fields.readInt(KEY_NOISE, DEFAULTS.radioNoisePercent, NOISE_MIN, NOISE_MAX),
         fields.readInt(KEY_HUM, DEFAULTS.electricHumPercent, NOISE_MIN, NOISE_MAX));
   }
@@ -55,6 +69,7 @@ public record ClientRadioSettings(
   void writeJson(final JsonObject root) {
     root.addProperty(KEY_MICROPHONE, microphone);
     root.addProperty(KEY_HEAR_VOICE, hearVoiceBroadcasts);
+    root.addProperty(KEY_HEAR_CALLS, hearVoiceCalls);
     root.addProperty(KEY_NOISE, radioNoisePercent);
     root.addProperty(KEY_HUM, electricHumPercent);
   }

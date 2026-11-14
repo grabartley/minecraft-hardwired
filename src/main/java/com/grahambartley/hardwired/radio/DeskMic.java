@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 public final class DeskMic {
 
-  public static final int MOST_FRAME_BYTES = AdpcmCodec.frameBytes(VoiceFormat.FRAME_SAMPLES);
   public static final long SILENT_MILLIS = 3000;
 
   @Nullable private UUID speaker;
@@ -55,8 +54,7 @@ public final class DeskMic {
   public boolean accepts(UUID player, int frameBytes, long nowMillis) {
     if (!taken
         || !player.equals(speaker)
-        || frameBytes <= AdpcmCodec.HEADER_BYTES
-        || frameBytes > MOST_FRAME_BYTES
+        || !VoiceFormat.frameFits(frameBytes)
         || !limit.allows(nowMillis)) {
       return false;
     }

@@ -9,6 +9,7 @@ import com.grahambartley.hardwired.block.CircuitBoardBlock;
 import com.grahambartley.hardwired.block.ControlPanelBlock;
 import com.grahambartley.hardwired.block.ControllerBlock;
 import com.grahambartley.hardwired.block.DuskClock;
+import com.grahambartley.hardwired.block.ExchangeBlock;
 import com.grahambartley.hardwired.block.FuelledSourceBlock;
 import com.grahambartley.hardwired.block.IntercomBlock;
 import com.grahambartley.hardwired.block.JunctionBlock;
@@ -29,6 +30,7 @@ import com.grahambartley.hardwired.block.SolarPanelBlock;
 import com.grahambartley.hardwired.block.SpeakerBlock;
 import com.grahambartley.hardwired.block.StreetlightBlock;
 import com.grahambartley.hardwired.block.SwitchBlock;
+import com.grahambartley.hardwired.block.TelephoneBlock;
 import java.util.EnumSet;
 import java.util.Set;
 import net.minecraft.block.AbstractBlock;
@@ -57,6 +59,8 @@ public final class ModBlocks {
   private static final double[] RADIO_BOX = {1, 0, 2, 15, 14, 14};
   private static final double[] SPEAKER_BOX = {3, 0, 3, 13, 13, 13};
   private static final double[] INTERCOM_BOX = {5, 0, 5, 11, 12, 11};
+  private static final double[] CANDLESTICK_TELEPHONE_BOX = {5, 0, 5, 11, 14, 11};
+  private static final double[] WALL_TELEPHONE_BOX = {3, 0, 1, 13, 6, 15};
   private static final int RADIO_GLOW = 7;
   private static final int DESK_GLOW = 7;
 
@@ -176,6 +180,31 @@ public final class ModBlocks {
       register("speaker", new SpeakerBlock(deviceSettings(), SPEAKER_BOX));
   public static final Block INTERCOM =
       register("intercom", new IntercomBlock(deviceSettings(), INTERCOM_BOX));
+  public static final Block CANDLESTICK_TELEPHONE =
+      register(
+          "candlestick_telephone",
+          new TelephoneBlock(
+              deviceSettings().pistonBehavior(PistonBehavior.BLOCK),
+              CANDLESTICK_TELEPHONE_BOX,
+              BlockFace.FLOOR));
+  public static final Block WALL_TELEPHONE =
+      register(
+          "wall_telephone",
+          new TelephoneBlock(
+              deviceSettings()
+                  .mapColor(MapColor.OAK_TAN)
+                  .sounds(BlockSoundGroup.WOOD)
+                  .pistonBehavior(PistonBehavior.BLOCK),
+              WALL_TELEPHONE_BOX,
+              BlockFace.WALL));
+  public static final Block EXCHANGE =
+      register(
+          "exchange",
+          new ExchangeBlock(
+              computerSettings()
+                  .mapColor(MapColor.DEEPSLATE_GRAY)
+                  .sounds(BlockSoundGroup.POLISHED_DEEPSLATE)
+                  .nonOpaque()));
 
   public static final Block LIFT =
       register(

@@ -7,6 +7,7 @@ import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.HumSettings;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.PhoneSettings;
 import com.grahambartley.hardwired.config.PowerLoads;
 import com.grahambartley.hardwired.config.PowerRatings;
 import com.grahambartley.hardwired.config.PowerSettings;
@@ -315,6 +316,30 @@ final class SettingsConfigSection {
                         config.power().withLoads(config.power().loads().withLiftLoad(value)))));
     list.addRow(
         rows.intSlider(
+            KEY + "telephoneload",
+            KEY + "telephoneload.tooltip",
+            PowerLoads.TELEPHONE_LOAD_MIN,
+            PowerLoads.TELEPHONE_LOAD_MAX,
+            config.power().loads().telephoneLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config
+                            .power()
+                            .withLoads(config.power().loads().withTelephoneLoad(value)))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "exchangeload",
+            KEY + "exchangeload.tooltip",
+            PowerLoads.EXCHANGE_LOAD_MIN,
+            PowerLoads.EXCHANGE_LOAD_MAX,
+            config.power().loads().exchangeLoad(),
+            value ->
+                config =
+                    config.withPower(
+                        config.power().withLoads(config.power().loads().withExchangeLoad(value)))));
+    list.addRow(
+        rows.intSlider(
             KEY + "humrange",
             KEY + "humrange.tooltip",
             HumSettings.HUM_RANGE_MIN,
@@ -442,6 +467,27 @@ final class SettingsConfigSection {
             KEY + "voicebroadcasts",
             config.radio().voiceBroadcasts(),
             value -> config = config.withRadio(config.radio().withVoiceBroadcasts(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "phoneringseconds",
+            KEY + "phoneringseconds.tooltip",
+            PhoneSettings.RING_SECONDS_MIN,
+            PhoneSettings.RING_SECONDS_MAX,
+            config.phone().phoneRingSeconds(),
+            value -> config = config.withPhone(config.phone().withPhoneRingSeconds(value))));
+    list.addRow(
+        rows.intSlider(
+            KEY + "exchangelines",
+            KEY + "exchangelines.tooltip",
+            PhoneSettings.EXCHANGE_LINES_MIN,
+            PhoneSettings.EXCHANGE_LINES_MAX,
+            config.phone().exchangeLines(),
+            value -> config = config.withPhone(config.phone().withExchangeLines(value))));
+    list.addRow(
+        rows.toggle(
+            KEY + "voicecalls",
+            config.phone().voiceCalls(),
+            value -> config = config.withPhone(config.phone().withVoiceCalls(value))));
   }
 
   HardwiredConfig config() {

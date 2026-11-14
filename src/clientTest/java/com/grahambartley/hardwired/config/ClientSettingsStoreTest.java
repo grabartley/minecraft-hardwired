@@ -20,7 +20,8 @@ class ClientSettingsStoreTest {
   void settingsRoundTrip(int through, int surface, boolean markers) {
     Path file = dir.resolve("settings.json");
     ClientDisplaySettings settings = new ClientDisplaySettings(through, surface, markers, !markers);
-    ClientRadioSettings radio = new ClientRadioSettings("Desk Mic", !markers, through, through);
+    ClientRadioSettings radio =
+        new ClientRadioSettings("Desk Mic", !markers, markers, through, through);
     ClientSettingsStore.write(file, settings, radio);
     assertEquals(settings, ClientSettingsStore.read(file));
     assertEquals(radio, ClientSettingsStore.readRadio(file));

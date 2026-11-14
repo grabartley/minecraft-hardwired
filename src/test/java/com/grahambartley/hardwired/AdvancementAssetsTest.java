@@ -25,7 +25,7 @@ class AdvancementAssetsTest {
   private static final Path ADVANCEMENTS = Path.of("src/main/resources/data/hardwired/advancement");
   private static final Path RECIPES = Path.of("src/main/resources/data/hardwired/recipe");
   private static final Set<String> HIDDEN =
-      Set.of("short_circuit", "vintage", "lights_out", "blown_fuse");
+      Set.of("short_circuit", "vintage", "lights_out", "blown_fuse", "party_line");
 
   private static JsonObject read(String name) throws IOException {
     return JsonParser.parseString(Files.readString(ADVANCEMENTS.resolve(name + ".json")))
@@ -87,14 +87,17 @@ class AdvancementAssetsTest {
     "blown_fuse,charged_up",
     "pocket_circuit,logic_gate",
     "share_the_love,pocket_circuit",
-    "powers_on,charged_up"
+    "powers_on,charged_up",
+    "number_please,hardwired",
+    "long_distance,number_please",
+    "party_line,number_please"
   })
   void everyBranchHangsWhereThePrdSays(String name, String parent) throws IOException {
     assertEquals("hardwired:" + parent, read(name).get("parent").getAsString());
   }
 
   @Test
-  void onlyTheFourSecretsAreHidden() throws IOException {
+  void onlyTheSecretsAreHidden() throws IOException {
     try (Stream<Path> files = Files.list(ADVANCEMENTS)) {
       for (Path file : files.filter(Files::isRegularFile).toList()) {
         String name = file.getFileName().toString().replace(".json", "");

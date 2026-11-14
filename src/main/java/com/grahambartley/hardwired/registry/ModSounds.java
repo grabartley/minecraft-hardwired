@@ -27,6 +27,13 @@ public final class ModSounds {
   public static final SoundEvent LIFT_DING = register("lift.ding");
   public static final SoundEvent LIFT_DING_STRIKE = register("lift.ding_strike");
 
+  public static final SoundEvent TELEPHONE_BELL = register("telephone.bell");
+  public static final SoundEvent TELEPHONE_DIAL_CLICK = register("telephone.dial_click");
+  public static final SoundEvent TELEPHONE_RELAY = register("telephone.relay");
+  public static final SoundEvent TELEPHONE_RINGBACK = register("telephone.ringback");
+  public static final SoundEvent TELEPHONE_BUSY = register("telephone.busy");
+  public static final SoundEvent TELEPHONE_VOICE = register("telephone.voice");
+
   private ModSounds() {}
 
   public static void register() {}

@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:exchange"
+    },
+    "title": {
+      "translate": "advancement.hardwired.long_distance.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.long_distance.description"
+    },
+    "frame": "goal",
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "long_distance"
+      }
+    }
+  },
+  "parent": "hardwired:number_please",
+  "rewards": {
+    "experience": 50
+  }
+}

@@ -8,6 +8,7 @@ import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.HumSettings;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.PhoneSettings;
 import com.grahambartley.hardwired.config.PowerLoads;
 import com.grahambartley.hardwired.config.PowerRatings;
 import com.grahambartley.hardwired.config.PowerSettings;
@@ -54,6 +55,8 @@ public final class ServerConfigPayloads {
     buf.writeVarInt(power.loads().alarmLoad());
     buf.writeVarInt(power.loads().broadcastLoad());
     buf.writeVarInt(power.loads().liftLoad());
+    buf.writeVarInt(power.loads().telephoneLoad());
+    buf.writeVarInt(power.loads().exchangeLoad());
     buf.writeVarInt(power.hum().humRange());
     buf.writeVarInt(power.hum().humStartLoad());
     buf.writeVarInt(power.hum().humFullLoad());
@@ -70,6 +73,10 @@ public final class ServerConfigPayloads {
     buf.writeVarInt(radio.undergroundFreeDepth());
     buf.writeVarInt(radio.undergroundLossDepth());
     buf.writeBoolean(radio.voiceBroadcasts());
+    PhoneSettings phone = config.phone();
+    buf.writeVarInt(phone.phoneRingSeconds());
+    buf.writeVarInt(phone.exchangeLines());
+    buf.writeBoolean(phone.voiceCalls());
   }
 
   private static HardwiredConfig read(RegistryByteBuf buf) {
@@ -95,6 +102,8 @@ public final class ServerConfigPayloads {
                 buf.readVarInt(),
                 buf.readVarInt(),
                 buf.readVarInt(),
+                buf.readVarInt(),
+                buf.readVarInt(),
                 buf.readVarInt()),
             new HumSettings(buf.readVarInt(), buf.readVarInt(), buf.readVarInt())),
         new LiftSettings(buf.readVarInt()),
@@ -108,7 +117,8 @@ public final class ServerConfigPayloads {
             buf.readVarInt(),
             buf.readVarInt(),
             buf.readVarInt(),
-            buf.readBoolean()));
+            buf.readBoolean()),
+        new PhoneSettings(buf.readVarInt(), buf.readVarInt(), buf.readBoolean()));
   }
 
   public record SyncServerConfigS2CPayload(HardwiredConfig config) implements CustomPayload {

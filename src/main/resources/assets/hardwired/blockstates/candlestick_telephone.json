@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "hardwired:block/intercom"
+    },
+    "facing=east": {
+      "model": "hardwired:block/intercom",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "hardwired:block/intercom",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "hardwired:block/intercom",
+      "y": 270
+    }
+  }
+}

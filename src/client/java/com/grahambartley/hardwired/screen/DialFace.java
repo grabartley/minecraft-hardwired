@@ -33,7 +33,7 @@ public final class DialFace {
     return new ArrayList<>(pixels);
   }
 
-  private static Pixel onCircle(double angle, int radius) {
+  static Pixel onCircle(double angle, int radius) {
     return new Pixel(
         (int) Math.round(Math.cos(angle) * radius), (int) Math.round(Math.sin(angle) * radius));
   }

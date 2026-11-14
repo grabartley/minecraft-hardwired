@@ -111,5 +111,68 @@
         "pitch": 1.5
       }
     ]
+  },
+  "telephone.bell": {
+    "subtitle": "subtitles.hardwired.telephone.bell",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.bell",
+        "type": "event",
+        "pitch": 1.4
+      }
+    ]
+  },
+  "telephone.dial_click": {
+    "subtitle": "subtitles.hardwired.telephone.dial_click",
+    "sounds": [
+      {
+        "name": "minecraft:block.tripwire.click_on",
+        "type": "event",
+        "pitch": 2.0,
+        "volume": 0.4
+      }
+    ]
+  },
+  "telephone.relay": {
+    "subtitle": "subtitles.hardwired.telephone.relay",
+    "sounds": [
+      {
+        "name": "minecraft:block.comparator.click",
+        "type": "event",
+        "pitch": 1.6,
+        "volume": 0.6
+      }
+    ]
+  },
+  "telephone.ringback": {
+    "subtitle": "subtitles.hardwired.telephone.ringback",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.bell",
+        "type": "event",
+        "pitch": 0.9,
+        "volume": 0.25
+      }
+    ]
+  },
+  "telephone.busy": {
+    "subtitle": "subtitles.hardwired.telephone.busy",
+    "sounds": [
+      {
+        "name": "minecraft:block.note_block.bass",
+        "type": "event",
+        "pitch": 1.2,
+        "volume": 0.4
+      }
+    ]
+  },
+  "telephone.voice": {
+    "subtitle": "subtitles.hardwired.telephone.voice",
+    "sounds": [
+      {
+        "name": "fabric-sound-api-v1:empty",
+        "stream": true
+      }
+    ]
   }
 }

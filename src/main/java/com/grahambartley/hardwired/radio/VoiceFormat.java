@@ -5,10 +5,15 @@ public final class VoiceFormat {
   public static final int SAMPLE_RATE = 16_000;
   public static final int FRAME_SAMPLES = SAMPLE_RATE / 10;
   public static final int BYTES_PER_SAMPLE = 2;
+  public static final int MOST_FRAME_BYTES = AdpcmCodec.frameBytes(FRAME_SAMPLES);
   private static final int BYTE_BITS = 8;
   private static final int BYTE_MASK = 0xFF;
 
   private VoiceFormat() {}
+
+  public static boolean frameFits(int frameBytes) {
+    return frameBytes > AdpcmCodec.HEADER_BYTES && frameBytes <= MOST_FRAME_BYTES;
+  }
 
   public static int millisToBytes(int millis) {
     return SAMPLE_RATE * millis / 1000 * BYTES_PER_SAMPLE;

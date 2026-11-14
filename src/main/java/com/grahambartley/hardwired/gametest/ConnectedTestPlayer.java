@@ -4,6 +4,8 @@ import com.grahambartley.hardwired.network.CircuitResultPayload;
 import com.grahambartley.hardwired.network.DeviceInspectResultPayload;
 import com.grahambartley.hardwired.network.MainPanelViewPayload;
 import com.grahambartley.hardwired.network.OpenDevicePayload;
+import com.grahambartley.hardwired.network.PhoneSaidPayload;
+import com.grahambartley.hardwired.network.PhoneViewPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload.CellView;
 import com.grahambartley.hardwired.network.WireInspectResultPayload;
@@ -206,6 +208,14 @@ public final class ConnectedTestPlayer {
       steps++;
     }
     return steps;
+  }
+
+  public List<PhoneViewPayload> phoneViews() {
+    return received(PhoneViewPayload.class);
+  }
+
+  public List<PhoneSaidPayload> phoneLines() {
+    return received(PhoneSaidPayload.class);
   }
 
   public int inspectResults() {

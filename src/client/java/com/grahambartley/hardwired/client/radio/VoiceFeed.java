@@ -1,7 +1,5 @@
 package com.grahambartley.hardwired.client.radio;
 
-import com.grahambartley.hardwired.config.ClientSettingsStore;
-import com.grahambartley.hardwired.network.VoiceFramePayload;
 import com.grahambartley.hardwired.radio.AdpcmCodec;
 import com.grahambartley.hardwired.radio.VoiceFormat;
 import com.grahambartley.hardwired.radio.VoiceJitter;
@@ -17,13 +15,10 @@ final class VoiceFeed {
 
   private VoiceFeed() {}
 
-  static void receive(VoiceFramePayload frame) {
-    if (!ClientSettingsStore.radio().hearVoiceBroadcasts()) {
-      return;
-    }
-    byte[] pcm = VoiceFormat.toBytes(AdpcmCodec.decode(frame.adpcm()));
+  static void receive(BlockPos source, byte[] adpcm) {
+    byte[] pcm = VoiceFormat.toBytes(AdpcmCodec.decode(adpcm));
     CHANNELS
-        .computeIfAbsent(frame.desk(), desk -> new VoiceChannel())
+        .computeIfAbsent(source, key -> new VoiceChannel())
         .receive(pcm, Util.getMeasuringTimeMs());
   }
 

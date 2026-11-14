@@ -13,11 +13,11 @@ import com.grahambartley.hardwired.network.RadioSetPayload;
 import com.grahambartley.hardwired.network.VoiceFramePayload;
 import com.grahambartley.hardwired.radio.DeskAction;
 import com.grahambartley.hardwired.radio.DeskActions;
-import com.grahambartley.hardwired.radio.DeskMic;
 import com.grahambartley.hardwired.radio.DeskVoice;
 import com.grahambartley.hardwired.radio.Frequency;
 import com.grahambartley.hardwired.radio.RadioActions;
 import com.grahambartley.hardwired.radio.SongClock;
+import com.grahambartley.hardwired.radio.VoiceFormat;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireFace;
@@ -258,7 +258,7 @@ public class BroadcastDeskGameTest implements FabricGameTest {
       DeskActions.act(player.player(), new DeskActionPayload(far, action.ordinal(), 0));
     }
     DeskVoice.frame(
-        player.player(), new VoiceFramePayload(far, new byte[DeskMic.MOST_FRAME_BYTES]));
+        player.player(), new VoiceFramePayload(far, new byte[VoiceFormat.MOST_FRAME_BYTES]));
     RadioActions.set(player.player(), new RadioSetPayload(far, false, Frequency.MAX, 0));
     context.assertFalse(world.isChunkLoaded(chunkX, chunkZ), "the far chunk must stay unloaded");
     player.leave();

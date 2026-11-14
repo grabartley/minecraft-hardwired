@@ -82,10 +82,11 @@ class RadioToneStreamTest {
     short[] tail = Arrays.copyOfRange(whole, split, whole.length);
     RadioToneStream stream =
         new RadioToneStream(
-            new Feed(format(1, bigEndian), pcm(bigEndian, head), pcm(bigEndian, tail)));
+            new Feed(format(1, bigEndian), pcm(bigEndian, head), pcm(bigEndian, tail)),
+            RadioTone.Band.RADIO);
     short[] first = read(stream.read(0), bigEndian);
     short[] second = read(stream.read(0), bigEndian);
-    RadioTone tone = new RadioTone(44100, 1);
+    RadioTone tone = new RadioTone(44100, 1, RadioTone.Band.RADIO);
     for (int i = 0; i < whole.length; i++) {
       short got = i < split ? first[i] : second[i - split];
       short expected =
@@ -106,7 +107,8 @@ class RadioToneStreamTest {
             new Feed(
                 format(2, false),
                 pcm(false, Arrays.copyOfRange(mixed, 0, 101)),
-                pcm(false, Arrays.copyOfRange(mixed, 101, 202))));
+                pcm(false, Arrays.copyOfRange(mixed, 101, 202))),
+            RadioTone.Band.RADIO);
     short[] first = read(stream.read(0), false);
     short[] second = read(stream.read(0), false);
     assertEquals(0, first[1]);
@@ -117,7 +119,7 @@ class RadioToneStreamTest {
   @Test
   void theEndOfAStreamPassesThroughAndCloses() throws IOException {
     Feed feed = new Feed(format(1, false));
-    RadioToneStream stream = new RadioToneStream(feed);
+    RadioToneStream stream = new RadioToneStream(feed, RadioTone.Band.RADIO);
     assertNull(stream.read(16));
     stream.close();
     assertTrue(feed.closed);

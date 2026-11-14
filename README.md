@@ -2,7 +2,7 @@
 
 Bring the wonder of early electricity to your world. Run hidden cloth wire through your walls, hang filament lamps on copper and brass, and change every light in the house from one slate switchboard.
 
-> **Alpha:** Hardwired is in early development. Wiring, lamps, switches, panels, Controllers, circuits, household electronics and lifts work today, and more devices are on the way.
+> **Alpha:** Hardwired is in early development. Wiring, lamps, switches, panels, Controllers, circuits, household electronics, lifts and telephones work today, and more devices are on the way.
 > The [product requirements](docs/prd.md) say what the mod will be.
 
 ## What you can do
@@ -14,6 +14,7 @@ Bring the wonder of early electricity to your world. Run hidden cloth wire throu
 - **Build a circuit:** design logic on a Circuit Board and pack it into one block you can copy.
 - **Power it all:** run your wiring from Redstone Cells, generators, solar panels and dynamos, chain them as your build grows, and bring it up with one great switch.
 - **Go on the air:** raise a radio tower, then play discs or speak live to every Radio tuned in within its reach.
+- **Make a call:** wire Telephones to an Exchange, then dial a friend to talk or type.
 - **Work with redstone:** wire drives doors, pistons and lamps, and redstone can drive wire. Sensors and Junctions add a little logic.
 
 ## Documentation

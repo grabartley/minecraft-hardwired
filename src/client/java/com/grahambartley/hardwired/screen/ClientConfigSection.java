@@ -60,6 +60,11 @@ final class ClientConfigSection {
             radio.hearVoiceBroadcasts(),
             value -> radio = radio.withHearVoiceBroadcasts(value)));
     list.addRow(
+        rows.toggle(
+            KEY + "hearvoicecalls",
+            radio.hearVoiceCalls(),
+            value -> radio = radio.withHearVoiceCalls(value)));
+    list.addRow(
         rows.choice(
             KEY + "microphone",
             microphones(),

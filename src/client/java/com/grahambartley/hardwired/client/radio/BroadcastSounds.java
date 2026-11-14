@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.client.radio;
 
 import com.grahambartley.hardwired.block.SoundingBlockEntity;
+import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.grahambartley.hardwired.config.RadioSettings;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
 import com.grahambartley.hardwired.device.DeviceStatus;
@@ -65,7 +66,12 @@ public final class BroadcastSounds {
         });
     ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> forgetAll(client));
     ClientPlayNetworking.registerGlobalReceiver(
-        VoiceFramePayload.ID, (payload, context) -> VoiceFeed.receive(payload));
+        VoiceFramePayload.ID,
+        (payload, context) -> {
+          if (ClientSettingsStore.radio().hearVoiceBroadcasts()) {
+            VoiceFeed.receive(payload.desk(), payload.adpcm());
+          }
+        });
     ClientTickEvents.END_CLIENT_TICK.register(BroadcastSounds::tick);
   }
 
@@ -90,7 +96,9 @@ public final class BroadcastSounds {
     Vec3d listener = client.gameRenderer.getCamera().getPos();
     boolean audible = client.options.getSoundVolume(SoundCategory.RECORDS) > 0;
     StreamShare.Granted<SoundingBlockEntity> granted =
-        StreamShare.share(wantsOf(heardFrom(client, listener)), StreamPicker.MOST_STREAMS);
+        StreamShare.share(
+            wantsOf(heardFrom(client, listener)),
+            StreamPicker.MOST_STREAMS - CallVoiceSounds.playing());
     Iterator<Map.Entry<SoundingBlockEntity, Playing>> playing = PLAYING.entrySet().iterator();
     while (playing.hasNext()) {
       Map.Entry<SoundingBlockEntity, Playing> entry = playing.next();

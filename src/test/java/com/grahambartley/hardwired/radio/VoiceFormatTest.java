@@ -22,4 +22,10 @@ class VoiceFormatTest {
   void millisBecomeBytes(int millis, int bytes) {
     assertEquals(bytes, VoiceFormat.millisToBytes(millis));
   }
+
+  @ParameterizedTest(name = "{0} bytes")
+  @CsvSource({"0,false", "3,false", "4,true", "803,true", "804,false"})
+  void aFrameMustHoldSoundAndFitATenthOfASecond(int bytes, boolean fits) {
+    assertEquals(fits, VoiceFormat.frameFits(bytes));
+  }
 }
