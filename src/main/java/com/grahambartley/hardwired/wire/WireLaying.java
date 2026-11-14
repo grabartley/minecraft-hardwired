@@ -61,7 +61,7 @@ public final class WireLaying {
     }
     WireEngine engine = WireEngine.of(player.getServerWorld());
     WireCell cell = chooseCell(player, engine.grid(), face);
-    if (cell == null || engine.grid().spans().isAnchor(cell)) {
+    if (cell == null) {
       return;
     }
     if (engine.grid().networkOf(cell).isOn()) {

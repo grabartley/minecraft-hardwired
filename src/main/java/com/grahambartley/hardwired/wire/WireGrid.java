@@ -203,16 +203,11 @@ public final class WireGrid {
       if (cells.containsKey(anchor)) {
         joined.add(cells.get(anchor));
       }
-      LongList column = spans.column(anchor.face().pos());
-      if (column != null) {
-        column.forEach(
-            (long block) -> {
-              for (WireCell touching : cellsTouchingBlock(block, anchor)) {
-                if (cells.containsKey(touching)) {
-                  joined.add(cells.get(touching));
-                }
-              }
-            });
+      for (WireFace face : facesTouchingColumn(anchor.face().pos())) {
+        WireNetwork touching = cells.get(anchor.onFace(face));
+        if (touching != null) {
+          joined.add(touching);
+        }
       }
     }
     return 1 + totalSize(joined);
@@ -233,25 +228,13 @@ public final class WireGrid {
 
   public Set<UUID> sealedOwnersTouchingColumn(BlockPos top, Hue color) {
     Set<UUID> owners = new LinkedHashSet<>();
-    LongList column = spans.column(top);
-    if (column == null) {
-      return owners;
+    for (WireFace face : facesTouchingColumn(top)) {
+      for (WireCell cell : cellsOn(face.pos())) {
+        if (cell.face().equals(face) && cell.color() == color && cell.isSealed()) {
+          owners.add(cell.owner());
+        }
+      }
     }
-    column.forEach(
-        (long block) -> {
-          BlockPos pos = BlockPos.fromLong(block);
-          for (Direction side : Direction.values()) {
-            for (WireFace face :
-                List.of(
-                    new WireFace(pos, side), new WireFace(pos.offset(side), side.getOpposite()))) {
-              for (WireCell cell : cellsOn(face.pos())) {
-                if (cell.face().equals(face) && cell.color() == color && cell.isSealed()) {
-                  owners.add(cell.owner());
-                }
-              }
-            }
-          }
-        });
     return owners;
   }
 
@@ -544,10 +527,7 @@ public final class WireGrid {
     }
     adjacent.addAll(spans.linkedTo(cell));
     if (spans.isAnchor(cell)) {
-      LongList column = spans.column(cell.face().pos());
-      if (column != null) {
-        column.forEach((long block) -> adjacent.addAll(cellsTouchingBlock(block, cell)));
-      }
+      facesTouchingColumn(cell.face().pos()).forEach(face -> adjacent.add(cell.onFace(face)));
     } else {
       for (long block : new long[] {hostKey(cell), cell.face().occupant().asLong()}) {
         WireCell anchor = spans.anchorFor(block, cell);
@@ -561,14 +541,21 @@ public final class WireGrid {
     return new ArrayList<>(adjacent);
   }
 
-  private List<WireCell> cellsTouchingBlock(long block, WireCell like) {
-    List<WireCell> touching = new ArrayList<>();
-    BlockPos pos = BlockPos.fromLong(block);
-    for (Direction side : Direction.values()) {
-      touching.add(like.onFace(new WireFace(pos, side)));
-      touching.add(like.onFace(new WireFace(pos.offset(side), side.getOpposite())));
+  private List<WireFace> facesTouchingColumn(BlockPos top) {
+    LongList column = spans.column(top);
+    if (column == null) {
+      return List.of();
     }
-    return touching;
+    List<WireFace> faces = new ArrayList<>();
+    column.forEach(
+        (long block) -> {
+          BlockPos pos = BlockPos.fromLong(block);
+          for (Direction side : Direction.values()) {
+            faces.add(new WireFace(pos, side));
+            faces.add(new WireFace(pos.offset(side), side.getOpposite()));
+          }
+        });
+    return faces;
   }
 
   private WireNetwork newNetwork(Hue color, UUID owner) {

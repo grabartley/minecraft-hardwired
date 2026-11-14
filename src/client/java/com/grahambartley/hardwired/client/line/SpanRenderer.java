@@ -21,6 +21,7 @@ public final class SpanRenderer {
 
   private static final int SEGMENTS = 24;
   private static final double HALF_WIDTH = 0.03;
+  private static final double HALF_PIXEL_PER_BLOCK = 0.0008;
   private static final float SIDE_SHADE = 0.75F;
 
   private SpanRenderer() {}
@@ -60,17 +61,23 @@ public final class SpanRenderer {
     int rgb = span.rgb();
     SpanCurve curve = span.curve();
     Vec3d along = curve.to().subtract(curve.from());
-    Vec3d flat = new Vec3d(-along.z, 0, along.x).normalize().multiply(HALF_WIDTH);
-    Vec3d up = new Vec3d(0, HALF_WIDTH, 0);
+    Vec3d across = new Vec3d(-along.z, 0, along.x).normalize();
     for (int step = 0; step < SEGMENTS; step++) {
       Vec3d start = curve.at((double) step / SEGMENTS).subtract(camera);
       Vec3d end = curve.at((double) (step + 1) / SEGMENTS).subtract(camera);
+      double half = halfWidth(start.add(end).multiply(0.5).length());
+      Vec3d flat = across.multiply(half);
+      Vec3d up = new Vec3d(0, half, 0);
       int light =
           WorldRenderer.getLightmapCoordinates(
               world, BlockPos.ofFloored(curve.at((step + 0.5) / SEGMENTS)));
       ribbon(buffer, start, end, flat, rgb, 1F, light);
       ribbon(buffer, start, end, up, rgb, SIDE_SHADE, light);
     }
+  }
+
+  static double halfWidth(double distance) {
+    return Math.max(HALF_WIDTH, distance * HALF_PIXEL_PER_BLOCK);
   }
 
   private static void ribbon(

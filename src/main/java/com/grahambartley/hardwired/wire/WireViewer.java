@@ -18,7 +18,7 @@ public record WireViewer(UUID id, boolean override) {
   }
 
   public boolean canSee(WireCell cell) {
-    return !cell.isSealed() || override || cell.owner().equals(id);
+    return !cell.isSealed() || canSee(cell.owner());
   }
 
   public boolean canSee(WireSpan span) {
@@ -30,12 +30,12 @@ public record WireViewer(UUID id, boolean override) {
   }
 
   public boolean canSee(WireNetwork network) {
-    return !network.isSealed() || override || network.owner().equals(id);
+    return !network.isSealed() || canSee(network.owner());
   }
 
   public List<WireCell> visibleOn(WireGrid grid, WireFace face) {
     return grid.cellsOn(face.pos()).stream()
-        .filter(cell -> cell.face().equals(face) && canSee(cell))
+        .filter(cell -> cell.face().equals(face) && canSee(cell) && !grid.spans().isAnchor(cell))
         .sorted(
             Comparator.comparingInt(this::rank)
                 .thenComparing(WireCell::color)

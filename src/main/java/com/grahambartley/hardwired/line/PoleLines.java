@@ -92,7 +92,7 @@ public final class PoleLines {
 
   public boolean wax(BlockPos top, Predicate<WireSpan> allowed) {
     boolean waxed = false;
-    for (WireSpan span : List.copyOf(engine.spansAt(top))) {
+    for (WireSpan span : engine.spansAt(top)) {
       if (span.canAge() && allowed.test(span)) {
         waxed |= engine.restyleSpan(span, span.withWax());
       }

@@ -48,21 +48,14 @@ public final class WireSpans {
   }
 
   public boolean restyle(WireSpan old, WireSpan next) {
-    if (!old.sameRun(next) || !Objects.equals(old.owner(), next.owner()) || !remove(old)) {
-      return false;
-    }
-    spans.add(next);
-    index(next);
-    return true;
+    return old.sameRun(next) && Objects.equals(old.owner(), next.owner()) && replace(old, next);
   }
 
   public void reown(Collection<WireCell> anchors, UUID owner) {
     for (WireCell anchor : anchors) {
       for (WireSpan span : at(anchor.face().pos())) {
-        if (span.color() == anchor.color() && Objects.equals(span.owner(), anchor.owner())) {
-          remove(span);
-          spans.add(span.ownedBy(owner));
-          index(span.ownedBy(owner));
+        if (anchors(span, anchor)) {
+          replace(span, span.ownedBy(owner));
         }
       }
     }
@@ -117,6 +110,15 @@ public final class WireSpans {
         WireSpan.anchor(
             BlockPos.fromLong(topOfBlock.get(block)), touching.color(), touching.owner());
     return isAnchor(anchor) ? anchor : null;
+  }
+
+  private boolean replace(WireSpan old, WireSpan next) {
+    if (!remove(old)) {
+      return false;
+    }
+    spans.add(next);
+    index(next);
+    return true;
   }
 
   private static boolean anchors(WireSpan span, WireCell cell) {
