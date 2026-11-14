@@ -2,6 +2,7 @@ package com.grahambartley.hardwired.phone;
 
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.advancement.ModCriteria;
+import com.grahambartley.hardwired.block.ExchangeBlock;
 import com.grahambartley.hardwired.config.PhoneSettings;
 import com.grahambartley.hardwired.device.ActionRate;
 import com.grahambartley.hardwired.wire.WiredWorld;
@@ -29,6 +30,7 @@ public final class Switchboard {
   private final Map<Long, UUID> lifted = new HashMap<>();
   private final ActionRate dialRate = new ActionRate(DIAL_GAP_TICKS);
   private final LongOpenHashSet loadedChunks = new LongOpenHashSet();
+  private Map<Long, Integer> lampsLit = Map.of();
   private final PhoneLine line;
 
   public Switchboard(ServerWorld world) {
@@ -142,6 +144,7 @@ public final class Switchboard {
   }
 
   public void tick() {
+    lightExchanges();
     settleLoadedPhones();
     for (Map.Entry<Long, UUID> held : List.copyOf(lifted.entrySet())) {
       line.fault(held.getKey(), held.getValue())
@@ -183,6 +186,19 @@ public final class Switchboard {
     }
   }
 
+  private void lightExchanges() {
+    Map<Long, Integer> lit = ExchangeLines.lampsLit(calls, ExchangeBlock.LAMPS);
+    Set<Long> exchanges = new HashSet<>(lampsLit.keySet());
+    exchanges.addAll(lit.keySet());
+    for (long exchange : exchanges) {
+      int lines = lit.getOrDefault(exchange, 0);
+      if (lines != lampsLit.getOrDefault(exchange, 0)) {
+        line.lightExchange(exchange, lines);
+      }
+    }
+    lampsLit = lit;
+  }
+
   private void settleLoadedPhones() {
     if (loadedChunks.isEmpty()) {
       return;
@@ -190,10 +206,14 @@ public final class Switchboard {
     PhoneBook.of(world)
         .entries()
         .forEach(
-            (phone, entry) -> {
-              if (!entry.exchange()
-                  && loadedChunks.contains(ChunkPos.toLong(BlockPos.fromLong(phone)))) {
-                line.show(phone);
+            (device, entry) -> {
+              if (!loadedChunks.contains(ChunkPos.toLong(BlockPos.fromLong(device)))) {
+                return;
+              }
+              if (entry.exchange()) {
+                line.lightExchange(device, lampsLit.getOrDefault(device, 0));
+              } else {
+                line.show(device);
               }
             });
     loadedChunks.clear();

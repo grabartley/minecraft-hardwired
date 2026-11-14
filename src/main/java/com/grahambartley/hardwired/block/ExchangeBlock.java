@@ -24,6 +24,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -37,6 +38,8 @@ public final class ExchangeBlock extends HorizontalFacingBlock
     implements BlockEntityProvider, WireDevice, Electronic {
 
   public static final EnumProperty<ExchangePart> PART = EnumProperty.of("part", ExchangePart.class);
+  public static final int LAMPS = 12;
+  public static final IntProperty LINES = IntProperty.of("lines", 0, LAMPS);
   private static final double[] BOARD_BOX = {0, 0, 6, 16, 16, 16};
 
   public ExchangeBlock(Settings settings) {
@@ -45,7 +48,8 @@ public final class ExchangeBlock extends HorizontalFacingBlock
         getStateManager()
             .getDefaultState()
             .with(FACING, Direction.NORTH)
-            .with(PART, ExchangePart.LOWER_LEFT));
+            .with(PART, ExchangePart.LOWER_LEFT)
+            .with(LINES, 0));
   }
 
   public static BlockPos anchorOf(BlockPos pos, BlockState state) {
@@ -59,7 +63,7 @@ public final class ExchangeBlock extends HorizontalFacingBlock
 
   @Override
   protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-    builder.add(FACING, PART);
+    builder.add(FACING, PART, LINES);
   }
 
   @Override

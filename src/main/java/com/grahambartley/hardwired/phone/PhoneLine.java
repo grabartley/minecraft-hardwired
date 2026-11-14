@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.phone;
 
+import com.grahambartley.hardwired.block.ExchangeBlock;
 import com.grahambartley.hardwired.block.TelephoneBlock;
 import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.power.PowerGrids;
@@ -110,6 +111,21 @@ final class PhoneLine {
     for (long phone : call.members().keySet()) {
       world.playSound(
           null, BlockPos.fromLong(phone), ModSounds.TELEPHONE_RELAY, SoundCategory.BLOCKS, 1F, 1F);
+    }
+  }
+
+  void lightExchange(long exchange, int lines) {
+    BlockPos anchor = BlockPos.fromLong(exchange);
+    BlockState state = world.getBlockState(anchor);
+    if (!WireEngine.of(world).isLoaded(anchor)
+        || !(state.getBlock() instanceof ExchangeBlock block)) {
+      return;
+    }
+    for (BlockPos cell : block.cells(anchor, state)) {
+      BlockState part = world.getBlockState(cell);
+      if (part.isOf(block) && part.get(ExchangeBlock.LINES) != lines) {
+        world.setBlockState(cell, part.with(ExchangeBlock.LINES, lines), Block.NOTIFY_LISTENERS);
+      }
     }
   }
 
