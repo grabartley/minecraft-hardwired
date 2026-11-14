@@ -8,18 +8,20 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 class PhoneSettingsTest {
 
-  @ParameterizedTest(name = "ring {0} lines {1}")
-  @CsvSource({"0,0,5,1", "30,4,30,4", "9999,99,300,12"})
-  void valuesAreClamped(int ring, int lines, int expectedRing, int expectedLines) {
-    PhoneSettings settings = new PhoneSettings(ring, lines, true);
+  @ParameterizedTest(name = "ring {0} lines {1} bell {2}")
+  @CsvSource({"0,0,0,5,1,1", "30,4,32,30,4,32", "9999,99,9999,300,12,256"})
+  void valuesAreClamped(
+      int ring, int lines, int bell, int expectedRing, int expectedLines, int expectedBell) {
+    PhoneSettings settings = new PhoneSettings(ring, lines, bell, true);
     assertEquals(expectedRing, settings.phoneRingSeconds());
     assertEquals(expectedLines, settings.exchangeLines());
+    assertEquals(expectedBell, settings.bellBoxHearing());
   }
 
-  @ParameterizedTest(name = "ring {0} lines {1} voice {2}")
-  @CsvSource({"12,2,false", "300,12,true"})
-  void settingsSurviveAJsonRoundTrip(int ring, int lines, boolean voice) {
-    PhoneSettings settings = new PhoneSettings(ring, lines, voice);
+  @ParameterizedTest(name = "ring {0} lines {1} bell {2} voice {3}")
+  @CsvSource({"12,2,40,false", "300,12,256,true"})
+  void settingsSurviveAJsonRoundTrip(int ring, int lines, int bell, boolean voice) {
+    PhoneSettings settings = new PhoneSettings(ring, lines, bell, voice);
     JsonObject root = new JsonObject();
     settings.writeJson(root);
     assertEquals(settings, PhoneSettings.fromJson(new ConfigJsonFields(root)));

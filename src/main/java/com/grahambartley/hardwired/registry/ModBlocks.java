@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.registry;
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.AbstractLampBlock;
 import com.grahambartley.hardwired.block.AlarmBlock;
+import com.grahambartley.hardwired.block.BellBoxBlock;
 import com.grahambartley.hardwired.block.BroadcastDeskBlock;
 import com.grahambartley.hardwired.block.CircuitBlock;
 import com.grahambartley.hardwired.block.CircuitBoardBlock;
@@ -63,6 +64,7 @@ public final class ModBlocks {
   private static final double[] INTERCOM_BOX = {5, 0, 5, 11, 12, 11};
   private static final double[] CANDLESTICK_TELEPHONE_BOX = {5, 0, 5, 11, 14, 11};
   private static final double[] WALL_TELEPHONE_BOX = {3, 0, 1, 13, 6, 15};
+  private static final double[] BELL_BOX_BOX = {4, 0, 2, 12, 4, 15};
   private static final int RADIO_GLOW = 7;
   private static final int DESK_GLOW = 7;
 
@@ -199,6 +201,12 @@ public final class ModBlocks {
                   .pistonBehavior(PistonBehavior.BLOCK),
               WALL_TELEPHONE_BOX,
               BlockFace.WALL));
+  public static final Block BELL_BOX =
+      register(
+          "bell_box",
+          new BellBoxBlock(
+              deviceSettings().mapColor(MapColor.OAK_TAN).sounds(BlockSoundGroup.WOOD),
+              BELL_BOX_BOX));
   public static final Block EXCHANGE =
       register(
           "exchange",
@@ -259,7 +267,7 @@ public final class ModBlocks {
   }
 
   public static Block[] animatedDevices() {
-    return new Block[] {};
+    return new Block[] {BELL_BOX};
   }
 
   private static Block telephonePole(String wood, MapColor color) {

@@ -57,7 +57,8 @@ public final class DeviceAnimations {
     }
   }
 
-  public record Animation(DeviceClip clip, List<Part> parts, int yaw, boolean wide) {}
+  public record Animation(
+      DeviceClip clip, List<Part> parts, int yaw, boolean wide, boolean upright) {}
 
   private static final String FOLDER = "animated";
   private static final String SUFFIX = ".json";
@@ -119,7 +120,8 @@ public final class DeviceAnimations {
     }
     int yaw = root.has("yaw") ? root.get("yaw").getAsInt() : 0;
     boolean wide = root.has("wide") && root.get("wide").getAsBoolean();
-    return new Animation(DeviceClip.parse(clipJson), List.copyOf(parts), yaw, wide);
+    boolean upright = root.has("upright") && root.get("upright").getAsBoolean();
+    return new Animation(DeviceClip.parse(clipJson), List.copyOf(parts), yaw, wide, upright);
   }
 
   static Part part(JsonObject part) {

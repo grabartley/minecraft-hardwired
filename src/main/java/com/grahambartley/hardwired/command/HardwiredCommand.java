@@ -311,6 +311,15 @@ public final class HardwiredCommand {
                   config.withPower(
                       config.power().withLoads(config.power().loads().withExchangeLoad(value)))),
           new IntOption(
+              "bellboxload",
+              "value",
+              PowerLoads.BELL_BOX_LOAD_MIN,
+              PowerLoads.BELL_BOX_LOAD_MAX,
+              config -> config.power().loads().bellBoxLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withBellBoxLoad(value)))),
+          new IntOption(
               "humrange",
               "value",
               HumSettings.HUM_RANGE_MIN,
@@ -428,6 +437,13 @@ public final class HardwiredCommand {
               PhoneSettings.EXCHANGE_LINES_MAX,
               config -> config.phone().exchangeLines(),
               (config, value) -> config.withPhone(config.phone().withExchangeLines(value))),
+          new IntOption(
+              "bellboxhearing",
+              "blocks",
+              PhoneSettings.BELL_BOX_HEARING_MIN,
+              PhoneSettings.BELL_BOX_HEARING_MAX,
+              config -> config.phone().bellBoxHearing(),
+              (config, value) -> config.withPhone(config.phone().withBellBoxHearing(value))),
           new IntOption(
               "polespanblocks",
               "blocks",

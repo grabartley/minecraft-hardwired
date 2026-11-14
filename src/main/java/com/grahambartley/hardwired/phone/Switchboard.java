@@ -5,6 +5,7 @@ import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.block.ExchangeBlock;
 import com.grahambartley.hardwired.config.PhoneSettings;
 import com.grahambartley.hardwired.device.ActionRate;
+import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WiredWorld;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -52,6 +54,23 @@ public final class Switchboard {
 
   public boolean isRinging(long phone) {
     return callOf(phone).filter(call -> call.isRinging(phone)).isPresent();
+  }
+
+  public boolean bellRings(BlockPos bell) {
+    if (calls.stream().allMatch(Call::isConnected)) {
+      return false;
+    }
+    Set<Long> touched =
+        WireEngine.of(world).grid().networksTouching(bell).stream()
+            .flatMap(network -> network.touches().stream())
+            .map(touch -> touch.pos().asLong())
+            .collect(Collectors.toSet());
+    PhoneDirectory directory = PhoneDirectory.of(world);
+    return BellRing.rings(
+        calls,
+        touched,
+        phone -> directory.entry(phone).map(PhoneEntry::cells).orElse(List.of(phone)),
+        world.getTime());
   }
 
   public Optional<UUID> userOf(long phone) {

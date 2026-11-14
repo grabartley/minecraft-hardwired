@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.gametest;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.block.BellBoxBlock;
 import com.grahambartley.hardwired.block.ExchangeBlock;
 import com.grahambartley.hardwired.block.ExchangeLayout;
 import com.grahambartley.hardwired.block.ExchangePart;
@@ -52,6 +53,7 @@ public class TelephoneGameTest implements FabricGameTest {
   private static final BlockPos EXCHANGE = at(4, 1);
   private static final BlockPos SECOND = at(6, 1);
   private static final BlockPos THIRD = at(7, 1);
+  private static final BlockPos BELL = at(3, 1);
   private static final Identifier NUMBER_PLEASE = Identifier.of(Hardwired.MOD_ID, "number_please");
   private static final Identifier PARTY_LINE = Identifier.of(Hardwired.MOD_ID, "party_line");
 
@@ -96,6 +98,23 @@ public class TelephoneGameTest implements FabricGameTest {
               .with(ExchangeBlock.FACING, Direction.SOUTH)
               .with(ExchangeBlock.PART, part));
     }
+  }
+
+  private static void placeBellBox(TestContext context, boolean ringing) {
+    context.setBlockState(BELL.south(), Blocks.STONE);
+    context.setBlockState(
+        BELL,
+        ModBlocks.BELL_BOX
+            .getDefaultState()
+            .with(BellBoxBlock.FACING, Direction.NORTH)
+            .with(BellBoxBlock.POWERED, ringing));
+  }
+
+  private static void expectBell(TestContext context, boolean ringing) {
+    context.expectBlockProperty(BELL, BellBoxBlock.POWERED, ringing);
+    context.assertTrue(
+        WireEngine.of(context.getWorld()).isOn(context.getAbsolutePos(BELL)) == ringing,
+        "the bell's network must be " + (ringing ? "on" : "off"));
   }
 
   private static long abs(TestContext context, BlockPos pos) {
@@ -581,6 +600,42 @@ public class TelephoneGameTest implements FabricGameTest {
               PhoneDirectory.readiness(context.getWorld(), context.getAbsolutePos(EXCHANGE));
           context.assertTrue(
               status == DeviceStatus.NO_TELEPHONE, "a lone Exchange must say so, was " + status);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 80)
+  public void aRingingPhoneRingsABellBoxThatTurnsItsNetworkOn(TestContext context) {
+    buildNetwork(context);
+    placeBellBox(context, false);
+    ConnectedTestPlayer caller = ConnectedTestPlayer.joinAt(context, at(2, 3));
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          expectBell(context, false);
+          pickUp(context, caller, FIRST);
+          dial(context, caller, FIRST, numberOf(context, SECOND));
+        });
+    context.waitAndRun(SETTLE_TICKS + 3L, () -> expectBell(context, true));
+    context.waitAndRun(
+        SETTLE_TICKS + 5L, () -> Switchboard.of(context.getWorld()).hangUp(abs(context, FIRST)));
+    context.waitAndRun(
+        SETTLE_TICKS + 8L,
+        () -> {
+          expectBell(context, false);
+          leaveAll(caller);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 60)
+  public void aBellBoxLeftRingingWithNoCallFallsSilent(TestContext context) {
+    buildNetwork(context);
+    placeBellBox(context, true);
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          expectBell(context, false);
           context.complete();
         });
   }

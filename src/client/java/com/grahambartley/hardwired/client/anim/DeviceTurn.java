@@ -11,21 +11,21 @@ public record DeviceTurn(int x, int y) {
   private static final int WALL = 90;
   private static final int CEILING = 180;
 
-  public static DeviceTurn of(BlockState state) {
+  public static DeviceTurn of(BlockState state, boolean upright) {
     Direction facing =
         state.contains(Properties.HORIZONTAL_FACING)
             ? state.get(Properties.HORIZONTAL_FACING)
             : Direction.NORTH;
     BlockFace face =
         state.contains(Properties.BLOCK_FACE) ? state.get(Properties.BLOCK_FACE) : BlockFace.FLOOR;
-    return of(face, facing);
+    return of(face, facing, upright);
   }
 
-  static DeviceTurn of(BlockFace face, Direction facing) {
+  static DeviceTurn of(BlockFace face, Direction facing, boolean upright) {
     int yaw = yaw(facing);
     return switch (face) {
       case FLOOR -> new DeviceTurn(NO_TURN, yaw);
-      case WALL -> new DeviceTurn(WALL, yaw);
+      case WALL -> new DeviceTurn(upright ? NO_TURN : WALL, yaw);
       case CEILING -> new DeviceTurn(CEILING, (yaw + CEILING) % 360);
     };
   }

@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "face=wall,facing=north,powered=false": {
+      "model": "hardwired:block/bell_box"
+    },
+    "face=wall,facing=north,powered=true": {
+      "model": "hardwired:block/bell_box"
+    },
+    "face=wall,facing=east,powered=false": {
+      "model": "hardwired:block/bell_box",
+      "y": 90
+    },
+    "face=wall,facing=east,powered=true": {
+      "model": "hardwired:block/bell_box",
+      "y": 90
+    },
+    "face=wall,facing=south,powered=false": {
+      "model": "hardwired:block/bell_box",
+      "y": 180
+    },
+    "face=wall,facing=south,powered=true": {
+      "model": "hardwired:block/bell_box",
+      "y": 180
+    },
+    "face=wall,facing=west,powered=false": {
+      "model": "hardwired:block/bell_box",
+      "y": 270
+    },
+    "face=wall,facing=west,powered=true": {
+      "model": "hardwired:block/bell_box",
+      "y": 270
+    }
+  }
+}
