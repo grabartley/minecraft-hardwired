@@ -1,7 +1,32 @@
 {
   "variants": {
-    "": {
-      "model": "minecraft:block/oak_fence_post"
+    "axis=x,part=single": {
+      "model": "hardwired:block/telephone_pole_single"
+    },
+    "axis=z,part=single": {
+      "model": "hardwired:block/telephone_pole_single",
+      "y": 90
+    },
+    "axis=x,part=top": {
+      "model": "hardwired:block/telephone_pole_top"
+    },
+    "axis=z,part=top": {
+      "model": "hardwired:block/telephone_pole_top",
+      "y": 90
+    },
+    "axis=x,part=foot": {
+      "model": "hardwired:block/telephone_pole_foot"
+    },
+    "axis=z,part=foot": {
+      "model": "hardwired:block/telephone_pole_foot",
+      "y": 90
+    },
+    "axis=x,part=middle": {
+      "model": "hardwired:block/telephone_pole_middle"
+    },
+    "axis=z,part=middle": {
+      "model": "hardwired:block/telephone_pole_middle",
+      "y": 90
     }
   }
 }

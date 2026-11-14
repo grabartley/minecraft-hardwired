@@ -1,0 +1,241 @@
+{
+  "format_version": "1.9.0",
+  "textures": {
+    "copper": "minecraft:block/copper_block",
+    "log": "minecraft:block/stripped_oak_log",
+    "particle": "minecraft:block/stripped_oak_log"
+  },
+  "elements": [
+    {
+      "from": [
+        6,
+        0,
+        6
+      ],
+      "to": [
+        10,
+        16,
+        10
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          7.5,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ],
+          "texture": "#log"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ],
+          "texture": "#log"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ],
+          "texture": "#log"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ],
+          "texture": "#log"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#log"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#log"
+        }
+      }
+    },
+    {
+      "from": [
+        5.25,
+        0,
+        5.25
+      ],
+      "to": [
+        10.75,
+        1.5,
+        10.75
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          1,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            5.5,
+            1.5
+          ],
+          "texture": "#log"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            5.5,
+            1.5
+          ],
+          "texture": "#log"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            5.5,
+            1.5
+          ],
+          "texture": "#log"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            5.5,
+            1.5
+          ],
+          "texture": "#log"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            5.5,
+            5.5
+          ],
+          "texture": "#log"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            5.5,
+            5.5
+          ],
+          "texture": "#log"
+        }
+      }
+    },
+    {
+      "from": [
+        5.5,
+        1.5,
+        5.5
+      ],
+      "to": [
+        10.5,
+        2,
+        10.5
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          2.25,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            5.0,
+            0.5
+          ],
+          "texture": "#copper"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            5.0,
+            0.5
+          ],
+          "texture": "#copper"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            5.0,
+            0.5
+          ],
+          "texture": "#copper"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            5.0,
+            0.5
+          ],
+          "texture": "#copper"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            5.0,
+            5.0
+          ],
+          "texture": "#copper"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            5.0,
+            5.0
+          ],
+          "texture": "#copper"
+        }
+      }
+    }
+  ]
+}

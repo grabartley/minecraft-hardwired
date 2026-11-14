@@ -1,0 +1,7 @@
+{
+  "parent": "hardwired:block/telephone_pole_single",
+  "textures": {
+    "log": "minecraft:block/stripped_dark_oak_log",
+    "particle": "minecraft:block/stripped_dark_oak_log"
+  }
+}
