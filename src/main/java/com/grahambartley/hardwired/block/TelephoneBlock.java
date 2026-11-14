@@ -1,6 +1,5 @@
 package com.grahambartley.hardwired.block;
 
-import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.AnimatedDevice;
 import com.grahambartley.hardwired.device.DeviceStatus;
@@ -10,7 +9,6 @@ import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.phone.PhoneActions;
 import com.grahambartley.hardwired.phone.PhoneDirectory;
 import com.grahambartley.hardwired.phone.Switchboard;
-import com.grahambartley.hardwired.wire.WireEngine;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Set;
@@ -177,6 +175,6 @@ public final class TelephoneBlock extends HorizontalFacingBlock
 
   @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
-    return WireEngine.of(world).isWired(pos) ? ratedLoad(Hardwired.SERVER_CONFIG.power()) : 0;
+    return loadWhenWired(world, pos, state);
   }
 }

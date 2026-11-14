@@ -440,7 +440,7 @@
   "screen.hardwired.telephone.hang_up": "Hang Up",
   "screen.hardwired.telephone.no_directory": "No directory on this line.",
   "screen.hardwired.telephone.listing": "%s  %s",
-  "screen.hardwired.telephone.status.dial_tone": "Dial tone. Turn the wheel to the stop.",
+  "screen.hardwired.telephone.status.dial_tone": "Dial tone.",
   "screen.hardwired.telephone.status.ringing_out": "Ringing.",
   "screen.hardwired.telephone.status.connected": "Connected.",
   "screen.hardwired.telephone.status.busy": "Busy.",
@@ -481,7 +481,7 @@
   "screen.hardwired.telephone.status.left": "You left the Telephone.",
   "device.hardwired.status.no_telephone": "No Telephone on its wire yet.",
   "device.hardwired.status.sealed_out": "This wire is sealed by someone else.",
-  "screen.hardwired.exchange.pick": "Pick 2 to 4 Telephones to share a number.",
+  "screen.hardwired.exchange.pick": "Pick 2 to %s Telephones to share a number.",
   "screen.hardwired.exchange.not_shared": "Those Telephones do not share a number.",
   "screen.hardwired.exchange.needs_build": "You need build rights to change this Exchange."
 }

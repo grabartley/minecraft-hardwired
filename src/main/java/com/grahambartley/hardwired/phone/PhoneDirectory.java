@@ -7,6 +7,7 @@ import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireGrid;
 import com.grahambartley.hardwired.wire.WireNetwork;
 import com.grahambartley.hardwired.wire.WireOverrides;
+import com.grahambartley.hardwired.wire.WireViewer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -168,11 +169,9 @@ public final class PhoneDirectory {
   }
 
   private boolean allowed(PhoneEntry entry, WireNetwork network) {
-    if (!network.isSealed() || network.owner().equals(entry.placer())) {
-      return true;
-    }
     ServerPlayerEntity placer = world.getServer().getPlayerManager().getPlayer(entry.placer());
-    return placer != null && WireOverrides.isActive(placer);
+    boolean override = placer != null && WireOverrides.isActive(placer);
+    return new WireViewer(entry.placer(), override).canSee(network);
   }
 
   private PhoneNumbering.Result numberSystem(WireNetwork network, List<Long> members) {
@@ -180,7 +179,7 @@ public final class PhoneDirectory {
     List<PhoneNumbering.Phone> phones = new ArrayList<>();
     for (long pos : members) {
       PhoneEntry entry = book.at(pos).orElseThrow();
-      boolean allowed = entry.hasNumber() || allowed(entry, network);
+      boolean allowed = entry.trusted() || allowed(entry, network);
       if (entry.exchange()) {
         exchanges.add(new PhoneNumbering.Exchange(pos, entry.order(), entry.number(), allowed));
       } else {

@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
@@ -254,7 +255,23 @@ public final class DialScreen extends Screen {
         top() + DIALED_Y,
         LIST_COLOR,
         PanelText.Align.LEFT);
-    renderRows(context, sideLeft, sideRight, connected() ? List.copyOf(transcript) : listings());
+    if (connected()) {
+      renderTranscript(context, sideLeft, sideRight);
+    } else {
+      renderRows(context, sideLeft, sideRight, listings());
+    }
+  }
+
+  private void renderTranscript(DrawContext context, int left, int right) {
+    List<OrderedText> lines =
+        transcript.stream()
+            .flatMap(line -> textRenderer.wrapLines(line, right - left).stream())
+            .toList();
+    int shown = Math.min(lines.size(), visibleRows());
+    for (int row = 0; row < shown; row++) {
+      OrderedText line = lines.get(lines.size() - shown + row);
+      context.drawText(textRenderer, line, left, top() + LIST_Y + row * ROW, LIST_COLOR, false);
+    }
   }
 
   private void renderRows(DrawContext context, int left, int right, List<Text> rows) {

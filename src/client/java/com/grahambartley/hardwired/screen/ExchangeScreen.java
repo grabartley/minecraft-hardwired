@@ -25,7 +25,6 @@ public final class ExchangeScreen extends Screen {
   private static final int ROW = 12;
   private static final int BUTTON_HEIGHT = 18;
   private static final int GAP = 6;
-  private static final int ROW_COLOR = 0xFFE6E2DA;
   private static final int CHOSEN_FILL = 0xFF5C4A1E;
 
   private ExchangeViewPayload view;
@@ -152,7 +151,14 @@ public final class ExchangeScreen extends Screen {
       }
       Text label = PhoneListing.label(line.number(), line.name());
       PanelText.flat(
-          context, textRenderer, label, textLeft, textRight, y, ROW_COLOR, PanelText.Align.LEFT);
+          context,
+          textRenderer,
+          label,
+          textLeft,
+          textRight,
+          y,
+          SlatePlate.CALCITE,
+          PanelText.Align.LEFT);
     }
   }
 

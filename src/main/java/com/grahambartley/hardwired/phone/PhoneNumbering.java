@@ -22,10 +22,6 @@ public final class PhoneNumbering {
   public record Assignment(int number, long exchange) {
 
     public static final Assignment UNNUMBERED = new Assignment(NONE, 0L);
-
-    public boolean hasNumber() {
-      return number != NONE;
-    }
   }
 
   public record Result(Map<Long, Integer> digits, Map<Long, Assignment> phones) {}
@@ -34,10 +30,6 @@ public final class PhoneNumbering {
 
   public static int number(int digit, int line) {
     return digit * LINES_PER_EXCHANGE + line;
-  }
-
-  public static int digitOf(int number) {
-    return number / LINES_PER_EXCHANGE;
   }
 
   public static int lineOf(int number) {

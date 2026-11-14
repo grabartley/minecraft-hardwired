@@ -28,11 +28,9 @@ public final class ExchangeActions {
       ElectronicsDriver.tell(world, anchor, player);
       return;
     }
-    if (refusal(player, anchor).isPresent()) {
-      player.sendMessage(Text.translatable(refusal(player, anchor).get()), true);
-      return;
-    }
-    send(player, anchor);
+    refusal(player, anchor)
+        .ifPresentOrElse(
+            key -> player.sendMessage(Text.translatable(key), true), () -> send(player, anchor));
   }
 
   public static void share(ServerPlayerEntity player, ExchangeSharePayload action) {
@@ -40,6 +38,7 @@ public final class ExchangeActions {
     ServerWorld world = player.getServerWorld();
     if (!(world.getBlockState(anchor).getBlock() instanceof ExchangeBlock)
         || !DeviceActions.canUse(player, anchor)
+        || PhoneDirectory.readiness(world, anchor).isStopped()
         || refusal(player, anchor).isPresent()) {
       return;
     }
@@ -57,10 +56,9 @@ public final class ExchangeActions {
             : PartyLines.part(numbers, orders, chosen);
     if (changed.isEmpty()) {
       player.sendMessage(
-          Text.translatable(
-              action.share()
-                  ? "screen.hardwired.exchange.pick"
-                  : "screen.hardwired.exchange.not_shared"),
+          action.share()
+              ? Text.translatable("screen.hardwired.exchange.pick", PartyLines.MOST_PHONES)
+              : Text.translatable("screen.hardwired.exchange.not_shared"),
           true);
     }
     changed.forEach((phone, number) -> directory.renumber(phone, number, anchor.asLong()));

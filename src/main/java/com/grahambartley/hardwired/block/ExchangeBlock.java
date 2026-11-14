@@ -1,6 +1,5 @@
 package com.grahambartley.hardwired.block;
 
-import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.Electronic;
@@ -8,7 +7,6 @@ import com.grahambartley.hardwired.device.ElectronicsDriver;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.phone.ExchangeActions;
 import com.grahambartley.hardwired.phone.PhoneDirectory;
-import com.grahambartley.hardwired.wire.WireEngine;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
 import net.minecraft.block.Block;
@@ -164,8 +162,6 @@ public final class ExchangeBlock extends HorizontalFacingBlock
 
   @Override
   public int load(ServerWorld world, BlockPos pos, BlockState state) {
-    WireEngine engine = WireEngine.of(world);
-    boolean wired = cells(pos, state).stream().anyMatch(engine::isWired);
-    return wired ? ratedLoad(Hardwired.SERVER_CONFIG.power()) : 0;
+    return loadWhenWired(world, pos, state);
   }
 }

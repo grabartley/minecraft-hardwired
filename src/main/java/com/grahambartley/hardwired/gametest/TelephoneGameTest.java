@@ -30,6 +30,7 @@ import com.grahambartley.hardwired.wire.WireFace;
 import java.util.List;
 import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.block.Blocks;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.test.AfterBatch;
 import net.minecraft.test.BeforeBatch;
@@ -329,6 +330,77 @@ public class TelephoneGameTest implements FabricGameTest {
                       .size()
                   == 3,
               "three phones must be on the call");
+          leaveAll(caller, answerer, joiner);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 100)
+  public void aRingingPhoneThatIsTakenAwayEndsTheCall(TestContext context) {
+    buildNetwork(context);
+    ConnectedTestPlayer caller = ConnectedTestPlayer.joinAt(context, at(2, 3));
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          pickUp(context, caller, FIRST);
+          dial(context, caller, FIRST, numberOf(context, SECOND));
+          context.setBlockState(SECOND, Blocks.AIR);
+        });
+    context.waitAndRun(
+        SETTLE_TICKS + 3L,
+        () -> {
+          context.assertTrue(
+              Switchboard.of(context.getWorld()).callOf(abs(context, FIRST)).isEmpty(),
+              "a call with nothing left to ring must end");
+          expectStatus(context, caller, LineStatus.LINE_DEAD);
+          leaveAll(caller);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 140)
+  public void aSealedLineKeepsItsNumbersAndRefusesASecondPhone(TestContext context) {
+    buildNetwork(context);
+    ConnectedTestPlayer caller = ConnectedTestPlayer.joinAt(context, at(2, 3));
+    ConnectedTestPlayer answerer = ConnectedTestPlayer.joinAt(context, at(6, 3));
+    ConnectedTestPlayer joiner = ConnectedTestPlayer.joinAt(context, at(7, 3));
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () ->
+            ExchangeActions.share(
+                answerer.player(),
+                new ExchangeSharePayload(
+                    context.getAbsolutePos(EXCHANGE),
+                    List.of(context.getAbsolutePos(SECOND), context.getAbsolutePos(THIRD)),
+                    true)));
+    context.waitAndRun(
+        SETTLE_TICKS + 2L,
+        () -> {
+          PhoneDirectory directory = PhoneDirectory.of(context.getWorld());
+          WireEngine.of(context.getWorld())
+              .reown(directory.systemOf(abs(context, FIRST)).orElseThrow(), new UUID(9, 9));
+          directory.refresh();
+          context.assertTrue(
+              numberOf(context, SECOND) != PhoneNumbering.NONE
+                  && numberOf(context, SECOND) == numberOf(context, THIRD),
+              "sealing must keep the numbers phones already had");
+          pickUp(context, caller, FIRST);
+          dial(context, caller, FIRST, numberOf(context, SECOND));
+        });
+    context.waitAndRun(
+        SETTLE_TICKS + 4L,
+        () -> {
+          pickUp(context, answerer, SECOND);
+          pickUp(context, joiner, THIRD);
+          expectStatus(context, joiner, LineStatus.BUSY);
+          context.assertTrue(
+              Switchboard.of(context.getWorld())
+                      .callOf(abs(context, FIRST))
+                      .orElseThrow()
+                      .members()
+                      .size()
+                  == 2,
+              "a sealed line must not take a second phone");
           leaveAll(caller, answerer, joiner);
           context.complete();
         });

@@ -85,6 +85,7 @@ public final class Switchboard {
     boolean rateAllows = holding && dialRate.allow(player.getUuid(), world.getTime());
     PhoneDirectory directory = PhoneDirectory.of(world);
     List<Long> targets = directory.phonesNumbered(phone, number);
+    List<Long> answerable = targets.stream().filter(line::answerable).toList();
     Set<Long> exchanges = new HashSet<>();
     directory.entry(phone).ifPresent(entry -> exchanges.add(entry.numberedBy()));
     targets.forEach(
@@ -97,13 +98,13 @@ public final class Switchboard {
                 !targets.isEmpty(),
                 targets.contains(phone),
                 targets.stream().anyMatch(this::isBusy),
+                !answerable.isEmpty(),
                 line.exchangesLive(exchanges),
                 ExchangeLines.free(calls, exchanges, settings().exchangeLines())));
     if (status == LineStatus.RINGING_OUT) {
-      boolean joinable = directory.systemOf(phone).map(network -> !network.isSealed()).orElse(true);
       lifted.remove(phone);
-      calls.add(new Call(phone, player.getUuid(), targets, exchanges, joinable, world.getTime()));
-      targets.forEach(line::show);
+      calls.add(new Call(phone, player.getUuid(), answerable, exchanges, world.getTime()));
+      answerable.forEach(line::show);
     }
     return status;
   }
@@ -164,7 +165,7 @@ public final class Switchboard {
           line.show(member.getKey());
         }
       }
-      if (!calls.contains(call)) {
+      if (!calls.contains(call) || dropDarkPhones(call)) {
         continue;
       }
       if (call.unanswered(now, ringTicks)) {
@@ -189,6 +190,20 @@ public final class Switchboard {
               }
             });
     loadedChunks.clear();
+  }
+
+  private boolean dropDarkPhones(Call call) {
+    for (long phone : List.copyOf(call.called())) {
+      if (!call.isConnected() && !line.answerable(phone)) {
+        boolean none = call.stopRinging(phone);
+        line.show(phone);
+        if (none) {
+          end(call, LineStatus.LINE_DEAD);
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private boolean isBusy(long phone) {
@@ -219,7 +234,9 @@ public final class Switchboard {
   }
 
   private LineStatus join(ServerPlayerEntity player, long phone, Call call) {
-    if (!call.join(phone, player.getUuid())) {
+    boolean openWire =
+        PhoneDirectory.of(world).systemOf(phone).map(network -> !network.isSealed()).orElse(false);
+    if (!call.join(phone, player.getUuid(), openWire)) {
       return LineStatus.BUSY;
     }
     ModCriteria.DEVICE.trigger(player, ModCriteria.PARTY_LINE);

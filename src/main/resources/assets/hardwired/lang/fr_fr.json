@@ -440,7 +440,7 @@
   "screen.hardwired.telephone.hang_up": "Raccrocher",
   "screen.hardwired.telephone.no_directory": "Aucun annuaire sur cette ligne.",
   "screen.hardwired.telephone.listing": "%s  %s",
-  "screen.hardwired.telephone.status.dial_tone": "Tonalité. Tournez le cadran jusqu'à la butée.",
+  "screen.hardwired.telephone.status.dial_tone": "Tonalité.",
   "screen.hardwired.telephone.status.ringing_out": "Ça sonne.",
   "screen.hardwired.telephone.status.connected": "Connecté.",
   "screen.hardwired.telephone.status.busy": "Occupé.",
@@ -481,7 +481,7 @@
   "screen.hardwired.telephone.status.left": "Vous avez quitté le Téléphone.",
   "device.hardwired.status.no_telephone": "Aucun Téléphone sur son fil pour l'instant.",
   "device.hardwired.status.sealed_out": "Ce fil est scellé par quelqu'un d'autre.",
-  "screen.hardwired.exchange.pick": "Choisissez 2 à 4 Téléphones pour partager un numéro.",
+  "screen.hardwired.exchange.pick": "Choisissez 2 à %s Téléphones pour partager un numéro.",
   "screen.hardwired.exchange.not_shared": "Ces Téléphones ne partagent pas de numéro.",
   "screen.hardwired.exchange.needs_build": "Il vous faut les droits de construction pour modifier ce Central."
 }

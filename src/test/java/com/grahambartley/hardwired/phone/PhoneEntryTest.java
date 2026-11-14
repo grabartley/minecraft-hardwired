@@ -11,9 +11,10 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 class PhoneEntryTest {
 
-  @ParameterizedTest(name = "exchange {0} number {1} home [{2}]")
-  @CsvSource({"false,105,RED,Kitchen", "true,3,'',''", "false,-1,'',Hall"})
-  void anEntrySurvivesASave(boolean exchange, int number, String home, String name) {
+  @ParameterizedTest(name = "exchange {0} number {1} home [{2}] trusted {4}")
+  @CsvSource({"false,105,RED,Kitchen,true", "true,3,'','',true", "false,-1,'',Hall,false"})
+  void anEntrySurvivesASave(
+      boolean exchange, int number, String home, String name, boolean trusted) {
     PhoneEntry entry =
         new PhoneEntry(
             exchange,
@@ -23,7 +24,8 @@ class PhoneEntryTest {
             42L,
             home.isEmpty() ? Optional.empty() : Optional.of(Hue.valueOf(home)),
             name,
-            new UUID(1, 2));
+            new UUID(1, 2),
+            trusted);
     assertEquals(entry, PhoneEntry.read(entry.write()));
   }
 
@@ -57,5 +59,15 @@ class PhoneEntryTest {
   void aNameIsNeverCutThroughAPairedCharacter(int before, int kept) {
     String name = "a".repeat(before) + "📞" + "b".repeat(10);
     assertEquals(kept, PhoneEntry.fitName(name).length());
+  }
+
+  @ParameterizedTest(name = "numbers {0}")
+  @CsvSource({"'-1',false", "'104',true", "'104,-1',true", "'-1,-1',false"})
+  void aPhoneKeepsItsTrustOnceItHasHadANumber(String numbers, boolean trusted) {
+    PhoneEntry entry = PhoneEntry.added(false, List.of(1L), 0L);
+    for (String number : numbers.split(",")) {
+      entry = entry.numbered(Integer.parseInt(number), 2L);
+    }
+    assertEquals(trusted, entry.trusted());
   }
 }

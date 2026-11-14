@@ -440,7 +440,7 @@
   "screen.hardwired.telephone.hang_up": "挂断",
   "screen.hardwired.telephone.no_directory": "这条线路没有电话簿。",
   "screen.hardwired.telephone.listing": "%s  %s",
-  "screen.hardwired.telephone.status.dial_tone": "拨号音。把拨盘转到止挡处。",
+  "screen.hardwired.telephone.status.dial_tone": "拨号音。",
   "screen.hardwired.telephone.status.ringing_out": "正在呼叫。",
   "screen.hardwired.telephone.status.connected": "已接通。",
   "screen.hardwired.telephone.status.busy": "占线。",
@@ -481,7 +481,7 @@
   "screen.hardwired.telephone.status.left": "你离开了电话。",
   "device.hardwired.status.no_telephone": "它的线路上还没有电话。",
   "device.hardwired.status.sealed_out": "这条线路已被其他人密封。",
-  "screen.hardwired.exchange.pick": "选择 2 到 4 部电话来共享一个号码。",
+  "screen.hardwired.exchange.pick": "选择 2 到 %s 部电话来共享一个号码。",
   "screen.hardwired.exchange.not_shared": "这些电话没有共享号码。",
   "screen.hardwired.exchange.needs_build": "你需要建造权限才能更改这台交换机。"
 }

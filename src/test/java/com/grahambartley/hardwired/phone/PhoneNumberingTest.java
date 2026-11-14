@@ -140,8 +140,7 @@ class PhoneNumberingTest {
 
   @ParameterizedTest(name = "number {0}")
   @CsvSource({"100,1,0", "342,3,42", "999,9,99"})
-  void aNumberSplitsIntoDigitAndLine(int number, int digit, int line) {
-    assertEquals(digit, PhoneNumbering.digitOf(number));
+  void aDigitAndLineMakeANumber(int number, int digit, int line) {
     assertEquals(line, PhoneNumbering.lineOf(number));
     assertEquals(number, PhoneNumbering.number(digit, line));
   }

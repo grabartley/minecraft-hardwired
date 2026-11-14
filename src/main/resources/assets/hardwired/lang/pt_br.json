@@ -440,7 +440,7 @@
   "screen.hardwired.telephone.hang_up": "Desligar",
   "screen.hardwired.telephone.no_directory": "Nenhuma lista nesta linha.",
   "screen.hardwired.telephone.listing": "%s  %s",
-  "screen.hardwired.telephone.status.dial_tone": "Tom de discagem. Gire o disco até o batente.",
+  "screen.hardwired.telephone.status.dial_tone": "Tom de discagem.",
   "screen.hardwired.telephone.status.ringing_out": "Chamando.",
   "screen.hardwired.telephone.status.connected": "Conectado.",
   "screen.hardwired.telephone.status.busy": "Ocupado.",
@@ -481,7 +481,7 @@
   "screen.hardwired.telephone.status.left": "Você se afastou do Telefone.",
   "device.hardwired.status.no_telephone": "Ainda não há Telefone no seu fio.",
   "device.hardwired.status.sealed_out": "Este fio foi selado por outra pessoa.",
-  "screen.hardwired.exchange.pick": "Escolha de 2 a 4 Telefones para compartilhar um número.",
+  "screen.hardwired.exchange.pick": "Escolha de 2 a %s Telefones para compartilhar um número.",
   "screen.hardwired.exchange.not_shared": "Esses Telefones não compartilham um número.",
   "screen.hardwired.exchange.needs_build": "Você precisa de permissão de construção para mudar esta Central."
 }

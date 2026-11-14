@@ -23,7 +23,6 @@ class ExchangeLinesTest {
                     new UUID(0, i),
                     List.of(100L + i),
                     i < local ? Set.of(LOCAL) : Set.of(LOCAL, FAR),
-                    true,
                     0))
         .toList();
   }

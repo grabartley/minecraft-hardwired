@@ -18,7 +18,8 @@ public record PhoneEntry(
     long numberedBy,
     Optional<Hue> home,
     String name,
-    UUID placer) {
+    UUID placer,
+    boolean trusted) {
 
   public static final int MAX_NAME = 50;
 
@@ -30,6 +31,7 @@ public record PhoneEntry(
   private static final String HOME = "home";
   private static final String NAME = "name";
   private static final String PLACER = "placer";
+  private static final String TRUSTED = "trusted";
 
   public static PhoneEntry added(boolean exchange, List<Long> cells, long order) {
     return new PhoneEntry(
@@ -40,7 +42,8 @@ public record PhoneEntry(
         0L,
         Optional.empty(),
         "",
-        Util.NIL_UUID);
+        Util.NIL_UUID,
+        false);
   }
 
   public static String fitName(String name) {
@@ -52,7 +55,8 @@ public record PhoneEntry(
   }
 
   public PhoneEntry placedBy(String by, UUID player) {
-    return new PhoneEntry(exchange, cells, order, number, numberedBy, home, fitName(by), player);
+    return new PhoneEntry(
+        exchange, cells, order, number, numberedBy, home, fitName(by), player, trusted);
   }
 
   public boolean hasNumber() {
@@ -60,11 +64,20 @@ public record PhoneEntry(
   }
 
   public PhoneEntry numbered(int value, long by) {
-    return new PhoneEntry(exchange, cells, order, value, by, home, name, placer);
+    return new PhoneEntry(
+        exchange,
+        cells,
+        order,
+        value,
+        by,
+        home,
+        name,
+        placer,
+        trusted || value != PhoneNumbering.NONE);
   }
 
   public PhoneEntry homedOn(Optional<Hue> value) {
-    return new PhoneEntry(exchange, cells, order, number, numberedBy, value, name, placer);
+    return new PhoneEntry(exchange, cells, order, number, numberedBy, value, name, placer, trusted);
   }
 
   NbtCompound write() {
@@ -77,6 +90,7 @@ public record PhoneEntry(
     home.ifPresent(hue -> nbt.putInt(HOME, hue.ordinal()));
     nbt.putString(NAME, name);
     nbt.put(PLACER, NbtHelper.fromUuid(placer));
+    nbt.putBoolean(TRUSTED, trusted);
     return nbt;
   }
 
@@ -91,6 +105,7 @@ public record PhoneEntry(
         nbt.getLong(NUMBERED_BY),
         home,
         fitName(nbt.getString(NAME)),
-        nbt.contains(PLACER) ? NbtHelper.toUuid(nbt.get(PLACER)) : Util.NIL_UUID);
+        nbt.contains(PLACER) ? NbtHelper.toUuid(nbt.get(PLACER)) : Util.NIL_UUID,
+        nbt.getBoolean(TRUSTED));
   }
 }

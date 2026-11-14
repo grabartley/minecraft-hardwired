@@ -440,7 +440,7 @@
   "screen.hardwired.telephone.hang_up": "Auflegen",
   "screen.hardwired.telephone.no_directory": "Kein Verzeichnis auf dieser Leitung.",
   "screen.hardwired.telephone.listing": "%s  %s",
-  "screen.hardwired.telephone.status.dial_tone": "Freizeichen. Dreh die Wählscheibe bis zum Anschlag.",
+  "screen.hardwired.telephone.status.dial_tone": "Freizeichen.",
   "screen.hardwired.telephone.status.ringing_out": "Es klingelt.",
   "screen.hardwired.telephone.status.connected": "Verbunden.",
   "screen.hardwired.telephone.status.busy": "Besetzt.",
@@ -481,7 +481,7 @@
   "screen.hardwired.telephone.status.left": "Du hast das Telefon verlassen.",
   "device.hardwired.status.no_telephone": "Noch kein Telefon an seinem Draht.",
   "device.hardwired.status.sealed_out": "Dieser Draht ist von jemand anderem versiegelt.",
-  "screen.hardwired.exchange.pick": "Wähle 2 bis 4 Telefone, um eine Nummer zu teilen.",
+  "screen.hardwired.exchange.pick": "Wähle 2 bis %s Telefone, um eine Nummer zu teilen.",
   "screen.hardwired.exchange.not_shared": "Diese Telefone teilen keine Nummer.",
   "screen.hardwired.exchange.needs_build": "Du brauchst Baurechte, um diese Vermittlung zu ändern."
 }

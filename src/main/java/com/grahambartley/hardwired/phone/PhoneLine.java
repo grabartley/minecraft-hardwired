@@ -37,12 +37,18 @@ final class PhoneLine {
         || !player.canInteractWithBlockAt(pos, DeviceActions.REACH_MARGIN)) {
       return Optional.of(LineStatus.LEFT);
     }
-    boolean live =
-        WireEngine.of(world).isLoaded(pos)
-            && world.getBlockState(pos).getBlock() instanceof TelephoneBlock
-            && power().hasPower(pos)
-            && PhoneDirectory.of(world).entry(phone).filter(PhoneEntry::hasNumber).isPresent();
+    boolean live = WireEngine.of(world).isLoaded(pos) && answerable(phone);
     return live ? Optional.empty() : Optional.of(LineStatus.LINE_DEAD);
+  }
+
+  boolean answerable(long phone) {
+    BlockPos pos = BlockPos.fromLong(phone);
+    boolean standing =
+        !WireEngine.of(world).isLoaded(pos)
+            || world.getBlockState(pos).getBlock() instanceof TelephoneBlock;
+    return standing
+        && power().hasPower(pos)
+        && PhoneDirectory.of(world).entry(phone).filter(PhoneEntry::hasNumber).isPresent();
   }
 
   boolean exchangesLive(Set<Long> exchanges) {

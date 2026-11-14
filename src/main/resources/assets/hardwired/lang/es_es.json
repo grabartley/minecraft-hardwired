@@ -440,7 +440,7 @@
   "screen.hardwired.telephone.hang_up": "Colgar",
   "screen.hardwired.telephone.no_directory": "No hay guía en esta línea.",
   "screen.hardwired.telephone.listing": "%s  %s",
-  "screen.hardwired.telephone.status.dial_tone": "Tono de marcar. Gira el disco hasta el tope.",
+  "screen.hardwired.telephone.status.dial_tone": "Tono de marcar.",
   "screen.hardwired.telephone.status.ringing_out": "Sonando.",
   "screen.hardwired.telephone.status.connected": "Conectado.",
   "screen.hardwired.telephone.status.busy": "Ocupado.",
@@ -481,7 +481,7 @@
   "screen.hardwired.telephone.status.left": "Te alejaste del Teléfono.",
   "device.hardwired.status.no_telephone": "Aún no hay ningún Teléfono en su cable.",
   "device.hardwired.status.sealed_out": "Otra persona selló este cable.",
-  "screen.hardwired.exchange.pick": "Elige de 2 a 4 Teléfonos para compartir un número.",
+  "screen.hardwired.exchange.pick": "Elige de 2 a %s Teléfonos para compartir un número.",
   "screen.hardwired.exchange.not_shared": "Esos Teléfonos no comparten número.",
   "screen.hardwired.exchange.needs_build": "Necesitas permisos de construcción para cambiar esta Centralita."
 }

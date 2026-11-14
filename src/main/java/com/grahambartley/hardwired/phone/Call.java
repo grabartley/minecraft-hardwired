@@ -1,6 +1,6 @@
 package com.grahambartley.hardwired.phone;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,22 +13,15 @@ public final class Call {
   private final long caller;
   private final List<Long> called;
   private final Set<Long> exchanges;
-  private final boolean joinable;
   private final long startedAt;
   private final Map<Long, UUID> members = new LinkedHashMap<>();
   private boolean connected;
 
   public Call(
-      long caller,
-      UUID callerPlayer,
-      List<Long> called,
-      Set<Long> exchanges,
-      boolean joinable,
-      long startedAt) {
+      long caller, UUID callerPlayer, List<Long> called, Set<Long> exchanges, long startedAt) {
     this.caller = caller;
-    this.called = List.copyOf(called);
+    this.called = new ArrayList<>(called);
     this.exchanges = Set.copyOf(exchanges);
-    this.joinable = joinable;
     this.startedAt = startedAt;
     members.put(caller, callerPlayer);
   }
@@ -38,7 +31,7 @@ public final class Call {
   }
 
   public List<Long> called() {
-    return called;
+    return Collections.unmodifiableList(called);
   }
 
   public Set<Long> exchanges() {
@@ -73,8 +66,12 @@ public final class Call {
     return Collections.unmodifiableMap(members);
   }
 
-  public Collection<UUID> players() {
-    return Collections.unmodifiableCollection(members.values());
+  public boolean stopRinging(long phone) {
+    if (connected) {
+      return false;
+    }
+    called.remove(phone);
+    return called.isEmpty();
   }
 
   public boolean answer(long phone, UUID player) {
@@ -86,12 +83,8 @@ public final class Call {
     return true;
   }
 
-  public boolean canJoin(long phone) {
-    return connected && joinable && called.contains(phone) && !members.containsKey(phone);
-  }
-
-  public boolean join(long phone, UUID player) {
-    if (!canJoin(phone)) {
+  public boolean join(long phone, UUID player, boolean openWire) {
+    if (!connected || !openWire || !called.contains(phone) || members.containsKey(phone)) {
       return false;
     }
     members.put(phone, player);

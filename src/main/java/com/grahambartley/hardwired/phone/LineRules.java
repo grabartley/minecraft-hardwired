@@ -18,6 +18,7 @@ public final class LineRules {
       boolean numberExists,
       boolean ownNumber,
       boolean targetBusy,
+      boolean targetAnswerable,
       boolean exchangesLive,
       boolean linesFree) {}
 
@@ -47,7 +48,7 @@ public final class LineRules {
     if (facts.ownNumber() || facts.targetBusy()) {
       return LineStatus.BUSY;
     }
-    if (!facts.exchangesLive()) {
+    if (!facts.targetAnswerable() || !facts.exchangesLive()) {
       return LineStatus.LINE_DEAD;
     }
     return facts.linesFree() ? LineStatus.RINGING_OUT : LineStatus.BUSY;

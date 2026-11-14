@@ -1,7 +1,9 @@
 package com.grahambartley.hardwired.device;
 
+import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.wire.Hue;
+import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -82,6 +84,12 @@ public interface WireDevice {
 
   default int ratedLoad(PowerSettings settings) {
     return 0;
+  }
+
+  default int loadWhenWired(ServerWorld world, BlockPos pos, BlockState state) {
+    WireEngine engine = WireEngine.of(world);
+    boolean wired = cells(pos, state).stream().anyMatch(engine::isWired);
+    return wired ? ratedLoad(Hardwired.SERVER_CONFIG.power()) : 0;
   }
 
   default List<BlockPos> cells(BlockPos pos, BlockState state) {

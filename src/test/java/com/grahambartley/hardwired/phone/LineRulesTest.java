@@ -30,16 +30,17 @@ class LineRulesTest {
     assertEquals(expected, LineRules.pickUp(ringing, held(holder), liveCall));
   }
 
-  @ParameterizedTest(name = "{7}")
+  @ParameterizedTest(name = "{8}")
   @CsvSource({
-    "false,true,true,false,false,true,true,LINE_DEAD",
-    "true,false,true,false,false,true,true,TOO_FAST",
-    "true,true,false,false,false,true,true,NO_SUCH_NUMBER",
-    "true,true,true,true,false,true,true,BUSY",
-    "true,true,true,false,true,true,true,BUSY",
-    "true,true,true,false,false,false,true,LINE_DEAD",
-    "true,true,true,false,false,true,false,BUSY",
-    "true,true,true,false,false,true,true,RINGING_OUT"
+    "false,true,true,false,false,true,true,true,LINE_DEAD",
+    "true,false,true,false,false,true,true,true,TOO_FAST",
+    "true,true,false,false,false,false,true,true,NO_SUCH_NUMBER",
+    "true,true,true,true,false,true,true,true,BUSY",
+    "true,true,true,false,true,true,true,true,BUSY",
+    "true,true,true,false,false,false,true,true,LINE_DEAD",
+    "true,true,true,false,false,true,false,true,LINE_DEAD",
+    "true,true,true,false,false,true,true,false,BUSY",
+    "true,true,true,false,false,true,true,true,RINGING_OUT"
   })
   void dialingChecksEachRuleInOrder(
       boolean holding,
@@ -47,11 +48,13 @@ class LineRulesTest {
       boolean exists,
       boolean own,
       boolean busy,
+      boolean answerable,
       boolean live,
       boolean lines,
       LineStatus expected) {
     assertEquals(
         expected,
-        LineRules.dial(new LineRules.Dial(holding, rate, exists, own, busy, live, lines)));
+        LineRules.dial(
+            new LineRules.Dial(holding, rate, exists, own, busy, answerable, live, lines)));
   }
 }

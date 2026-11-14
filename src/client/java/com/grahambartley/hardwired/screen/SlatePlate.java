@@ -11,6 +11,7 @@ public final class SlatePlate {
   public static final int BRASS = 0xFFF5C21C;
   public static final int SLATE = 0xFF2A2632;
   public static final int SLATE_LIGHT = 0xFF3C3746;
+  public static final int CALCITE = 0xFFE6E2DA;
   private static final int RIVET = 0xFFBE7E12;
   private static final int RIVET_INSET = 6;
   private static final int RIVET_SIZE = 2;
