@@ -8,7 +8,7 @@ import com.grahambartley.hardwired.device.PhoneDevice;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.phone.PhoneActions;
 import com.grahambartley.hardwired.phone.PhoneDirectory;
-import com.grahambartley.hardwired.phone.Switchboard;
+import com.grahambartley.hardwired.phone.PhoneLifecycle;
 import com.grahambartley.hardwired.registry.ModSounds;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.mojang.serialization.MapCodec;
@@ -22,6 +22,7 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BlockStateComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
@@ -35,7 +36,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
@@ -47,6 +47,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public final class PhoneBoxBlock extends HorizontalFacingBlock
     implements PhoneDevice, BlockEntityProvider, WireDevice, Electronic {
@@ -96,6 +97,14 @@ public final class PhoneBoxBlock extends HorizontalFacingBlock
   }
 
   @Override
+  public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    ItemStack stack = super.getPickStack(world, pos, state);
+    stack.set(
+        DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(PAINT, state.get(PAINT)));
+    return stack;
+  }
+
+  @Override
   public BlockState getPlacementState(ItemPlacementContext context) {
     BlockState state =
         getDefaultState().with(FACING, context.getHorizontalPlayerFacing().getOpposite());
@@ -110,11 +119,7 @@ public final class PhoneBoxBlock extends HorizontalFacingBlock
         world.setBlockState(pos.up(part.height()), state.with(PART, part), NOTIFY_ALL);
       }
     }
-    if (world instanceof ServerWorld server && placer instanceof ServerPlayerEntity player) {
-      Text name = stack.get(DataComponentTypes.CUSTOM_NAME);
-      PhoneDirectory.of(server)
-          .placedBy(pos.asLong(), name == null ? "" : name.getString(), player.getUuid());
-    }
+    PhoneLifecycle.placed(world, pos, placer, stack);
   }
 
   @Override
@@ -123,9 +128,8 @@ public final class PhoneBoxBlock extends HorizontalFacingBlock
     if (!state.isOf(newState.getBlock())) {
       BlockPos floor = floorOf(pos, state);
       WireDevice.clearOthers(world, pos, this, cells(pos, state));
-      if (world instanceof ServerWorld server && pos.equals(floor)) {
-        Switchboard.of(server).removed(floor.asLong());
-        PhoneDirectory.of(server).remove(floor.asLong());
+      if (pos.equals(floor)) {
+        PhoneLifecycle.removed(world, floor);
       }
     }
     super.onStateReplaced(state, world, pos, newState, moved);
@@ -208,12 +212,9 @@ public final class PhoneBoxBlock extends HorizontalFacingBlock
   @Override
   protected void onBlockAdded(
       BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-    if (!oldState.isOf(this) && state.get(PART) == PhoneBoxPart.LOWER) {
+    if (!world.isClient && !oldState.isOf(this) && state.get(PART) == PhoneBoxPart.LOWER) {
       world.scheduleBlockTick(pos, this, 1);
-      if (world instanceof ServerWorld server) {
-        PhoneDirectory.of(server)
-            .add(pos.asLong(), cells(pos, state).stream().map(BlockPos::asLong).toList(), false);
-      }
+      PhoneLifecycle.listed(world, pos, cells(pos, state), false);
     }
   }
 
@@ -224,8 +225,7 @@ public final class PhoneBoxBlock extends HorizontalFacingBlock
 
   @Override
   public void onWireChange(ServerWorld world, BlockPos pos, BlockState state) {
-    PhoneDirectory.of(world).markStale();
-    ElectronicsDriver.wake(world, floorOf(pos, state));
+    PhoneLifecycle.rewired(world, floorOf(pos, state));
   }
 
   @Override

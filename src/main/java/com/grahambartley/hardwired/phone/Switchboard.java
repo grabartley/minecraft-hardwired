@@ -58,9 +58,9 @@ public final class Switchboard {
     return callOf(phone).filter(call -> call.isRinging(phone)).isPresent();
   }
 
-  public boolean bellRings(BlockPos bell) {
+  public Optional<Call> bellCall(BlockPos bell) {
     if (calls.stream().allMatch(Call::isConnected)) {
-      return false;
+      return Optional.empty();
     }
     Set<Long> touched =
         WireEngine.of(world).grid().networksTouching(bell).stream()
@@ -68,7 +68,7 @@ public final class Switchboard {
             .map(touch -> touch.pos().asLong())
             .collect(Collectors.toSet());
     PhoneDirectory directory = PhoneDirectory.of(world);
-    return BellRing.rings(
+    return BellRing.ringing(
         calls,
         touched,
         phone -> directory.entry(phone).map(PhoneEntry::cells).orElse(List.of(phone)),

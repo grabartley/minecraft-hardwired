@@ -3,18 +3,20 @@ package com.grahambartley.hardwired.block;
 import net.minecraft.util.StringIdentifiable;
 
 public enum PhoneBoxPart implements StringIdentifiable {
-  LOWER("lower"),
-  MIDDLE("middle"),
-  UPPER("upper");
+  LOWER("lower", 0),
+  MIDDLE("middle", 1),
+  UPPER("upper", 2);
 
   private final String id;
+  private final int height;
 
-  PhoneBoxPart(String id) {
+  PhoneBoxPart(String id, int height) {
     this.id = id;
+    this.height = height;
   }
 
   public int height() {
-    return ordinal();
+    return height;
   }
 
   @Override

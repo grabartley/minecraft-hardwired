@@ -3,9 +3,12 @@ package com.grahambartley.hardwired.block;
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.AnimatedDevice;
+import com.grahambartley.hardwired.phone.Call;
 import com.grahambartley.hardwired.phone.RingCadence;
 import com.grahambartley.hardwired.phone.Switchboard;
 import com.grahambartley.hardwired.registry.ModSounds;
+import com.grahambartley.hardwired.wire.WireEngine;
+import java.util.Optional;
 import java.util.Set;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -52,11 +55,18 @@ public final class BellBoxBlock extends MountedDeviceBlock
 
   @Override
   protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-    boolean ringing = Switchboard.of(world).bellRings(pos);
+    long now = world.getTime();
+    Optional<Call> call =
+        WireEngine.of(world).power().hasPower(pos)
+            ? Switchboard.of(world).bellCall(pos)
+            : Optional.empty();
+    boolean ringing = call.isPresent();
     if (ringing != state.get(POWERED)) {
       world.setBlockState(pos, state.with(POWERED, ringing), NOTIFY_ALL);
     }
-    float strike = ringing ? RingCadence.gongPitch(world.getTime()) : 0F;
+    float strike =
+        call.map(ring -> RingCadence.strikePitch(ring.ringingFor(now), ring.isPartyLine()))
+            .orElse(0F);
     if (strike > 0F) {
       float volume = Hardwired.SERVER_CONFIG.phone().bellBoxHearing() / BLOCKS_PER_VOLUME;
       world.playSound(null, pos, ModSounds.TELEPHONE_BELL, SoundCategory.BLOCKS, volume, strike);

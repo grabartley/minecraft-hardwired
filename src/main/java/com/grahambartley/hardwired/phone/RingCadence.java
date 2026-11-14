@@ -39,7 +39,7 @@ public final class RingCadence {
     return ringing(ticks, party) ? gongPitch(ticks) : 0F;
   }
 
-  public static float gongPitch(long ticks) {
+  private static float gongPitch(long ticks) {
     if (Math.floorMod(ticks, STRIKE_TICKS) != 0) {
       return 0F;
     }

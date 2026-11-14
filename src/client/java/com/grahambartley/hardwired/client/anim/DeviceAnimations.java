@@ -119,9 +119,16 @@ public final class DeviceAnimations {
       parts.add(part(element.getAsJsonObject()));
     }
     int yaw = root.has("yaw") ? root.get("yaw").getAsInt() : 0;
-    boolean wide = root.has("wide") && root.get("wide").getAsBoolean();
-    boolean upright = root.has("upright") && root.get("upright").getAsBoolean();
-    return new Animation(DeviceClip.parse(clipJson), List.copyOf(parts), yaw, wide, upright);
+    return new Animation(
+        DeviceClip.parse(clipJson),
+        List.copyOf(parts),
+        yaw,
+        flag(root, "wide"),
+        flag(root, "upright"));
+  }
+
+  static boolean flag(JsonObject root, String key) {
+    return root.has(key) && root.get(key).getAsBoolean();
   }
 
   static Part part(JsonObject part) {

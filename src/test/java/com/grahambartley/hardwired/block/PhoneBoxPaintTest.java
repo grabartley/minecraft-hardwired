@@ -2,6 +2,12 @@ package com.grahambartley.hardwired.block;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
 import net.minecraft.component.DataComponentTypes;
@@ -15,6 +21,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EnumSource;
 
 class PhoneBoxPaintTest {
+
+  private static final String ITEM_MODEL =
+      "src/main/resources/assets/hardwired/models/item/phone_box.json";
 
   @BeforeAll
   static void bootstrap() {
@@ -48,5 +57,24 @@ class PhoneBoxPaintTest {
   @CsvSource("x")
   void aBoxWithNoPaintIsOak(String unused) {
     assertEquals(PhoneBoxPaint.OAK, PhoneBoxPaint.on(new ItemStack(Items.PAPER)));
+  }
+
+  @ParameterizedTest(name = "{0}")
+  @EnumSource(PhoneBoxPaint.class)
+  void eachPaintShowsItsOwnItemModel(PhoneBoxPaint paint) throws IOException {
+    JsonObject model =
+        JsonParser.parseString(Files.readString(Path.of(ITEM_MODEL))).getAsJsonObject();
+    String chosen = "hardwired:block/phone_box_item";
+    for (JsonElement override : model.getAsJsonArray("overrides")) {
+      JsonObject entry = override.getAsJsonObject();
+      if (paint.shade() >= entry.getAsJsonObject("predicate").get("hardwired:paint").getAsFloat()) {
+        chosen = entry.get("model").getAsString();
+      }
+    }
+    String expected =
+        paint == PhoneBoxPaint.OAK
+            ? "hardwired:block/phone_box_item"
+            : "hardwired:item/phone_box_" + paint.asString();
+    assertEquals(expected, chosen);
   }
 }

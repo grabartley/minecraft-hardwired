@@ -49,7 +49,8 @@ class BellRingTest {
       long called, long ticks, long touched, boolean rings) {
     assertEquals(
         rings,
-        BellRing.rings(List.of(call(List.of(called))), Set.of(touched), CELLS, STARTED + ticks));
+        BellRing.ringing(List.of(call(List.of(called))), Set.of(touched), CELLS, STARTED + ticks)
+            .isPresent());
   }
 
   @ParameterizedTest(name = "answered after {0} ticks")
@@ -57,7 +58,7 @@ class BellRingTest {
   void anAnsweredCallStopsTheBell(long ticks) {
     Call call = call(List.of(PHONE));
     call.answer(PHONE, UUID.randomUUID());
-    assertFalse(BellRing.rings(List.of(call), Set.of(PHONE), CELLS, STARTED + ticks));
+    assertFalse(BellRing.ringing(List.of(call), Set.of(PHONE), CELLS, STARTED + ticks).isPresent());
   }
 
   @ParameterizedTest(name = "party line {0}")
@@ -71,7 +72,9 @@ class BellRingTest {
         LongStream.range(0, ringTicks)
             .anyMatch(
                 tick -> {
-                  boolean on = BellRing.rings(List.of(call), Set.of(PHONE), CELLS, STARTED + tick);
+                  boolean on =
+                      BellRing.ringing(List.of(call), Set.of(PHONE), CELLS, STARTED + tick)
+                          .isPresent();
                   boolean changed = on != last[0];
                   last[0] = on;
                   return changed && detector.recordChange(STARTED + tick);
