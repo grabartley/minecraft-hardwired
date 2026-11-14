@@ -41,6 +41,7 @@ import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.WireCell;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireFace;
+import com.grahambartley.hardwired.wire.WireNetwork;
 import java.util.List;
 import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -562,6 +563,40 @@ public class TelephoneGameTest implements FabricGameTest {
         SETTLE_TICKS,
         () -> {
           expectBell(context, false);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 80)
+  public void aBellBoxWithNoPowerStaysSilentWhileItsPhoneRings(TestContext context) {
+    buildNetwork(context);
+    WireEngine engine = WireEngine.of(context.getWorld());
+    WireNetwork unpowered = null;
+    for (int z = 2; z <= 3; z++) {
+      unpowered =
+          engine.lay(
+              new WireCell(
+                  new WireFace(context.getAbsolutePos(new BlockPos(6, FLOOR_Y, z)), Direction.UP),
+                  Hue.RED));
+    }
+    engine.reown(unpowered, UUID.randomUUID());
+    BlockPos bell = at(6, 3);
+    context.setBlockState(bell.south(), Blocks.STONE);
+    context.setBlockState(
+        bell, ModBlocks.BELL_BOX.getDefaultState().with(BellBoxBlock.FACING, Direction.NORTH));
+    ConnectedTestPlayer caller = ConnectedTestPlayer.joinAt(context, at(2, 3));
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          pickUp(context, caller, FIRST);
+          dial(context, caller, FIRST, numberOf(context, SECOND));
+        });
+    context.waitAndRun(
+        SETTLE_TICKS + 3L,
+        () -> {
+          context.expectBlockProperty(SECOND, PhoneDevice.RINGING, true);
+          context.expectBlockProperty(bell, BellBoxBlock.POWERED, false);
+          leaveAll(caller);
           context.complete();
         });
   }

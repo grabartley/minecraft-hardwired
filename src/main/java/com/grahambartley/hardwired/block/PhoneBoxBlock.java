@@ -12,9 +12,9 @@ import com.grahambartley.hardwired.phone.PhoneLifecycle;
 import com.grahambartley.hardwired.registry.ModSounds;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.mojang.serialization.MapCodec;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.UnaryOperator;
-import java.util.stream.IntStream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -99,8 +99,10 @@ public final class PhoneBoxBlock extends HorizontalFacingBlock
   @Override
   public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
     ItemStack stack = super.getPickStack(world, pos, state);
-    stack.set(
-        DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(PAINT, state.get(PAINT)));
+    PhoneBoxPaint paint = state.get(PAINT);
+    if (paint != PhoneBoxPaint.OAK) {
+      stack.set(DataComponentTypes.BLOCK_STATE, BlockStateComponent.DEFAULT.with(PAINT, paint));
+    }
     return stack;
   }
 
@@ -236,7 +238,7 @@ public final class PhoneBoxBlock extends HorizontalFacingBlock
   @Override
   public List<BlockPos> cells(BlockPos pos, BlockState state) {
     BlockPos floor = floorOf(pos, state);
-    return IntStream.range(0, PhoneBoxPart.values().length).mapToObj(floor::up).toList();
+    return Arrays.stream(PhoneBoxPart.values()).map(part -> floor.up(part.height())).toList();
   }
 
   @Override
