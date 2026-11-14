@@ -1,0 +1,8 @@
+[QA-SERVER] staged at BlockPos{x=0, y=-60, z=0}
+[QA-SERVER] numbers exchange=1 a=100 b=101
+[QA-SERVER] t=240 exchangeChunkLoaded=false callA=ringing
+[QA-SERVER] t=280 exchangeChunkLoaded=false callA=ringing
+[QA-SERVER] t=320 exchangeChunkLoaded=false callA=ringing
+[QA-SERVER] t=360 exchangeChunkLoaded=false callA=connected
+[QA-SERVER] t=400 exchangeChunkLoaded=false callA=connected
+[QA-SERVER] t=440 exchangeChunkLoaded=false callA=connected
