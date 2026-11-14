@@ -22,6 +22,7 @@ import com.grahambartley.hardwired.block.LodestoneDynamoBlock;
 import com.grahambartley.hardwired.block.MainPanelBlock;
 import com.grahambartley.hardwired.block.MasterSwitchBlock;
 import com.grahambartley.hardwired.block.MountedLampBlock;
+import com.grahambartley.hardwired.block.PhoneBoxBlock;
 import com.grahambartley.hardwired.block.RadioBlock;
 import com.grahambartley.hardwired.block.RadioMastBlock;
 import com.grahambartley.hardwired.block.RedstoneCellBlock;
@@ -207,6 +208,15 @@ public final class ModBlocks {
           new BellBoxBlock(
               deviceSettings().mapColor(MapColor.OAK_TAN).sounds(BlockSoundGroup.WOOD),
               BELL_BOX_BOX));
+  public static final Block PHONE_BOX =
+      register(
+          "phone_box",
+          new PhoneBoxBlock(
+              deviceSettings()
+                  .mapColor(MapColor.OAK_TAN)
+                  .sounds(BlockSoundGroup.WOOD)
+                  .pistonBehavior(PistonBehavior.BLOCK)
+                  .luminance(PhoneBoxBlock::light)));
   public static final Block EXCHANGE =
       register(
           "exchange",

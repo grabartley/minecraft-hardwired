@@ -33,6 +33,8 @@ public final class ModSounds {
   public static final SoundEvent TELEPHONE_RINGBACK = register("telephone.ringback");
   public static final SoundEvent TELEPHONE_BUSY = register("telephone.busy");
   public static final SoundEvent TELEPHONE_VOICE = register("telephone.voice");
+  public static final SoundEvent PHONE_BOX_DOOR_OPEN = register("phone_box.door_open");
+  public static final SoundEvent PHONE_BOX_DOOR_CLOSE = register("phone_box.door_close");
 
   private ModSounds() {}
 

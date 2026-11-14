@@ -1,8 +1,8 @@
 package com.grahambartley.hardwired.phone;
 
 import com.grahambartley.hardwired.block.ExchangeBlock;
-import com.grahambartley.hardwired.block.TelephoneBlock;
 import com.grahambartley.hardwired.device.DeviceActions;
+import com.grahambartley.hardwired.device.PhoneDevice;
 import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.registry.ModSounds;
 import com.grahambartley.hardwired.wire.WireEngine;
@@ -35,7 +35,8 @@ final class PhoneLine {
     if (player == null
         || player.getServerWorld() != world
         || !player.isAlive()
-        || !player.canInteractWithBlockAt(pos, DeviceActions.REACH_MARGIN)) {
+        || !player.canInteractWithBlockAt(pos, DeviceActions.REACH_MARGIN)
+        || !PhoneDevice.usableAt(world, pos, player)) {
       return Optional.of(LineStatus.LEFT);
     }
     boolean live = WireEngine.of(world).isLoaded(pos) && answerable(phone);
@@ -46,7 +47,7 @@ final class PhoneLine {
     BlockPos pos = BlockPos.fromLong(phone);
     boolean standing =
         !WireEngine.of(world).isLoaded(pos)
-            || world.getBlockState(pos).getBlock() instanceof TelephoneBlock;
+            || world.getBlockState(pos).getBlock() instanceof PhoneDevice;
     return standing
         && power().hasPower(pos)
         && PhoneDirectory.of(world).entry(phone).filter(PhoneEntry::hasNumber).isPresent();
@@ -131,9 +132,8 @@ final class PhoneLine {
 
   private void setLook(BlockPos pos, boolean lifted, boolean ringing) {
     BlockState state = world.getBlockState(pos);
-    if (state.getBlock() instanceof TelephoneBlock) {
-      BlockState next =
-          state.with(TelephoneBlock.LIFTED, lifted).with(TelephoneBlock.RINGING, ringing);
+    if (state.getBlock() instanceof PhoneDevice) {
+      BlockState next = state.with(PhoneDevice.LIFTED, lifted).with(PhoneDevice.RINGING, ringing);
       if (next != state) {
         world.setBlockState(pos, next, Block.NOTIFY_LISTENERS);
       }

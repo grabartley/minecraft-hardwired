@@ -1,0 +1,6 @@
+{
+  "parent": "hardwired:block/part/phone_box_door_right",
+  "textures": {
+    "oak_planks": "minecraft:block/lime_concrete"
+  }
+}

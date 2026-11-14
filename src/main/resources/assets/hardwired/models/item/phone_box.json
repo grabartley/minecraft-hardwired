@@ -1,0 +1,101 @@
+{
+  "parent": "hardwired:block/phone_box_item",
+  "overrides": [
+    {
+      "predicate": {
+        "hardwired:paint": 0.0625
+      },
+      "model": "hardwired:item/phone_box_white"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.125
+      },
+      "model": "hardwired:item/phone_box_orange"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.1875
+      },
+      "model": "hardwired:item/phone_box_magenta"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.25
+      },
+      "model": "hardwired:item/phone_box_light_blue"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.3125
+      },
+      "model": "hardwired:item/phone_box_yellow"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.375
+      },
+      "model": "hardwired:item/phone_box_lime"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.4375
+      },
+      "model": "hardwired:item/phone_box_pink"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.5
+      },
+      "model": "hardwired:item/phone_box_gray"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.5625
+      },
+      "model": "hardwired:item/phone_box_light_gray"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.625
+      },
+      "model": "hardwired:item/phone_box_cyan"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.6875
+      },
+      "model": "hardwired:item/phone_box_purple"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.75
+      },
+      "model": "hardwired:item/phone_box_blue"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.8125
+      },
+      "model": "hardwired:item/phone_box_brown"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.875
+      },
+      "model": "hardwired:item/phone_box_green"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 0.9375
+      },
+      "model": "hardwired:item/phone_box_red"
+    },
+    {
+      "predicate": {
+        "hardwired:paint": 1.0
+      },
+      "model": "hardwired:item/phone_box_black"
+    }
+  ]
+}

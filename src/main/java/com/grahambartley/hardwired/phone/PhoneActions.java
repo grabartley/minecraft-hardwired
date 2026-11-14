@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.phone;
 import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.device.DeviceChat;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
+import com.grahambartley.hardwired.device.PhoneDevice;
 import com.grahambartley.hardwired.network.PhoneActionPayload;
 import com.grahambartley.hardwired.network.PhoneSaidPayload;
 import java.util.Optional;
@@ -22,6 +23,9 @@ public final class PhoneActions {
 
   public static void use(ServerPlayerEntity player, BlockPos pos) {
     ServerWorld world = player.getServerWorld();
+    if (!PhoneDevice.usableAt(world, pos, player)) {
+      return;
+    }
     ElectronicsDriver.pulse(world, pos);
     if (PhoneDirectory.readiness(world, pos).isStopped()) {
       ElectronicsDriver.tell(world, pos, player);
@@ -48,16 +52,21 @@ public final class PhoneActions {
         click(world, pos);
       }
       case DIAL -> {
-        if (DeviceActions.canUse(player, pos)) {
+        if (reaches(player, pos)) {
           PhoneViews.update(player, phone, board.dial(player, phone, action.number()));
         }
       }
       case SAY -> {
-        if (DeviceActions.canUse(player, pos)) {
+        if (reaches(player, pos)) {
           say(player, board, phone, action.line());
         }
       }
     }
+  }
+
+  private static boolean reaches(ServerPlayerEntity player, BlockPos pos) {
+    return DeviceActions.canUse(player, pos)
+        && PhoneDevice.usableAt(player.getServerWorld(), pos, player);
   }
 
   public static void forget(ServerPlayerEntity player) {

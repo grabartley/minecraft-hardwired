@@ -174,5 +174,25 @@
         "stream": true
       }
     ]
+  },
+  "phone_box.door_open": {
+    "subtitle": "subtitles.hardwired.phone_box.door_open",
+    "sounds": [
+      {
+        "name": "minecraft:block.wooden_door.open",
+        "type": "event",
+        "pitch": 1.1
+      }
+    ]
+  },
+  "phone_box.door_close": {
+    "subtitle": "subtitles.hardwired.phone_box.door_close",
+    "sounds": [
+      {
+        "name": "minecraft:block.wooden_door.close",
+        "type": "event",
+        "pitch": 1.1
+      }
+    ]
   }
 }

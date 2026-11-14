@@ -1,0 +1,561 @@
+{
+  "clip": "hardwired:clips/wall_telephone.animation.json",
+  "wide": true,
+  "parts": [
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=oak",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=oak",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_white",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=white",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_white",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=white",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_orange",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=orange",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_orange",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=orange",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_magenta",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=magenta",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_magenta",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=magenta",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_light_blue",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=light_blue",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_light_blue",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=light_blue",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_yellow",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=yellow",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_yellow",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=yellow",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_lime",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=lime",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_lime",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=lime",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_pink",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=pink",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_pink",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=pink",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_gray",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=gray",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_gray",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=gray",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_light_gray",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=light_gray",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_light_gray",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=light_gray",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_cyan",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=cyan",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_cyan",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=cyan",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_purple",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=purple",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_purple",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=purple",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_blue",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=blue",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_blue",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=blue",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_brown",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=brown",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_brown",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=brown",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_green",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=green",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_green",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=green",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_red",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=red",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_red",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=red",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "door_left",
+      "model": "hardwired:block/part/phone_box_door_left_black",
+      "pivot": [
+        1.5,
+        0,
+        1
+      ],
+      "when": "paint=black",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": -90
+      }
+    },
+    {
+      "bone": "door_right",
+      "model": "hardwired:block/part/phone_box_door_right_black",
+      "pivot": [
+        14.5,
+        0,
+        1
+      ],
+      "when": "paint=black",
+      "dial": {
+        "value": "door",
+        "axis": "y",
+        "from": 0,
+        "to": 90
+      }
+    },
+    {
+      "bone": "wall_receiver",
+      "model": "hardwired:block/part/phone_box_receiver",
+      "pivot": [
+        3.75,
+        29.25,
+        12.5
+      ],
+      "when": "!lifted",
+      "moves_when": "ringing"
+    }
+  ]
+}

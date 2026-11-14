@@ -5,6 +5,7 @@ import com.grahambartley.hardwired.device.AnimatedDevice;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.device.Electronic;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
+import com.grahambartley.hardwired.device.PhoneDevice;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.phone.PhoneActions;
 import com.grahambartley.hardwired.phone.PhoneDirectory;
@@ -27,7 +28,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -41,10 +41,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public final class TelephoneBlock extends HorizontalFacingBlock
-    implements BlockEntityProvider, WireDevice, AnimatedDevice, Electronic {
-
-  public static final BooleanProperty LIFTED = BooleanProperty.of("lifted");
-  public static final BooleanProperty RINGING = BooleanProperty.of("ringing");
+    implements PhoneDevice, BlockEntityProvider, WireDevice, AnimatedDevice, Electronic {
 
   private final double[] floorBox;
   private final BlockFace mount;

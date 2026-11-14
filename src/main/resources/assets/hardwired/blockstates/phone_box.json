@@ -1,0 +1,3064 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "paint": "oak",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "oak",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "oak",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "oak",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "white",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_white"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "white",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_white"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "white",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_white"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "white",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_white"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "orange",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_orange"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "orange",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_orange"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "orange",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_orange"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "orange",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_orange"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "magenta",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_magenta"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "magenta",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_magenta"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "magenta",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_magenta"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "magenta",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_magenta"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "light_blue",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_light_blue"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "light_blue",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_light_blue"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "light_blue",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_light_blue"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "light_blue",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_light_blue"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "yellow",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_yellow"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "yellow",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_yellow"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "yellow",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_yellow"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "yellow",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_yellow"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "lime",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_lime"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "lime",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lime"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "lime",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_lime"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "lime",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_lime"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "pink",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_pink"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "pink",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_pink"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "pink",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_pink"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "pink",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_pink"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "gray",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_gray"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "gray",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_gray"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "gray",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_gray"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "gray",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_gray"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "light_gray",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_light_gray"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "light_gray",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_light_gray"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "light_gray",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_light_gray"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "light_gray",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_light_gray"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "cyan",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_cyan"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "cyan",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_cyan"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "cyan",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_cyan"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "cyan",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_cyan"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "purple",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_purple"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "purple",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_purple"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "purple",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_purple"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "purple",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_purple"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "blue",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_blue"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "blue",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_blue"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "blue",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_blue"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "blue",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_blue"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "brown",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_brown"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "brown",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_brown"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "brown",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_brown"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "brown",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_brown"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "green",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_green"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "green",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_green"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "green",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_green"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "green",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_green"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "red",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_red"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "red",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_red"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "red",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_red"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "red",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_red"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "black",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_black"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "black",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_black"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "black",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_black"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "paint": "black",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_black"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "oak",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "oak",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "oak",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "oak",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "white",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_white",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "white",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_white",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "white",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_white",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "white",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_white",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "orange",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_orange",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "orange",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_orange",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "orange",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_orange",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "orange",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_orange",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "magenta",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_magenta",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "magenta",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_magenta",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "magenta",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_magenta",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "magenta",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_magenta",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "light_blue",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_light_blue",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "light_blue",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_light_blue",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "light_blue",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_light_blue",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "light_blue",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_light_blue",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "yellow",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_yellow",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "yellow",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_yellow",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "yellow",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_yellow",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "yellow",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_yellow",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "lime",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_lime",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "lime",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lime",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "lime",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_lime",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "lime",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_lime",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "pink",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_pink",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "pink",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_pink",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "pink",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_pink",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "pink",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_pink",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "gray",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_gray",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "gray",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_gray",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "gray",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_gray",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "gray",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_gray",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "light_gray",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_light_gray",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "light_gray",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_light_gray",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "light_gray",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_light_gray",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "light_gray",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_light_gray",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "cyan",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_cyan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "cyan",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_cyan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "cyan",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_cyan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "cyan",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_cyan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "purple",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_purple",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "purple",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_purple",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "purple",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_purple",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "purple",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_purple",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "blue",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_blue",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "blue",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_blue",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "blue",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_blue",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "blue",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_blue",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "brown",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_brown",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "brown",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_brown",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "brown",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_brown",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "brown",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_brown",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "green",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_green",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "green",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_green",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "green",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_green",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "green",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_green",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "red",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_red",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "red",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_red",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "red",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_red",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "red",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_red",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "black",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_black",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "black",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_black",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "black",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_black",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "paint": "black",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_black",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "oak",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "oak",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "oak",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "oak",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "white",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_white",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "white",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_white",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "white",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_white",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "white",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_white",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "orange",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_orange",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "orange",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_orange",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "orange",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_orange",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "orange",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_orange",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "magenta",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_magenta",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "magenta",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_magenta",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "magenta",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_magenta",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "magenta",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_magenta",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "light_blue",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_light_blue",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "light_blue",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_light_blue",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "light_blue",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_light_blue",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "light_blue",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_light_blue",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "yellow",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_yellow",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "yellow",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_yellow",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "yellow",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_yellow",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "yellow",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_yellow",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "lime",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_lime",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "lime",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lime",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "lime",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_lime",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "lime",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_lime",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "pink",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_pink",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "pink",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_pink",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "pink",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_pink",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "pink",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_pink",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "gray",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_gray",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "gray",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_gray",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "gray",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_gray",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "gray",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_gray",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "light_gray",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_light_gray",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "light_gray",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_light_gray",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "light_gray",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_light_gray",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "light_gray",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_light_gray",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "cyan",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_cyan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "cyan",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_cyan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "cyan",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_cyan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "cyan",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_cyan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "purple",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_purple",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "purple",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_purple",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "purple",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_purple",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "purple",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_purple",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "blue",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_blue",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "blue",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_blue",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "blue",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_blue",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "blue",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_blue",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "brown",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_brown",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "brown",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_brown",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "brown",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_brown",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "brown",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_brown",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "green",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_green",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "green",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_green",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "green",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_green",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "green",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_green",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "red",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_red",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "red",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_red",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "red",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_red",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "red",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_red",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "black",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_black",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "black",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_black",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "black",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_black",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "paint": "black",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_black",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "oak",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "oak",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "oak",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "oak",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "white",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_white",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "white",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_white",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "white",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_white",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "white",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_white",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "orange",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_orange",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "orange",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_orange",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "orange",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_orange",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "orange",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_orange",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "magenta",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_magenta",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "magenta",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_magenta",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "magenta",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_magenta",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "magenta",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_magenta",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "light_blue",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_light_blue",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "light_blue",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_light_blue",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "light_blue",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_light_blue",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "light_blue",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_light_blue",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "yellow",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_yellow",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "yellow",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_yellow",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "yellow",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_yellow",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "yellow",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_yellow",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "lime",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_lime",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "lime",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lime",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "lime",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_lime",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "lime",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_lime",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "pink",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_pink",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "pink",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_pink",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "pink",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_pink",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "pink",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_pink",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "gray",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_gray",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "gray",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_gray",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "gray",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_gray",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "gray",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_gray",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "light_gray",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_light_gray",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "light_gray",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_light_gray",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "light_gray",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_light_gray",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "light_gray",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_light_gray",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "cyan",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_cyan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "cyan",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_cyan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "cyan",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_cyan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "cyan",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_cyan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "purple",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_purple",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "purple",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_purple",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "purple",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_purple",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "purple",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_purple",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "blue",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_blue",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "blue",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_blue",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "blue",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_blue",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "blue",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_blue",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "brown",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_brown",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "brown",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_brown",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "brown",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_brown",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "brown",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_brown",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "green",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_green",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "green",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_green",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "green",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_green",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "green",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_green",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "red",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_red",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "red",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_red",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "red",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_red",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "red",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_red",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "black",
+        "part": "lower"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_lower_black",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "black",
+        "part": "middle",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_black",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "black",
+        "part": "middle",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_middle_lit_black",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "paint": "black",
+        "part": "upper"
+      },
+      "apply": {
+        "model": "hardwired:block/phone_box_upper_black",
+        "y": 270
+      }
+    }
+  ]
+}
