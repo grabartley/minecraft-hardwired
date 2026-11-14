@@ -2,7 +2,6 @@ package com.grahambartley.hardwired.phone;
 
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.network.CallVoicePayload;
-import com.grahambartley.hardwired.radio.VoiceFormat;
 import com.grahambartley.hardwired.radio.VoiceRateLimit;
 import java.util.HashMap;
 import java.util.List;
@@ -30,17 +29,25 @@ public final class CallVoice {
 
   public static List<UUID> audience(ServerPlayerEntity player, CallVoicePayload frame) {
     long phone = frame.phone().asLong();
-    Optional<Call> call =
-        Switchboard.of(player.getServerWorld()).callOf(phone).filter(Call::isConnected);
+    Optional<Call> call = Switchboard.of(player.getServerWorld()).callOf(phone);
+    List<UUID> heard =
+        CallAudience.of(
+            call.map(Call::members).orElse(Map.of()),
+            call.filter(Call::isConnected).isPresent(),
+            phone,
+            player.getUuid(),
+            Hardwired.SERVER_CONFIG.phone().voiceCalls(),
+            frame.adpcm().length);
     long now = Util.getMeasuringTimeMs();
-    if (!Hardwired.SERVER_CONFIG.phone().voiceCalls()
-        || call.isEmpty()
-        || !player.getUuid().equals(call.get().members().get(phone))
-        || !VoiceFormat.frameFits(frame.adpcm().length)
+    if (heard.isEmpty()
         || !LIMITS.computeIfAbsent(player.getUuid(), id -> new VoiceRateLimit(now)).allows(now)) {
       return List.of();
     }
-    return call.get().players().stream().filter(id -> !id.equals(player.getUuid())).toList();
+    return heard;
+  }
+
+  public static void clear() {
+    LIMITS.clear();
   }
 
   public static void forget(ServerPlayerEntity player) {

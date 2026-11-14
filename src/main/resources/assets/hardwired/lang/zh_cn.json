@@ -451,7 +451,6 @@
   "screen.hardwired.exchange.share": "共享号码",
   "screen.hardwired.exchange.part": "分开",
   "screen.hardwired.exchange.digit": "数字 %s",
-  "screen.hardwired.exchange.no_digit": "没有数字。网络已满。",
   "screen.hardwired.exchange.no_lines": "这台交换机上没有电话。",
   "screen.hardwired.exchange.not_yours": "只有这条线路的主人才能在这里共享号码。",
   "chat.hardwired.telephone": "[电话] <%s> %s",
@@ -478,5 +477,11 @@
   "screen.hardwired.settings.voicecalls.tooltip": "允许玩家在电话通话中说话。",
   "subtitles.hardwired.telephone.voice": "线路中的语音",
   "screen.hardwired.settings.hearvoicecalls": "收听通话",
-  "screen.hardwired.settings.hearvoicecalls.tooltip": "在此设备上播放电话通话中的语音。"
+  "screen.hardwired.settings.hearvoicecalls.tooltip": "在此设备上播放电话通话中的语音。",
+  "screen.hardwired.telephone.status.left": "你离开了电话。",
+  "device.hardwired.status.no_telephone": "它的线路上还没有电话。",
+  "device.hardwired.status.sealed_out": "这条线路已被其他人密封。",
+  "screen.hardwired.exchange.pick": "选择 2 到 4 部电话来共享一个号码。",
+  "screen.hardwired.exchange.not_shared": "这些电话没有共享号码。",
+  "screen.hardwired.exchange.needs_build": "你需要建造权限才能更改这台交换机。"
 }

@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -23,12 +24,12 @@ public final class ExchangeActions {
   public static void open(ServerPlayerEntity player, BlockPos anchor) {
     ServerWorld world = player.getServerWorld();
     ElectronicsDriver.pulse(world, anchor);
-    if (ExchangeBlock.readiness(world, anchor).isStopped()) {
+    if (PhoneDirectory.readiness(world, anchor).isStopped()) {
       ElectronicsDriver.tell(world, anchor, player);
       return;
     }
-    if (!mayManage(player, anchor)) {
-      player.sendMessage(Text.translatable("screen.hardwired.exchange.not_yours"), true);
+    if (refusal(player, anchor).isPresent()) {
+      player.sendMessage(Text.translatable(refusal(player, anchor).get()), true);
       return;
     }
     send(player, anchor);
@@ -39,26 +40,45 @@ public final class ExchangeActions {
     ServerWorld world = player.getServerWorld();
     if (!(world.getBlockState(anchor).getBlock() instanceof ExchangeBlock)
         || !DeviceActions.canUse(player, anchor)
-        || !mayManage(player, anchor)) {
+        || refusal(player, anchor).isPresent()) {
       return;
     }
     PhoneDirectory directory = PhoneDirectory.of(world);
     Map<Long, Integer> numbers = numbersOf(directory, anchor.asLong());
     List<Long> chosen = action.phones().stream().map(BlockPos::asLong).toList();
+    Map<Long, Long> orders = new HashMap<>();
+    numbers
+        .keySet()
+        .forEach(
+            phone -> directory.entry(phone).ifPresent(entry -> orders.put(phone, entry.order())));
     Map<Long, Integer> changed =
-        action.share() ? PartyLines.share(numbers, chosen) : PartyLines.part(numbers, chosen);
+        action.share()
+            ? PartyLines.share(numbers, chosen)
+            : PartyLines.part(numbers, orders, chosen);
+    if (changed.isEmpty()) {
+      player.sendMessage(
+          Text.translatable(
+              action.share()
+                  ? "screen.hardwired.exchange.pick"
+                  : "screen.hardwired.exchange.not_shared"),
+          true);
+    }
     changed.forEach((phone, number) -> directory.renumber(phone, number, anchor.asLong()));
     directory.refresh();
     send(player, anchor);
   }
 
-  private static boolean mayManage(ServerPlayerEntity player, BlockPos anchor) {
+  private static Optional<String> refusal(ServerPlayerEntity player, BlockPos anchor) {
+    if (!player.canModifyBlocks()) {
+      return Optional.of("screen.hardwired.exchange.needs_build");
+    }
     WireViewer viewer = WireViewer.of(player);
-    return player.canModifyBlocks()
-        && PhoneDirectory.of(player.getServerWorld())
+    boolean mayChange =
+        PhoneDirectory.of(player.getServerWorld())
             .systemOf(anchor.asLong())
             .map(viewer::canSee)
             .orElse(true);
+    return mayChange ? Optional.empty() : Optional.of("screen.hardwired.exchange.not_yours");
   }
 
   private static Map<Long, Integer> numbersOf(PhoneDirectory directory, long anchor) {

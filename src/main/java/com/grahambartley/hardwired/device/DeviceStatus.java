@@ -19,7 +19,9 @@ public enum DeviceStatus {
   SHAFT_BLOCKED("shaft_blocked"),
   NO_LIFT("no_lift"),
   NO_EXCHANGE("no_exchange"),
-  NETWORK_FULL("network_full");
+  NETWORK_FULL("network_full"),
+  NO_TELEPHONE("no_telephone"),
+  SEALED_OUT("sealed_out");
 
   private final String id;
 

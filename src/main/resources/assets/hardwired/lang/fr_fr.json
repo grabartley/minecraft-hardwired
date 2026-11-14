@@ -451,7 +451,6 @@
   "screen.hardwired.exchange.share": "Partager le numéro",
   "screen.hardwired.exchange.part": "Séparer",
   "screen.hardwired.exchange.digit": "Chiffre %s",
-  "screen.hardwired.exchange.no_digit": "Aucun chiffre. Le réseau est plein.",
   "screen.hardwired.exchange.no_lines": "Aucun Téléphone sur ce Central.",
   "screen.hardwired.exchange.not_yours": "Seul le propriétaire de ce fil peut partager des numéros ici.",
   "chat.hardwired.telephone": "[Téléphone] <%s> %s",
@@ -478,5 +477,11 @@
   "screen.hardwired.settings.voicecalls.tooltip": "Permet aux joueurs de parler pendant les appels téléphoniques.",
   "subtitles.hardwired.telephone.voice": "Voix sur la ligne",
   "screen.hardwired.settings.hearvoicecalls": "Entendre les appels",
-  "screen.hardwired.settings.hearvoicecalls.tooltip": "Joue les voix des appels téléphoniques sur cet appareil."
+  "screen.hardwired.settings.hearvoicecalls.tooltip": "Joue les voix des appels téléphoniques sur cet appareil.",
+  "screen.hardwired.telephone.status.left": "Vous avez quitté le Téléphone.",
+  "device.hardwired.status.no_telephone": "Aucun Téléphone sur son fil pour l'instant.",
+  "device.hardwired.status.sealed_out": "Ce fil est scellé par quelqu'un d'autre.",
+  "screen.hardwired.exchange.pick": "Choisissez 2 à 4 Téléphones pour partager un numéro.",
+  "screen.hardwired.exchange.not_shared": "Ces Téléphones ne partagent pas de numéro.",
+  "screen.hardwired.exchange.needs_build": "Il vous faut les droits de construction pour modifier ce Central."
 }

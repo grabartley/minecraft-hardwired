@@ -1,6 +1,5 @@
 package com.grahambartley.hardwired.phone;
 
-import com.grahambartley.hardwired.block.TelephoneBlock;
 import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.device.DeviceChat;
 import com.grahambartley.hardwired.device.ElectronicsDriver;
@@ -24,7 +23,7 @@ public final class PhoneActions {
   public static void use(ServerPlayerEntity player, BlockPos pos) {
     ServerWorld world = player.getServerWorld();
     ElectronicsDriver.pulse(world, pos);
-    if (TelephoneBlock.readiness(world, pos).isStopped()) {
+    if (PhoneDirectory.readiness(world, pos).isStopped()) {
       ElectronicsDriver.tell(world, pos, player);
       return;
     }
@@ -32,7 +31,7 @@ public final class PhoneActions {
     if (status != LineStatus.BUSY) {
       click(world, pos);
     }
-    PhoneViews.send(player, pos.asLong(), status);
+    PhoneViews.open(player, pos.asLong(), status);
   }
 
   public static void act(ServerPlayerEntity player, PhoneActionPayload action) {
@@ -50,10 +49,14 @@ public final class PhoneActions {
       }
       case DIAL -> {
         if (DeviceActions.canUse(player, pos)) {
-          PhoneViews.send(player, phone, board.dial(player, phone, action.number()));
+          PhoneViews.update(player, phone, board.dial(player, phone, action.number()));
         }
       }
-      case SAY -> say(player, board, phone, action.line());
+      case SAY -> {
+        if (DeviceActions.canUse(player, pos)) {
+          say(player, board, phone, action.line());
+        }
+      }
     }
   }
 

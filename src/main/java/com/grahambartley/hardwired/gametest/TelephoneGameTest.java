@@ -7,6 +7,7 @@ import com.grahambartley.hardwired.block.ExchangePart;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
 import com.grahambartley.hardwired.block.TelephoneBlock;
 import com.grahambartley.hardwired.config.HardwiredConfig;
+import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.network.CallVoicePayload;
 import com.grahambartley.hardwired.network.ExchangeSharePayload;
 import com.grahambartley.hardwired.network.PhoneActionPayload;
@@ -36,6 +37,7 @@ import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 
 public class TelephoneGameTest implements FabricGameTest {
@@ -141,6 +143,9 @@ public class TelephoneGameTest implements FabricGameTest {
         () -> {
           context.assertTrue(numberOf(context, EXCHANGE) == 1, "the Exchange must take digit 1");
           context.assertTrue(numberOf(context, FIRST) == 100, "the first phone must be 100");
+          context.assertTrue(
+              numberOf(context, SECOND) != numberOf(context, THIRD),
+              "two phones wired in one tick must get different numbers");
           context.assertTrue(numberOf(context, SECOND) == 101, "the second phone must be 101");
           context.assertTrue(numberOf(context, THIRD) == 102, "the third phone must be 102");
           context.complete();
@@ -397,5 +402,73 @@ public class TelephoneGameTest implements FabricGameTest {
   @AfterBatch(batchId = VOICE_OFF_BATCH)
   public void restoreVoiceCalls(ServerWorld world) {
     Hardwired.SERVER_CONFIG = savedConfig;
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 80)
+  public void twoPlayersDiallingOneNumberInOneTickGiveOneCall(TestContext context) {
+    buildNetwork(context);
+    ConnectedTestPlayer first = ConnectedTestPlayer.joinAt(context, at(2, 3));
+    ConnectedTestPlayer second = ConnectedTestPlayer.joinAt(context, at(7, 3));
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          pickUp(context, first, FIRST);
+          pickUp(context, second, THIRD);
+          int target = numberOf(context, SECOND);
+          dial(context, first, FIRST, target);
+          dial(context, second, THIRD, target);
+          expectStatus(context, first, LineStatus.RINGING_OUT);
+          expectStatus(context, second, LineStatus.BUSY);
+          leaveAll(first, second);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 60)
+  public void aTelephoneLoadedWithAStaleRingSettles(TestContext context) {
+    buildNetwork(context);
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          context.setBlockState(
+              SECOND,
+              context
+                  .getBlockState(SECOND)
+                  .with(TelephoneBlock.RINGING, true)
+                  .with(TelephoneBlock.LIFTED, true));
+          Switchboard.of(context.getWorld())
+              .chunkLoaded(new ChunkPos(context.getAbsolutePos(SECOND)));
+        });
+    context.waitAndRun(
+        SETTLE_TICKS + 2L,
+        () -> {
+          context.expectBlockProperty(SECOND, TelephoneBlock.RINGING, false);
+          context.expectBlockProperty(SECOND, TelephoneBlock.LIFTED, false);
+          context.complete();
+        });
+  }
+
+  @GameTest(templateName = BENCH, tickLimit = 60)
+  public void anExchangeWithNoTelephoneSaysSo(TestContext context) {
+    context.setBlockState(CELL, ModBlocks.REDSTONE_CELL);
+    WireEngine engine = WireEngine.of(context.getWorld());
+    for (int x = 1; x <= 5; x++) {
+      engine.lay(
+          new WireCell(
+              new WireFace(context.getAbsolutePos(new BlockPos(x, FLOOR_Y, 1)), Direction.UP),
+              Hue.PLAIN));
+    }
+    RedstoneCellBlockEntity cell = context.getBlockEntity(CELL);
+    cell.setCharge(500);
+    placeExchange(context);
+    context.waitAndRun(
+        SETTLE_TICKS,
+        () -> {
+          DeviceStatus status =
+              PhoneDirectory.readiness(context.getWorld(), context.getAbsolutePos(EXCHANGE));
+          context.assertTrue(
+              status == DeviceStatus.NO_TELEPHONE, "a lone Exchange must say so, was " + status);
+          context.complete();
+        });
   }
 }

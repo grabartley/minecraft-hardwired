@@ -8,9 +8,7 @@ import com.grahambartley.hardwired.device.ElectronicsDriver;
 import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.phone.ExchangeActions;
 import com.grahambartley.hardwired.phone.PhoneDirectory;
-import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.wire.WireEngine;
-import com.grahambartley.hardwired.wire.WireViewer;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
 import net.minecraft.block.Block;
@@ -56,14 +54,6 @@ public final class ExchangeBlock extends HorizontalFacingBlock
     return ExchangeLayout.anchorOf(state.get(PART), state.get(FACING), pos);
   }
 
-  public static DeviceStatus readiness(ServerWorld world, BlockPos anchor) {
-    PowerGrids power = WireEngine.of(world).power();
-    if (!power.hasPower(anchor)) {
-      return power.stopReason(anchor);
-    }
-    return PhoneDirectory.of(world).status(anchor.asLong());
-  }
-
   @Override
   protected MapCodec<? extends HorizontalFacingBlock> getCodec() {
     return MapCodec.unit(this);
@@ -99,7 +89,7 @@ public final class ExchangeBlock extends HorizontalFacingBlock
       }
     }
     if (world instanceof ServerWorld server && placer instanceof ServerPlayerEntity player) {
-      PhoneDirectory.of(server).placedBy(pos.asLong(), "", WireViewer.of(player));
+      PhoneDirectory.of(server).placedBy(pos.asLong(), "", player.getUuid());
     }
   }
 
@@ -150,7 +140,7 @@ public final class ExchangeBlock extends HorizontalFacingBlock
 
   @Override
   public void onWireChange(ServerWorld world, BlockPos pos, BlockState state) {
-    PhoneDirectory.of(world).refresh();
+    PhoneDirectory.of(world).markStale();
     ElectronicsDriver.wake(world, anchorOf(pos, state));
   }
 
@@ -161,7 +151,7 @@ public final class ExchangeBlock extends HorizontalFacingBlock
 
   @Override
   public DeviceStatus demand(ServerWorld world, BlockPos pos, BlockState state) {
-    return readiness(world, pos);
+    return PhoneDirectory.readiness(world, pos);
   }
 
   @Override

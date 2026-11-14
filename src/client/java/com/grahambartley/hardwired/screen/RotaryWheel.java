@@ -9,10 +9,6 @@ public final class RotaryWheel {
 
   private RotaryWheel() {}
 
-  public static int pulsesFor(int digit) {
-    return digit == 0 ? MOST_PULSES : digit;
-  }
-
   public static int digitFor(int pulses) {
     return pulses % MOST_PULSES;
   }

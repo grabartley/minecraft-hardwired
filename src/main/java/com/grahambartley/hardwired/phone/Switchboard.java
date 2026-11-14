@@ -5,6 +5,7 @@ import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.config.PhoneSettings;
 import com.grahambartley.hardwired.device.ActionRate;
 import com.grahambartley.hardwired.wire.WiredWorld;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,8 @@ import java.util.Set;
 import java.util.UUID;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 
 public final class Switchboard {
 
@@ -25,6 +28,7 @@ public final class Switchboard {
   private final List<Call> calls = new ArrayList<>();
   private final Map<Long, UUID> lifted = new HashMap<>();
   private final ActionRate dialRate = new ActionRate(DIAL_GAP_TICKS);
+  private final LongOpenHashSet loadedChunks = new LongOpenHashSet();
   private final PhoneLine line;
 
   public Switchboard(ServerWorld world) {
@@ -55,56 +59,53 @@ public final class Switchboard {
 
   public LineStatus pickUp(ServerPlayerEntity player, long phone) {
     Optional<Call> call = callOf(phone);
-    if (call.isPresent() && call.get().isRinging(phone)) {
-      return answer(player, phone, call.get());
-    }
-    Optional<UUID> user = userOf(phone);
-    if (user.isPresent()) {
-      if (!user.get().equals(player.getUuid())) {
-        return LineStatus.BUSY;
-      }
-      return call.map(c -> c.isConnected() ? LineStatus.CONNECTED : LineStatus.RINGING_OUT)
-          .orElse(LineStatus.DIAL_TONE);
-    }
     Optional<Call> numbered = numberCall(phone);
-    if (numbered.isPresent()) {
-      return join(player, phone, numbered.get());
-    }
-    lifted.put(phone, player.getUuid());
-    line.show(phone);
-    return LineStatus.DIAL_TONE;
+    LineRules.PickUp outcome =
+        LineRules.pickUp(
+            call.filter(c -> c.isRinging(phone)).isPresent(),
+            userOf(phone).map(player.getUuid()::equals),
+            numbered.isPresent());
+    return switch (outcome) {
+      case ANSWER -> answer(player, phone, call.orElseThrow());
+      case BUSY -> LineStatus.BUSY;
+      case RESUME ->
+          call.map(c -> c.isConnected() ? LineStatus.CONNECTED : LineStatus.RINGING_OUT)
+              .orElse(LineStatus.DIAL_TONE);
+      case JOIN -> join(player, phone, numbered.orElseThrow());
+      case LIFT -> {
+        lifted.put(phone, player.getUuid());
+        line.show(phone);
+        yield LineStatus.DIAL_TONE;
+      }
+    };
   }
 
   public LineStatus dial(ServerPlayerEntity player, long phone, int number) {
-    if (!player.getUuid().equals(lifted.get(phone))) {
-      return LineStatus.LINE_DEAD;
-    }
-    if (!dialRate.allow(player.getUuid(), world.getTime())) {
-      return LineStatus.TOO_FAST;
-    }
+    boolean holding = player.getUuid().equals(lifted.get(phone));
+    boolean rateAllows = holding && dialRate.allow(player.getUuid(), world.getTime());
     PhoneDirectory directory = PhoneDirectory.of(world);
     List<Long> targets = directory.phonesNumbered(phone, number);
-    if (targets.isEmpty()) {
-      return LineStatus.NO_SUCH_NUMBER;
-    }
-    if (targets.contains(phone) || targets.stream().anyMatch(this::isBusy)) {
-      return LineStatus.BUSY;
-    }
     Set<Long> exchanges = new HashSet<>();
     directory.entry(phone).ifPresent(entry -> exchanges.add(entry.numberedBy()));
     targets.forEach(
         target -> directory.entry(target).ifPresent(entry -> exchanges.add(entry.numberedBy())));
-    if (!line.exchangesLive(exchanges)) {
-      return LineStatus.LINE_DEAD;
+    LineStatus status =
+        LineRules.dial(
+            new LineRules.Dial(
+                holding,
+                rateAllows,
+                !targets.isEmpty(),
+                targets.contains(phone),
+                targets.stream().anyMatch(this::isBusy),
+                line.exchangesLive(exchanges),
+                ExchangeLines.free(calls, exchanges, settings().exchangeLines())));
+    if (status == LineStatus.RINGING_OUT) {
+      boolean joinable = directory.systemOf(phone).map(network -> !network.isSealed()).orElse(true);
+      lifted.remove(phone);
+      calls.add(new Call(phone, player.getUuid(), targets, exchanges, joinable, world.getTime()));
+      targets.forEach(line::show);
     }
-    if (!ExchangeLines.free(calls, exchanges, settings().exchangeLines())) {
-      return LineStatus.BUSY;
-    }
-    boolean joinable = directory.systemOf(phone).map(network -> !network.isSealed()).orElse(true);
-    lifted.remove(phone);
-    calls.add(new Call(phone, player.getUuid(), targets, exchanges, joinable, world.getTime()));
-    targets.forEach(line::show);
-    return LineStatus.RINGING_OUT;
+    return status;
   }
 
   public void hangUp(long phone) {
@@ -128,7 +129,12 @@ public final class Switchboard {
     }
   }
 
+  public void chunkLoaded(ChunkPos chunk) {
+    loadedChunks.add(chunk.toLong());
+  }
+
   public void tick() {
+    settleLoadedPhones();
     for (Map.Entry<Long, UUID> held : List.copyOf(lifted.entrySet())) {
       line.fault(held.getKey(), held.getValue())
           .ifPresent(
@@ -150,7 +156,10 @@ public final class Switchboard {
                 ? line.fault(member.getKey(), member.getValue())
                 : Optional.empty();
         if (fault.isPresent()) {
-          leave(call, member.getKey(), fault.get());
+          leave(
+              call,
+              member.getKey(),
+              fault.get() == LineStatus.LEFT ? LineStatus.HUNG_UP : fault.get());
           line.tell(member.getKey(), member.getValue(), fault.get());
           line.show(member.getKey());
         }
@@ -164,6 +173,22 @@ public final class Switchboard {
         line.ring(call, now);
       }
     }
+  }
+
+  private void settleLoadedPhones() {
+    if (loadedChunks.isEmpty()) {
+      return;
+    }
+    PhoneBook.of(world)
+        .entries()
+        .forEach(
+            (phone, entry) -> {
+              if (!entry.exchange()
+                  && loadedChunks.contains(ChunkPos.toLong(BlockPos.fromLong(phone)))) {
+                line.show(phone);
+              }
+            });
+    loadedChunks.clear();
   }
 
   private boolean isBusy(long phone) {

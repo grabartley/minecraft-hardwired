@@ -13,8 +13,7 @@ class RotaryWheelTest {
 
   @ParameterizedTest(name = "digit {0}")
   @CsvSource({"1,1", "5,5", "9,9", "0,10"})
-  void zeroSendsTenPulsesAndEveryOtherDigitItsOwn(int digit, int pulses) {
-    assertEquals(pulses, RotaryWheel.pulsesFor(digit));
+  void tenPulsesDialZeroAndEveryOtherCountItsOwnDigit(int digit, int pulses) {
     assertEquals(digit, RotaryWheel.digitFor(pulses));
   }
 

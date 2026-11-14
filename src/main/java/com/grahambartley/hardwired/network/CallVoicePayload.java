@@ -1,7 +1,7 @@
 package com.grahambartley.hardwired.network;
 
 import com.grahambartley.hardwired.Hardwired;
-import com.grahambartley.hardwired.radio.DeskMic;
+import com.grahambartley.hardwired.radio.VoiceFormat;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -17,7 +17,7 @@ public record CallVoicePayload(BlockPos phone, byte[] adpcm) implements CustomPa
       PacketCodec.tuple(
           BlockPos.PACKET_CODEC,
           CallVoicePayload::phone,
-          PacketCodecs.byteArray(DeskMic.MOST_FRAME_BYTES),
+          PacketCodecs.byteArray(VoiceFormat.MOST_FRAME_BYTES),
           CallVoicePayload::adpcm,
           CallVoicePayload::new);
 

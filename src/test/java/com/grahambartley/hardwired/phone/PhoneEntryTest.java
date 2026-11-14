@@ -3,7 +3,6 @@ package com.grahambartley.hardwired.phone;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.grahambartley.hardwired.wire.Hue;
-import com.grahambartley.hardwired.wire.WireViewer;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,10 +11,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 class PhoneEntryTest {
 
-  @ParameterizedTest(name = "exchange {0} number {1} home {2}")
-  @CsvSource({"false,105,RED,Kitchen,false", "true,3,'',,true", "false,-1,'',Hall,false"})
-  void anEntrySurvivesASave(
-      boolean exchange, int number, String home, String name, boolean override) {
+  @ParameterizedTest(name = "exchange {0} number {1} home [{2}]")
+  @CsvSource({"false,105,RED,Kitchen", "true,3,'',''", "false,-1,'',Hall"})
+  void anEntrySurvivesASave(boolean exchange, int number, String home, String name) {
     PhoneEntry entry =
         new PhoneEntry(
             exchange,
@@ -24,8 +22,8 @@ class PhoneEntryTest {
             number,
             42L,
             home.isEmpty() ? Optional.empty() : Optional.of(Hue.valueOf(home)),
-            name == null ? "" : name,
-            new WireViewer(new UUID(1, 2), override));
+            name,
+            new UUID(1, 2));
     assertEquals(entry, PhoneEntry.read(entry.write()));
   }
 
@@ -40,11 +38,24 @@ class PhoneEntryTest {
   @ParameterizedTest(name = "name [{0}]")
   @CsvSource({"Kitchen", "''"})
   void placingKeepsTheNumberAndRecordsThePlacer(String name) {
-    WireViewer placer = new WireViewer(new UUID(5, 6), false);
+    UUID placer = new UUID(5, 6);
     PhoneEntry entry =
         PhoneEntry.added(false, List.of(1L), 0L).numbered(104, 2L).placedBy(name, placer);
     assertEquals(104, entry.number());
     assertEquals(name, entry.name());
     assertEquals(placer, entry.placer());
+  }
+
+  @ParameterizedTest(name = "{0} characters")
+  @CsvSource({"10,10", "50,50", "51,50", "400,50"})
+  void aNameIsCutToFitTheDirectory(int length, int kept) {
+    assertEquals(kept, PhoneEntry.fitName("a".repeat(length)).length());
+  }
+
+  @ParameterizedTest(name = "pair at {0}")
+  @CsvSource({"49,49", "48,50"})
+  void aNameIsNeverCutThroughAPairedCharacter(int before, int kept) {
+    String name = "a".repeat(before) + "📞" + "b".repeat(10);
+    assertEquals(kept, PhoneEntry.fitName(name).length());
   }
 }

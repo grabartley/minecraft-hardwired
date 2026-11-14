@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.grahambartley.hardwired.phone.PhoneDirectory.Listing;
+import com.grahambartley.hardwired.phone.PhoneEntry;
 import io.netty.buffer.Unpooled;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -21,18 +22,19 @@ class PhoneViewPayloadTest {
   @ParameterizedTest(name = "{0} listings")
   @ValueSource(ints = {0, 1, PhoneViewPayload.MAX_LISTINGS})
   void aDirectoryUpToAFullNetworkSurvivesTheWire(int count) {
-    PhoneViewPayload payload = new PhoneViewPayload(new BlockPos(1, 2, 3), 105, 2, listings(count));
+    PhoneViewPayload payload =
+        new PhoneViewPayload(new BlockPos(1, 2, 3), 105, 2, listings(count), count % 2 == 0);
     RegistryByteBuf buffer = new RegistryByteBuf(Unpooled.buffer(), null);
     PhoneViewPayload.CODEC.encode(buffer, payload);
     assertEquals(payload, PhoneViewPayload.CODEC.decode(buffer));
   }
 
   @ParameterizedTest(name = "{0} characters")
-  @ValueSource(ints = {PhoneViewPayload.MAX_NAME + 1, 400})
+  @ValueSource(ints = {PhoneEntry.MAX_NAME + 1, 400})
   void aNameOverTheLimitIsRefused(int length) {
     PhoneViewPayload payload =
         new PhoneViewPayload(
-            BlockPos.ORIGIN, 100, 0, List.of(new Listing(100, "a".repeat(length))));
+            BlockPos.ORIGIN, 100, 0, List.of(new Listing(100, "a".repeat(length))), true);
     RegistryByteBuf buffer = new RegistryByteBuf(Unpooled.buffer(), null);
     assertThrows(RuntimeException.class, () -> PhoneViewPayload.CODEC.encode(buffer, payload));
   }

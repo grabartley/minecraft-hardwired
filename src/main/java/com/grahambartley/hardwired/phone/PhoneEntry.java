@@ -1,10 +1,10 @@
 package com.grahambartley.hardwired.phone;
 
 import com.grahambartley.hardwired.wire.Hue;
-import com.grahambartley.hardwired.wire.WireViewer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtLongArray;
@@ -18,7 +18,9 @@ public record PhoneEntry(
     long numberedBy,
     Optional<Hue> home,
     String name,
-    WireViewer placer) {
+    UUID placer) {
+
+  public static final int MAX_NAME = 50;
 
   private static final String EXCHANGE = "exchange";
   private static final String CELLS = "cells";
@@ -28,7 +30,6 @@ public record PhoneEntry(
   private static final String HOME = "home";
   private static final String NAME = "name";
   private static final String PLACER = "placer";
-  private static final String OVERRIDE = "override";
 
   public static PhoneEntry added(boolean exchange, List<Long> cells, long order) {
     return new PhoneEntry(
@@ -39,11 +40,19 @@ public record PhoneEntry(
         0L,
         Optional.empty(),
         "",
-        new WireViewer(Util.NIL_UUID, false));
+        Util.NIL_UUID);
   }
 
-  public PhoneEntry placedBy(String by, WireViewer viewer) {
-    return new PhoneEntry(exchange, cells, order, number, numberedBy, home, by, viewer);
+  public static String fitName(String name) {
+    if (name.length() <= MAX_NAME) {
+      return name;
+    }
+    int end = Character.isHighSurrogate(name.charAt(MAX_NAME - 1)) ? MAX_NAME - 1 : MAX_NAME;
+    return name.substring(0, end);
+  }
+
+  public PhoneEntry placedBy(String by, UUID player) {
+    return new PhoneEntry(exchange, cells, order, number, numberedBy, home, fitName(by), player);
   }
 
   public boolean hasNumber() {
@@ -67,8 +76,7 @@ public record PhoneEntry(
     nbt.putLong(NUMBERED_BY, numberedBy);
     home.ifPresent(hue -> nbt.putInt(HOME, hue.ordinal()));
     nbt.putString(NAME, name);
-    nbt.put(PLACER, NbtHelper.fromUuid(placer.id()));
-    nbt.putBoolean(OVERRIDE, placer.override());
+    nbt.put(PLACER, NbtHelper.fromUuid(placer));
     return nbt;
   }
 
@@ -82,7 +90,7 @@ public record PhoneEntry(
         nbt.getInt(NUMBER),
         nbt.getLong(NUMBERED_BY),
         home,
-        nbt.getString(NAME),
-        new WireViewer(NbtHelper.toUuid(nbt.get(PLACER)), nbt.getBoolean(OVERRIDE)));
+        fitName(nbt.getString(NAME)),
+        nbt.contains(PLACER) ? NbtHelper.toUuid(nbt.get(PLACER)) : Util.NIL_UUID);
   }
 }

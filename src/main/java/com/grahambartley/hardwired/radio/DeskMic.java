@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 public final class DeskMic {
 
-  public static final int MOST_FRAME_BYTES = AdpcmCodec.frameBytes(VoiceFormat.FRAME_SAMPLES);
   public static final long SILENT_MILLIS = 3000;
 
   @Nullable private UUID speaker;

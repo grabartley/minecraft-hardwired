@@ -1,6 +1,8 @@
 package com.grahambartley.hardwired.network;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.phone.PartyLines;
+import com.grahambartley.hardwired.phone.PhoneEntry;
 import com.grahambartley.hardwired.phone.PhoneNumbering;
 import java.util.List;
 import net.minecraft.network.RegistryByteBuf;
@@ -21,7 +23,7 @@ public record ExchangeViewPayload(BlockPos exchange, int digit, List<Line> lines
             Line::phone,
             PacketCodecs.VAR_INT.<RegistryByteBuf>cast(),
             Line::number,
-            PacketCodecs.string(PhoneViewPayload.MAX_NAME).<RegistryByteBuf>cast(),
+            PacketCodecs.string(PhoneEntry.MAX_NAME).<RegistryByteBuf>cast(),
             Line::name,
             Line::new);
   }
@@ -34,7 +36,8 @@ public record ExchangeViewPayload(BlockPos exchange, int digit, List<Line> lines
           ExchangeViewPayload::exchange,
           PacketCodecs.VAR_INT.<RegistryByteBuf>cast(),
           ExchangeViewPayload::digit,
-          Line.CODEC.collect(PacketCodecs.toList(PhoneNumbering.LINES_PER_EXCHANGE)),
+          Line.CODEC.collect(
+              PacketCodecs.toList(PhoneNumbering.LINES_PER_EXCHANGE * PartyLines.MOST_PHONES)),
           ExchangeViewPayload::lines,
           ExchangeViewPayload::new);
 

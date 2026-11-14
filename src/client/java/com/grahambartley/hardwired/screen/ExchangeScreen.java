@@ -3,7 +3,6 @@ package com.grahambartley.hardwired.screen;
 import com.grahambartley.hardwired.network.ExchangeSharePayload;
 import com.grahambartley.hardwired.network.ExchangeViewPayload;
 import com.grahambartley.hardwired.phone.PartyLines;
-import com.grahambartley.hardwired.phone.PhoneNumbering;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -123,10 +122,7 @@ public final class ExchangeScreen extends Screen {
         top() + TITLE_Y,
         SlatePlate.TITLE_COLOR,
         PanelText.Align.CENTER);
-    Text digit =
-        view.digit() == PhoneNumbering.NONE
-            ? Text.translatable("screen.hardwired.exchange.no_digit")
-            : Text.translatable("screen.hardwired.exchange.digit", view.digit());
+    Text digit = Text.translatable("screen.hardwired.exchange.digit", view.digit());
     PanelText.flat(
         context,
         textRenderer,
@@ -154,11 +150,7 @@ public final class ExchangeScreen extends Screen {
       if (chosen.contains(line.phone())) {
         context.fill(textLeft - 2, y - 2, textRight + 2, y + ROW - 2, CHOSEN_FILL);
       }
-      Text label =
-          line.name().isEmpty()
-              ? Text.literal(String.valueOf(line.number()))
-              : Text.translatable(
-                  "screen.hardwired.telephone.listing", String.valueOf(line.number()), line.name());
+      Text label = PhoneListing.label(line.number(), line.name());
       PanelText.flat(
           context, textRenderer, label, textLeft, textRight, y, ROW_COLOR, PanelText.Align.LEFT);
     }

@@ -10,8 +10,7 @@ import org.jetbrains.annotations.Nullable;
 public final class CallTalk {
 
   private final BlockPos phone;
-  @Nullable private VoiceCapture capture;
-  @Nullable private MicProblem problem;
+  private final MicSession mic = new MicSession();
 
   public CallTalk(BlockPos phone) {
     this.phone = phone;
@@ -22,20 +21,14 @@ public final class CallTalk {
   }
 
   public void press(MinecraftClient client, boolean connected) {
-    if (capture == null && connected && allowed()) {
-      problem = null;
-      capture =
-          VoiceCapture.start(
-              frame -> client.execute(() -> send(frame)),
-              failure -> client.execute(() -> fail(failure)));
+    if (connected && allowed()) {
+      mic.open(
+          client, frame -> ClientPlayNetworking.send(new CallVoicePayload(phone, frame)), () -> {});
     }
   }
 
   public void letGo() {
-    if (capture != null) {
-      capture.stop();
-      capture = null;
-    }
+    mic.close();
   }
 
   public void tick(MinecraftClient client, boolean connected) {
@@ -45,22 +38,11 @@ public final class CallTalk {
   }
 
   public boolean micOpen() {
-    return capture != null;
+    return mic.isOpen();
   }
 
   @Nullable
   public MicProblem problem() {
-    return problem;
-  }
-
-  private void fail(MicProblem failure) {
-    problem = failure;
-    letGo();
-  }
-
-  private void send(byte[] frame) {
-    if (capture != null) {
-      ClientPlayNetworking.send(new CallVoicePayload(phone, frame));
-    }
+    return mic.problem();
   }
 }

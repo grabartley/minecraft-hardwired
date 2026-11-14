@@ -9,6 +9,7 @@ public enum LineStatus {
   NO_ANSWER("screen.hardwired.telephone.status.no_answer"),
   HUNG_UP("screen.hardwired.telephone.status.hung_up"),
   LINE_DEAD("screen.hardwired.telephone.status.line_dead"),
+  LEFT("screen.hardwired.telephone.status.left"),
   TOO_FAST("device.hardwired.too_fast");
 
   private final String key;

@@ -1,11 +1,12 @@
 package com.grahambartley.hardwired.phone;
 
 import com.grahambartley.hardwired.device.DeviceStatus;
+import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireGrid;
 import com.grahambartley.hardwired.wire.WireNetwork;
-import com.grahambartley.hardwired.wire.WireViewer;
+import com.grahambartley.hardwired.wire.WireOverrides;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -15,23 +16,46 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 
 public final class PhoneDirectory {
 
   public record Listing(int number, String name) {}
 
+  private final ServerWorld world;
   private final PhoneBook book;
   private final WireGrid grid;
 
-  private PhoneDirectory(PhoneBook book, WireGrid grid) {
-    this.book = book;
-    this.grid = grid;
+  private PhoneDirectory(ServerWorld world) {
+    this.world = world;
+    this.book = PhoneBook.of(world);
+    this.grid = WireEngine.of(world).grid();
   }
 
   public static PhoneDirectory of(ServerWorld world) {
-    return new PhoneDirectory(PhoneBook.of(world), WireEngine.of(world).grid());
+    return new PhoneDirectory(world);
+  }
+
+  public static DeviceStatus readiness(ServerWorld world, BlockPos pos) {
+    PowerGrids power = WireEngine.of(world).power();
+    if (!power.hasPower(pos)) {
+      return power.stopReason(pos);
+    }
+    return of(world).status(pos.asLong());
+  }
+
+  public void markStale() {
+    book.markStale();
+  }
+
+  public void refreshIfStale() {
+    if (book.takeStale()) {
+      refresh();
+    }
   }
 
   public void refresh() {
@@ -75,18 +99,18 @@ public final class PhoneDirectory {
   public void add(long pos, List<Long> cells, boolean exchange) {
     if (book.at(pos).isEmpty()) {
       book.put(pos, PhoneEntry.added(exchange, cells, book.nextOrder()));
-      refresh();
+      markStale();
     }
   }
 
-  public void placedBy(long pos, String name, WireViewer placer) {
+  public void placedBy(long pos, String name, UUID placer) {
     book.at(pos).ifPresent(entry -> book.put(pos, entry.placedBy(name, placer)));
-    refresh();
+    markStale();
   }
 
   public void remove(long pos) {
     book.remove(pos);
-    refresh();
+    markStale();
   }
 
   public void renumber(long phone, int number, long exchange) {
@@ -128,14 +152,27 @@ public final class PhoneDirectory {
   }
 
   public DeviceStatus status(long pos) {
-    Optional<PhoneEntry> entry = book.at(pos);
-    if (entry.isEmpty()) {
+    Optional<PhoneEntry> found = book.at(pos);
+    if (found.isEmpty()) {
       return DeviceStatus.NO_EXCHANGE;
     }
-    if (entry.get().home().isEmpty()) {
-      return entry.get().exchange() ? DeviceStatus.READY : DeviceStatus.NO_EXCHANGE;
+    PhoneEntry entry = found.get();
+    Optional<WireNetwork> system = systemOf(pos);
+    if (system.isEmpty()) {
+      return entry.exchange() ? DeviceStatus.NO_TELEPHONE : DeviceStatus.NO_EXCHANGE;
     }
-    return entry.get().hasNumber() ? DeviceStatus.READY : DeviceStatus.NETWORK_FULL;
+    if (entry.hasNumber()) {
+      return DeviceStatus.READY;
+    }
+    return allowed(entry, system.get()) ? DeviceStatus.NETWORK_FULL : DeviceStatus.SEALED_OUT;
+  }
+
+  private boolean allowed(PhoneEntry entry, WireNetwork network) {
+    if (!network.isSealed() || network.owner().equals(entry.placer())) {
+      return true;
+    }
+    ServerPlayerEntity placer = world.getServer().getPlayerManager().getPlayer(entry.placer());
+    return placer != null && WireOverrides.isActive(placer);
   }
 
   private PhoneNumbering.Result numberSystem(WireNetwork network, List<Long> members) {
@@ -143,7 +180,7 @@ public final class PhoneDirectory {
     List<PhoneNumbering.Phone> phones = new ArrayList<>();
     for (long pos : members) {
       PhoneEntry entry = book.at(pos).orElseThrow();
-      boolean allowed = entry.hasNumber() || entry.placer().canSee(network);
+      boolean allowed = entry.hasNumber() || allowed(entry, network);
       if (entry.exchange()) {
         exchanges.add(new PhoneNumbering.Exchange(pos, entry.order(), entry.number(), allowed));
       } else {

@@ -9,8 +9,11 @@ public final class PhoneNetwork {
   private PhoneNetwork() {}
 
   public static void tick(ServerWorld world) {
+    PhoneDirectory directory = PhoneDirectory.of(world);
     if (world.getTime() % REFRESH_TICKS == 0) {
-      PhoneDirectory.of(world).refresh();
+      directory.refresh();
+    } else {
+      directory.refreshIfStale();
     }
     Switchboard.of(world).tick();
   }

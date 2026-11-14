@@ -35,7 +35,7 @@ final class PhoneLine {
         || player.getServerWorld() != world
         || !player.isAlive()
         || !player.canInteractWithBlockAt(pos, DeviceActions.REACH_MARGIN)) {
-      return Optional.of(LineStatus.HUNG_UP);
+      return Optional.of(LineStatus.LEFT);
     }
     boolean live =
         WireEngine.of(world).isLoaded(pos)
@@ -88,7 +88,7 @@ final class PhoneLine {
     for (Map.Entry<Long, UUID> member : call.members().entrySet()) {
       ServerPlayerEntity player = player(member.getValue());
       if (player != null) {
-        PhoneViews.send(player, member.getKey(), status);
+        PhoneViews.update(player, member.getKey(), status);
       }
     }
   }
@@ -96,7 +96,7 @@ final class PhoneLine {
   void tell(long phone, UUID id, LineStatus status) {
     ServerPlayerEntity player = player(id);
     if (player != null) {
-      PhoneViews.send(player, phone, status);
+      PhoneViews.update(player, phone, status);
     }
   }
 

@@ -451,7 +451,6 @@
   "screen.hardwired.exchange.share": "Nummer teilen",
   "screen.hardwired.exchange.part": "Trennen",
   "screen.hardwired.exchange.digit": "Ziffer %s",
-  "screen.hardwired.exchange.no_digit": "Keine Ziffer. Das Netz ist voll.",
   "screen.hardwired.exchange.no_lines": "Keine Telefone an dieser Vermittlung.",
   "screen.hardwired.exchange.not_yours": "Nur der Besitzer dieses Drahts kann hier Nummern teilen.",
   "chat.hardwired.telephone": "[Telefon] <%s> %s",
@@ -478,5 +477,11 @@
   "screen.hardwired.settings.voicecalls.tooltip": "Erlaubt Spielern, bei Telefonanrufen zu sprechen.",
   "subtitles.hardwired.telephone.voice": "Stimme in der Leitung",
   "screen.hardwired.settings.hearvoicecalls": "Anrufe hören",
-  "screen.hardwired.settings.hearvoicecalls.tooltip": "Spielt Stimmen bei Telefonanrufen auf diesem Gerät ab."
+  "screen.hardwired.settings.hearvoicecalls.tooltip": "Spielt Stimmen bei Telefonanrufen auf diesem Gerät ab.",
+  "screen.hardwired.telephone.status.left": "Du hast das Telefon verlassen.",
+  "device.hardwired.status.no_telephone": "Noch kein Telefon an seinem Draht.",
+  "device.hardwired.status.sealed_out": "Dieser Draht ist von jemand anderem versiegelt.",
+  "screen.hardwired.exchange.pick": "Wähle 2 bis 4 Telefone, um eine Nummer zu teilen.",
+  "screen.hardwired.exchange.not_shared": "Diese Telefone teilen keine Nummer.",
+  "screen.hardwired.exchange.needs_build": "Du brauchst Baurechte, um diese Vermittlung zu ändern."
 }

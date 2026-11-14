@@ -18,8 +18,7 @@ public final class TalkControl {
   private final BlockPos pos;
   private final BroadcastDeskBlockEntity desk;
   private final TalkState state = new TalkState();
-  @Nullable private VoiceCapture capture;
-  @Nullable private MicProblem problem;
+  private final MicSession mic = new MicSession();
 
   public TalkControl(BlockPos pos, BroadcastDeskBlockEntity desk) {
     this.pos = pos;
@@ -28,7 +27,7 @@ public final class TalkControl {
 
   public void press() {
     if (state.press(available())) {
-      problem = null;
+      mic.clearProblem();
       send(DeskAction.TAKE_MIC);
     }
   }
@@ -47,19 +46,19 @@ public final class TalkControl {
     if (state.askAgain(desk.mic().speaker() == null)) {
       send(DeskAction.TAKE_MIC);
     }
-    switch (state.capture(capture != null, mine(client))) {
+    switch (state.capture(mic.isOpen(), mine(client))) {
       case START ->
-          capture =
-              VoiceCapture.start(
-                  frame -> client.execute(() -> send(frame)),
-                  failure -> client.execute(() -> fail(failure)));
-      case STOP -> closeCapture();
+          mic.open(
+              client,
+              frame -> ClientPlayNetworking.send(new VoiceFramePayload(pos, frame)),
+              this::drop);
+      case STOP -> mic.close();
       case KEEP -> {}
     }
   }
 
   public boolean micOpen() {
-    return capture != null;
+    return mic.isOpen();
   }
 
   public boolean available() {
@@ -72,17 +71,12 @@ public final class TalkControl {
 
   @Nullable
   public MicProblem problem() {
-    return problem;
+    return mic.problem();
   }
 
   private boolean mine(MinecraftClient client) {
     UUID speaker = desk.mic().speaker();
     return speaker != null && speaker.equals(client.player.getUuid());
-  }
-
-  private void fail(MicProblem failure) {
-    problem = failure;
-    drop();
   }
 
   private void drop() {
@@ -92,21 +86,8 @@ public final class TalkControl {
   }
 
   private void giveUpMic() {
-    closeCapture();
+    mic.close();
     send(DeskAction.RELEASE_MIC);
-  }
-
-  private void closeCapture() {
-    if (capture != null) {
-      capture.stop();
-      capture = null;
-    }
-  }
-
-  private void send(byte[] frame) {
-    if (capture != null) {
-      ClientPlayNetworking.send(new VoiceFramePayload(pos, frame));
-    }
   }
 
   private void send(DeskAction action) {

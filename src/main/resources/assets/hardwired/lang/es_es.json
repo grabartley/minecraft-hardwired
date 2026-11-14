@@ -451,7 +451,6 @@
   "screen.hardwired.exchange.share": "Compartir número",
   "screen.hardwired.exchange.part": "Separar",
   "screen.hardwired.exchange.digit": "Dígito %s",
-  "screen.hardwired.exchange.no_digit": "Sin dígito. La red está llena.",
   "screen.hardwired.exchange.no_lines": "No hay Teléfonos en esta Centralita.",
   "screen.hardwired.exchange.not_yours": "Solo el dueño de este cable puede compartir números aquí.",
   "chat.hardwired.telephone": "[Teléfono] <%s> %s",
@@ -478,5 +477,11 @@
   "screen.hardwired.settings.voicecalls.tooltip": "Permite a los jugadores hablar en llamadas de Teléfono.",
   "subtitles.hardwired.telephone.voice": "Voz en la línea",
   "screen.hardwired.settings.hearvoicecalls": "Oír llamadas",
-  "screen.hardwired.settings.hearvoicecalls.tooltip": "Reproduce las voces de las llamadas de Teléfono en este dispositivo."
+  "screen.hardwired.settings.hearvoicecalls.tooltip": "Reproduce las voces de las llamadas de Teléfono en este dispositivo.",
+  "screen.hardwired.telephone.status.left": "Te alejaste del Teléfono.",
+  "device.hardwired.status.no_telephone": "Aún no hay ningún Teléfono en su cable.",
+  "device.hardwired.status.sealed_out": "Otra persona selló este cable.",
+  "screen.hardwired.exchange.pick": "Elige de 2 a 4 Teléfonos para compartir un número.",
+  "screen.hardwired.exchange.not_shared": "Esos Teléfonos no comparten número.",
+  "screen.hardwired.exchange.needs_build": "Necesitas permisos de construcción para cambiar esta Centralita."
 }

@@ -22,6 +22,7 @@ public final class PhoneBook extends PersistentState {
 
   private final Map<Long, PhoneEntry> entries = new LinkedHashMap<>();
   private long nextOrder;
+  private boolean stale;
 
   public static PhoneBook of(ServerWorld world) {
     return world.getPersistentStateManager().getOrCreate(TYPE, KEY);
@@ -38,6 +39,16 @@ public final class PhoneBook extends PersistentState {
   public long nextOrder() {
     markDirty();
     return nextOrder++;
+  }
+
+  public void markStale() {
+    stale = true;
+  }
+
+  public boolean takeStale() {
+    boolean was = stale;
+    stale = false;
+    return was;
   }
 
   public void put(long pos, PhoneEntry entry) {

@@ -11,7 +11,15 @@ public final class PhoneViews {
 
   private PhoneViews() {}
 
-  public static void send(ServerPlayerEntity player, long phone, LineStatus status) {
+  public static void open(ServerPlayerEntity player, long phone, LineStatus status) {
+    send(player, phone, status, true);
+  }
+
+  public static void update(ServerPlayerEntity player, long phone, LineStatus status) {
+    send(player, phone, status, false);
+  }
+
+  private static void send(ServerPlayerEntity player, long phone, LineStatus status, boolean open) {
     PhoneDirectory directory = PhoneDirectory.of(player.getServerWorld());
     int number = directory.entry(phone).map(PhoneEntry::number).orElse(PhoneNumbering.NONE);
     WireViewer viewer = WireViewer.of(player);
@@ -20,6 +28,7 @@ public final class PhoneViews {
             ? directory.listings(phone)
             : List.of();
     ServerPlayNetworking.send(
-        player, new PhoneViewPayload(BlockPos.fromLong(phone), number, status.ordinal(), listings));
+        player,
+        new PhoneViewPayload(BlockPos.fromLong(phone), number, status.ordinal(), listings, open));
   }
 }

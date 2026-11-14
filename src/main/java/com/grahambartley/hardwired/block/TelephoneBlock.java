@@ -10,9 +10,7 @@ import com.grahambartley.hardwired.device.WireDevice;
 import com.grahambartley.hardwired.phone.PhoneActions;
 import com.grahambartley.hardwired.phone.PhoneDirectory;
 import com.grahambartley.hardwired.phone.Switchboard;
-import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.wire.WireEngine;
-import com.grahambartley.hardwired.wire.WireViewer;
 import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Set;
@@ -66,14 +64,6 @@ public final class TelephoneBlock extends HorizontalFacingBlock
             .with(RINGING, false));
   }
 
-  public static DeviceStatus readiness(ServerWorld world, BlockPos pos) {
-    PowerGrids power = WireEngine.of(world).power();
-    if (!power.hasPower(pos)) {
-      return power.stopReason(pos);
-    }
-    return PhoneDirectory.of(world).status(pos.asLong());
-  }
-
   @Override
   protected MapCodec<? extends HorizontalFacingBlock> getCodec() {
     return MapCodec.unit(this);
@@ -122,7 +112,7 @@ public final class TelephoneBlock extends HorizontalFacingBlock
     if (world instanceof ServerWorld server && placer instanceof ServerPlayerEntity player) {
       Text name = stack.get(DataComponentTypes.CUSTOM_NAME);
       PhoneDirectory.of(server)
-          .placedBy(pos.asLong(), name == null ? "" : name.getString(), WireViewer.of(player));
+          .placedBy(pos.asLong(), name == null ? "" : name.getString(), player.getUuid());
     }
   }
 
@@ -163,7 +153,7 @@ public final class TelephoneBlock extends HorizontalFacingBlock
 
   @Override
   public void onWireChange(ServerWorld world, BlockPos pos, BlockState state) {
-    PhoneDirectory.of(world).refresh();
+    PhoneDirectory.of(world).markStale();
     ElectronicsDriver.wake(world, pos);
   }
 
@@ -174,7 +164,7 @@ public final class TelephoneBlock extends HorizontalFacingBlock
 
   @Override
   public DeviceStatus demand(ServerWorld world, BlockPos pos, BlockState state) {
-    return readiness(world, pos);
+    return PhoneDirectory.readiness(world, pos);
   }
 
   @Override

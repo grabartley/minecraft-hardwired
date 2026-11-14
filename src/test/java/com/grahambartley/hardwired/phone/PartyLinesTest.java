@@ -42,12 +42,19 @@ class PartyLinesTest {
   @ParameterizedTest(name = "numbers [{0}] part [{1}] changes [{2}]")
   @CsvSource({
     "'100 100 101','2','2=-1'",
+    "'100 100 101','1','1=-1'",
+    "'100 100 101','1 2','2=-1'",
     "'100 100 101','3','-'",
     "'100 100 100','1 2','1=-1 2=-1'",
+    "'100 100 100','1 2 3','2=-1 3=-1'",
     "'100','7','-'"
   })
-  void partingGivesASharedPhoneItsOwnNumberAgain(String numbers, String chosen, String changes) {
-    assertEquals(expected(changes), PartyLines.part(numbers(numbers), phones(chosen)));
+  void partingChangesOnlyThePickedPhonesAndTheFirstWiredKeepsTheNumber(
+      String numbers, String chosen, String changes) {
+    Map<Long, Integer> book = numbers(numbers);
+    Map<Long, Long> orders = new LinkedHashMap<>();
+    book.keySet().forEach(phone -> orders.put(phone, phone));
+    assertEquals(expected(changes), PartyLines.part(book, orders, phones(chosen)));
   }
 
   private static Map<Long, Integer> expected(String changes) {

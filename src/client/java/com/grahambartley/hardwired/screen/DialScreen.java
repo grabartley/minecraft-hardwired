@@ -6,9 +6,7 @@ import com.grahambartley.hardwired.device.IntercomLine;
 import com.grahambartley.hardwired.network.PhoneActionPayload;
 import com.grahambartley.hardwired.network.PhoneViewPayload;
 import com.grahambartley.hardwired.phone.LineStatus;
-import com.grahambartley.hardwired.phone.PhoneDirectory.Listing;
 import com.grahambartley.hardwired.phone.PhoneNumbering;
-import com.grahambartley.hardwired.phone.RingCadence;
 import com.grahambartley.hardwired.registry.ModSounds;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -17,8 +15,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
@@ -38,27 +34,20 @@ public final class DialScreen extends Screen {
   private static final int ROW = 10;
   private static final int FIELD_HEIGHT = 18;
   private static final int BUTTON_HEIGHT = 18;
-  private static final int BUTTON_GAP = 6;
+  private static final int GAP = 4;
   private static final int MOST_LINES = 5;
-  private static final int DIGITS = 3;
-  private static final double RETURN_PER_TICK = RotaryWheel.STEP / 2;
-  private static final int BUSY_TICKS = 10;
   private static final int LIST_COLOR = 0xFFE6E2DA;
 
   private final BlockPos phone;
   private final Deque<Text> transcript = new ArrayDeque<>();
+  private final DialState dial = new DialState();
+  private final LineTones tones = new LineTones();
+  private final CallTalk talk;
   private PhoneViewPayload view;
   private LineStatus status;
-  private String dialed = "";
-  private int heldPulses;
-  private double grabAngle;
-  private double turned;
-  private boolean returning;
   private int listOffset;
-  private long ticks;
   private TextFieldWidget field;
   private TalkButton talkButton;
-  private final CallTalk talk;
 
   public DialScreen(PhoneViewPayload view) {
     super(Text.translatable("screen.hardwired.telephone.title"));
@@ -73,13 +62,9 @@ public final class DialScreen extends Screen {
 
   public void accept(PhoneViewPayload next) {
     view = next;
-    LineStatus previous = status;
     status = LineStatus.byIndex(next.status());
-    if (previous != status) {
-      ticks = 0;
-      if (!status.isOnCall()) {
-        dialed = "";
-      }
+    if (!status.isOnCall()) {
+      dial.clearDigits();
     }
     if (field != null) {
       field.visible = connected();
@@ -101,26 +86,33 @@ public final class DialScreen extends Screen {
     return (height - HEIGHT) / 2;
   }
 
+  private int sideWidth() {
+    return WIDTH - SIDE_X - PADDING;
+  }
+
+  private int buttonY() {
+    return top() + HEIGHT - PADDING - BUTTON_HEIGHT;
+  }
+
+  private int fieldY() {
+    return buttonY() - GAP - FIELD_HEIGHT;
+  }
+
   @Override
   protected void init() {
-    int sideWidth = WIDTH - SIDE_X - PADDING;
+    Text prompt = Text.translatable("screen.hardwired.intercom.prompt");
     field =
         new TextFieldWidget(
-            textRenderer,
-            left() + SIDE_X,
-            top() + HEIGHT - PADDING - BUTTON_HEIGHT - FIELD_HEIGHT - 4,
-            sideWidth,
-            FIELD_HEIGHT,
-            Text.translatable("screen.hardwired.intercom.prompt"));
+            textRenderer, left() + SIDE_X, fieldY(), sideWidth(), FIELD_HEIGHT, prompt);
     field.setMaxLength(IntercomLine.MAX_LENGTH);
-    field.setPlaceholder(Text.translatable("screen.hardwired.intercom.prompt"));
+    field.setPlaceholder(prompt);
     field.visible = connected();
     addDrawableChild(field);
-    int half = (sideWidth - BUTTON_GAP) / 2;
+    int half = (sideWidth() - GAP) / 2;
     talkButton =
         new TalkButton(
             left() + SIDE_X,
-            top() + HEIGHT - PADDING - BUTTON_HEIGHT,
+            buttonY(),
             half,
             BUTTON_HEIGHT,
             Text.translatable("screen.hardwired.desk.talk"),
@@ -128,8 +120,8 @@ public final class DialScreen extends Screen {
     addDrawableChild(talkButton);
     addDrawableChild(
         new RedButton(
-            left() + SIDE_X + half + BUTTON_GAP,
-            top() + HEIGHT - PADDING - BUTTON_HEIGHT,
+            left() + SIDE_X + half + GAP,
+            buttonY(),
             half,
             BUTTON_HEIGHT,
             Text.translatable("screen.hardwired.telephone.hang_up"),
@@ -138,17 +130,14 @@ public final class DialScreen extends Screen {
 
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int button) {
-    if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT && canDial()) {
+    if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
       int pulses =
           RotaryWheel.holeAt(
               mouseX - wheelX(),
               mouseY - wheelY(),
               RotaryDialPainter.RING_RADIUS,
               RotaryDialPainter.HOLE_RADIUS);
-      if (pulses > 0) {
-        heldPulses = pulses;
-        grabAngle = angleTo(mouseX, mouseY);
-        turned = 0;
+      if (dial.grab(pulses, angleTo(mouseX, mouseY), status.isOnCall())) {
         return true;
       }
     }
@@ -158,8 +147,8 @@ public final class DialScreen extends Screen {
   @Override
   public boolean mouseDragged(
       double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-    if (heldPulses > 0) {
-      turned = RotaryWheel.turn(grabAngle, angleTo(mouseX, mouseY), heldPulses);
+    if (dial.holding()) {
+      dial.drag(angleTo(mouseX, mouseY));
       return true;
     }
     return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
@@ -168,12 +157,10 @@ public final class DialScreen extends Screen {
   @Override
   public boolean mouseReleased(double mouseX, double mouseY, int button) {
     talk.letGo();
-    if (heldPulses > 0) {
-      if (RotaryWheel.atStop(turned, heldPulses)) {
-        dial(RotaryWheel.digitFor(heldPulses));
-      }
-      heldPulses = 0;
-      returning = true;
+    if (dial.holding()) {
+      dial.release();
+      dial.number()
+          .ifPresent(number -> ClientPlayNetworking.send(PhoneActionPayload.dial(phone, number)));
       return true;
     }
     return super.mouseReleased(mouseX, mouseY, button);
@@ -182,7 +169,7 @@ public final class DialScreen extends Screen {
   @Override
   public boolean mouseScrolled(
       double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-    int most = Math.max(0, view.listings().size() - visibleListings());
+    int most = Math.max(0, view.listings().size() - visibleRows());
     listOffset = Math.clamp(listOffset - (int) Math.signum(verticalAmount), 0, most);
     return true;
   }
@@ -212,24 +199,13 @@ public final class DialScreen extends Screen {
 
   @Override
   public void tick() {
-    ticks++;
+    if (dial.tick()) {
+      LineTones.play(client, ModSounds.TELEPHONE_DIAL_CLICK);
+    }
+    tones.tick(client, status);
     talk.tick(client, connected());
     talkButton.visible = connected() && CallTalk.allowed();
     talkButton.setLit(talk.micOpen());
-    if (returning) {
-      double before = turned;
-      turned = Math.max(0, turned - RETURN_PER_TICK);
-      if (Math.floor(before / RotaryWheel.STEP) > Math.floor(turned / RotaryWheel.STEP)
-          && turned >= RotaryWheel.STEP) {
-        play(ModSounds.TELEPHONE_DIAL_CLICK, 1F);
-      }
-      returning = turned > 0;
-    }
-    if (status == LineStatus.RINGING_OUT && RingCadence.strokeStarting(ticks, false) > 0) {
-      play(ModSounds.TELEPHONE_RINGBACK, 1F);
-    } else if (status == LineStatus.BUSY && ticks % BUSY_TICKS == 0) {
-      play(ModSounds.TELEPHONE_BUSY, 1F);
-    }
   }
 
   @Override
@@ -249,7 +225,7 @@ public final class DialScreen extends Screen {
   public void render(DrawContext context, int mouseX, int mouseY, float delta) {
     super.render(context, mouseX, mouseY, delta);
     int sideLeft = left() + SIDE_X;
-    int sideRight = left() + WIDTH - PADDING;
+    int sideRight = sideLeft + sideWidth();
     PanelText.shadowed(
         context,
         textRenderer,
@@ -259,7 +235,7 @@ public final class DialScreen extends Screen {
         top() + TITLE_Y,
         SlatePlate.TITLE_COLOR,
         PanelText.Align.CENTER);
-    RotaryDialPainter.draw(context, textRenderer, wheelX(), wheelY(), turned, ownNumber());
+    RotaryDialPainter.draw(context, textRenderer, wheelX(), wheelY(), dial.turned(), ownNumber());
     PanelText.shadowed(
         context,
         textRenderer,
@@ -272,25 +248,21 @@ public final class DialScreen extends Screen {
     PanelText.flat(
         context,
         textRenderer,
-        Text.literal(dialed + "_".repeat(DIGITS - dialed.length())),
+        Text.literal(dial.dialed() + "_".repeat(DialState.DIGITS - dial.dialed().length())),
         sideLeft,
         sideRight,
         top() + DIALED_Y,
         LIST_COLOR,
         PanelText.Align.LEFT);
-    if (connected()) {
-      renderLines(context, sideLeft, sideRight, transcript.stream().toList());
-    } else {
-      renderLines(context, sideLeft, sideRight, listings());
-    }
+    renderRows(context, sideLeft, sideRight, connected() ? List.copyOf(transcript) : listings());
   }
 
-  private void renderLines(DrawContext context, int left, int right, List<Text> lines) {
-    for (int row = 0; row < lines.size() && row < visibleListings(); row++) {
+  private void renderRows(DrawContext context, int left, int right, List<Text> rows) {
+    for (int row = 0; row < rows.size() && row < visibleRows(); row++) {
       PanelText.flat(
           context,
           textRenderer,
-          lines.get(row),
+          rows.get(row),
           left,
           right,
           top() + LIST_Y + row * ROW,
@@ -311,42 +283,23 @@ public final class DialScreen extends Screen {
   }
 
   private List<Text> listings() {
-    List<Listing> all = view.listings();
-    if (all.isEmpty()) {
+    if (view.listings().isEmpty()) {
       return List.of(Text.translatable("screen.hardwired.telephone.no_directory"));
     }
-    return all.stream()
+    return view.listings().stream()
         .skip(listOffset)
-        .<Text>map(
-            listing ->
-                listing.name().isEmpty()
-                    ? Text.literal(String.valueOf(listing.number()))
-                    : Text.translatable(
-                        "screen.hardwired.telephone.listing",
-                        String.valueOf(listing.number()),
-                        listing.name()))
+        .map(listing -> PhoneListing.label(listing.number(), listing.name()))
         .toList();
   }
 
-  private int visibleListings() {
-    return (HEIGHT - LIST_Y - PADDING - BUTTON_HEIGHT - FIELD_HEIGHT - 8) / ROW;
+  private int visibleRows() {
+    return (fieldY() - GAP - top() - LIST_Y) / ROW;
   }
 
   private Text ownNumber() {
     return view.number() == PhoneNumbering.NONE
         ? Text.literal("---")
         : Text.literal(String.valueOf(view.number()));
-  }
-
-  private boolean canDial() {
-    return !status.isOnCall() && !returning && dialed.length() < DIGITS;
-  }
-
-  private void dial(int digit) {
-    dialed += digit;
-    if (dialed.length() == DIGITS) {
-      ClientPlayNetworking.send(PhoneActionPayload.dial(phone, Integer.parseInt(dialed)));
-    }
   }
 
   private void say() {
@@ -366,12 +319,6 @@ public final class DialScreen extends Screen {
 
   private double angleTo(double mouseX, double mouseY) {
     return Math.atan2(mouseY - wheelY(), mouseX - wheelX());
-  }
-
-  private void play(SoundEvent sound, float pitch) {
-    if (client != null) {
-      client.getSoundManager().play(PositionedSoundInstance.master(sound, pitch));
-    }
   }
 
   @Override

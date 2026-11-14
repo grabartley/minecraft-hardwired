@@ -12,7 +12,7 @@ public final class PhoneScreens {
   public static void show(MinecraftClient client, PhoneViewPayload view) {
     if (client.currentScreen instanceof DialScreen screen && screen.shows(view.phone())) {
       screen.accept(view);
-    } else {
+    } else if (view.open()) {
       client.setScreen(new DialScreen(view));
     }
   }

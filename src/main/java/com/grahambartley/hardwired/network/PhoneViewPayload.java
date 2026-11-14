@@ -1,7 +1,9 @@
 package com.grahambartley.hardwired.network;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.phone.PartyLines;
 import com.grahambartley.hardwired.phone.PhoneDirectory.Listing;
+import com.grahambartley.hardwired.phone.PhoneEntry;
 import com.grahambartley.hardwired.phone.PhoneNumbering;
 import java.util.List;
 import net.minecraft.network.RegistryByteBuf;
@@ -11,18 +13,18 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
-public record PhoneViewPayload(BlockPos phone, int number, int status, List<Listing> listings)
+public record PhoneViewPayload(
+    BlockPos phone, int number, int status, List<Listing> listings, boolean open)
     implements CustomPayload {
 
-  public static final int MAX_NAME = 50;
   public static final int MAX_LISTINGS =
-      PhoneNumbering.LAST_DIGIT * PhoneNumbering.LINES_PER_EXCHANGE;
+      PhoneNumbering.LAST_DIGIT * PhoneNumbering.LINES_PER_EXCHANGE * PartyLines.MOST_PHONES;
 
   private static final PacketCodec<RegistryByteBuf, Listing> LISTING =
       PacketCodec.tuple(
           PacketCodecs.VAR_INT.<RegistryByteBuf>cast(),
           Listing::number,
-          PacketCodecs.string(MAX_NAME).<RegistryByteBuf>cast(),
+          PacketCodecs.string(PhoneEntry.MAX_NAME).<RegistryByteBuf>cast(),
           Listing::name,
           Listing::new);
 
@@ -38,6 +40,8 @@ public record PhoneViewPayload(BlockPos phone, int number, int status, List<List
           PhoneViewPayload::status,
           LISTING.collect(PacketCodecs.toList(MAX_LISTINGS)),
           PhoneViewPayload::listings,
+          PacketCodecs.BOOL.<RegistryByteBuf>cast(),
+          PhoneViewPayload::open,
           PhoneViewPayload::new);
 
   @Override
