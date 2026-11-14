@@ -12,7 +12,9 @@ public record PowerLoads(
     int intercomLoad,
     int alarmLoad,
     int broadcastLoad,
-    int liftLoad) {
+    int liftLoad,
+    int telephoneLoad,
+    int exchangeLoad) {
 
   public static final int LAMP_LOAD_MIN = 0;
   public static final int LAMP_LOAD_MAX = 256;
@@ -34,8 +36,12 @@ public record PowerLoads(
   public static final int BROADCAST_LOAD_MAX = 256;
   public static final int LIFT_LOAD_MIN = 0;
   public static final int LIFT_LOAD_MAX = 256;
+  public static final int TELEPHONE_LOAD_MIN = 0;
+  public static final int TELEPHONE_LOAD_MAX = 256;
+  public static final int EXCHANGE_LOAD_MIN = 0;
+  public static final int EXCHANGE_LOAD_MAX = 256;
 
-  public static final PowerLoads DEFAULTS = new PowerLoads(1, 2, 2, 2, 4, 4, 4, 8, 16, 32);
+  public static final PowerLoads DEFAULTS = new PowerLoads(1, 2, 2, 2, 4, 4, 4, 8, 16, 32, 1, 4);
 
   static final String KEY_LAMP_LOAD = "lampLoad";
   static final String KEY_STREETLIGHT_LOAD = "streetlightLoad";
@@ -47,6 +53,8 @@ public record PowerLoads(
   static final String KEY_ALARM_LOAD = "alarmLoad";
   static final String KEY_BROADCAST_LOAD = "broadcastLoad";
   static final String KEY_LIFT_LOAD = "liftLoad";
+  static final String KEY_TELEPHONE_LOAD = "telephoneLoad";
+  static final String KEY_EXCHANGE_LOAD = "exchangeLoad";
 
   public PowerLoads {
     lampLoad = ConfigBounds.clamp(lampLoad, LAMP_LOAD_MIN, LAMP_LOAD_MAX);
@@ -60,6 +68,8 @@ public record PowerLoads(
     alarmLoad = ConfigBounds.clamp(alarmLoad, ALARM_LOAD_MIN, ALARM_LOAD_MAX);
     broadcastLoad = ConfigBounds.clamp(broadcastLoad, BROADCAST_LOAD_MIN, BROADCAST_LOAD_MAX);
     liftLoad = ConfigBounds.clamp(liftLoad, LIFT_LOAD_MIN, LIFT_LOAD_MAX);
+    telephoneLoad = ConfigBounds.clamp(telephoneLoad, TELEPHONE_LOAD_MIN, TELEPHONE_LOAD_MAX);
+    exchangeLoad = ConfigBounds.clamp(exchangeLoad, EXCHANGE_LOAD_MIN, EXCHANGE_LOAD_MAX);
   }
 
   public PowerLoads withLampLoad(final int value) {
@@ -73,7 +83,9 @@ public record PowerLoads(
         intercomLoad,
         alarmLoad,
         broadcastLoad,
-        liftLoad);
+        liftLoad,
+        telephoneLoad,
+        exchangeLoad);
   }
 
   public PowerLoads withStreetlightLoad(final int value) {
@@ -87,7 +99,9 @@ public record PowerLoads(
         intercomLoad,
         alarmLoad,
         broadcastLoad,
-        liftLoad);
+        liftLoad,
+        telephoneLoad,
+        exchangeLoad);
   }
 
   public PowerLoads withLogicLoad(final int value) {
@@ -101,7 +115,9 @@ public record PowerLoads(
         intercomLoad,
         alarmLoad,
         broadcastLoad,
-        liftLoad);
+        liftLoad,
+        telephoneLoad,
+        exchangeLoad);
   }
 
   public PowerLoads withVanillaLoad(final int value) {
@@ -115,7 +131,9 @@ public record PowerLoads(
         intercomLoad,
         alarmLoad,
         broadcastLoad,
-        liftLoad);
+        liftLoad,
+        telephoneLoad,
+        exchangeLoad);
   }
 
   public PowerLoads withRadioLoad(final int value) {
@@ -129,7 +147,9 @@ public record PowerLoads(
         intercomLoad,
         alarmLoad,
         broadcastLoad,
-        liftLoad);
+        liftLoad,
+        telephoneLoad,
+        exchangeLoad);
   }
 
   public PowerLoads withSpeakerLoad(final int value) {
@@ -143,7 +163,9 @@ public record PowerLoads(
         intercomLoad,
         alarmLoad,
         broadcastLoad,
-        liftLoad);
+        liftLoad,
+        telephoneLoad,
+        exchangeLoad);
   }
 
   public PowerLoads withIntercomLoad(final int value) {
@@ -157,7 +179,9 @@ public record PowerLoads(
         value,
         alarmLoad,
         broadcastLoad,
-        liftLoad);
+        liftLoad,
+        telephoneLoad,
+        exchangeLoad);
   }
 
   public PowerLoads withAlarmLoad(final int value) {
@@ -171,7 +195,9 @@ public record PowerLoads(
         intercomLoad,
         value,
         broadcastLoad,
-        liftLoad);
+        liftLoad,
+        telephoneLoad,
+        exchangeLoad);
   }
 
   public PowerLoads withBroadcastLoad(final int value) {
@@ -185,7 +211,9 @@ public record PowerLoads(
         intercomLoad,
         alarmLoad,
         value,
-        liftLoad);
+        liftLoad,
+        telephoneLoad,
+        exchangeLoad);
   }
 
   public PowerLoads withLiftLoad(final int value) {
@@ -199,6 +227,40 @@ public record PowerLoads(
         intercomLoad,
         alarmLoad,
         broadcastLoad,
+        value,
+        telephoneLoad,
+        exchangeLoad);
+  }
+
+  public PowerLoads withTelephoneLoad(final int value) {
+    return new PowerLoads(
+        lampLoad,
+        streetlightLoad,
+        logicLoad,
+        vanillaLoad,
+        radioLoad,
+        speakerLoad,
+        intercomLoad,
+        alarmLoad,
+        broadcastLoad,
+        liftLoad,
+        value,
+        exchangeLoad);
+  }
+
+  public PowerLoads withExchangeLoad(final int value) {
+    return new PowerLoads(
+        lampLoad,
+        streetlightLoad,
+        logicLoad,
+        vanillaLoad,
+        radioLoad,
+        speakerLoad,
+        intercomLoad,
+        alarmLoad,
+        broadcastLoad,
+        liftLoad,
+        telephoneLoad,
         value);
   }
 
@@ -219,7 +281,11 @@ public record PowerLoads(
         fields.readInt(KEY_ALARM_LOAD, DEFAULTS.alarmLoad, ALARM_LOAD_MIN, ALARM_LOAD_MAX),
         fields.readInt(
             KEY_BROADCAST_LOAD, DEFAULTS.broadcastLoad, BROADCAST_LOAD_MIN, BROADCAST_LOAD_MAX),
-        fields.readInt(KEY_LIFT_LOAD, DEFAULTS.liftLoad, LIFT_LOAD_MIN, LIFT_LOAD_MAX));
+        fields.readInt(KEY_LIFT_LOAD, DEFAULTS.liftLoad, LIFT_LOAD_MIN, LIFT_LOAD_MAX),
+        fields.readInt(
+            KEY_TELEPHONE_LOAD, DEFAULTS.telephoneLoad, TELEPHONE_LOAD_MIN, TELEPHONE_LOAD_MAX),
+        fields.readInt(
+            KEY_EXCHANGE_LOAD, DEFAULTS.exchangeLoad, EXCHANGE_LOAD_MIN, EXCHANGE_LOAD_MAX));
   }
 
   void writeJson(final JsonObject root) {
@@ -233,5 +299,7 @@ public record PowerLoads(
     root.addProperty(KEY_ALARM_LOAD, alarmLoad);
     root.addProperty(KEY_BROADCAST_LOAD, broadcastLoad);
     root.addProperty(KEY_LIFT_LOAD, liftLoad);
+    root.addProperty(KEY_TELEPHONE_LOAD, telephoneLoad);
+    root.addProperty(KEY_EXCHANGE_LOAD, exchangeLoad);
   }
 }

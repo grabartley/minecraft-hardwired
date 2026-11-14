@@ -43,7 +43,8 @@
       "com.grahambartley.hardwired.gametest.LiftGateGameTest",
       "com.grahambartley.hardwired.gametest.LargeLiftGameTest",
       "com.grahambartley.hardwired.gametest.RadioGameTest",
-      "com.grahambartley.hardwired.gametest.BroadcastDeskGameTest"
+      "com.grahambartley.hardwired.gametest.BroadcastDeskGameTest",
+      "com.grahambartley.hardwired.gametest.TelephoneGameTest"
     ],
     "modmenu": [
       "com.grahambartley.hardwired.HardwiredModMenu"

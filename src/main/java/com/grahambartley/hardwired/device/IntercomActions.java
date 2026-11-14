@@ -8,23 +8,21 @@ import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.block.BlockState;
-import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 
 public final class IntercomActions {
 
-  private static final int MIN_TICKS_BETWEEN_LINES = 20;
-  private static final ActionRate RATE = new ActionRate(MIN_TICKS_BETWEEN_LINES);
+  private static final DeviceChat CHAT = new DeviceChat();
 
   private IntercomActions() {}
 
   public static void forget(ServerPlayerEntity player) {
-    RATE.forget(player.getUuid());
+    CHAT.forget(player);
   }
 
   public static DeviceStatus readiness(ServerWorld world, BlockPos pos) {
@@ -49,17 +47,8 @@ public final class IntercomActions {
         || !(world.getBlockState(pos).getBlock() instanceof IntercomBlock)) {
       return;
     }
-    if (player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-      player.sendMessage(
-          Text.translatable("chat.disabled.options").formatted(Formatting.RED), true);
-      return;
-    }
-    String line = IntercomLine.clean(said.line());
+    Optional<String> line = CHAT.accept(player, said.line());
     if (line.isEmpty()) {
-      return;
-    }
-    if (!RATE.allow(player.getUuid(), world.getTime())) {
-      player.sendMessage(Text.translatable("device.hardwired.too_fast"), true);
       return;
     }
     if (readiness(world, pos).isStopped()) {
@@ -70,7 +59,8 @@ public final class IntercomActions {
     broadcast(
         world,
         pos,
-        Text.translatable("chat.hardwired.intercom", player.getDisplayName(), Text.literal(line)));
+        Text.translatable(
+            "chat.hardwired.intercom", player.getDisplayName(), Text.literal(line.get())));
   }
 
   private static void broadcast(ServerWorld world, BlockPos pos, Text message) {
@@ -78,8 +68,7 @@ public final class IntercomActions {
     int range = Hardwired.SERVER_CONFIG.device().intercomRangeBlocks();
     world.getServer().sendMessage(message);
     for (ServerPlayerEntity listener : world.getPlayers()) {
-      if (listener.getClientChatVisibility() == ChatVisibility.FULL
-          && IntercomLine.reaches(listener.getPos(), intercoms, range)) {
+      if (DeviceChat.reads(listener) && IntercomLine.reaches(listener.getPos(), intercoms, range)) {
         listener.sendMessage(message);
       }
     }

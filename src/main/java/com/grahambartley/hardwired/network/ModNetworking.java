@@ -9,6 +9,9 @@ import com.grahambartley.hardwired.lift.LiftActions;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.EditServerConfigC2SPayload;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.SyncServerConfigS2CPayload;
 import com.grahambartley.hardwired.network.handler.ServerConfigNetworkHandler;
+import com.grahambartley.hardwired.phone.CallVoice;
+import com.grahambartley.hardwired.phone.ExchangeActions;
+import com.grahambartley.hardwired.phone.PhoneActions;
 import com.grahambartley.hardwired.power.DeviceInspector;
 import com.grahambartley.hardwired.radio.DeskActions;
 import com.grahambartley.hardwired.radio.DeskVoice;
@@ -52,6 +55,13 @@ public final class ModNetworking {
     PayloadTypeRegistry.playS2C().register(VoiceFramePayload.ID, VoiceFramePayload.CODEC);
     PayloadTypeRegistry.playS2C().register(LiftViewPayload.ID, LiftViewPayload.CODEC);
     PayloadTypeRegistry.playS2C().register(HumLevelPayload.ID, HumLevelPayload.CODEC);
+    PayloadTypeRegistry.playC2S().register(PhoneActionPayload.ID, PhoneActionPayload.CODEC);
+    PayloadTypeRegistry.playC2S().register(CallVoicePayload.ID, CallVoicePayload.CODEC);
+    PayloadTypeRegistry.playS2C().register(CallVoicePayload.ID, CallVoicePayload.CODEC);
+    PayloadTypeRegistry.playS2C().register(PhoneViewPayload.ID, PhoneViewPayload.CODEC);
+    PayloadTypeRegistry.playS2C().register(PhoneSaidPayload.ID, PhoneSaidPayload.CODEC);
+    PayloadTypeRegistry.playC2S().register(ExchangeSharePayload.ID, ExchangeSharePayload.CODEC);
+    PayloadTypeRegistry.playS2C().register(ExchangeViewPayload.ID, ExchangeViewPayload.CODEC);
     PayloadTypeRegistry.playC2S().register(DeviceInspectPayload.ID, DeviceInspectPayload.CODEC);
     PayloadTypeRegistry.playS2C()
         .register(DeviceInspectResultPayload.ID, DeviceInspectResultPayload.CODEC);
@@ -63,6 +73,13 @@ public final class ModNetworking {
         RadioSetPayload.ID, (payload, context) -> RadioActions.set(context.player(), payload));
     ServerPlayNetworking.registerGlobalReceiver(
         LiftChoosePayload.ID, (payload, context) -> LiftActions.choose(context.player(), payload));
+    ServerPlayNetworking.registerGlobalReceiver(
+        PhoneActionPayload.ID, (payload, context) -> PhoneActions.act(context.player(), payload));
+    ServerPlayNetworking.registerGlobalReceiver(
+        CallVoicePayload.ID, (payload, context) -> CallVoice.frame(context.player(), payload));
+    ServerPlayNetworking.registerGlobalReceiver(
+        ExchangeSharePayload.ID,
+        (payload, context) -> ExchangeActions.share(context.player(), payload));
     ServerPlayNetworking.registerGlobalReceiver(
         IntercomSayPayload.ID,
         (payload, context) -> IntercomActions.say(context.player(), payload));

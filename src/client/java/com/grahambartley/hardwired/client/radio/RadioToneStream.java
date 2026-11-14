@@ -17,10 +17,10 @@ final class RadioToneStream implements AudioStream {
   private final int channels;
   private int channel;
 
-  RadioToneStream(AudioStream stream) {
+  RadioToneStream(AudioStream stream, RadioTone.Band band) {
     this.stream = stream;
     this.channels = stream.getFormat().getChannels();
-    this.tone = new RadioTone(stream.getFormat().getSampleRate(), channels);
+    this.tone = new RadioTone(stream.getFormat().getSampleRate(), channels, band);
   }
 
   @Override

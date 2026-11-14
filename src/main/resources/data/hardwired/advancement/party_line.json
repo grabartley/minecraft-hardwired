@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:wall_telephone"
+    },
+    "title": {
+      "translate": "advancement.hardwired.party_line.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.party_line.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "party_line"
+      }
+    }
+  },
+  "parent": "hardwired:number_please"
+}

@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.client.radio;
 
+import com.grahambartley.hardwired.radio.RadioTone;
 import com.grahambartley.hardwired.radio.VoiceJitter;
 import com.grahambartley.hardwired.registry.ModSounds;
 import java.util.concurrent.CompletableFuture;
@@ -22,6 +23,7 @@ final class VoiceSoundInstance extends DeviceSoundInstance {
   @Override
   public CompletableFuture<AudioStream> getAudioStream(
       SoundLoader loader, Identifier id, boolean repeatInstantly) {
-    return CompletableFuture.completedFuture(new RadioToneStream(new VoiceStream(jitter)));
+    return CompletableFuture.completedFuture(
+        new RadioToneStream(new VoiceStream(jitter), RadioTone.Band.RADIO));
   }
 }

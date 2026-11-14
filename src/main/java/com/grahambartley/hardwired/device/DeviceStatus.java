@@ -17,7 +17,9 @@ public enum DeviceStatus {
   TOWER_NO_ROD("tower_no_rod"),
   TOWER_IN_USE("tower_in_use"),
   SHAFT_BLOCKED("shaft_blocked"),
-  NO_LIFT("no_lift");
+  NO_LIFT("no_lift"),
+  NO_EXCHANGE("no_exchange"),
+  NETWORK_FULL("network_full");
 
   private final String id;
 

@@ -9,6 +9,7 @@ import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.HumSettings;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.PhoneSettings;
 import com.grahambartley.hardwired.config.PowerLoads;
 import com.grahambartley.hardwired.config.PowerRatings;
 import com.grahambartley.hardwired.config.PowerSettings;
@@ -63,7 +64,8 @@ class ServerConfigPayloadsTest {
                     .withLoads(PowerLoads.DEFAULTS.withLiftLoad(16)),
                 new LiftSettings(13),
                 new CircuitSettings(200, 15),
-                new RadioSettings(17, 18, 19, 20, 21, 22, 23, 24, false))),
+                new RadioSettings(17, 18, 19, 20, 21, 22, 23, 24, false),
+                new PhoneSettings(12, 3, false))),
         Arguments.of(
             new HardwiredConfig(
                 new WireSettings(96, 65536),
@@ -74,7 +76,8 @@ class ServerConfigPayloadsTest {
                     .withBurn(new BurnRates(9, 8, 7)),
                 new LiftSettings(40),
                 new CircuitSettings(256, 64),
-                new RadioSettings(63, 127, 4096, 512, 126, 255, 254, 253, true))));
+                new RadioSettings(63, 127, 4096, 512, 126, 255, 254, 253, true),
+                new PhoneSettings(300, 12, true))));
   }
 
   @ParameterizedTest(name = "{0}")

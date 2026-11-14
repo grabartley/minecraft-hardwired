@@ -1,0 +1,24 @@
+{
+  "display": {
+    "icon": {
+      "id": "hardwired:candlestick_telephone"
+    },
+    "title": {
+      "translate": "advancement.hardwired.number_please.title"
+    },
+    "description": {
+      "translate": "advancement.hardwired.number_please.description"
+    },
+    "frame": "task",
+    "hidden": false
+  },
+  "criteria": {
+    "done": {
+      "trigger": "hardwired:device",
+      "conditions": {
+        "event": "number_please"
+      }
+    }
+  },
+  "parent": "hardwired:hardwired"
+}

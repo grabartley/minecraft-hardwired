@@ -8,6 +8,7 @@ import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.HumSettings;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.PhoneSettings;
 import com.grahambartley.hardwired.config.PowerLoads;
 import com.grahambartley.hardwired.config.PowerRatings;
 import com.grahambartley.hardwired.config.PowerSettings;
@@ -46,7 +47,11 @@ public final class HardwiredCommand {
           new BoolOption(
               "voicebroadcasts",
               config -> config.radio().voiceBroadcasts(),
-              (config, value) -> config.withRadio(config.radio().withVoiceBroadcasts(value))));
+              (config, value) -> config.withRadio(config.radio().withVoiceBroadcasts(value))),
+          new BoolOption(
+              "voicecalls",
+              config -> config.phone().voiceCalls(),
+              (config, value) -> config.withPhone(config.phone().withVoiceCalls(value))));
 
   private static final List<IntOption> OPTIONS =
       List.of(
@@ -287,6 +292,24 @@ public final class HardwiredCommand {
                   config.withPower(
                       config.power().withLoads(config.power().loads().withLiftLoad(value)))),
           new IntOption(
+              "telephoneload",
+              "value",
+              PowerLoads.TELEPHONE_LOAD_MIN,
+              PowerLoads.TELEPHONE_LOAD_MAX,
+              config -> config.power().loads().telephoneLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withTelephoneLoad(value)))),
+          new IntOption(
+              "exchangeload",
+              "value",
+              PowerLoads.EXCHANGE_LOAD_MIN,
+              PowerLoads.EXCHANGE_LOAD_MAX,
+              config -> config.power().loads().exchangeLoad(),
+              (config, value) ->
+                  config.withPower(
+                      config.power().withLoads(config.power().loads().withExchangeLoad(value)))),
+          new IntOption(
               "humrange",
               "value",
               HumSettings.HUM_RANGE_MIN,
@@ -389,7 +412,21 @@ public final class HardwiredCommand {
               RadioSettings.UNDERGROUND_LOSS_DEPTH_MIN,
               RadioSettings.UNDERGROUND_LOSS_DEPTH_MAX,
               config -> config.radio().undergroundLossDepth(),
-              (config, value) -> config.withRadio(config.radio().withUndergroundLossDepth(value))));
+              (config, value) -> config.withRadio(config.radio().withUndergroundLossDepth(value))),
+          new IntOption(
+              "phoneringseconds",
+              "seconds",
+              PhoneSettings.RING_SECONDS_MIN,
+              PhoneSettings.RING_SECONDS_MAX,
+              config -> config.phone().phoneRingSeconds(),
+              (config, value) -> config.withPhone(config.phone().withPhoneRingSeconds(value))),
+          new IntOption(
+              "exchangelines",
+              "calls",
+              PhoneSettings.EXCHANGE_LINES_MIN,
+              PhoneSettings.EXCHANGE_LINES_MAX,
+              config -> config.phone().exchangeLines(),
+              (config, value) -> config.withPhone(config.phone().withExchangeLines(value))));
 
   private HardwiredCommand() {}
 

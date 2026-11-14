@@ -87,7 +87,10 @@ class AdvancementAssetsTest {
     "blown_fuse,charged_up",
     "pocket_circuit,logic_gate",
     "share_the_love,pocket_circuit",
-    "powers_on,charged_up"
+    "powers_on,charged_up",
+    "number_please,hardwired",
+    "long_distance,number_please",
+    "party_line,number_please"
   })
   void everyBranchHangsWhereThePrdSays(String name, String parent) throws IOException {
     assertEquals("hardwired:" + parent, read(name).get("parent").getAsString());

@@ -10,6 +10,11 @@ public final class VoiceFormat {
 
   private VoiceFormat() {}
 
+  public static boolean frameFits(int frameBytes) {
+    return frameBytes > AdpcmCodec.HEADER_BYTES
+        && frameBytes <= AdpcmCodec.frameBytes(FRAME_SAMPLES);
+  }
+
   public static int millisToBytes(int millis) {
     return SAMPLE_RATE * millis / 1000 * BYTES_PER_SAMPLE;
   }

@@ -27,6 +27,9 @@ public final class ModCriteria {
   public static final String TUNED_IN = "tuned_in";
   public static final String ON_THE_AIR = "on_the_air";
   public static final String LIVE_MIC = "live_mic";
+  public static final String NUMBER_PLEASE = "number_please";
+  public static final String LONG_DISTANCE = "long_distance";
+  public static final String PARTY_LINE = "party_line";
   public static final DeviceCriterion DEVICE =
       Criteria.register(Hardwired.MOD_ID + ":device", new DeviceCriterion());
 

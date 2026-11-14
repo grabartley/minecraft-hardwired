@@ -1,0 +1,49 @@
+package com.grahambartley.hardwired.phone;
+
+import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.network.CallVoicePayload;
+import com.grahambartley.hardwired.radio.VoiceFormat;
+import com.grahambartley.hardwired.radio.VoiceRateLimit;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Util;
+
+public final class CallVoice {
+
+  private static final Map<UUID, VoiceRateLimit> LIMITS = new HashMap<>();
+
+  private CallVoice() {}
+
+  public static void frame(ServerPlayerEntity player, CallVoicePayload frame) {
+    for (UUID id : audience(player, frame)) {
+      ServerPlayerEntity listener = player.getServer().getPlayerManager().getPlayer(id);
+      if (listener != null && ServerPlayNetworking.canSend(listener, CallVoicePayload.ID)) {
+        ServerPlayNetworking.send(listener, frame);
+      }
+    }
+  }
+
+  public static List<UUID> audience(ServerPlayerEntity player, CallVoicePayload frame) {
+    long phone = frame.phone().asLong();
+    Optional<Call> call =
+        Switchboard.of(player.getServerWorld()).callOf(phone).filter(Call::isConnected);
+    long now = Util.getMeasuringTimeMs();
+    if (!Hardwired.SERVER_CONFIG.phone().voiceCalls()
+        || call.isEmpty()
+        || !player.getUuid().equals(call.get().members().get(phone))
+        || !VoiceFormat.frameFits(frame.adpcm().length)
+        || !LIMITS.computeIfAbsent(player.getUuid(), id -> new VoiceRateLimit(now)).allows(now)) {
+      return List.of();
+    }
+    return call.get().players().stream().filter(id -> !id.equals(player.getUuid())).toList();
+  }
+
+  public static void forget(ServerPlayerEntity player) {
+    LIMITS.remove(player.getUuid());
+  }
+}

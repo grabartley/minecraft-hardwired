@@ -24,13 +24,17 @@ import com.grahambartley.hardwired.client.glow.GlowRenderer;
 import com.grahambartley.hardwired.client.power.PowerSounds;
 import com.grahambartley.hardwired.client.power.PowerTooltip;
 import com.grahambartley.hardwired.client.radio.BroadcastSounds;
+import com.grahambartley.hardwired.client.radio.CallVoiceSounds;
 import com.grahambartley.hardwired.client.radio.TalkKey;
 import com.grahambartley.hardwired.config.ClientSettingsStore;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
 import com.grahambartley.hardwired.network.CircuitResultPayload;
+import com.grahambartley.hardwired.network.ExchangeViewPayload;
 import com.grahambartley.hardwired.network.LiftViewPayload;
 import com.grahambartley.hardwired.network.MainPanelViewPayload;
 import com.grahambartley.hardwired.network.OpenDevicePayload;
+import com.grahambartley.hardwired.network.PhoneSaidPayload;
+import com.grahambartley.hardwired.network.PhoneViewPayload;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.SyncServerConfigS2CPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload;
 import com.grahambartley.hardwired.network.WireInspectResultPayload;
@@ -48,6 +52,7 @@ import com.grahambartley.hardwired.screen.IntercomScreen;
 import com.grahambartley.hardwired.screen.JunctionScreen;
 import com.grahambartley.hardwired.screen.LiftScreen;
 import com.grahambartley.hardwired.screen.MainPanelScreen;
+import com.grahambartley.hardwired.screen.PhoneScreens;
 import com.grahambartley.hardwired.screen.RadioScreen;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.LampLook;
@@ -104,6 +109,13 @@ public class HardwiredClient implements ClientModInitializer {
     ClientPlayNetworking.registerGlobalReceiver(
         OpenDevicePayload.ID, (payload, context) -> openDevice(context.client(), payload));
     ClientPlayNetworking.registerGlobalReceiver(
+        PhoneViewPayload.ID, (payload, context) -> PhoneScreens.show(context.client(), payload));
+    ClientPlayNetworking.registerGlobalReceiver(
+        PhoneSaidPayload.ID, (payload, context) -> PhoneScreens.hear(context.client(), payload));
+    ClientPlayNetworking.registerGlobalReceiver(
+        ExchangeViewPayload.ID,
+        (payload, context) -> PhoneScreens.showExchange(context.client(), payload));
+    ClientPlayNetworking.registerGlobalReceiver(
         MainPanelViewPayload.ID, (payload, context) -> showMainPanel(context.client(), payload));
     ClientPlayNetworking.registerGlobalReceiver(
         LiftViewPayload.ID,
@@ -138,6 +150,7 @@ public class HardwiredClient implements ClientModInitializer {
     DeviceReadings.register();
     PowerTooltip.register();
     TalkKey.register();
+    CallVoiceSounds.register();
     ClientConfigCommand.register();
     EntityRendererRegistry.register(ModEntities.LIFT_CAR, LiftCarRenderer::small);
     EntityRendererRegistry.register(ModEntities.LARGE_LIFT_CAR, LiftCarRenderer::large);

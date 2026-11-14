@@ -55,8 +55,7 @@ public final class DeskMic {
   public boolean accepts(UUID player, int frameBytes, long nowMillis) {
     if (!taken
         || !player.equals(speaker)
-        || frameBytes <= AdpcmCodec.HEADER_BYTES
-        || frameBytes > MOST_FRAME_BYTES
+        || !VoiceFormat.frameFits(frameBytes)
         || !limit.allows(nowMillis)) {
       return false;
     }
