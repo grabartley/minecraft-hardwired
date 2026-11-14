@@ -1,3 +1,3 @@
 {
-  "parent": "hardwired:item/wall_switch"
+  "parent": "hardwired:block/wall_telephone"
 }
