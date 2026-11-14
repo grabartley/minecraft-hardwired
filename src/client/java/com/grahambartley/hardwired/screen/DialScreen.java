@@ -212,6 +212,7 @@ public final class DialScreen extends Screen {
   @Override
   public void removed() {
     talk.letGo();
+    tones.stop(client);
     ClientPlayNetworking.send(PhoneActionPayload.hangUp(phone));
     super.removed();
   }

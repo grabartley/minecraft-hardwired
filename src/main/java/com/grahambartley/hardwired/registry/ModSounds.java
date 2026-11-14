@@ -30,6 +30,7 @@ public final class ModSounds {
   public static final SoundEvent TELEPHONE_BELL = register("telephone.bell");
   public static final SoundEvent TELEPHONE_DIAL_CLICK = register("telephone.dial_click");
   public static final SoundEvent TELEPHONE_RELAY = register("telephone.relay");
+  public static final SoundEvent TELEPHONE_DIAL_TONE = register("telephone.dial_tone");
   public static final SoundEvent TELEPHONE_RINGBACK = register("telephone.ringback");
   public static final SoundEvent TELEPHONE_BUSY = register("telephone.busy");
   public static final SoundEvent TELEPHONE_VOICE = register("telephone.voice");

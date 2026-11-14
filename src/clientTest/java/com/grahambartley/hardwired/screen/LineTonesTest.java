@@ -17,11 +17,19 @@ class LineTonesTest {
     "BUSY,0,BUSY",
     "BUSY,5,NONE",
     "BUSY,10,BUSY",
-    "DIAL_TONE,0,NONE",
+    "DIAL_TONE,0,DIAL",
+    "DIAL_TONE,7,NONE",
+    "DIAL_TONE,20,DIAL",
     "CONNECTED,0,NONE",
     "NO_ANSWER,10,NONE"
   })
   void eachLineStatePlaysItsOwnTone(LineStatus status, long ticks, LineTones.Tone tone) {
     assertEquals(tone, LineTones.toneAt(status, ticks));
+  }
+
+  @ParameterizedTest(name = "noise {0}% hisses at {1}")
+  @CsvSource({"0,0", "50,0.06", "100,0.12"})
+  void theLineHissFollowsTheNoiseSetting(int noise, double loudness) {
+    assertEquals(loudness, LineTones.hissLoudness(noise), 1e-9);
   }
 }

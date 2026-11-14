@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.block;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import net.minecraft.block.Block;
@@ -11,7 +12,6 @@ public final class PhoneBoxShapes {
 
   private static final double WALL = 1;
   private static final double FULL = 16;
-  private static final double LEAF_DEPTH = 8;
 
   private static final Map<Direction, VoxelShape[]> SHAPES = new EnumMap<>(Direction.class);
 
@@ -51,20 +51,18 @@ public final class PhoneBoxShapes {
       return new double[][] {{0, 0, 0, FULL, FULL, FULL}};
     }
     double floor = part == PhoneBoxPart.LOWER ? WALL : 0;
-    double[] door =
-        open
-            ? new double[] {WALL, floor, WALL, WALL * 2, FULL, LEAF_DEPTH}
-            : new double[] {WALL, floor, 0, FULL - WALL, FULL, WALL};
-    double[] otherLeaf =
-        open ? new double[] {FULL - WALL * 2, floor, WALL, FULL - WALL, FULL, LEAF_DEPTH} : door;
-    return new double[][] {
+    double[][] walls = {
       {0, 0, 0, FULL, floor, FULL},
       {0, 0, 0, WALL, FULL, FULL},
       {FULL - WALL, 0, 0, FULL, FULL, FULL},
-      {0, 0, FULL - WALL, FULL, FULL, FULL},
-      door,
-      otherLeaf
+      {0, 0, FULL - WALL, FULL, FULL, FULL}
     };
+    if (open) {
+      return walls;
+    }
+    double[][] shut = Arrays.copyOf(walls, walls.length + 1);
+    shut[walls.length] = new double[] {WALL, floor, 0, FULL - WALL, FULL, WALL};
+    return shut;
   }
 
   private static VoxelShape turn(double[][] boxes, Direction facing) {

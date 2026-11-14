@@ -5,7 +5,9 @@ import com.grahambartley.hardwired.advancement.ModCriteria;
 import com.grahambartley.hardwired.block.ExchangeBlock;
 import com.grahambartley.hardwired.config.PhoneSettings;
 import com.grahambartley.hardwired.device.ActionRate;
+import com.grahambartley.hardwired.power.PowerGrids;
 import com.grahambartley.hardwired.wire.WireEngine;
+import com.grahambartley.hardwired.wire.WireNetwork;
 import com.grahambartley.hardwired.wire.WiredWorld;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayList;
@@ -71,6 +73,12 @@ public final class Switchboard {
         touched,
         phone -> directory.entry(phone).map(PhoneEntry::cells).orElse(List.of(phone)),
         world.getTime());
+  }
+
+  public void crackle(Set<WireNetwork> grid) {
+    PowerGrids power = WireEngine.of(world).power();
+    LineStrike.struck(calls, phone -> power.networksAt(BlockPos.fromLong(phone)), grid)
+        .forEach(line::crackle);
   }
 
   public Optional<UUID> userOf(long phone) {

@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.block;
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.AnimatedDevice;
+import com.grahambartley.hardwired.phone.RingCadence;
 import com.grahambartley.hardwired.phone.Switchboard;
 import com.grahambartley.hardwired.registry.ModSounds;
 import java.util.Set;
@@ -54,10 +55,11 @@ public final class BellBoxBlock extends MountedDeviceBlock
     boolean ringing = Switchboard.of(world).bellRings(pos);
     if (ringing != state.get(POWERED)) {
       world.setBlockState(pos, state.with(POWERED, ringing), NOTIFY_ALL);
-      if (ringing) {
-        float volume = Hardwired.SERVER_CONFIG.phone().bellBoxHearing() / BLOCKS_PER_VOLUME;
-        world.playSound(null, pos, ModSounds.TELEPHONE_BELL, SoundCategory.BLOCKS, volume, 1F);
-      }
+    }
+    float strike = ringing ? RingCadence.gongPitch(world.getTime()) : 0F;
+    if (strike > 0F) {
+      float volume = Hardwired.SERVER_CONFIG.phone().bellBoxHearing() / BLOCKS_PER_VOLUME;
+      world.playSound(null, pos, ModSounds.TELEPHONE_BELL, SoundCategory.BLOCKS, volume, strike);
     }
     world.scheduleBlockTick(pos, this, 1);
   }

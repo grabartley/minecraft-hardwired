@@ -19,6 +19,9 @@ import net.minecraft.util.math.BlockPos;
 
 final class PhoneLine {
 
+  private static final float BELL_VOLUME = 0.6F;
+  private static final float STRIKE_VOLUME = 2F;
+
   private final ServerWorld world;
 
   PhoneLine(ServerWorld world) {
@@ -71,15 +74,16 @@ final class PhoneLine {
   void ring(Call call, long now) {
     long ticks = call.ringingFor(now);
     boolean ringing = RingCadence.ringing(ticks, call.isPartyLine());
-    boolean stroke = RingCadence.strokeStarting(ticks, call.isPartyLine()) > 0;
+    float strike = RingCadence.strikePitch(ticks, call.isPartyLine());
     for (long phone : call.called()) {
       BlockPos pos = BlockPos.fromLong(phone);
       if (!WireEngine.of(world).isLoaded(pos)) {
         continue;
       }
       setLook(pos, false, ringing);
-      if (stroke) {
-        world.playSound(null, pos, ModSounds.TELEPHONE_BELL, SoundCategory.BLOCKS, 1F, 1F);
+      if (strike > 0F) {
+        world.playSound(
+            null, pos, ModSounds.TELEPHONE_BELL, SoundCategory.BLOCKS, BELL_VOLUME, strike);
       }
     }
   }
@@ -112,6 +116,18 @@ final class PhoneLine {
     for (long phone : call.members().keySet()) {
       world.playSound(
           null, BlockPos.fromLong(phone), ModSounds.TELEPHONE_RELAY, SoundCategory.BLOCKS, 1F, 1F);
+    }
+  }
+
+  void crackle(Call call) {
+    for (long phone : call.members().keySet()) {
+      world.playSound(
+          null,
+          BlockPos.fromLong(phone),
+          ModSounds.RADIO_CRACKLE,
+          SoundCategory.BLOCKS,
+          STRIKE_VOLUME,
+          1F);
     }
   }
 
