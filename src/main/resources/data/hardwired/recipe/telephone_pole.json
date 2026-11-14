@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "KCK",
+    " L ",
+    " L "
+  ],
+  "key": {
+    "K": {
+      "item": "minecraft:calcite"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "L": {
+      "tag": "hardwired:oak_pole_logs"
+    }
+  },
+  "result": {
+    "id": "hardwired:telephone_pole",
+    "count": 2
+  }
+}

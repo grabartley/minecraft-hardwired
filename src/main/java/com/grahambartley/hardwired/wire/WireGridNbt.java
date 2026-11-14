@@ -2,6 +2,7 @@ package com.grahambartley.hardwired.wire;
 
 import com.grahambartley.hardwired.power.GridState;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.nbt.NbtCompound;
@@ -32,6 +33,15 @@ public final class WireGridNbt {
   private static final String LINKS = "links";
   private static final String MASTERS = "masters";
   private static final String VALUES = "_values";
+  private static final String SPANS = "spans";
+  private static final String WIRE = "wire";
+  private static final String AGE = "age";
+  private static final String WAXED = "waxed";
+  private static final String FROM = "from";
+  private static final String TO = "to";
+  private static final String COLUMNS = "columns";
+  private static final String TOP = "top";
+  private static final String BLOCKS = "blocks";
 
   private WireGridNbt() {}
 
@@ -41,6 +51,7 @@ public final class WireGridNbt {
       networks.add(writeNetwork(network));
     }
     NbtCompound root = new NbtCompound();
+    root.put(SPANS, writeSpans(grid.spans()));
     root.put(NETWORKS, networks);
     root.putLong(LOOK_CLOCK, grid.lookClock());
     return root;
@@ -48,6 +59,7 @@ public final class WireGridNbt {
 
   public static WireGrid read(NbtCompound root) {
     WireGrid grid = new WireGrid();
+    readSpans(grid.spans(), root.getCompound(SPANS));
     NbtList networks = root.getList(NETWORKS, NbtElement.COMPOUND_TYPE);
     for (int i = 0; i < networks.size(); i++) {
       readNetwork(grid, networks.getCompound(i));
@@ -55,6 +67,57 @@ public final class WireGridNbt {
     grid.restoreLookClock(root.getLong(LOOK_CLOCK));
     grid.drainDirty();
     return grid;
+  }
+
+  private static NbtCompound writeSpans(WireSpans spans) {
+    NbtList list = new NbtList();
+    for (WireSpan span : spans.all()) {
+      NbtCompound nbt = new NbtCompound();
+      nbt.putLong(FROM, span.from().asLong());
+      nbt.putLong(TO, span.to().asLong());
+      nbt.putString(COLOR, span.color().asString());
+      nbt.putInt(WIRE, span.wire());
+      nbt.putInt(AGE, span.age());
+      nbt.putBoolean(WAXED, span.waxed());
+      if (span.owner() != null) {
+        nbt.putUuid(OWNER, span.owner());
+      }
+      list.add(nbt);
+    }
+    NbtList columns = new NbtList();
+    spans
+        .columns()
+        .forEach(
+            (top, blocks) -> {
+              NbtCompound nbt = new NbtCompound();
+              nbt.putLong(TOP, top);
+              nbt.putLongArray(BLOCKS, blocks.toLongArray());
+              columns.add(nbt);
+            });
+    NbtCompound root = new NbtCompound();
+    root.put(SPANS, list);
+    root.put(COLUMNS, columns);
+    return root;
+  }
+
+  private static void readSpans(WireSpans spans, NbtCompound root) {
+    for (NbtElement element : root.getList(COLUMNS, NbtElement.COMPOUND_TYPE)) {
+      NbtCompound nbt = (NbtCompound) element;
+      spans.setColumn(
+          BlockPos.fromLong(nbt.getLong(TOP)), new LongArrayList(nbt.getLongArray(BLOCKS)));
+    }
+    for (NbtElement element : root.getList(SPANS, NbtElement.COMPOUND_TYPE)) {
+      NbtCompound nbt = (NbtCompound) element;
+      spans.add(
+          new WireSpan(
+              BlockPos.fromLong(nbt.getLong(FROM)),
+              BlockPos.fromLong(nbt.getLong(TO)),
+              Hue.byName(nbt.getString(COLOR)),
+              nbt.containsUuid(OWNER) ? nbt.getUuid(OWNER) : null,
+              nbt.getInt(WIRE),
+              nbt.getInt(AGE),
+              nbt.getBoolean(WAXED)));
+    }
   }
 
   private static NbtCompound writeNetwork(WireNetwork network) {

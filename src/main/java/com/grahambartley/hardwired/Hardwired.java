@@ -8,6 +8,9 @@ import com.grahambartley.hardwired.device.ControllerActions;
 import com.grahambartley.hardwired.device.IntercomActions;
 import com.grahambartley.hardwired.device.MainPanelActions;
 import com.grahambartley.hardwired.lift.LiftActions;
+import com.grahambartley.hardwired.line.PoleActions;
+import com.grahambartley.hardwired.line.SpanCare;
+import com.grahambartley.hardwired.line.SpanSync;
 import com.grahambartley.hardwired.network.ModNetworking;
 import com.grahambartley.hardwired.phone.CallVoice;
 import com.grahambartley.hardwired.phone.PhoneActions;
@@ -59,17 +62,27 @@ public class Hardwired implements ModInitializer {
         (dispatcher, registries, environment) -> HardwiredCommand.register(dispatcher));
     UseBlockCallback.EVENT.register(WireSealing::use);
     ServerTickEvents.END_WORLD_TICK.register(world -> WireEngine.of(world).tick());
+    ServerTickEvents.END_WORLD_TICK.register(SpanCare::tick);
     ServerTickEvents.END_WORLD_TICK.register(PhoneNetwork::tick);
     ServerTickEvents.END_SERVER_TICK.register(WireView::tick);
+    ServerTickEvents.END_SERVER_TICK.register(SpanSync::tick);
+    ServerTickEvents.END_SERVER_TICK.register(PoleActions::tick);
     ServerTickEvents.END_SERVER_TICK.register(HumView::tick);
     ServerChunkEvents.CHUNK_LOAD.register(
         (world, chunk) -> WireEngine.of(world).onChunkLoaded(chunk.getPos()));
     ServerChunkEvents.CHUNK_LOAD.register(
         (world, chunk) -> Switchboard.of(world).chunkLoaded(chunk.getPos()));
-    ServerLifecycleEvents.SERVER_STOPPED.register(server -> CallVoice.clear());
+    ServerLifecycleEvents.SERVER_STOPPED.register(
+        server -> {
+          CallVoice.clear();
+          SpanSync.clear();
+          PoleActions.clear();
+        });
     ServerPlayConnectionEvents.DISCONNECT.register(
         (handler, server) -> {
           WireView.forget(handler.getPlayer());
+          SpanSync.forget(handler.getPlayer());
+          PoleActions.forget(handler.getPlayer());
           HumView.forget(handler.getPlayer());
           CircuitActions.forget(handler.getPlayer());
           MainPanelActions.forget(handler.getPlayer());

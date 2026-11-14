@@ -7,7 +7,10 @@ import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import java.util.Optional;
 import java.util.stream.Stream;
+import net.minecraft.Bootstrap;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,6 +20,12 @@ class PowerLabelTest {
 
   private static final String GIVES = "tooltip.hardwired.gives_power";
   private static final String DRAWS = "tooltip.hardwired.draws_power";
+
+  @BeforeAll
+  static void bootstrap() {
+    SharedConstants.createGameVersion();
+    Bootstrap.initialize();
+  }
 
   private static Stream<Arguments> labels() {
     return Stream.of(

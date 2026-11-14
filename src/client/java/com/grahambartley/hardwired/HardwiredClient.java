@@ -21,6 +21,8 @@ import com.grahambartley.hardwired.client.WireViewStore;
 import com.grahambartley.hardwired.client.anim.AnimatedDeviceRenderer;
 import com.grahambartley.hardwired.client.anim.DeviceAnimations;
 import com.grahambartley.hardwired.client.glow.GlowRenderer;
+import com.grahambartley.hardwired.client.line.ClientSpans;
+import com.grahambartley.hardwired.client.line.SpanRenderer;
 import com.grahambartley.hardwired.client.power.PowerSounds;
 import com.grahambartley.hardwired.client.power.PowerTooltip;
 import com.grahambartley.hardwired.client.radio.BroadcastSounds;
@@ -36,6 +38,7 @@ import com.grahambartley.hardwired.network.OpenDevicePayload;
 import com.grahambartley.hardwired.network.PhoneSaidPayload;
 import com.grahambartley.hardwired.network.PhoneViewPayload;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.SyncServerConfigS2CPayload;
+import com.grahambartley.hardwired.network.SpanViewPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload;
 import com.grahambartley.hardwired.network.WireInspectResultPayload;
 import com.grahambartley.hardwired.network.WireViewClearPayload;
@@ -124,6 +127,8 @@ public class HardwiredClient implements ClientModInitializer {
         CircuitResultPayload.ID,
         (payload, context) -> showCircuitResult(context.client(), payload));
     ClientPlayNetworking.registerGlobalReceiver(
+        SpanViewPayload.ID, (payload, context) -> ClientSpans.receive(payload));
+    ClientPlayNetworking.registerGlobalReceiver(
         SyncServerConfigS2CPayload.ID,
         (payload, context) -> SyncedServerConfig.apply(payload.config()));
     SyncedServerConfig.resetOnDisconnect();
@@ -131,11 +136,13 @@ public class HardwiredClient implements ClientModInitializer {
         (handler, client) -> {
           WireViewStore.clear();
           GlowRenderer.clear();
+          ClientSpans.clear();
         });
     ClientTickEvents.END_CLIENT_TICK.register(WireDrag::tick);
     UseBlockCallback.EVENT.register(WireDrag::onUseBlock);
     GlowRenderer.register();
     WorldRenderEvents.LAST.register(WireRenderer::render);
+    WorldRenderEvents.AFTER_ENTITIES.register(SpanRenderer::render);
     HudRenderCallback.EVENT.register(WireHud::render);
     HudRenderCallback.EVENT.register(DeviceHud::render);
     registerColors();
@@ -216,7 +223,8 @@ public class HardwiredClient implements ClientModInitializer {
         ModBlocks.LARGE_LIFT,
         ModBlocks.LIFT_FLOOR,
         ModBlocks.LARGE_LIFT_FLOOR,
-        ModBlocks.RADIO_MAST);
+        ModBlocks.RADIO_MAST,
+        ModBlocks.TELEPHONE_POLE);
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.BROADCAST_DESK, RenderLayer.getTranslucent());
     ColorProviderRegistry.BLOCK.register(
         (state, world, pos, tintIndex) -> {

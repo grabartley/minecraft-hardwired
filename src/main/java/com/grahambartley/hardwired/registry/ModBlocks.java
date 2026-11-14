@@ -31,6 +31,7 @@ import com.grahambartley.hardwired.block.SpeakerBlock;
 import com.grahambartley.hardwired.block.StreetlightBlock;
 import com.grahambartley.hardwired.block.SwitchBlock;
 import com.grahambartley.hardwired.block.TelephoneBlock;
+import com.grahambartley.hardwired.block.TelephonePoleBlock;
 import java.util.EnumSet;
 import java.util.Set;
 import net.minecraft.block.AbstractBlock;
@@ -38,6 +39,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.enums.BlockFace;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -233,6 +235,17 @@ public final class ModBlocks {
           "radio_mast",
           new RadioMastBlock(
               AbstractBlock.Settings.copy(Blocks.COPPER_BLOCK)
+                  .nonOpaque()
+                  .pistonBehavior(PistonBehavior.BLOCK)));
+  public static final Block TELEPHONE_POLE =
+      register(
+          "telephone_pole",
+          new TelephonePoleBlock(
+              AbstractBlock.Settings.create()
+                  .mapColor(MapColor.OAK_TAN)
+                  .instrument(NoteBlockInstrument.BASS)
+                  .strength(2.0F)
+                  .sounds(BlockSoundGroup.WOOD)
                   .nonOpaque()
                   .pistonBehavior(PistonBehavior.BLOCK)));
   public static final Block BROADCAST_DESK =

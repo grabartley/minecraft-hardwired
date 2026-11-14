@@ -44,7 +44,8 @@
       "com.grahambartley.hardwired.gametest.LargeLiftGameTest",
       "com.grahambartley.hardwired.gametest.RadioGameTest",
       "com.grahambartley.hardwired.gametest.BroadcastDeskGameTest",
-      "com.grahambartley.hardwired.gametest.TelephoneGameTest"
+      "com.grahambartley.hardwired.gametest.TelephoneGameTest",
+      "com.grahambartley.hardwired.gametest.PoleGameTest"
     ],
     "modmenu": [
       "com.grahambartley.hardwired.HardwiredModMenu"

@@ -8,6 +8,7 @@ import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.HumSettings;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.LineSettings;
 import com.grahambartley.hardwired.config.PhoneSettings;
 import com.grahambartley.hardwired.config.PowerLoads;
 import com.grahambartley.hardwired.config.PowerRatings;
@@ -77,6 +78,8 @@ public final class ServerConfigPayloads {
     buf.writeVarInt(phone.phoneRingSeconds());
     buf.writeVarInt(phone.exchangeLines());
     buf.writeBoolean(phone.voiceCalls());
+    buf.writeVarInt(config.line().poleSpanBlocks());
+    buf.writeVarInt(config.line().spanBlocksPerWire());
   }
 
   private static HardwiredConfig read(RegistryByteBuf buf) {
@@ -118,7 +121,8 @@ public final class ServerConfigPayloads {
             buf.readVarInt(),
             buf.readVarInt(),
             buf.readBoolean()),
-        new PhoneSettings(buf.readVarInt(), buf.readVarInt(), buf.readBoolean()));
+        new PhoneSettings(buf.readVarInt(), buf.readVarInt(), buf.readBoolean()),
+        new LineSettings(buf.readVarInt(), buf.readVarInt()));
   }
 
   public record SyncServerConfigS2CPayload(HardwiredConfig config) implements CustomPayload {

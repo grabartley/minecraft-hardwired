@@ -21,6 +21,10 @@ public record WireViewer(UUID id, boolean override) {
     return !cell.isSealed() || override || cell.owner().equals(id);
   }
 
+  public boolean canSee(WireSpan span) {
+    return span.owner() == null || override || span.owner().equals(id);
+  }
+
   public boolean canSee(WireNetwork network) {
     return !network.isSealed() || override || network.owner().equals(id);
   }

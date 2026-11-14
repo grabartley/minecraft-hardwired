@@ -8,6 +8,7 @@ import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.HumSettings;
 import com.grahambartley.hardwired.config.LampSettings;
 import com.grahambartley.hardwired.config.LiftSettings;
+import com.grahambartley.hardwired.config.LineSettings;
 import com.grahambartley.hardwired.config.PhoneSettings;
 import com.grahambartley.hardwired.config.PowerLoads;
 import com.grahambartley.hardwired.config.PowerRatings;
@@ -426,7 +427,21 @@ public final class HardwiredCommand {
               PhoneSettings.EXCHANGE_LINES_MIN,
               PhoneSettings.EXCHANGE_LINES_MAX,
               config -> config.phone().exchangeLines(),
-              (config, value) -> config.withPhone(config.phone().withExchangeLines(value))));
+              (config, value) -> config.withPhone(config.phone().withExchangeLines(value))),
+          new IntOption(
+              "polespanblocks",
+              "blocks",
+              LineSettings.SPAN_BLOCKS_MIN,
+              LineSettings.SPAN_BLOCKS_MAX,
+              config -> config.line().poleSpanBlocks(),
+              (config, value) -> config.withLine(config.line().withPoleSpanBlocks(value))),
+          new IntOption(
+              "spanblocksperwire",
+              "blocks",
+              LineSettings.BLOCKS_PER_WIRE_MIN,
+              LineSettings.BLOCKS_PER_WIRE_MAX,
+              config -> config.line().spanBlocksPerWire(),
+              (config, value) -> config.withLine(config.line().withSpanBlocksPerWire(value))));
 
   private HardwiredCommand() {}
 

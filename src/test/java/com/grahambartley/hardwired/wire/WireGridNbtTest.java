@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 import net.minecraft.nbt.NbtCompound;
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class WireGridNbtTest {
 
@@ -110,5 +113,38 @@ class WireGridNbtTest {
     WireGrid read = WireGridNbt.read(root);
 
     assertFalse(read.networkOf(cell(0, Hue.RED)).isSealed());
+  }
+
+  @ParameterizedTest(name = "sealed {0}")
+  @ValueSource(booleans = {true, false})
+  void aSpanAndItsPolesSurviveAReloadAsOneNetwork(boolean sealed) {
+    UUID owner = sealed ? new UUID(3, 4) : null;
+    WireGrid grid = new WireGrid();
+    BlockPos westTop = new BlockPos(0, 66, 0);
+    BlockPos eastTop = new BlockPos(20, 66, 0);
+    grid.setColumn(
+        westTop,
+        new LongArrayList(
+            new long[] {
+              new BlockPos(0, 64, 0).asLong(), new BlockPos(0, 65, 0).asLong(), westTop.asLong()
+            }));
+    grid.setColumn(
+        eastTop,
+        new LongArrayList(
+            new long[] {
+              new BlockPos(20, 64, 0).asLong(), new BlockPos(20, 65, 0).asLong(), eastTop.asLong()
+            }));
+    WireCell west =
+        new WireCell(new WireFace(new BlockPos(0, 63, 0), Direction.UP), Hue.PLAIN, owner);
+    WireCell east =
+        new WireCell(new WireFace(new BlockPos(20, 63, 0), Direction.UP), Hue.PLAIN, owner);
+    grid.add(west);
+    grid.add(east);
+    WireSpan span = new WireSpan(westTop, eastTop, Hue.PLAIN, owner, 5, 2, true);
+    grid.addSpan(span);
+    WireGrid loaded = WireGridNbt.read(WireGridNbt.write(grid));
+    assertEquals(Set.of(span), loaded.spans().all());
+    assertEquals(1, loaded.networks().size());
+    assertEquals(loaded.networkOf(west), loaded.networkOf(east));
   }
 }
