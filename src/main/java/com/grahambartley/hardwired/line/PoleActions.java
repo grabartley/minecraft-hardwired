@@ -45,17 +45,20 @@ public final class PoleActions {
         finish(player, lines, draft.get(), top, wire.color());
       } else {
         DRAFTS.start(player.getUuid(), new SpanDrafts.Draft(dimension, top, wire.color()));
-        tell(player, "line.hardwired.span_started");
+        tell(player, "message.hardwired.span_started");
       }
     }
     return true;
   }
 
   public static boolean wax(ServerPlayerEntity player, BlockPos pos, ItemStack honeycomb) {
+    if (!player.canModifyBlocks()) {
+      return false;
+    }
     ServerWorld world = player.getServerWorld();
     PoleLines lines = PoleLines.of(world);
     WireViewer viewer = WireViewer.of(player);
-    boolean waxed = lines.wax(lines.topOf(pos), span -> viewer.canSee(span));
+    boolean waxed = lines.wax(lines.topOf(pos), viewer::canSee);
     if (waxed) {
       honeycomb.decrementUnlessCreative(1, player);
       world.playSound(null, pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.BLOCKS, 1F, 1F);
@@ -70,7 +73,7 @@ public final class PoleActions {
           ServerPlayerEntity player = server.getPlayerManager().getPlayer(id);
           boolean stale = player == null || !holds(player, draft.color());
           if (stale && player != null) {
-            tell(player, "line.hardwired.span_cancelled");
+            tell(player, "message.hardwired.span_cancelled");
           }
           return stale;
         });
@@ -96,18 +99,22 @@ public final class PoleActions {
     boolean standing =
         TelephonePoleBlock.isPole(player.getServerWorld().getBlockState(draft.start()));
     BlockPos start = standing ? lines.topOf(draft.start()) : draft.start();
-    double length = Math.sqrt(start.getSquaredDistance(end));
-    int cost = SpanRules.cost(length, settings.spanBlocksPerWire());
     boolean creative = player.isCreative();
+    WireSpan planned =
+        new WireSpan(
+            start, end, color, lines.ownerFor(start, end, color, WireViewer.of(player)), 0);
+    int cost = SpanRules.cost(planned.length(), settings.spanBlocksPerWire());
     SpanRules.Finish outcome =
         SpanRules.finish(
             new SpanRules.Attempt(
                 start.equals(end) || !standing,
-                length,
+                planned.length(),
                 settings.poleSpanBlocks(),
                 lines.spansAt(start),
                 lines.spansAt(end),
                 lines.strung(start, end, color),
+                lines.sizeAfter(planned),
+                Hardwired.SERVER_CONFIG.wire().maxNetworkSize(),
                 player
                     .getInventory()
                     .count(player.getStackInHand(WireItem.wireHand(player)).getItem()),
@@ -115,32 +122,28 @@ public final class PoleActions {
                 creative));
     DRAFTS.end(player.getUuid());
     switch (outcome) {
-      case CANCEL -> tell(player, "line.hardwired.span_cancelled");
+      case CANCEL -> tell(player, "message.hardwired.span_cancelled");
       case TOO_FAR ->
           player.sendMessage(
-              Text.translatable("line.hardwired.too_far", settings.poleSpanBlocks()), true);
+              Text.translatable("message.hardwired.too_far", settings.poleSpanBlocks()), true);
       case POLE_FULL ->
           player.sendMessage(
-              Text.translatable("line.hardwired.pole_full", SpanRules.MOST_SPANS), true);
-      case ALREADY_STRUNG -> tell(player, "line.hardwired.already_strung");
+              Text.translatable("message.hardwired.pole_full", SpanRules.MOST_SPANS), true);
+      case ALREADY_STRUNG -> tell(player, "message.hardwired.already_strung");
       case NEEDS_WIRE ->
-          player.sendMessage(Text.translatable("line.hardwired.needs_wire", cost), true);
+          player.sendMessage(Text.translatable("message.hardwired.needs_wire", cost), true);
+      case NETWORK_FULL -> tell(player, "message.hardwired.network_full");
       case STRUNG ->
           pay(
               player,
               lines,
-              new WireSpan(
-                  start,
-                  end,
-                  color,
-                  lines.ownerFor(start, end, color, WireViewer.of(player)),
-                  creative ? 0 : cost));
+              new WireSpan(start, end, color, planned.owner(), creative ? 0 : cost, 0, false));
     }
   }
 
   private static void pay(ServerPlayerEntity player, PoleLines lines, WireSpan span) {
     if (!lines.string(span)) {
-      tell(player, "line.hardwired.already_strung");
+      tell(player, "message.hardwired.already_strung");
       return;
     }
     ItemStack held = player.getStackInHand(WireItem.wireHand(player));
@@ -154,22 +157,22 @@ public final class PoleActions {
         .getServerWorld()
         .playSound(
             null, span.to(), SoundEvents.ENTITY_LEASH_KNOT_PLACE, SoundCategory.BLOCKS, 1F, 1F);
-    tell(player, "line.hardwired.span_strung");
+    tell(player, "message.hardwired.span_strung");
   }
 
   private static void unstring(
       ServerPlayerEntity player, PoleLines lines, BlockPos top, Hue color) {
     DRAFTS.end(player.getUuid());
-    List<ItemStack> wire = lines.unstring(top, color);
+    List<ItemStack> wire = lines.unstring(top, color, WireViewer.of(player));
     if (wire.isEmpty()) {
-      tell(player, "line.hardwired.no_span");
+      tell(player, "message.hardwired.no_span");
       return;
     }
     wire.forEach(stack -> player.getInventory().offerOrDrop(stack));
     player
         .getServerWorld()
         .playSound(null, top, SoundEvents.ENTITY_LEASH_KNOT_BREAK, SoundCategory.BLOCKS, 1F, 1F);
-    tell(player, "line.hardwired.span_removed");
+    tell(player, "message.hardwired.span_removed");
   }
 
   private static void tell(ServerPlayerEntity player, String key) {

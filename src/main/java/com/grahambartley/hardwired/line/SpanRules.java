@@ -1,5 +1,8 @@
 package com.grahambartley.hardwired.line;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class SpanRules {
 
   public static final int MOST_SPANS = 8;
@@ -9,6 +12,7 @@ public final class SpanRules {
     TOO_FAR,
     POLE_FULL,
     ALREADY_STRUNG,
+    NETWORK_FULL,
     NEEDS_WIRE,
     STRUNG
   }
@@ -20,6 +24,8 @@ public final class SpanRules {
       int spansAtStart,
       int spansAtEnd,
       boolean alreadyStrung,
+      int sizeAfter,
+      int maxSize,
       int wireHeld,
       int cost,
       boolean creative) {}
@@ -32,6 +38,14 @@ public final class SpanRules {
 
   public static boolean reaches(double length, int maxBlocks) {
     return length > 0 && length <= maxBlocks;
+  }
+
+  public static List<Integer> stackSizes(int count, int maxStack) {
+    List<Integer> sizes = new ArrayList<>();
+    for (int left = count; left > 0; left -= maxStack) {
+      sizes.add(Math.min(left, maxStack));
+    }
+    return List.copyOf(sizes);
   }
 
   public static boolean hasRoom(int spansOnPole) {
@@ -50,6 +64,9 @@ public final class SpanRules {
     }
     if (attempt.alreadyStrung()) {
       return Finish.ALREADY_STRUNG;
+    }
+    if (attempt.sizeAfter() > attempt.maxSize()) {
+      return Finish.NETWORK_FULL;
     }
     return attempt.creative() || attempt.wireHeld() >= attempt.cost()
         ? Finish.STRUNG

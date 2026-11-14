@@ -85,15 +85,13 @@ public final class WireGridNbt {
       list.add(nbt);
     }
     NbtList columns = new NbtList();
-    spans
-        .columns()
-        .forEach(
-            (top, blocks) -> {
-              NbtCompound nbt = new NbtCompound();
-              nbt.putLong(TOP, top);
-              nbt.putLongArray(BLOCKS, blocks.toLongArray());
-              columns.add(nbt);
-            });
+    spans.forEachColumn(
+        (top, blocks) -> {
+          NbtCompound nbt = new NbtCompound();
+          nbt.putLong(TOP, top.asLong());
+          nbt.putLongArray(BLOCKS, blocks.toLongArray());
+          columns.add(nbt);
+        });
     NbtCompound root = new NbtCompound();
     root.put(SPANS, list);
     root.put(COLUMNS, columns);

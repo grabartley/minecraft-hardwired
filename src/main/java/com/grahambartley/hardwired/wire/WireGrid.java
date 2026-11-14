@@ -197,6 +197,64 @@ public final class WireGrid {
     return 1 + totalSize(joined);
   }
 
+  public int sizeAfterSpan(WireSpan span) {
+    Set<WireNetwork> joined = new HashSet<>();
+    for (WireCell anchor : List.of(span.fromAnchor(), span.toAnchor())) {
+      if (cells.containsKey(anchor)) {
+        joined.add(cells.get(anchor));
+      }
+      LongList column = spans.column(anchor.face().pos());
+      if (column != null) {
+        column.forEach(
+            (long block) -> {
+              for (WireCell touching : cellsTouchingBlock(block, anchor)) {
+                if (cells.containsKey(touching)) {
+                  joined.add(cells.get(touching));
+                }
+              }
+            });
+      }
+    }
+    return 1 + totalSize(joined);
+  }
+
+  public Set<WireNetwork> spanNetworksAt(BlockPos top) {
+    Set<WireNetwork> found = new LinkedHashSet<>();
+    for (WireSpan span : spans.at(top)) {
+      WireNetwork network =
+          cells.get(
+              span.fromAnchor().face().pos().equals(top) ? span.fromAnchor() : span.toAnchor());
+      if (network != null) {
+        found.add(network);
+      }
+    }
+    return found;
+  }
+
+  public Set<UUID> sealedOwnersTouchingColumn(BlockPos top, Hue color) {
+    Set<UUID> owners = new LinkedHashSet<>();
+    LongList column = spans.column(top);
+    if (column == null) {
+      return owners;
+    }
+    column.forEach(
+        (long block) -> {
+          BlockPos pos = BlockPos.fromLong(block);
+          for (Direction side : Direction.values()) {
+            for (WireFace face :
+                List.of(
+                    new WireFace(pos, side), new WireFace(pos.offset(side), side.getOpposite()))) {
+              for (WireCell cell : cellsOn(face.pos())) {
+                if (cell.face().equals(face) && cell.color() == color && cell.isSealed()) {
+                  owners.add(cell.owner());
+                }
+              }
+            }
+          }
+        });
+    return owners;
+  }
+
   public int sizeAfterJoining(WireCell cell) {
     return 1 + totalSize(adjacentNetworks(cell));
   }
@@ -415,9 +473,11 @@ public final class WireGrid {
 
   private void addTouches(WireCell cell, WireNetwork network) {
     List<TouchPoint> touches =
-        WireTopology.touches(
-            cell.face(),
-            WireTopology.arms(cell.face(), face -> cells.containsKey(cell.onFace(face))));
+        spans.isAnchor(cell)
+            ? List.of()
+            : WireTopology.touches(
+                cell.face(),
+                WireTopology.arms(cell.face(), face -> cells.containsKey(cell.onFace(face))));
     cellTouches.put(cell, touches);
     for (TouchPoint touch : touches) {
       network.touches.addTo(touch, 1);

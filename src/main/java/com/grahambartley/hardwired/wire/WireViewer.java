@@ -22,7 +22,11 @@ public record WireViewer(UUID id, boolean override) {
   }
 
   public boolean canSee(WireSpan span) {
-    return span.owner() == null || override || span.owner().equals(id);
+    return span.owner() == null || canSee(span.owner());
+  }
+
+  public boolean canSee(UUID owner) {
+    return override || owner.equals(id);
   }
 
   public boolean canSee(WireNetwork network) {

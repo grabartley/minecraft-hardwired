@@ -21,12 +21,6 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_the_recipe": {
-      "conditions": {
-        "recipe": "hardwired:telephone_pole"
-      },
-      "trigger": "minecraft:recipe_unlocked"
-    },
     "has_logs": {
       "conditions": {
         "items": [
@@ -36,6 +30,12 @@
         ]
       },
       "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "hardwired:oak_telephone_pole"
+      },
+      "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
@@ -54,7 +54,7 @@
   ],
   "rewards": {
     "recipes": [
-      "hardwired:telephone_pole"
+      "hardwired:oak_telephone_pole"
     ]
   }
 }

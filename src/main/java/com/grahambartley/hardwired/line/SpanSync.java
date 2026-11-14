@@ -3,6 +3,7 @@ package com.grahambartley.hardwired.line;
 import com.grahambartley.hardwired.item.WireItem;
 import com.grahambartley.hardwired.network.SpanViewPayload;
 import com.grahambartley.hardwired.wire.WireEngine;
+import com.grahambartley.hardwired.wire.WireViewRange;
 import com.grahambartley.hardwired.wire.WireViewer;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +18,6 @@ import net.minecraft.world.World;
 public final class SpanSync {
 
   private static final int CHECK_TICKS = 5;
-  private static final int CHUNK_BLOCKS = 16;
   private static final Map<UUID, Sent> SENT = new HashMap<>();
 
   private record Sent(RegistryKey<World> world, List<SpanViewPayload.SpanView> spans) {}
@@ -28,7 +28,7 @@ public final class SpanSync {
     if (server.getTicks() % CHECK_TICKS != 0) {
       return;
     }
-    int range = (server.getPlayerManager().getViewDistance() + 1) * CHUNK_BLOCKS;
+    int range = WireViewRange.blocksIn(server.getPlayerManager().getViewDistance() + 1);
     for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
       if (ServerPlayNetworking.canSend(player, SpanViewPayload.ID)) {
         send(player, range);

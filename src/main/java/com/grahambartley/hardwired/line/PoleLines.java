@@ -9,7 +9,10 @@ import com.grahambartley.hardwired.wire.WireSpan;
 import com.grahambartley.hardwired.wire.WireViewer;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -40,23 +43,30 @@ public final class PoleLines {
     BlockColumn column = columnAt(pos, false);
     BlockPos top = pos.withY(column.top());
     LongArrayList blocks = new LongArrayList();
+    Set<BlockPos> lower = new HashSet<>();
+    Set<WireSpan> touchingLower = new LinkedHashSet<>();
     for (int y = column.bottom(); y <= column.top(); y++) {
       BlockPos block = pos.withY(y);
       blocks.add(block.asLong());
       if (y != column.top()) {
+        lower.add(block);
+        touchingLower.addAll(engine.spansAt(block));
         engine.clearPoleColumn(block);
-        moveSpans(block, top);
       }
     }
+    SpanMoves.Plan plan = SpanMoves.plan(engine.spansAt(top), touchingLower, lower, top);
+    touchingLower.forEach(engine::removeSpan);
+    plan.moved().forEach(engine::addSpan);
+    plan.dropped().forEach(span -> drop(span, top));
     engine.setPoleColumn(top, blocks);
   }
 
   public void poleBroken(BlockPos pos) {
     BlockColumn column = columnAt(pos, true);
     BlockPos top = pos.withY(column.top());
-    for (WireSpan span : List.copyOf(engine.spansAt(top))) {
+    for (WireSpan span : engine.spansAt(top)) {
       engine.removeSpan(span);
-      wireOf(span).forEach(stack -> Block.dropStack(world, pos, stack));
+      drop(span, pos);
     }
     engine.clearPoleColumn(top);
     for (BlockPos rest : List.of(pos.down(), pos.up())) {
@@ -70,10 +80,10 @@ public final class PoleLines {
     return engine.addSpan(span);
   }
 
-  public List<ItemStack> unstring(BlockPos top, Hue color) {
+  public List<ItemStack> unstring(BlockPos top, Hue color, WireViewer viewer) {
     List<ItemStack> wire = new ArrayList<>();
-    for (WireSpan span : List.copyOf(engine.spansAt(top))) {
-      if (span.color() == color && engine.removeSpan(span)) {
+    for (WireSpan span : engine.spansAt(top)) {
+      if (span.color() == color && viewer.canSee(span) && engine.removeSpan(span)) {
         wire.addAll(wireOf(span));
       }
     }
@@ -91,11 +101,21 @@ public final class PoleLines {
   }
 
   public UUID ownerFor(BlockPos from, BlockPos to, Hue color, WireViewer viewer) {
-    return Stream.concat(engine.spansAt(from).stream(), engine.spansAt(to).stream())
-        .filter(span -> span.color() == color && span.owner() != null && viewer.canSee(span))
-        .map(WireSpan::owner)
+    Stream<UUID> fromSpans =
+        Stream.concat(engine.spansAt(from).stream(), engine.spansAt(to).stream())
+            .filter(span -> span.color() == color)
+            .map(WireSpan::owner);
+    Stream<UUID> fromWire =
+        Stream.of(from, to)
+            .flatMap(top -> engine.grid().sealedOwnersTouchingColumn(top, color).stream());
+    return Stream.concat(fromSpans, fromWire)
+        .filter(owner -> owner != null && viewer.canSee(owner))
         .findFirst()
         .orElse(null);
+  }
+
+  public int sizeAfter(WireSpan span) {
+    return engine.grid().sizeAfterSpan(span);
   }
 
   public int spansAt(BlockPos top) {
@@ -108,22 +128,13 @@ public final class PoleLines {
   }
 
   private static List<ItemStack> wireOf(WireSpan span) {
-    List<ItemStack> stacks = new ArrayList<>();
-    int left = span.wire();
-    while (left > 0) {
-      ItemStack stack = new ItemStack(ModItems.wire(span.color()));
-      stack.setCount(Math.min(left, stack.getMaxCount()));
-      left -= stack.getCount();
-      stacks.add(stack);
-    }
-    return stacks;
+    return SpanRules.stackSizes(span.wire(), ModItems.wire(span.color()).getMaxCount()).stream()
+        .map(count -> new ItemStack(ModItems.wire(span.color()), count))
+        .toList();
   }
 
-  private void moveSpans(BlockPos from, BlockPos to) {
-    for (WireSpan span : List.copyOf(engine.spansAt(from))) {
-      engine.removeSpan(span);
-      engine.addSpan(span.movedEnd(from, to));
-    }
+  private void drop(WireSpan span, BlockPos at) {
+    wireOf(span).forEach(stack -> Block.dropStack(world, at, stack));
   }
 
   private BlockColumn columnAt(BlockPos pos, boolean includingPos) {

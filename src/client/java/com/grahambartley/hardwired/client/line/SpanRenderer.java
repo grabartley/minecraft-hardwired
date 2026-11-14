@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.client.line;
 
+import com.grahambartley.hardwired.wire.WireViewRange;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
@@ -21,7 +22,6 @@ public final class SpanRenderer {
   private static final int SEGMENTS = 24;
   private static final double HALF_WIDTH = 0.03;
   private static final float SIDE_SHADE = 0.75F;
-  private static final int CHUNK_BLOCKS = 16;
 
   private SpanRenderer() {}
 
@@ -31,7 +31,8 @@ public final class SpanRenderer {
       return;
     }
     Vec3d camera = context.camera().getPos();
-    double range = MinecraftClient.getInstance().options.getClampedViewDistance() * CHUNK_BLOCKS;
+    double range =
+        WireViewRange.blocksIn(MinecraftClient.getInstance().options.getClampedViewDistance());
     BufferBuilder buffer =
         Tessellator.getInstance()
             .begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_LIGHT);

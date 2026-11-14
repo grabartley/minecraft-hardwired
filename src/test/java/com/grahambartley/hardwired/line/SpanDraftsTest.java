@@ -36,7 +36,7 @@ class SpanDraftsTest {
   void aStaleDraftIsDropped(boolean stale) {
     SpanDrafts drafts = new SpanDrafts();
     drafts.start(ALICE, DRAFT);
-    assertEquals(stale, drafts.dropWhere((player, draft) -> stale));
+    drafts.dropWhere((player, draft) -> stale);
     assertEquals(!stale, drafts.of(ALICE, OVERWORLD).isPresent());
     drafts.end(ALICE);
     assertEquals(Optional.empty(), drafts.of(ALICE, OVERWORLD));

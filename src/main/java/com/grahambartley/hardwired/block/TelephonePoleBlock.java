@@ -1,23 +1,14 @@
 package com.grahambartley.hardwired.block;
 
-import com.grahambartley.hardwired.item.WireItem;
-import com.grahambartley.hardwired.line.PoleActions;
 import com.grahambartley.hardwired.line.PoleLines;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -29,12 +20,13 @@ import net.minecraft.world.WorldAccess;
 public final class TelephonePoleBlock extends Block {
 
   public static final EnumProperty<PolePart> PART = EnumProperty.of("part", PolePart.class);
-  public static final EnumProperty<PoleWood> WOOD = EnumProperty.of("wood", PoleWood.class);
+  public static final double ARM_HEIGHT = 12.5 / 16.0;
+  public static final double ARM_LENGTH = 14.0 / 16.0;
   private static final VoxelShape POST = Block.createCuboidShape(5, 0, 5, 11, 16, 11);
   private static final VoxelShape ARM_X =
-      VoxelShapes.union(POST, Block.createCuboidShape(0, 11, 6, 16, 14, 10));
+      VoxelShapes.union(POST, Block.createCuboidShape(1, 11, 6, 15, 14, 10));
   private static final VoxelShape ARM_Z =
-      VoxelShapes.union(POST, Block.createCuboidShape(6, 11, 0, 10, 14, 16));
+      VoxelShapes.union(POST, Block.createCuboidShape(6, 11, 1, 10, 14, 15));
 
   public TelephonePoleBlock(Settings settings) {
     super(settings);
@@ -42,12 +34,15 @@ public final class TelephonePoleBlock extends Block {
         getStateManager()
             .getDefaultState()
             .with(PART, PolePart.SINGLE)
-            .with(WOOD, PoleWood.OAK)
             .with(Properties.HORIZONTAL_AXIS, Direction.Axis.X));
   }
 
   public static boolean isPole(BlockState state) {
     return state.getBlock() instanceof TelephonePoleBlock;
+  }
+
+  public static boolean isTop(BlockView world, BlockPos pos) {
+    return isPole(world.getBlockState(pos)) && !isPole(world.getBlockState(pos.up()));
   }
 
   private static PolePart partAt(BlockView world, BlockPos pos) {
@@ -57,7 +52,7 @@ public final class TelephonePoleBlock extends Block {
 
   @Override
   protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-    builder.add(PART, WOOD, Properties.HORIZONTAL_AXIS);
+    builder.add(PART, Properties.HORIZONTAL_AXIS);
   }
 
   @Override
@@ -90,27 +85,6 @@ public final class TelephonePoleBlock extends Block {
       return POST;
     }
     return state.get(Properties.HORIZONTAL_AXIS) == Direction.Axis.X ? ARM_X : ARM_Z;
-  }
-
-  @Override
-  protected ItemActionResult onUseWithItem(
-      ItemStack stack,
-      BlockState state,
-      World world,
-      BlockPos pos,
-      PlayerEntity player,
-      Hand hand,
-      BlockHitResult hit) {
-    boolean waxing = stack.isOf(Items.HONEYCOMB) && !WireItem.isHolding(player);
-    if (!(stack.getItem() instanceof WireItem) && !waxing) {
-      return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-    }
-    if (player instanceof ServerPlayerEntity server) {
-      boolean used =
-          waxing ? PoleActions.wax(server, pos, stack) : PoleActions.use(server, pos, stack);
-      return used ? ItemActionResult.SUCCESS : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-    }
-    return ItemActionResult.SUCCESS;
   }
 
   @Override

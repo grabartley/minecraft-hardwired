@@ -1,6 +1,6 @@
 {
   "replace": false,
   "values": [
-    "hardwired:telephone_pole"
+    "#hardwired:telephone_poles"
   ]
 }

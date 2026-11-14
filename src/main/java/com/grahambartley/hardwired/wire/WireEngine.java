@@ -6,6 +6,7 @@ import com.grahambartley.hardwired.registry.ModItems;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -189,8 +190,20 @@ public final class WireEngine {
         .toList();
   }
 
+  public <T> List<T> allOnSpansAt(BlockPos top, Class<T> type) {
+    return loadedOn(grid.spanNetworksAt(top)).stream()
+        .map(world::getBlockEntity)
+        .filter(type::isInstance)
+        .map(type::cast)
+        .toList();
+  }
+
   public List<BlockPos> loadedOnNetwork(BlockPos pos) {
-    return grid.networksTouching(pos).stream()
+    return loadedOn(grid.networksTouching(pos));
+  }
+
+  private List<BlockPos> loadedOn(Collection<WireNetwork> networks) {
+    return networks.stream()
         .flatMap(network -> network.touches().stream())
         .map(TouchPoint::pos)
         .distinct()

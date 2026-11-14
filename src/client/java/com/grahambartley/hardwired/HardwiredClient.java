@@ -139,6 +139,7 @@ public class HardwiredClient implements ClientModInitializer {
           ClientSpans.clear();
         });
     ClientTickEvents.END_CLIENT_TICK.register(WireDrag::tick);
+    ClientTickEvents.END_CLIENT_TICK.register(ClientSpans::tick);
     UseBlockCallback.EVENT.register(WireDrag::onUseBlock);
     GlowRenderer.register();
     WorldRenderEvents.LAST.register(WireRenderer::render);
@@ -224,7 +225,9 @@ public class HardwiredClient implements ClientModInitializer {
         ModBlocks.LIFT_FLOOR,
         ModBlocks.LARGE_LIFT_FLOOR,
         ModBlocks.RADIO_MAST,
-        ModBlocks.TELEPHONE_POLE);
+        ModBlocks.OAK_TELEPHONE_POLE,
+        ModBlocks.SPRUCE_TELEPHONE_POLE,
+        ModBlocks.DARK_OAK_TELEPHONE_POLE);
     BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.BROADCAST_DESK, RenderLayer.getTranslucent());
     ColorProviderRegistry.BLOCK.register(
         (state, world, pos, tintIndex) -> {

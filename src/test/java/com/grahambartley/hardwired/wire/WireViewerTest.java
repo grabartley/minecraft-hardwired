@@ -47,6 +47,14 @@ class WireViewerTest {
         visible, new WireViewer(ALICE, override).canSee(new WireCell(FACE, Hue.RED, owner)));
   }
 
+  @ParameterizedTest(name = "span owner {0}, override {1}: visible {2}")
+  @MethodSource("sight")
+  void aSealedSpanShowsOnlyToItsOwnerOrAnOverride(UUID owner, boolean override, boolean visible) {
+    WireSpan span =
+        new WireSpan(new BlockPos(0, 70, 0), new BlockPos(20, 70, 0), Hue.PLAIN, owner, 5);
+    assertEquals(visible, new WireViewer(ALICE, override).canSee(span));
+  }
+
   @Test
   void hiddenCellsAreLeftOutAndTheRestAreRankedOwnFirst() {
     WireGrid grid = new WireGrid();

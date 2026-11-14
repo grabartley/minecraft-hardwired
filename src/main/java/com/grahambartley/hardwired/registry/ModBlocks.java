@@ -237,17 +237,9 @@ public final class ModBlocks {
               AbstractBlock.Settings.copy(Blocks.COPPER_BLOCK)
                   .nonOpaque()
                   .pistonBehavior(PistonBehavior.BLOCK)));
-  public static final Block TELEPHONE_POLE =
-      register(
-          "telephone_pole",
-          new TelephonePoleBlock(
-              AbstractBlock.Settings.create()
-                  .mapColor(MapColor.OAK_TAN)
-                  .instrument(NoteBlockInstrument.BASS)
-                  .strength(2.0F)
-                  .sounds(BlockSoundGroup.WOOD)
-                  .nonOpaque()
-                  .pistonBehavior(PistonBehavior.BLOCK)));
+  public static final Block OAK_TELEPHONE_POLE = telephonePole("oak", MapColor.OAK_TAN);
+  public static final Block SPRUCE_TELEPHONE_POLE = telephonePole("spruce", MapColor.SPRUCE_BROWN);
+  public static final Block DARK_OAK_TELEPHONE_POLE = telephonePole("dark_oak", MapColor.BROWN);
   public static final Block BROADCAST_DESK =
       register(
           "broadcast_desk",
@@ -268,6 +260,19 @@ public final class ModBlocks {
 
   public static Block[] animatedDevices() {
     return new Block[] {};
+  }
+
+  private static Block telephonePole(String wood, MapColor color) {
+    return register(
+        wood + "_telephone_pole",
+        new TelephonePoleBlock(
+            AbstractBlock.Settings.create()
+                .mapColor(color)
+                .instrument(NoteBlockInstrument.BASS)
+                .strength(2.0F)
+                .sounds(BlockSoundGroup.WOOD)
+                .nonOpaque()
+                .pistonBehavior(PistonBehavior.BLOCK)));
   }
 
   private static MountedLampBlock mountedLamp(double[] floorBox, Set<BlockFace> faces) {

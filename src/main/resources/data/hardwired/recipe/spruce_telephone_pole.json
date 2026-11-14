@@ -18,12 +18,7 @@
     }
   },
   "result": {
-    "id": "hardwired:telephone_pole",
-    "count": 2,
-    "components": {
-      "minecraft:block_state": {
-        "wood": "spruce"
-      }
-    }
+    "id": "hardwired:spruce_telephone_pole",
+    "count": 2
   }
 }

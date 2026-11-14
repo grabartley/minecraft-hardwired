@@ -27,8 +27,8 @@ public final class SpanDrafts {
     drafts.remove(player);
   }
 
-  public boolean dropWhere(BiPredicate<UUID, Draft> stale) {
-    return drafts.entrySet().removeIf(entry -> stale.test(entry.getKey(), entry.getValue()));
+  public void dropWhere(BiPredicate<UUID, Draft> stale) {
+    drafts.entrySet().removeIf(entry -> stale.test(entry.getKey(), entry.getValue()));
   }
 
   public void clear() {

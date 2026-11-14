@@ -15,7 +15,9 @@ public final class ChargeNetwork {
         .toList();
   }
 
-  public static int fill(ServerWorld world, BlockPos pos, int amount) {
-    return ChargeLedger.fill(cellsFor(world, pos), amount);
+  public static List<ChargeStore> cellsOnSpansAt(ServerWorld world, BlockPos top) {
+    return WireEngine.of(world).allOnSpansAt(top, ChargeStore.class).stream()
+        .filter(ChargeStore::acceptsEarnings)
+        .toList();
   }
 }

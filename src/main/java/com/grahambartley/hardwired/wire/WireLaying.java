@@ -37,6 +37,7 @@ public final class WireLaying {
           new WireCell(
               face, wire.color(), viewer.ownerOfNewWire(engine.grid(), face, wire.color()));
       if (engine.grid().contains(cell)
+          || engine.grid().spans().isAnchor(cell)
           || !canEdit(player, face)
           || !WireRules.accepts(world, face.pos(), face.side())) {
         continue;
@@ -60,7 +61,7 @@ public final class WireLaying {
     }
     WireEngine engine = WireEngine.of(player.getServerWorld());
     WireCell cell = chooseCell(player, engine.grid(), face);
-    if (cell == null) {
+    if (cell == null || engine.grid().spans().isAnchor(cell)) {
       return;
     }
     if (engine.grid().networkOf(cell).isOn()) {

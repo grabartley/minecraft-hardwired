@@ -9,6 +9,7 @@ import com.grahambartley.hardwired.device.IntercomActions;
 import com.grahambartley.hardwired.device.MainPanelActions;
 import com.grahambartley.hardwired.lift.LiftActions;
 import com.grahambartley.hardwired.line.PoleActions;
+import com.grahambartley.hardwired.line.PoleUse;
 import com.grahambartley.hardwired.line.SpanCare;
 import com.grahambartley.hardwired.line.SpanSync;
 import com.grahambartley.hardwired.network.ModNetworking;
@@ -61,6 +62,7 @@ public class Hardwired implements ModInitializer {
     CommandRegistrationCallback.EVENT.register(
         (dispatcher, registries, environment) -> HardwiredCommand.register(dispatcher));
     UseBlockCallback.EVENT.register(WireSealing::use);
+    UseBlockCallback.EVENT.register(PoleUse::onUseBlock);
     ServerTickEvents.END_WORLD_TICK.register(world -> WireEngine.of(world).tick());
     ServerTickEvents.END_WORLD_TICK.register(SpanCare::tick);
     ServerTickEvents.END_WORLD_TICK.register(PhoneNetwork::tick);

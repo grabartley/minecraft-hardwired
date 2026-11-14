@@ -11,12 +11,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public final class WireSpans {
 
   private final Set<WireSpan> spans = new LinkedHashSet<>();
+  private final Long2ObjectOpenHashMap<List<WireSpan>> byTop = new Long2ObjectOpenHashMap<>();
   private final Long2ObjectOpenHashMap<LongList> columns = new Long2ObjectOpenHashMap<>();
   private final Long2LongOpenHashMap topOfBlock = new Long2LongOpenHashMap();
 
@@ -25,36 +27,45 @@ public final class WireSpans {
   }
 
   public List<WireSpan> at(BlockPos top) {
-    return spans.stream().filter(span -> span.endsAt(top)).toList();
+    List<WireSpan> found = byTop.get(top.asLong());
+    return found == null ? List.of() : List.copyOf(found);
   }
 
   public boolean add(WireSpan span) {
-    return spans.stream().noneMatch(span::sameRun) && spans.add(span);
+    if (at(span.from()).stream().anyMatch(span::sameRun) || !spans.add(span)) {
+      return false;
+    }
+    index(span);
+    return true;
+  }
+
+  public boolean remove(WireSpan span) {
+    if (!spans.remove(span)) {
+      return false;
+    }
+    unindex(span);
+    return true;
   }
 
   public boolean restyle(WireSpan old, WireSpan next) {
-    if (!old.sameRun(next) || !Objects.equals(old.owner(), next.owner()) || !spans.remove(old)) {
+    if (!old.sameRun(next) || !Objects.equals(old.owner(), next.owner()) || !remove(old)) {
       return false;
     }
     spans.add(next);
+    index(next);
     return true;
   }
 
   public void reown(Collection<WireCell> anchors, UUID owner) {
     for (WireCell anchor : anchors) {
-      for (WireSpan span : List.copyOf(spans)) {
-        if (span.color() == anchor.color()
-            && Objects.equals(span.owner(), anchor.owner())
-            && span.endsAt(anchor.face().pos())) {
-          spans.remove(span);
+      for (WireSpan span : at(anchor.face().pos())) {
+        if (span.color() == anchor.color() && Objects.equals(span.owner(), anchor.owner())) {
+          remove(span);
           spans.add(span.ownedBy(owner));
+          index(span.ownedBy(owner));
         }
       }
     }
-  }
-
-  public boolean remove(WireSpan span) {
-    return spans.remove(span);
   }
 
   public void setColumn(BlockPos top, LongList blocks) {
@@ -78,34 +89,24 @@ public final class WireSpans {
     return columns.get(top.asLong());
   }
 
-  public Long2ObjectOpenHashMap<LongList> columns() {
-    return columns;
+  public void forEachColumn(BiConsumer<BlockPos, LongList> action) {
+    columns.forEach((top, blocks) -> action.accept(BlockPos.fromLong(top), blocks));
   }
 
   public boolean isAnchor(WireCell cell) {
     return cell.face().side() == Direction.UP
-        && spans.stream()
-            .anyMatch(
-                span ->
-                    span.color() == cell.color()
-                        && Objects.equals(span.owner(), cell.owner())
-                        && span.endsAt(cell.face().pos()));
+        && at(cell.face().pos()).stream().anyMatch(span -> anchors(span, cell));
   }
 
   public List<WireCell> linkedTo(WireCell cell) {
-    List<WireCell> linked = new ArrayList<>();
-    if (!isAnchor(cell)) {
-      return linked;
+    if (cell.face().side() != Direction.UP) {
+      return List.of();
     }
     BlockPos top = cell.face().pos();
-    for (WireSpan span : spans) {
-      if (span.color() == cell.color()
-          && Objects.equals(span.owner(), cell.owner())
-          && span.endsAt(top)) {
-        linked.add(WireSpan.anchor(span.otherEnd(top), span.color(), span.owner()));
-      }
-    }
-    return linked;
+    return at(top).stream()
+        .filter(span -> anchors(span, cell))
+        .map(span -> WireSpan.anchor(span.otherEnd(top), span.color(), span.owner()))
+        .toList();
   }
 
   public WireCell anchorFor(long block, WireCell touching) {
@@ -116,5 +117,27 @@ public final class WireSpans {
         WireSpan.anchor(
             BlockPos.fromLong(topOfBlock.get(block)), touching.color(), touching.owner());
     return isAnchor(anchor) ? anchor : null;
+  }
+
+  private static boolean anchors(WireSpan span, WireCell cell) {
+    return span.color() == cell.color() && Objects.equals(span.owner(), cell.owner());
+  }
+
+  private void index(WireSpan span) {
+    for (BlockPos top : List.of(span.from(), span.to())) {
+      byTop.computeIfAbsent(top.asLong(), key -> new ArrayList<>()).add(span);
+    }
+  }
+
+  private void unindex(WireSpan span) {
+    for (BlockPos top : List.of(span.from(), span.to())) {
+      List<WireSpan> found = byTop.get(top.asLong());
+      if (found != null) {
+        found.remove(span);
+        if (found.isEmpty()) {
+          byTop.remove(top.asLong());
+        }
+      }
+    }
   }
 }
