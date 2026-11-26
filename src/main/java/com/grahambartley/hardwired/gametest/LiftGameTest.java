@@ -19,6 +19,7 @@ import com.grahambartley.hardwired.registry.ModEntities;
 import java.util.List;
 import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -323,7 +324,7 @@ public class LiftGameTest implements FabricGameTest {
         () -> {
           context.assertTrue(stoppedTick[0] >= 0, "a dry generator stops the car");
           context.assertTrue(
-              stoppedTick[0] - emptyAt[0] <= TICKS_PER_SECOND,
+              stoppedTick[0] - emptyAt[0] <= SharedConstants.TICKS_PER_SECOND,
               "stopped within a second of running dry: empty at "
                   + emptyAt[0]
                   + ", stopped at "

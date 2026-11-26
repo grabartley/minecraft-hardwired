@@ -139,13 +139,18 @@ public final class ConnectedTestPlayer {
     channel.flushOutbound();
     List<String> keys = new ArrayList<>();
     for (Object message : channel.outboundMessages()) {
-      if (message instanceof GameMessageS2CPacket packet
-          && packet.overlay() == overlay
-          && packet.content().getContent() instanceof TranslatableTextContent content) {
-        keys.add(content.getKey());
+      if (message instanceof GameMessageS2CPacket packet && packet.overlay() == overlay) {
+        collectKeys(packet.content(), keys);
       }
     }
     return keys;
+  }
+
+  private static void collectKeys(Text text, List<String> keys) {
+    if (text.getContent() instanceof TranslatableTextContent content) {
+      keys.add(content.getKey());
+    }
+    text.getSiblings().forEach(sibling -> collectKeys(sibling, keys));
   }
 
   public List<Text> intercomLines() {

@@ -74,16 +74,6 @@ class DoorCellsTest {
     }
   }
 
-  @ParameterizedTest(name = "a vanilla {0} door at row {1} is its two halves")
-  @CsvSource({"NORTH,0", "NORTH,1", "EAST,0", "SOUTH,1"})
-  void aVanillaDoorIsItsTwoHalvesEvenBesideAnother(Direction facing, int row) {
-    Map<BlockPos, BlockState> world = new HashMap<>();
-    BlockPos corner = new BlockPos(0, 64, 0);
-    place(world, Blocks.OAK_DOOR, facing, corner, 2, 2);
-    BlockPos pos = corner.up(row);
-    assertEquals(List.of(corner, corner.up()), DoorCells.of(pos, world.get(pos), world::get));
-  }
-
   @ParameterizedTest(name = "a {0} door {1} wide and {2} tall is one door from any cell")
   @CsvSource({"NORTH,2,2", "NORTH,3,4", "EAST,5,4", "SOUTH,1,6", "WEST,5,6", "NORTH,4,3"})
   void aWideDoorIsOneDoorFromAnyCell(Direction facing, int width, int height) {
@@ -162,16 +152,23 @@ class DoorCellsTest {
     assertEquals(4 * width, DoorCells.of(corner, world.get(corner), world::get).size());
   }
 
-  @ParameterizedTest(name = "fits: {0}")
-  @CsvSource({"oak_door,true", "wide_door,true", "lever,false", "tall_grass,false"})
-  void onlyStatesWithADoorFacingAndHalfFit(String name, boolean fits) {
+  @ParameterizedTest(name = "{0} spans more than two halves: {1}")
+  @CsvSource({
+    "oak_door,false",
+    "iron_door,false",
+    "wide_door,true",
+    "lever,false",
+    "tall_grass,false"
+  })
+  void onlyADoorWithMoreThanVanillaDoorStateSpansMoreThanTwoHalves(String name, boolean spans) {
     BlockState state =
         switch (name) {
           case "oak_door" -> Blocks.OAK_DOOR.getDefaultState();
+          case "iron_door" -> Blocks.IRON_DOOR.getDefaultState();
           case "wide_door" -> wideDoor.getDefaultState();
           case "lever" -> Blocks.LEVER.getDefaultState();
           default -> Blocks.TALL_GRASS.getDefaultState();
         };
-    assertEquals(fits, DoorCells.fits(state));
+    assertEquals(spans, DoorCells.spansMoreThanTwoHalves(state));
   }
 }

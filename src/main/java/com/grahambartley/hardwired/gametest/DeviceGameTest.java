@@ -20,6 +20,7 @@ import com.grahambartley.hardwired.network.handler.ServerConfigNetworkHandler;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.server.ServerConfigEditPermission;
+import com.grahambartley.hardwired.server.ServerConfigService;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.LampLook;
 import com.grahambartley.hardwired.wire.WireCell;
@@ -417,20 +418,24 @@ public class DeviceGameTest implements FabricGameTest {
 
   @GameTest(templateName = BENCH)
   public void theConfigCommandRefusesATowerMinimumAboveTheMaximum(TestContext context) {
-    var server = context.getWorld().getServer();
     var before = Hardwired.SERVER_CONFIG;
-    int max = before.radio().towerMaxMasts();
-    int min = before.radio().towerMinMasts();
-    server
-        .getCommandManager()
-        .executeWithPrefix(
-            server.getCommandSource(), "hardwired config towerminmasts " + (max + 1));
-    server
-        .getCommandManager()
-        .executeWithPrefix(
-            server.getCommandSource(), "hardwired config towermaxmasts " + (min - 1));
-    context.assertTrue(
-        Hardwired.SERVER_CONFIG.equals(before), "a tower minimum above the maximum is refused");
+    ConnectedTestPlayer operator = ConnectedTestPlayer.joinAt(context, new BlockPos(1, 2, 1));
+    operator.setOperator(true);
+    try {
+      int max = before.radio().towerMaxMasts();
+      int min = before.radio().towerMinMasts();
+      operator.command("hardwired config towerminmasts " + (max + 1));
+      operator.command("hardwired config towermaxmasts " + (min - 1));
+      context.assertTrue(
+          Hardwired.SERVER_CONFIG.equals(before), "a tower minimum above the maximum is refused");
+      context.assertTrue(
+          operator.chatKeys().stream().filter("config.hardwired.refused.towermasts"::equals).count()
+              == 2,
+          "both refusals say why: " + operator.chatKeys());
+    } finally {
+      ServerConfigService.update(context.getWorld().getServer(), before);
+      operator.leave();
+    }
     context.complete();
   }
 
@@ -461,13 +466,17 @@ public class DeviceGameTest implements FabricGameTest {
             return ServerPlayNetworking.getSender(operator.player());
           }
         });
-    context.assertTrue(Hardwired.SERVER_CONFIG.equals(before), "the refused edit is not saved");
-    context.assertTrue(
-        operator.chatKeys().contains("config.hardwired.refused.towermasts"),
-        "the operator is told why: " + operator.chatKeys());
-    context.assertTrue(
-        operator.configSyncs() > syncsBefore, "the operator's screen is put back in step");
-    operator.leave();
+    try {
+      context.assertTrue(Hardwired.SERVER_CONFIG.equals(before), "the refused edit is not saved");
+      context.assertTrue(
+          operator.chatKeys().contains("config.hardwired.refused.towermasts"),
+          "the operator is told why: " + operator.chatKeys());
+      context.assertTrue(
+          operator.configSyncs() > syncsBefore, "the operator's screen is put back in step");
+    } finally {
+      ServerConfigService.update(context.getWorld().getServer(), before);
+      operator.leave();
+    }
     context.complete();
   }
 }

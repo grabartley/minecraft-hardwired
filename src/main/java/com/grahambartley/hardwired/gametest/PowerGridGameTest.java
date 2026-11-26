@@ -1,5 +1,6 @@
 package com.grahambartley.hardwired.gametest;
 
+import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.AbstractLampBlock;
 import com.grahambartley.hardwired.block.FuelledSourceBlock;
 import com.grahambartley.hardwired.block.MasterSwitchBlock;
@@ -7,6 +8,9 @@ import com.grahambartley.hardwired.block.MountedDeviceBlock;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
 import com.grahambartley.hardwired.block.RedstoneGeneratorBlockEntity;
 import com.grahambartley.hardwired.block.SourceBlockEntity;
+import com.grahambartley.hardwired.config.BurnRates;
+import com.grahambartley.hardwired.config.HardwiredConfig;
+import com.grahambartley.hardwired.config.PowerSettings;
 import com.grahambartley.hardwired.device.DeviceStatus;
 import com.grahambartley.hardwired.network.DeviceInspectPayload;
 import com.grahambartley.hardwired.network.DeviceInspectResultPayload;
@@ -22,6 +26,7 @@ import com.grahambartley.hardwired.wire.WireNetwork;
 import java.util.List;
 import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.WallMountedBlock;
@@ -30,7 +35,10 @@ import net.minecraft.block.enums.BlockFace;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
+import net.minecraft.test.AfterBatch;
+import net.minecraft.test.BeforeBatch;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
 import net.minecraft.util.math.BlockPos;
@@ -43,6 +51,8 @@ public class PowerGridGameTest implements FabricGameTest {
   private static final int SETTLE = 10;
   private static final int HOLD = GridRule.MIN_DARK_TICKS + SETTLE;
   private static final int FULL = 15;
+  private static final String DRAIN_BATCH = "power_drain";
+  private static HardwiredConfig savedConfig;
   private static final BlockPos CELL = at(1, 1);
   private static final BlockPos SECOND_CELL = at(2, 1);
   private static final BlockPos SWITCH = at(3, 1);
@@ -133,6 +143,58 @@ public class PowerGridGameTest implements FabricGameTest {
                   == DeviceStatus.OUT_OF_FUEL,
               "the reason must be fuel");
           context.complete();
+        });
+  }
+
+  @BeforeBatch(batchId = DRAIN_BATCH)
+  public void drainFast(ServerWorld world) {
+    savedConfig = Hardwired.SERVER_CONFIG;
+    PowerSettings power = savedConfig.power();
+    Hardwired.SERVER_CONFIG =
+        savedConfig.withPower(
+            power
+                .withLoads(power.loads().withLampLoad(power.ratings().cellRating()))
+                .withBurn(
+                    new BurnRates(
+                        BurnRates.CHARGE_PER_LOAD_MINUTE_MAX,
+                        power.burn().generatorChargePerLoadMinute(),
+                        power.burn().spareChargePerLoadMinute())));
+  }
+
+  @AfterBatch(batchId = DRAIN_BATCH)
+  public void restoreDrain(ServerWorld world) {
+    Hardwired.SERVER_CONFIG = savedConfig;
+  }
+
+  @GameTest(templateName = BENCH, batchId = DRAIN_BATCH, tickLimit = 100)
+  public void aCellRunningDryUnderALitLampStopsWithinASecond(TestContext context) {
+    lampRun(context);
+    RedstoneCellBlockEntity cell = cell(context, CELL, 1);
+    BlockPos lamp = context.getAbsolutePos(LAMP);
+    long[] emptyAt = {-1};
+    boolean[] litBeforeEmpty = {false};
+    context.runAtEveryTick(
+        () -> {
+          boolean powered = WireEngine.of(context.getWorld()).power().hasPower(lamp);
+          if (emptyAt[0] < 0) {
+            litBeforeEmpty[0] |= powered;
+            if (cell.charge() == 0) {
+              emptyAt[0] = context.getTick();
+            }
+          } else if (!powered) {
+            context.assertTrue(litBeforeEmpty[0], "the lamp was lit before the cell ran dry");
+            context.assertTrue(
+                context.getTick() - emptyAt[0] <= SharedConstants.TICKS_PER_SECOND,
+                "the lamp lost power within a second of the cell running dry");
+            context.assertFalse(cell.isRunning(), "the dry cell stopped");
+            context.assertTrue(
+                WireEngine.of(context.getWorld()).power().stopReason(lamp)
+                    == DeviceStatus.OUT_OF_FUEL,
+                "the reason must be fuel");
+            context.complete();
+          } else if (context.getTick() - emptyAt[0] > SharedConstants.TICKS_PER_SECOND) {
+            context.assertTrue(false, "the lamp still has power a second after the cell ran dry");
+          }
         });
   }
 

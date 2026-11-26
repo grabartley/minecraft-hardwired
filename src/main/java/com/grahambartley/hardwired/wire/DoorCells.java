@@ -1,6 +1,5 @@
 package com.grahambartley.hardwired.wire;
 
-import com.grahambartley.hardwired.device.WireDevice;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -24,15 +23,14 @@ public final class DoorCells {
 
   private DoorCells() {}
 
-  public static boolean fits(BlockState state) {
-    return state.contains(DoorBlock.FACING) && state.contains(DoorBlock.HALF);
+  public static boolean spansMoreThanTwoHalves(BlockState state) {
+    return state.contains(DoorBlock.FACING)
+        && state.contains(DoorBlock.HALF)
+        && !VANILLA_SIZED.containsAll(state.getProperties());
   }
 
   public static List<BlockPos> of(
       BlockPos pos, BlockState state, Function<BlockPos, BlockState> states) {
-    if (Set.copyOf(state.getProperties()).equals(VANILLA_SIZED)) {
-      return WireDevice.twoTall(pos, state.get(DoorBlock.HALF));
-    }
     Direction facing = state.get(DoorBlock.FACING);
     Direction back = facing.rotateYCounterclockwise();
     Direction[] steps = {Direction.UP, Direction.DOWN, facing.rotateYClockwise(), back};

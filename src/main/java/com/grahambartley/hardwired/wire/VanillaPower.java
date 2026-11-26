@@ -59,7 +59,7 @@ public final class VanillaPower {
 
   public static List<BlockPos> cells(
       BlockPos pos, BlockState state, Function<BlockPos, BlockState> states) {
-    if (state.isIn(BlockTags.DOORS) && DoorCells.fits(state)) {
+    if (state.isIn(BlockTags.DOORS) && DoorCells.spansMoreThanTwoHalves(state)) {
       return DoorCells.of(pos, state, states);
     }
     return state.contains(Properties.DOUBLE_BLOCK_HALF)
