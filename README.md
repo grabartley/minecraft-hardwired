@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://raw.githubusercontent.com/grabartley/minecraft-hardwired/main/docs/banner.png" alt="A Phone Box, a Radio, a Lift door, a lit copper lamp and a Master Switch above the name Hardwired in copper blocks" width="800">
+<img src="https://raw.githubusercontent.com/grabartley/minecraft-hardwired/main/docs/banner.png" alt="At night, a telephone Exchange, a Radio, a Lift door, a lit copper lamp and a Master Switch are joined by live wire, with telephone poles and a broadcasting radio mast behind them, above the name Hardwired in copper blocks" width="800">
 </p>
 
 # Hardwired
