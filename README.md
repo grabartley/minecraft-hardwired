@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://github.com/grabartley/minecraft-hardwired/raw/main/docs/banner.png" alt="Hardwired banner" width="800">
+</p>
+
 # Hardwired
 
 Bring the wonder of early electricity to your world. Run hidden cloth wire through your walls, hang filament lamps on copper and brass, and change every light in the house from one slate switchboard.
