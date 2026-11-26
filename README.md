@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/grabartley/minecraft-hardwired/raw/main/docs/banner.png" alt="Hardwired banner" width="800">
+<img src="https://raw.githubusercontent.com/grabartley/minecraft-hardwired/main/docs/banner.png" alt="A Phone Box, a Radio, a Lift door, a lit copper lamp and a Master Switch above the name Hardwired in copper blocks" width="800">
 </p>
 
 # Hardwired
