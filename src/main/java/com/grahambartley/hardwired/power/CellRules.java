@@ -15,6 +15,14 @@ public final class CellRules {
     return (int) Math.min(quarters, MAX_LEVEL);
   }
 
+  public static boolean crossesEmpty(int before, int after) {
+    return before > 0 != after > 0;
+  }
+
+  public static double partAfterBurn(int charge, double part, double step) {
+    return charge > 0 ? part : Math.max(part, -step);
+  }
+
   public static boolean takes(int charge, int capacity, int worth) {
     return itemsThatFit(charge, capacity, worth, 1) > 0;
   }

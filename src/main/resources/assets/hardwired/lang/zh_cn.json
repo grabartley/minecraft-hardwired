@@ -117,6 +117,7 @@
   "command.hardwired.status.setting": "- %s=%s",
   "command.hardwired.update.success": "已将 %s 设为 %s",
   "command.hardwired.update.failed": "无法保存设置",
+  "config.hardwired.refused.towermasts": "最矮发射塔(%s 根桅杆)不能高于最高发射塔(%s 根桅杆)",
   "advancement.hardwired.hardwired.title": "Hardwired",
   "advancement.hardwired.hardwired.description": "制作铜线。接下来，制作一个电源",
   "advancement.hardwired.juiced_up.title": "电力十足",

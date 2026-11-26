@@ -117,6 +117,7 @@
   "command.hardwired.status.setting": "- %s=%s",
   "command.hardwired.update.success": "Set %s to %s",
   "command.hardwired.update.failed": "Could not save the settings",
+  "config.hardwired.refused.towermasts": "Shortest Tower (%s masts) can't be taller than Tallest Tower (%s masts)",
   "advancement.hardwired.hardwired.title": "Hardwired",
   "advancement.hardwired.hardwired.description": "Craft Copper Wire. Next, craft a power source",
   "advancement.hardwired.juiced_up.title": "Juiced Up",

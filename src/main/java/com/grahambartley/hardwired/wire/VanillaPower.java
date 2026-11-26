@@ -6,10 +6,12 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RedstoneWireBlock;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -55,7 +57,11 @@ public final class VanillaPower {
     return state.isIn(WireRules.OUTPUTS);
   }
 
-  public static List<BlockPos> cells(BlockPos pos, BlockState state) {
+  public static List<BlockPos> cells(
+      BlockPos pos, BlockState state, Function<BlockPos, BlockState> states) {
+    if (state.isIn(BlockTags.DOORS) && DoorCells.spansMoreThanTwoHalves(state)) {
+      return DoorCells.of(pos, state, states);
+    }
     return state.contains(Properties.DOUBLE_BLOCK_HALF)
         ? WireDevice.twoTall(pos, state.get(Properties.DOUBLE_BLOCK_HALF))
         : List.of(pos);

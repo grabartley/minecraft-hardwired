@@ -117,6 +117,7 @@
   "command.hardwired.status.setting": "- %s=%s",
   "command.hardwired.update.success": "%s definido como %s",
   "command.hardwired.update.failed": "Não foi possível salvar as configurações",
+  "config.hardwired.refused.towermasts": "Torre mínima (%s mastros) não pode passar de Torre máxima (%s mastros)",
   "advancement.hardwired.hardwired.title": "Hardwired",
   "advancement.hardwired.hardwired.description": "Fabrique fio de cobre. Depois, fabrique uma fonte de energia",
   "advancement.hardwired.juiced_up.title": "Energizado",

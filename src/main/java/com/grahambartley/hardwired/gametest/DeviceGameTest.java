@@ -10,13 +10,17 @@ import com.grahambartley.hardwired.block.LampBlockEntity;
 import com.grahambartley.hardwired.block.MountedDeviceBlock;
 import com.grahambartley.hardwired.block.StreetlightBlock;
 import com.grahambartley.hardwired.block.SwitchBlock;
+import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.device.DeviceActions;
 import com.grahambartley.hardwired.light.Glow;
 import com.grahambartley.hardwired.network.JunctionSetPayload;
 import com.grahambartley.hardwired.network.PanelActionPayload;
+import com.grahambartley.hardwired.network.ServerConfigPayloads.EditServerConfigC2SPayload;
+import com.grahambartley.hardwired.network.handler.ServerConfigNetworkHandler;
 import com.grahambartley.hardwired.registry.ModBlocks;
 import com.grahambartley.hardwired.registry.ModComponents;
 import com.grahambartley.hardwired.server.ServerConfigEditPermission;
+import com.grahambartley.hardwired.server.ServerConfigService;
 import com.grahambartley.hardwired.wire.Hue;
 import com.grahambartley.hardwired.wire.LampLook;
 import com.grahambartley.hardwired.wire.WireCell;
@@ -26,6 +30,8 @@ import com.grahambartley.hardwired.wire.WireLaying;
 import java.util.List;
 import java.util.Optional;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.WallMountedBlock;
@@ -35,6 +41,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.TestContext;
@@ -406,6 +413,70 @@ public class DeviceGameTest implements FabricGameTest {
     server
         .getCommandManager()
         .executeWithPrefix(server.getCommandSource(), "hardwired config buttonholdticks " + before);
+    context.complete();
+  }
+
+  @GameTest(templateName = BENCH)
+  public void theConfigCommandRefusesATowerMinimumAboveTheMaximum(TestContext context) {
+    var before = Hardwired.SERVER_CONFIG;
+    ConnectedTestPlayer operator = ConnectedTestPlayer.joinAt(context, new BlockPos(1, 2, 1));
+    operator.setOperator(true);
+    try {
+      int max = before.radio().towerMaxMasts();
+      int min = before.radio().towerMinMasts();
+      operator.command("hardwired config towerminmasts " + (max + 1));
+      operator.command("hardwired config towermaxmasts " + (min - 1));
+      context.assertTrue(
+          Hardwired.SERVER_CONFIG.equals(before), "a tower minimum above the maximum is refused");
+      context.assertTrue(
+          operator.chatKeys().stream().filter("config.hardwired.refused.towermasts"::equals).count()
+              == 2,
+          "both refusals say why: " + operator.chatKeys());
+    } finally {
+      ServerConfigService.update(context.getWorld().getServer(), before);
+      operator.leave();
+    }
+    context.complete();
+  }
+
+  @GameTest(templateName = BENCH)
+  public void theServerRefusesASettingsScreenEditWithTheTowerMinimumAboveTheMaximum(
+      TestContext context) {
+    var before = Hardwired.SERVER_CONFIG;
+    ConnectedTestPlayer operator = ConnectedTestPlayer.joinAt(context, new BlockPos(1, 2, 1));
+    operator.setOperator(true);
+    int syncsBefore = operator.configSyncs();
+    HardwiredConfig refused =
+        before.withRadio(before.radio().withTowerMinMasts(before.radio().towerMaxMasts() + 1));
+    ServerConfigNetworkHandler.handleEditServerConfig(
+        new EditServerConfigC2SPayload(refused),
+        new ServerPlayNetworking.Context() {
+          @Override
+          public MinecraftServer server() {
+            return context.getWorld().getServer();
+          }
+
+          @Override
+          public ServerPlayerEntity player() {
+            return operator.player();
+          }
+
+          @Override
+          public PacketSender responseSender() {
+            return ServerPlayNetworking.getSender(operator.player());
+          }
+        });
+    try {
+      context.assertTrue(Hardwired.SERVER_CONFIG.equals(before), "the refused edit is not saved");
+      context.assertTrue(
+          operator.chatKeys().contains("config.hardwired.refused.towermasts"),
+          "the operator is told why: " + operator.chatKeys());
+      context.assertTrue(
+          operator.configSyncs() > syncsBefore, "the operator's screen is put back in step");
+    } finally {
+      ServerConfigService.update(context.getWorld().getServer(), before);
+      operator.leave();
+    }
     context.complete();
   }
 }

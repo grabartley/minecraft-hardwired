@@ -4,6 +4,7 @@ import static com.grahambartley.hardwired.gametest.LiftGameSupport.*;
 
 import com.grahambartley.hardwired.Hardwired;
 import com.grahambartley.hardwired.block.ElectronicBlockEntity;
+import com.grahambartley.hardwired.block.FuelledSourceBlockEntity;
 import com.grahambartley.hardwired.block.RedstoneCellBlockEntity;
 import com.grahambartley.hardwired.config.BurnRates;
 import com.grahambartley.hardwired.config.HardwiredConfig;
@@ -18,6 +19,7 @@ import com.grahambartley.hardwired.registry.ModEntities;
 import java.util.List;
 import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -246,6 +248,109 @@ public class LiftGameTest implements FabricGameTest {
           expectInCar(context, rider, MIDDLE, "rider");
           context.assertTrue(isOpen(context, MIDDLE), "gate opened at the floor below");
           context.assertEquals(0, cell.charge(), "lowering is free");
+          context.assertFalse(rider.hasEarned(GOING_UP), "a failed ride earns nothing");
+          finish(context, rider);
+        });
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BURN_BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void aGeneratorGivenChargeByDataRunningDryMidRideStopsThenLowers(TestContext context) {
+    FuelledSourceBlockEntity generator = build(context, ModBlocks.REDSTONE_GENERATOR, 0);
+    setChargeByData(context, generator, 1);
+    expectDryGeneratorStopsTheRide(context, generator, -1);
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BURN_BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void aGeneratorEmptiedByDataMidRideStopsThenLowers(TestContext context) {
+    FuelledSourceBlockEntity generator = build(context, ModBlocks.REDSTONE_GENERATOR, FULL_CHARGE);
+    int emptyTick = DRY_RIDE_TICK + EMPTIED_INTO_RIDE_TICKS;
+    context.runAtTick(emptyTick, () -> setChargeByData(context, generator, 0));
+    expectDryGeneratorStopsTheRide(context, generator, emptyTick);
+  }
+
+  private static void setChargeByData(
+      TestContext context, FuelledSourceBlockEntity generator, int charge) {
+    var registries = context.getWorld().getRegistryManager();
+    NbtCompound nbt = generator.createNbt(registries);
+    nbt.putInt("charge", charge);
+    nbt.putDouble("charge_part", 0);
+    generator.read(nbt, registries);
+  }
+
+  private static void expectDryGeneratorStopsTheRide(
+      TestContext context, FuelledSourceBlockEntity generator, int dataTick) {
+    ConnectedTestPlayer rider = riderFrom(context, LOW);
+    double[] lowest = {generator.exactCharge()};
+    double[] previous = {generator.exactCharge()};
+    double[] burnStep = {0};
+    long[] emptyAt = {-1};
+    long[] stoppedTick = {-1};
+    double[] stoppedAt = {Double.NaN};
+    DeviceStatus[] stopReason = {null};
+    int[] loweringTicks = {0};
+    context.runAtEveryTick(
+        () -> {
+          double charge = generator.exactCharge();
+          if (context.getTick() != dataTick) {
+            burnStep[0] = Math.max(burnStep[0], previous[0] - charge);
+          }
+          previous[0] = charge;
+          lowest[0] = Math.min(lowest[0], charge);
+          if (generator.charge() == 0 && emptyAt[0] < 0) {
+            emptyAt[0] = context.getTick();
+          }
+          shaft(context)
+              .car()
+              .ifPresent(
+                  car -> {
+                    if (car.run().phase() == LiftPhase.STOPPED && stoppedTick[0] < 0) {
+                      stoppedTick[0] = context.getTick();
+                      stoppedAt[0] = carLevel(context, car);
+                      stopReason[0] = car.run().stopReason();
+                    }
+                    if (car.run().phase() == LiftPhase.LOWERING) {
+                      loweringTicks[0]++;
+                    }
+                  });
+        });
+    context.runAtTick(
+        DRY_RIDE_TICK,
+        () -> {
+          openAt(context, rider, LOW);
+          choose(context, rider, LOW, HIGH);
+        });
+    context.runAtTick(
+        DRY_RIDE_TICK + SIX_BLOCK_RIDE_TICKS,
+        () -> {
+          context.assertTrue(stoppedTick[0] >= 0, "a dry generator stops the car");
+          context.assertTrue(
+              stoppedTick[0] - emptyAt[0] <= SharedConstants.TICKS_PER_SECOND,
+              "stopped within a second of running dry: empty at "
+                  + emptyAt[0]
+                  + ", stopped at "
+                  + stoppedTick[0]);
+          context.assertTrue(stoppedAt[0] < HIGH, "stopped short of the top: " + stoppedAt[0]);
+          context.assertTrue(
+              stopReason[0] == DeviceStatus.OUT_OF_FUEL, "stopped because " + stopReason[0]);
+          context.assertFalse(generator.isRunning(), "the dry generator stopped");
+          context.assertTrue(
+              rider.actionBarKeys().contains(DeviceStatus.OUT_OF_FUEL.translationKey()),
+              "the rider is told why: " + rider.actionBarKeys());
+        });
+    context.runAtTick(
+        DRY_RIDE_TICK + DRY_LANDED_TICKS,
+        () -> {
+          int below = stoppedAt[0] >= MIDDLE ? MIDDLE : LOW;
+          expectInCar(context, rider, below, "rider");
+          context.assertTrue(isOpen(context, below), "gate opened at the floor below");
+          double halfSpeedTicks =
+              (stoppedAt[0] - below) * Hardwired.SERVER_CONFIG.lift().ticksPerBlock() * 2;
+          context.assertTrue(
+              Math.abs(loweringTicks[0] - halfSpeedTicks) <= HALF_SPEED_TICK_SLACK,
+              "lowering runs at half speed: " + loweringTicks[0] + " ticks, not " + halfSpeedTicks);
+          context.assertTrue(
+              lowest[0] >= -burnStep[0],
+              "charge never runs a burn step below zero: " + lowest[0] + " vs " + burnStep[0]);
           context.assertFalse(rider.hasEarned(GOING_UP), "a failed ride earns nothing");
           finish(context, rider);
         });

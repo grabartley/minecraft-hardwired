@@ -6,6 +6,7 @@ import com.grahambartley.hardwired.power.CellRules;
 import com.grahambartley.hardwired.power.ChargeStore;
 import com.grahambartley.hardwired.power.PowerWear;
 import com.grahambartley.hardwired.registry.ModComponents;
+import com.grahambartley.hardwired.wire.WireEngine;
 import java.util.function.ToIntFunction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -13,6 +14,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 public abstract class FuelledSourceBlockEntity extends SourceBlockEntity implements ChargeStore {
@@ -49,9 +51,19 @@ public abstract class FuelledSourceBlockEntity extends SourceBlockEntity impleme
 
   @Override
   public void setCharge(int next) {
+    int before = charge;
     charge = Math.max(next, 0);
     markDirty();
     showLevel();
+    if (CellRules.crossesEmpty(before, charge)) {
+      recountGrid();
+    }
+  }
+
+  private void recountGrid() {
+    if (world instanceof ServerWorld server) {
+      WireEngine.of(server).power().changed(pos);
+    }
   }
 
   @Override
@@ -62,7 +74,11 @@ public abstract class FuelledSourceBlockEntity extends SourceBlockEntity impleme
       drain(whole);
       part += whole;
     }
+    part = CellRules.partAfterBurn(charge, part, amount);
     markDirty();
+    if (charge == 0) {
+      recountGrid();
+    }
   }
 
   @Override
