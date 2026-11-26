@@ -59,6 +59,8 @@ final class LiftGameSupport {
   static final int DRY_RIDE_TICK = 30;
   static final int DRY_LANDED_TICKS = 220;
   static final int HALF_SPEED_TICK_SLACK = 2;
+  static final int EMPTIED_INTO_RIDE_TICKS = 30;
+  static final int TICKS_PER_SECOND = 20;
   static final Identifier GOING_UP = Identifier.of(Hardwired.MOD_ID, "going_up");
   static final BlockPos CELL = new BlockPos(PILLAR_X, FLOOR_Y + 1, 2);
   static final BlockPos HEAD = new BlockPos(COLUMN_X, HEAD_Y, COLUMN_Z);

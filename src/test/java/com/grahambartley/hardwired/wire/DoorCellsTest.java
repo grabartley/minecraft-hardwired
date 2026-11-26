@@ -1,10 +1,12 @@
 package com.grahambartley.hardwired.wire;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.AbstractBlock;
@@ -88,10 +90,10 @@ class DoorCellsTest {
     Map<BlockPos, BlockState> world = new HashMap<>();
     BlockPos corner = new BlockPos(10, 70, -3);
     place(world, wideDoor, facing, corner, width, height);
-    List<BlockPos> expected = world.keySet().stream().sorted().toList();
     for (BlockPos pos : world.keySet()) {
       List<BlockPos> cells = DoorCells.of(pos, world.get(pos), world::get);
-      assertEquals(expected, cells, "from " + pos);
+      assertEquals(corner, cells.getFirst(), "anchor from " + pos);
+      assertEquals(world.keySet(), Set.copyOf(cells), "cells from " + pos);
       assertEquals(width * height, cells.size());
     }
   }
@@ -131,14 +133,33 @@ class DoorCellsTest {
     assertEquals(List.of(corner), DoorCells.of(corner, world.get(corner), world::get));
   }
 
-  @ParameterizedTest(name = "a door wall {0} wide stops at the cap")
-  @CsvSource({"10", "20"})
-  void aHugeRunOfDoorCellsStopsAtTheCap(int size) {
+  @ParameterizedTest(name = "a {0} door wall {1} wide stops at the cap with one anchor")
+  @CsvSource({"NORTH,10", "EAST,20", "SOUTH,12"})
+  void aHugeRunOfDoorCellsStopsAtTheCapWithOneAnchor(Direction facing, int size) {
     Map<BlockPos, BlockState> world = new HashMap<>();
-    place(world, wideDoor, Direction.NORTH, BlockPos.ORIGIN, size, size);
-    assertEquals(
-        DoorCells.MAX_CELLS,
-        DoorCells.of(BlockPos.ORIGIN, world.get(BlockPos.ORIGIN), world::get).size());
+    place(world, wideDoor, facing, BlockPos.ORIGIN, size, size);
+    for (BlockPos pos : world.keySet()) {
+      List<BlockPos> cells = DoorCells.of(pos, world.get(pos), world::get);
+      assertEquals(BlockPos.ORIGIN, cells.getFirst(), "anchor from " + pos);
+      assertTrue(cells.contains(pos), "keeps the touched cell " + pos);
+      assertTrue(cells.size() <= DoorCells.MAX_CELLS + 1, "capped from " + pos);
+    }
+  }
+
+  @ParameterizedTest(name = "two {0} wide doors of one block side by side count as one door")
+  @CsvSource({"1", "3"})
+  void twoWideDoorsOfOneBlockSideBySideCountAsOne(int width) {
+    Map<BlockPos, BlockState> world = new HashMap<>();
+    BlockPos corner = new BlockPos(0, 64, 0);
+    place(world, wideDoor, Direction.NORTH, corner, width, 2);
+    place(
+        world,
+        wideDoor,
+        Direction.NORTH,
+        corner.offset(Direction.NORTH.rotateYClockwise(), width),
+        width,
+        2);
+    assertEquals(4 * width, DoorCells.of(corner, world.get(corner), world::get).size());
   }
 
   @ParameterizedTest(name = "fits: {0}")

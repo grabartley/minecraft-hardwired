@@ -6,6 +6,7 @@ import com.grahambartley.hardwired.network.MainPanelViewPayload;
 import com.grahambartley.hardwired.network.OpenDevicePayload;
 import com.grahambartley.hardwired.network.PhoneSaidPayload;
 import com.grahambartley.hardwired.network.PhoneViewPayload;
+import com.grahambartley.hardwired.network.ServerConfigPayloads.SyncServerConfigS2CPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload;
 import com.grahambartley.hardwired.network.WireChunkPayload.CellView;
 import com.grahambartley.hardwired.network.WireInspectResultPayload;
@@ -127,11 +128,19 @@ public final class ConnectedTestPlayer {
   }
 
   public List<String> actionBarKeys() {
+    return messageKeys(true);
+  }
+
+  public List<String> chatKeys() {
+    return messageKeys(false);
+  }
+
+  private List<String> messageKeys(boolean overlay) {
     channel.flushOutbound();
     List<String> keys = new ArrayList<>();
     for (Object message : channel.outboundMessages()) {
       if (message instanceof GameMessageS2CPacket packet
-          && packet.overlay()
+          && packet.overlay() == overlay
           && packet.content().getContent() instanceof TranslatableTextContent content) {
         keys.add(content.getKey());
       }
@@ -229,6 +238,10 @@ public final class ConnectedTestPlayer {
 
   public List<PhoneSaidPayload> phoneLines() {
     return received(PhoneSaidPayload.class);
+  }
+
+  public int configSyncs() {
+    return received(SyncServerConfigS2CPayload.class).size();
   }
 
   public int inspectResults() {

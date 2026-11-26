@@ -55,7 +55,13 @@ public abstract class FuelledSourceBlockEntity extends SourceBlockEntity impleme
     charge = Math.max(next, 0);
     markDirty();
     showLevel();
-    if (CellRules.crossesEmpty(before, charge) && world instanceof ServerWorld server) {
+    if (CellRules.crossesEmpty(before, charge)) {
+      recountGrid();
+    }
+  }
+
+  private void recountGrid() {
+    if (world instanceof ServerWorld server) {
       WireEngine.of(server).power().changed(pos);
     }
   }
@@ -70,6 +76,9 @@ public abstract class FuelledSourceBlockEntity extends SourceBlockEntity impleme
     }
     part = CellRules.partAfterBurn(charge, part, amount);
     markDirty();
+    if (charge == 0) {
+      recountGrid();
+    }
   }
 
   @Override

@@ -255,33 +255,57 @@ public class LiftGameTest implements FabricGameTest {
   @GameTest(templateName = SHAFT, batchId = BURN_BATCH, tickLimit = RIDE_TICK_LIMIT)
   public void aGeneratorGivenChargeByDataRunningDryMidRideStopsThenLowers(TestContext context) {
     FuelledSourceBlockEntity generator = build(context, ModBlocks.REDSTONE_GENERATOR, 0);
+    setChargeByData(context, generator, 1);
+    expectDryGeneratorStopsTheRide(context, generator, -1);
+  }
+
+  @GameTest(templateName = SHAFT, batchId = BURN_BATCH, tickLimit = RIDE_TICK_LIMIT)
+  public void aGeneratorEmptiedByDataMidRideStopsThenLowers(TestContext context) {
+    FuelledSourceBlockEntity generator = build(context, ModBlocks.REDSTONE_GENERATOR, FULL_CHARGE);
+    int emptyTick = DRY_RIDE_TICK + EMPTIED_INTO_RIDE_TICKS;
+    context.runAtTick(emptyTick, () -> setChargeByData(context, generator, 0));
+    expectDryGeneratorStopsTheRide(context, generator, emptyTick);
+  }
+
+  private static void setChargeByData(
+      TestContext context, FuelledSourceBlockEntity generator, int charge) {
     var registries = context.getWorld().getRegistryManager();
     NbtCompound nbt = generator.createNbt(registries);
-    nbt.putInt("charge", 1);
+    nbt.putInt("charge", charge);
     nbt.putDouble("charge_part", 0);
     generator.read(nbt, registries);
-    expectDryGeneratorStopsTheRide(context, generator);
   }
 
   private static void expectDryGeneratorStopsTheRide(
-      TestContext context, FuelledSourceBlockEntity generator) {
+      TestContext context, FuelledSourceBlockEntity generator, int dataTick) {
     ConnectedTestPlayer rider = riderFrom(context, LOW);
-    double burnStep =
-        Hardwired.SERVER_CONFIG.power().loads().liftLoad()
-            * Hardwired.SERVER_CONFIG.power().burn().generatorChargePerLoadMinute()
-            / 60D;
     double[] lowest = {generator.exactCharge()};
+    double[] previous = {generator.exactCharge()};
+    double[] burnStep = {0};
+    long[] emptyAt = {-1};
+    long[] stoppedTick = {-1};
     double[] stoppedAt = {Double.NaN};
+    DeviceStatus[] stopReason = {null};
     int[] loweringTicks = {0};
     context.runAtEveryTick(
         () -> {
-          lowest[0] = Math.min(lowest[0], generator.exactCharge());
+          double charge = generator.exactCharge();
+          if (context.getTick() != dataTick) {
+            burnStep[0] = Math.max(burnStep[0], previous[0] - charge);
+          }
+          previous[0] = charge;
+          lowest[0] = Math.min(lowest[0], charge);
+          if (generator.charge() == 0 && emptyAt[0] < 0) {
+            emptyAt[0] = context.getTick();
+          }
           shaft(context)
               .car()
               .ifPresent(
                   car -> {
-                    if (car.run().phase() == LiftPhase.STOPPED && Double.isNaN(stoppedAt[0])) {
+                    if (car.run().phase() == LiftPhase.STOPPED && stoppedTick[0] < 0) {
+                      stoppedTick[0] = context.getTick();
                       stoppedAt[0] = carLevel(context, car);
+                      stopReason[0] = car.run().stopReason();
                     }
                     if (car.run().phase() == LiftPhase.LOWERING) {
                       loweringTicks[0]++;
@@ -297,11 +321,16 @@ public class LiftGameTest implements FabricGameTest {
     context.runAtTick(
         DRY_RIDE_TICK + SIX_BLOCK_RIDE_TICKS,
         () -> {
-          context.assertFalse(Double.isNaN(stoppedAt[0]), "a dry generator stops the car");
+          context.assertTrue(stoppedTick[0] >= 0, "a dry generator stops the car");
+          context.assertTrue(
+              stoppedTick[0] - emptyAt[0] <= TICKS_PER_SECOND,
+              "stopped within a second of running dry: empty at "
+                  + emptyAt[0]
+                  + ", stopped at "
+                  + stoppedTick[0]);
           context.assertTrue(stoppedAt[0] < HIGH, "stopped short of the top: " + stoppedAt[0]);
           context.assertTrue(
-              car(context).run().stopReason() == DeviceStatus.OUT_OF_FUEL,
-              "reason " + car(context).run().stopReason());
+              stopReason[0] == DeviceStatus.OUT_OF_FUEL, "stopped because " + stopReason[0]);
           context.assertFalse(generator.isRunning(), "the dry generator stopped");
           context.assertTrue(
               rider.actionBarKeys().contains(DeviceStatus.OUT_OF_FUEL.translationKey()),
@@ -312,14 +341,15 @@ public class LiftGameTest implements FabricGameTest {
         () -> {
           int below = stoppedAt[0] >= MIDDLE ? MIDDLE : LOW;
           expectInCar(context, rider, below, "rider");
+          context.assertTrue(isOpen(context, below), "gate opened at the floor below");
           double halfSpeedTicks =
               (stoppedAt[0] - below) * Hardwired.SERVER_CONFIG.lift().ticksPerBlock() * 2;
           context.assertTrue(
               Math.abs(loweringTicks[0] - halfSpeedTicks) <= HALF_SPEED_TICK_SLACK,
               "lowering runs at half speed: " + loweringTicks[0] + " ticks, not " + halfSpeedTicks);
-          context.assertTrue(isOpen(context, below), "gate opened at the floor below");
           context.assertTrue(
-              lowest[0] >= -burnStep, "charge never runs a burn step below zero: " + lowest[0]);
+              lowest[0] >= -burnStep[0],
+              "charge never runs a burn step below zero: " + lowest[0] + " vs " + burnStep[0]);
           context.assertFalse(rider.hasEarned(GOING_UP), "a failed ride earns nothing");
           finish(context, rider);
         });

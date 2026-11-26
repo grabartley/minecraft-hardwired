@@ -2,6 +2,7 @@ package com.grahambartley.hardwired.wire;
 
 import com.grahambartley.hardwired.device.WireDevice;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -33,13 +34,13 @@ public final class DoorCells {
       return WireDevice.twoTall(pos, state.get(DoorBlock.HALF));
     }
     Direction facing = state.get(DoorBlock.FACING);
-    Direction[] steps = {
-      Direction.UP, Direction.DOWN, facing.rotateYClockwise(), facing.rotateYCounterclockwise()
-    };
+    Direction back = facing.rotateYCounterclockwise();
+    Direction[] steps = {Direction.UP, Direction.DOWN, facing.rotateYClockwise(), back};
+    BlockPos anchor = anchorOf(pos, state, states, back);
     Set<BlockPos> found = new HashSet<>();
     Deque<BlockPos> frontier = new ArrayDeque<>();
-    found.add(pos.toImmutable());
-    frontier.add(pos.toImmutable());
+    found.add(anchor);
+    frontier.add(anchor);
     while (!frontier.isEmpty()) {
       BlockPos cell = frontier.poll();
       for (Direction step : steps) {
@@ -49,7 +50,27 @@ public final class DoorCells {
         }
       }
     }
-    return found.stream().sorted().toList();
+    found.add(pos.toImmutable());
+    found.remove(anchor);
+    List<BlockPos> cells = new ArrayList<>();
+    cells.add(anchor);
+    found.stream().sorted().forEach(cells::add);
+    return cells;
+  }
+
+  private static BlockPos anchorOf(
+      BlockPos pos, BlockState state, Function<BlockPos, BlockState> states, Direction back) {
+    BlockPos anchor = pos.toImmutable();
+    for (int moves = 0; moves < MAX_CELLS; moves++) {
+      if (sameDoor(states.apply(anchor.down()), state)) {
+        anchor = anchor.down();
+      } else if (sameDoor(states.apply(anchor.offset(back)), state)) {
+        anchor = anchor.offset(back);
+      } else {
+        break;
+      }
+    }
+    return anchor;
   }
 
   private static boolean sameDoor(BlockState other, BlockState door) {
