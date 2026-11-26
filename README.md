@@ -26,7 +26,7 @@ Hardwired brings the wonder of early electricity to Minecraft. Run hidden cloth 
 <img src="https://raw.githubusercontent.com/grabartley/minecraft-hardwired/main/docs/images/lighting.png" alt="Copper lamps, a streetlight, a wall lamp and a light strip above a Main Panel, a Control Panel, a Wall Switch, a Push Button and a Controller" width="800">
 </p>
 
-- **Lay wire anywhere.** Drag Copper Wire across any wall, floor or ceiling. It stays hidden until you hold wire again, comes in every dye colour, and honeycomb seals it in place.
+- **Lay wire anywhere.** Drag Copper Wire across any wall, floor or ceiling. It stays hidden until you hold wire again, comes in every dye colour, and honeycomb seals it so only you can see or change it.
 - **Hang the lights.** Copper lamps, wall lights, light strips and streetlights glow warm white or any dye colour, spill that colour onto the room, and age like copper.
 - **Set the mood.** Flip a Wall Switch or a Push Button, change every lamp at once from a Control Panel, save scenes for later, and run the whole house from a Main Panel.
 - **Hide a door.** Set a timeline on a Controller and pistons open and close a wall from one switch.
@@ -39,7 +39,7 @@ Hardwired brings the wonder of early electricity to Minecraft. Run hidden cloth 
 
 - **Choose your sources.** Redstone Cells, Redstone Generators, Solar Panels and Lodestone Dynamos run your wiring, and they add up as your build grows.
 - **Mind the load.** Ask too much of the grid and it blows like a fuse. Lightning striking a wired rod charges your cells.
-- **Throw the great switch.** Pull the Master Switch and every source comes up at once, with gauges that swing with the load.
+- **Throw the great switch.** Pull the Master Switch and your sources start one by one, with gauges that swing with the load.
 
 ## Build circuits
 
@@ -68,14 +68,15 @@ Hang a Lift over a shaft, or a Large Lift over a wide one, and put a folding gat
 
 - **Go on the air.** Raise a radio tower, then play a disc or speak live from the Broadcast Desk to every Radio tuned in within reach. Static creeps in with distance and depth, and a Speaker carries a Radio through the house.
 - **Make a call.** Wire Telephones to an Exchange and each one gets its own number. Dial a friend from a desk, a wall or a Phone Box, then talk or type, while a Bell Box rings through the house.
-- **Talk between rooms.** Intercoms on the same wire talk to each other.
+- **Talk between rooms.** Intercoms on the same wire send messages to each other.
 - **Run a line.** Raise Telephone Poles and string wire between them to carry calls, power and signals across the map.
 
 ## Install
 
 1. Install Fabric Loader, then put Hardwired and [Fabric API](https://modrinth.com/mod/fabric-api) in your `mods` folder.
 2. Load a world and craft Copper Wire from a copper ingot and redstone.
-3. Wire a Redstone Cell to a copper lamp and a Wall Switch, then flip the switch.
+3. Craft a Redstone Cell and fill it with redstone dust.
+4. Wire the cell to a Copper Ceiling Lamp and a Wall Switch, then flip the switch.
 
 Hardwired works in singleplayer and on servers, on Minecraft `1.21.1`. Hold `V` to talk at a Broadcast Desk or on a telephone. The key is under `Options > Controls > Key Binds`, in the Hardwired section.
 
@@ -123,11 +124,13 @@ Minecraft `1.21.1` on Java `21`.
 
 Hardwired is in English, Simplified Chinese (简体中文), German (Deutsch), French (Français), Portuguese (Português do Brasil), Russian (Русский) and Spanish (Español).
 
-Want to add your language? Copy [`en_us.json`](src/main/resources/assets/hardwired/lang/en_us.json), translate the text, and open a pull request. Keep the keys, the `%s` placeholders and the `§` codes as they are, and leave command names and arguments untranslated. Found a mistake in a translation? [Open an issue](https://github.com/grabartley/minecraft-hardwired/issues/new).
+Want to add your language? Copy [`en_us.json`](src/main/resources/assets/hardwired/lang/en_us.json), translate the text, and open a pull request. Keep the keys, the `%s` and `%%` placeholders, the `\n` line breaks and the `§` codes as they are, and leave command names and arguments untranslated. Found a mistake in a translation? [Open an issue](https://github.com/grabartley/minecraft-hardwired/issues/new).
 
-## Credits
+## Documentation
 
 How every part of the mod is meant to work is written down in the [product requirements](docs/prd.md). How it is built is in the [engineering standards](docs/standards.md) and the [decision records](docs/adr/README.md).
+
+## Credits
 
 Hardwired is released under the [MIT License](LICENSE).
 
