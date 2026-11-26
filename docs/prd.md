@@ -708,7 +708,7 @@ There is no singleplayer mode in this mod. A single-player world is an integrate
 | LOOK-1 | The mod's own block and item textures are 32x32 and its models use half-pixel detail, in vanilla's palette and shading. Models stay blocky, with nothing finer than that. Vanilla materials such as copper, stone and wood use vanilla's own textures by reference |
 | LOOK-2 | Models are simple and blocky, sitting comfortably beside vanilla blocks |
 | LOOK-3 | Copper and redstone are the main materials, in vanilla's colours |
-| LOOK-4 | Tile and icon art for the advancement tab follows the same rules |
+| LOOK-4 | Tile and icon art for the advancement tab follows the same rules. So do the mod icon, which is the Radio seen from the front, and the README banner, which is a night scene of the mod's devices joined by wire under telephone poles and a radio mast. Both are renders of the mod's own models |
 | LOOK-5 | Blocks and items look like vanilla ones wherever they are held or shown: GUI, first and third person, item frames and the ground |
 | LOOK-6 | Sounds use vanilla first, and real recordings next. Telephone tones may be generated, because on a real line they were electrical signals too |
 | LOOK-7 | A lit device shows a lit texture, as a redstone lamp does |
