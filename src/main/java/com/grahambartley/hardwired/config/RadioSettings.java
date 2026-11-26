@@ -59,6 +59,10 @@ public record RadioSettings(
             undergroundLossDepth, UNDERGROUND_LOSS_DEPTH_MIN, UNDERGROUND_LOSS_DEPTH_MAX);
   }
 
+  public boolean towerMastsInOrder() {
+    return towerMinMasts <= towerMaxMasts;
+  }
+
   public RadioSettings withTowerMinMasts(final int value) {
     return new RadioSettings(
         value,
@@ -177,6 +181,13 @@ public record RadioSettings(
   }
 
   static RadioSettings fromJson(final ConfigJsonFields fields) {
+    final RadioSettings loaded = readJson(fields);
+    return loaded.withTowerMinMasts(
+        ConfigBounds.orderedMin(
+            KEY_TOWER_MIN_MASTS, loaded.towerMinMasts, KEY_TOWER_MAX_MASTS, loaded.towerMaxMasts));
+  }
+
+  private static RadioSettings readJson(final ConfigJsonFields fields) {
     return new RadioSettings(
         fields.readInt(
             KEY_TOWER_MIN_MASTS, DEFAULTS.towerMinMasts, TOWER_MIN_MASTS_MIN, TOWER_MIN_MASTS_MAX),

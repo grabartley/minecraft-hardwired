@@ -218,7 +218,7 @@ public final class PowerGrids {
           network.masters().add(key);
         }
       } else if (VanillaPower.isComponent(state)) {
-        List<BlockPos> cells = VanillaPower.cells(pos, state);
+        List<BlockPos> cells = VanillaPower.cells(pos, state, this::loadedState);
         network.link(key, cells);
         if (network.isOn()) {
           GridTally.addLoad(loads, cells.getFirst().asLong(), settings.loads().vanillaLoad());

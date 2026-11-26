@@ -126,6 +126,19 @@ public final class ConnectedTestPlayer {
             base.allowsServerListing()));
   }
 
+  public List<String> actionBarKeys() {
+    channel.flushOutbound();
+    List<String> keys = new ArrayList<>();
+    for (Object message : channel.outboundMessages()) {
+      if (message instanceof GameMessageS2CPacket packet
+          && packet.overlay()
+          && packet.content().getContent() instanceof TranslatableTextContent content) {
+        keys.add(content.getKey());
+      }
+    }
+    return keys;
+  }
+
   public List<Text> intercomLines() {
     channel.flushOutbound();
     List<Text> lines = new ArrayList<>();

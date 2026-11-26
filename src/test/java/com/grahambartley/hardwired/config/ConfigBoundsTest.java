@@ -12,4 +12,10 @@ class ConfigBoundsTest {
   void clampsToTheRange(int value, int min, int max, int expected) {
     assertEquals(expected, ConfigBounds.clamp(value, min, max));
   }
+
+  @ParameterizedTest(name = "min {0} with max {1} becomes {2}")
+  @CsvSource({"5,32,5", "32,32,32", "40,33,33", "64,1,1", "1,128,1"})
+  void aMinimumAboveItsMaximumIsLoweredToIt(int min, int max, int expected) {
+    assertEquals(expected, ConfigBounds.orderedMin("min", min, "max", max));
+  }
 }

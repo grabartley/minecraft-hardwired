@@ -19,4 +19,17 @@ public final class ConfigBounds {
           "Hardwired config value {}={} out of range [{}, {}], clamping", key, value, min, max);
     }
   }
+
+  static int orderedMin(final String minKey, final int min, final String maxKey, final int max) {
+    if (min > max) {
+      LOGGER.warn(
+          "Hardwired config value {}={} is above {}={}, lowering it to match",
+          minKey,
+          min,
+          maxKey,
+          max);
+      return max;
+    }
+    return min;
+  }
 }

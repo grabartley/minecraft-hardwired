@@ -117,6 +117,7 @@
   "command.hardwired.status.setting": "- %s=%s",
   "command.hardwired.update.success": "%s cambiado a %s",
   "command.hardwired.update.failed": "No se pudieron guardar los ajustes",
+  "config.hardwired.refused.towermasts": "Torre más baja (%s mástiles) no puede superar a Torre más alta (%s mástiles)",
   "advancement.hardwired.hardwired.title": "Hardwired",
   "advancement.hardwired.hardwired.description": "Fabrica cable de cobre. Después, fabrica una fuente de energía",
   "advancement.hardwired.juiced_up.title": "Con energía",

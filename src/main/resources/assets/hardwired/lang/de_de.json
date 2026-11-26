@@ -117,6 +117,7 @@
   "command.hardwired.status.setting": "- %s=%s",
   "command.hardwired.update.success": "%s auf %s gesetzt",
   "command.hardwired.update.failed": "Einstellungen konnten nicht gespeichert werden",
+  "config.hardwired.refused.towermasts": "Kleinster Turm (%s Masten) darf nicht höher sein als Höchster Turm (%s Masten)",
   "advancement.hardwired.hardwired.title": "Hardwired",
   "advancement.hardwired.hardwired.description": "Stelle Kupferdraht her. Stelle als Nächstes eine Stromquelle her",
   "advancement.hardwired.juiced_up.title": "Unter Strom",

@@ -117,6 +117,7 @@
   "command.hardwired.status.setting": "- %s=%s",
   "command.hardwired.update.success": "%s réglé sur %s",
   "command.hardwired.update.failed": "Impossible d'enregistrer les paramètres",
+  "config.hardwired.refused.towermasts": "Tour minimale (%s mâts) ne peut pas dépasser Tour maximale (%s mâts)",
   "advancement.hardwired.hardwired.title": "Hardwired",
   "advancement.hardwired.hardwired.description": "Fabriquez du fil de cuivre. Ensuite, fabriquez une source d'énergie",
   "advancement.hardwired.juiced_up.title": "Sous tension",

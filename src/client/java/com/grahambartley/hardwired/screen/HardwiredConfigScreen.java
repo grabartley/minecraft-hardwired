@@ -1,14 +1,17 @@
 package com.grahambartley.hardwired.screen;
 
 import com.grahambartley.hardwired.config.ClientSettingsStore;
+import com.grahambartley.hardwired.config.ConfigRefusals;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.config.SyncedServerConfig;
 import com.grahambartley.hardwired.network.ServerConfigPayloads.EditServerConfigC2SPayload;
 import com.grahambartley.hardwired.server.ServerConfigEditPermission;
+import java.util.Optional;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
@@ -25,6 +28,8 @@ public final class HardwiredConfigScreen extends Screen {
   private final Screen parent;
   private final SettingsConfigSection settings;
   private final ClientConfigSection clientSettings = new ClientConfigSection();
+  private ButtonWidget doneButton;
+  private Optional<Text> shownRefusal = Optional.empty();
 
   public HardwiredConfigScreen(@Nullable Screen parent) {
     super(Text.translatable("screen.hardwired.settings.title"));
@@ -51,13 +56,15 @@ public final class HardwiredConfigScreen extends Screen {
 
     final int doneLeft = (this.width - (DONE_CANCEL_WIDTH * 2 + DONE_CANCEL_GAP)) / 2;
     final int cancelLeft = doneLeft + DONE_CANCEL_WIDTH + DONE_CANCEL_GAP;
-    final ButtonWidget doneButton =
+    this.doneButton =
         ButtonWidget.builder(
                 Text.translatable("screen.hardwired.settings.done"), button -> saveAndClose())
             .dimensions(
                 doneLeft, layout.buttonsY(), DONE_CANCEL_WIDTH, ConfigScreenLayout.BUTTON_HEIGHT)
             .build();
-    addDrawableChild(doneButton);
+    addDrawableChild(this.doneButton);
+    this.shownRefusal = Optional.empty();
+    showRefusal();
 
     addDrawableChild(
         ButtonWidget.builder(
@@ -65,6 +72,25 @@ public final class HardwiredConfigScreen extends Screen {
             .dimensions(
                 cancelLeft, layout.buttonsY(), DONE_CANCEL_WIDTH, ConfigScreenLayout.BUTTON_HEIGHT)
             .build());
+  }
+
+  @Override
+  public void tick() {
+    super.tick();
+    showRefusal();
+  }
+
+  private void showRefusal() {
+    final Optional<Text> refusal =
+        resolveAccess() == EditAccess.EDITABLE
+            ? ConfigRefusals.of(this.settings.config())
+            : Optional.empty();
+    if (refusal.equals(this.shownRefusal)) {
+      return;
+    }
+    this.shownRefusal = refusal;
+    this.doneButton.active = refusal.isEmpty();
+    this.doneButton.setTooltip(refusal.map(Tooltip::of).orElse(null));
   }
 
   private void saveAndClose() {

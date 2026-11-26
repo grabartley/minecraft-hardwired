@@ -25,14 +25,15 @@ class VanillaPowerTest {
                 half.equals("upper") ? DoubleBlockHalf.UPPER : DoubleBlockHalf.LOWER);
     assertEquals(
         List.of(new BlockPos(1, first, 1), new BlockPos(1, second, 1)),
-        VanillaPower.cells(new BlockPos(1, y, 1), door));
+        VanillaPower.cells(new BlockPos(1, y, 1), door, cell -> null));
   }
 
   @ParameterizedTest(name = "a lever at y {0} is one cell")
   @CsvSource({"5", "60"})
   void aSingleBlockIsOneCell(int y) {
     BlockPos pos = new BlockPos(1, y, 1);
-    assertEquals(List.of(pos), VanillaPower.cells(pos, Blocks.LEVER.getDefaultState()));
+    assertEquals(
+        List.of(pos), VanillaPower.cells(pos, Blocks.LEVER.getDefaultState(), cell -> null));
   }
 
   @ParameterizedTest

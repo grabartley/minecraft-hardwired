@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.command;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.config.ConfigRefusals;
 import com.grahambartley.hardwired.config.HardwiredConfig;
 import com.grahambartley.hardwired.server.ServerConfigService;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -8,6 +9,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 import net.minecraft.server.command.CommandManager;
@@ -69,6 +71,11 @@ final class ConfigSettingNodes {
       final String label,
       final String displayValue) {
     final ServerCommandSource source = ctx.getSource();
+    final Optional<Text> refusal = ConfigRefusals.of(updated);
+    if (refusal.isPresent()) {
+      source.sendError(refusal.get());
+      return 0;
+    }
     final boolean ok = ServerConfigService.update(source.getServer(), updated);
     if (!ok) {
       source.sendError(Text.translatable("command.hardwired.update.failed"));

@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.gametest;
 
 import com.grahambartley.hardwired.Hardwired;
+import com.grahambartley.hardwired.block.FuelledSourceBlockEntity;
 import com.grahambartley.hardwired.block.LargeLiftBlock;
 import com.grahambartley.hardwired.block.LargeLiftFloorBlock;
 import com.grahambartley.hardwired.block.LiftFloorBlock;
@@ -19,6 +20,7 @@ import com.grahambartley.hardwired.wire.WireCell;
 import com.grahambartley.hardwired.wire.WireEngine;
 import com.grahambartley.hardwired.wire.WireFace;
 import java.util.List;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.DoubleBlockHalf;
@@ -54,6 +56,9 @@ final class LiftGameSupport {
   static final int SIX_BLOCK_RIDE_TICKS = 74;
   static final int AFTER_RIDE_TICKS = 25;
   static final int RIDE_TICK_LIMIT = 300;
+  static final int DRY_RIDE_TICK = 30;
+  static final int DRY_LANDED_TICKS = 220;
+  static final int HALF_SPEED_TICK_SLACK = 2;
   static final Identifier GOING_UP = Identifier.of(Hardwired.MOD_ID, "going_up");
   static final BlockPos CELL = new BlockPos(PILLAR_X, FLOOR_Y + 1, 2);
   static final BlockPos HEAD = new BlockPos(COLUMN_X, HEAD_Y, COLUMN_Z);
@@ -81,6 +86,10 @@ final class LiftGameSupport {
   }
 
   static RedstoneCellBlockEntity build(TestContext context, int charge) {
+    return (RedstoneCellBlockEntity) build(context, ModBlocks.REDSTONE_CELL, charge);
+  }
+
+  static FuelledSourceBlockEntity build(TestContext context, Block source, int charge) {
     for (int y = FLOOR_Y + 1; y <= HEAD_Y; y++) {
       context.setBlockState(new BlockPos(PILLAR_X, y, COLUMN_Z), Blocks.STONE);
     }
@@ -91,7 +100,7 @@ final class LiftGameSupport {
     placeGate(context, MIDDLE);
     placeGate(context, HIGH);
     context.setBlockState(HEAD, ModBlocks.LIFT);
-    context.setBlockState(CELL, ModBlocks.REDSTONE_CELL);
+    context.setBlockState(CELL, source);
     WireEngine engine = WireEngine.of(context.getWorld());
     for (int y = FLOOR_Y + 1; y <= HEAD_Y; y++) {
       wire(engine, new BlockPos(PILLAR_X, y, COLUMN_Z), Direction.EAST, context);
@@ -101,9 +110,9 @@ final class LiftGameSupport {
     wire(engine, new BlockPos(GATE_X, FLOOR_Y, COLUMN_Z), Direction.UP, context);
     wire(engine, new BlockPos(GATE_X, FLOOR_Y, COLUMN_Z - 1), Direction.UP, context);
     wire(engine, new BlockPos(PILLAR_X, FLOOR_Y, COLUMN_Z - 1), Direction.UP, context);
-    RedstoneCellBlockEntity cell = context.getBlockEntity(CELL);
-    cell.setCharge(charge);
-    return cell;
+    FuelledSourceBlockEntity fuelled = context.getBlockEntity(CELL);
+    fuelled.setCharge(charge);
+    return fuelled;
   }
 
   static void useGate(TestContext context, ConnectedTestPlayer player, int level) {

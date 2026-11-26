@@ -61,4 +61,35 @@ class CellRulesTest {
   void aHeldStackGivesAsManyItemsAsFit(int charge, int capacity, int worth, int held, int taken) {
     assertEquals(taken, CellRules.itemsThatFit(charge, capacity, worth, held));
   }
+
+  @ParameterizedTest(name = "{0} to {1} crosses empty: {2}")
+  @CsvSource({
+    "1,0,true",
+    "16,0,true",
+    "0,1,true",
+    "0,64,true",
+    "2,1,false",
+    "5,9,false",
+    "0,0,false",
+    "1,1,false"
+  })
+  void aSourceIsToldToStopOrStartOnlyWhenItsChargeCrossesEmpty(
+      int before, int after, boolean crosses) {
+    assertEquals(crosses, CellRules.crossesEmpty(before, after));
+  }
+
+  @ParameterizedTest(name = "charge {0}, part {1}, step {2} leaves part {3}")
+  @CsvSource({
+    "0,-0.06,0.53,-0.06",
+    "0,-0.59,0.53,-0.53",
+    "0,-2.2,3.2,-2.2",
+    "0,-5.0,3.2,-3.2",
+    "0,0.4,0.53,0.4",
+    "1,-0.59,0.53,-0.59",
+    "3,-0.99,0.1,-0.99"
+  })
+  void anEmptySourceNeverRunsMoreThanOneBurnStepBelowZero(
+      int charge, double part, double step, double expected) {
+    assertEquals(expected, CellRules.partAfterBurn(charge, part, step), 1e-9);
+  }
 }

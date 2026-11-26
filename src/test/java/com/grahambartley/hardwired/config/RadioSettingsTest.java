@@ -1,6 +1,7 @@
 package com.grahambartley.hardwired.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.JsonObject;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -65,5 +66,24 @@ class RadioSettingsTest {
     JsonObject root = new JsonObject();
     d.writeJson(root);
     assertEquals(voice, RadioSettings.fromJson(new ConfigJsonFields(root)).voiceBroadcasts());
+  }
+
+  @ParameterizedTest(name = "min {0} and max {1} in order: {2}")
+  @CsvSource({"5,32,true", "32,32,true", "1,1,true", "33,32,false", "40,33,false", "64,1,false"})
+  void towerMastsAreInOrderWhenTheMinimumIsNotAboveTheMaximum(int min, int max, boolean inOrder) {
+    RadioSettings s = RadioSettings.DEFAULTS.withTowerMaxMasts(max).withTowerMinMasts(min);
+    assertEquals(inOrder, s.towerMastsInOrder());
+  }
+
+  @ParameterizedTest(name = "a file with min {0} and max {1} loads as {2}..{1}")
+  @CsvSource({"40,33,33", "64,1,1", "33,32,32", "32,32,32", "5,32,5"})
+  void aFileWithTheMinimumAboveTheMaximumLoadsInOrder(int min, int max, int loadedMin) {
+    JsonObject root = new JsonObject();
+    root.addProperty(RadioSettings.KEY_TOWER_MIN_MASTS, min);
+    root.addProperty(RadioSettings.KEY_TOWER_MAX_MASTS, max);
+    RadioSettings loaded = RadioSettings.fromJson(new ConfigJsonFields(root));
+    assertEquals(loadedMin, loaded.towerMinMasts());
+    assertEquals(max, loaded.towerMaxMasts());
+    assertTrue(loaded.towerMastsInOrder());
   }
 }

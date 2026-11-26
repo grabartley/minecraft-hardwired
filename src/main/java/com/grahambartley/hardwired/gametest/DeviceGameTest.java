@@ -408,4 +408,23 @@ public class DeviceGameTest implements FabricGameTest {
         .executeWithPrefix(server.getCommandSource(), "hardwired config buttonholdticks " + before);
     context.complete();
   }
+
+  @GameTest(templateName = BENCH)
+  public void theConfigCommandRefusesATowerMinimumAboveTheMaximum(TestContext context) {
+    var server = context.getWorld().getServer();
+    var before = Hardwired.SERVER_CONFIG;
+    int max = before.radio().towerMaxMasts();
+    int min = before.radio().towerMinMasts();
+    server
+        .getCommandManager()
+        .executeWithPrefix(
+            server.getCommandSource(), "hardwired config towerminmasts " + (max + 1));
+    server
+        .getCommandManager()
+        .executeWithPrefix(
+            server.getCommandSource(), "hardwired config towermaxmasts " + (min - 1));
+    context.assertTrue(
+        Hardwired.SERVER_CONFIG.equals(before), "a tower minimum above the maximum is refused");
+    context.complete();
+  }
 }
